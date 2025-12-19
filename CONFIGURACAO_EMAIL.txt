@@ -1,0 +1,50 @@
+# ========================================
+# GUIA DE CONFIGURAÇÃO DE E-MAIL
+# ========================================
+
+# Para enviar e-mails, você precisa configurar o arquivo .env
+
+# OPÇÃO 1: Gmail (Recomendado para testes)
+# ----------------------------------------
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=riguetepedro0@gmail.com
+MAIL_PASSWORD=wwxyjrphvwgbzmzg
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=riguetepedro0@gmail.com
+MAIL_FROM_NAME="${flashfood}"
+
+# IMPORTANTE: Para Gmail, você precisa:
+# 1. Ativar a verificação em duas etapas
+# 2. Gerar uma senha de app em: https://myaccount.google.com/apppasswords
+# 3. Usar essa senha de app no MAIL_PASSWORD
+
+# OPÇÃO 2: Mailtrap (Melhor para desenvolvimento/testes)
+# -------------------------------------------------------
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=seu_username_mailtrap
+MAIL_PASSWORD=sua_senha_mailtrap
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@flashfood.com
+MAIL_FROM_NAME="${APP_NAME}"
+
+# Cadastre-se gratuitamente em: https://mailtrap.io
+
+# OPÇÃO 3: SendGrid, Mailgun, Amazon SES, etc.
+# --------------------------------------------
+# Consulte a documentação do Laravel para outros provedores
+
+# ========================================
+# TESTANDO O ENVIO DE E-MAIL
+# ========================================
+
+# Depois de configurar, rode a migration:
+php artisan migrate
+
+# Para testar se está funcionando:
+php artisan tinker
+# E execute:
+Mail::raw('Teste', function($msg) { $msg->to('seu_email@gmail.com')->subject('Teste'); });
