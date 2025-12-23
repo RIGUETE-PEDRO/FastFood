@@ -111,3 +111,43 @@ body{
     background-color:#FAE8CB !important;
 
 }
+
+.circulo_maior {
+    height: 90px;
+    width: 90px;
+    border-radius: 50%;
+    background: #f5ed00;
+background: radial-gradient(circle,rgba(245, 237, 0, 1) 7%, rgba(240, 181, 19, 1) 95%);
+    border: 2px solid #fc6500;
+    /* centraliza o conteúdo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+}
+
+.profile-image {
+    height: 75px;
+    width: 75px;           /* definir largura igual à altura para ser circular */
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #00000073;
+    background-color: #ffff06; /* opcional: fundo da imagem */
+}
+
+.dashboard {
+    display: flex;
+    justify-content: space-between; /* espaça os painéis igualmente */
+    gap: 20px; /* distância entre eles */
+}
+
+.painel {
+    flex: 1; /* cada painel ocupa espaço igual */
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    border: 2px solid rgba(0,0,0,0.3);
+    text-align: center;
+}

@@ -36,7 +36,7 @@
         <div class="profile-card">
             <aside class="profile-card__summary">
                 <div class="profile-avatar">
-                    <img class="profile-image" src="{{ asset('img/perfilArendondado.svg') }}" alt="Foto do usuário">
+                    <img class="profile-image" src="{{ asset('img/pessoa.avif') }}" alt="Foto do usuário">
                     <span class="profile-role-badge">{{ $roleLabel }}</span>
                 </div>
 

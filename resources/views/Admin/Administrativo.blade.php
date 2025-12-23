@@ -48,8 +48,10 @@
            <!-- Menu do usuário -->
         <li class="nav-item dropdown ms-auto">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="{{ asset('img/person.png') }}" alt="Usuário" class="rounded-circle" width="30" height="30">
+                <div class="circulo_maior">
+                <img src="{{ asset('img/pessoa.avif') }}" alt="Usuário" class="rounded-circle profile-image" width="30" height="30"> </div>
                 <span class="ms-2 text" >{{ $nomeUsuario }}</span>
+
 
             </a>
                 <ul class="dropdown-menu dropdown-menu-end list">
@@ -67,5 +69,16 @@
     </div>
   </div>
 </nav>
+
+<main>
+ <div class="dashboard">
+    <div class="painel">Total de vendas</div>
+    <div class="painel">Pedidos hoje</div>
+    <div class="painel">Produto mais vendido</div>
+</div>
+
+
+</main>
+
 </body>
 </html>
