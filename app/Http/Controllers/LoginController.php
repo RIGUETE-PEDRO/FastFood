@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\AuthService;
 use App\Services\LoginService;
 use App\Mail\RecuperarSenhaMail;
+use App\Services\GenericBase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -15,36 +16,57 @@ class LoginController extends Controller
 {
     protected AuthService $authService;
     protected LoginService $loginService;
+    protected GenericBase $genericBase;
 
     //construtor para injeção de dependências
   public function __construct(
         AuthService $authService,
-        LoginService $loginService
+        LoginService $loginService,
+        GenericBase $genericBase
     ) {
         $this->authService = $authService;
         $this->loginService = $loginService;
+        $this->genericBase = $genericBase;
+    }
+
+
+    public function logout()
+    {
+
+        session()->forget('usuario_logado');
+        return redirect()->route('home');
     }
 
     //função de login de usuário
     public function login(Request $request)
     {
+
+
         $credenciais = $request->only('email', 'senha');
 
-        $usuario = $this->loginService->autenticar($credenciais);
+        $usuario = $this->genericBase->findAll()->where('email', $credenciais['email'])->first();
 
-        if ($usuario === null) {
+        $autenticador = $this->loginService->autenticar($credenciais);
+
+        if ($autenticador === null) {
             return redirect()->back()->withErrors(['login' => 'Credenciais inválidas'])->withInput();
         }
 
-
+        // Salvar usuário na sessão
+        session(['usuario_logado' => $usuario]);
 
         // Autenticação bem-sucedida, redirecionar para a página desejada
 
+        if($usuario->tipo_usuario_id == 1){
+            return redirect()->route('Administrativo');
+        }
 
-        if(!$usuario){
+        if(!$autenticador){
             return redirect()->route('login');
         }
-        if($usuario == true){
+
+
+        if($autenticador == true){
             return redirect()->route('home');
         }
 

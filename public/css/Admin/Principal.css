@@ -1,0 +1,113 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+
+.navbar {
+  display: flex;       /* ativa flexbox no menu */
+  list-style: none;
+  padding: 0 !important;
+  margin: 0 !important;
+  align-items: center;
+  gap: 20px;           /* espaço entre itens da esquerda */
+  padding-right: 0;    /* remove espaçamento do lado direito */
+
+}
+
+.navbar .container-fluid {
+  padding-right: 0;    /* remove padding interno do container bootstrap */
+}
+
+.navbar-nav {
+  width: 100%;
+  align-items: center;
+}
+
+.nav-item.person {
+  margin-left: auto;  /* empurra o grupo (imagem + nome) para o canto direito */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-item.person a {
+  display: flex;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+  padding-right: 0;
+  margin-right: 30px;
+}
+
+.nav-item.person img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;  /* opcional: deixa redonda */
+}
+
+
+.navbar{
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    padding-top: 0px !important;
+ background: #ff0000;
+background: linear-gradient(90deg,rgba(255, 0, 0, 1) 1%, rgba(255, 123, 0, 1) 46%, rgba(255, 0, 0, 1) 90%);
+}
+
+.text{
+    color: rgba(255, 251, 6, 0.915) !important;
+    font-family: "Anton", sans-serif;
+    font-size: 20px !important;
+}
+
+
+/* Define a cor de fundo do dropdown */
+.dropdown-menu.list {
+    background-color: #bf0a0a; /* fundo preto */
+}
+
+/* Letras vermelhas para o primeiro e terceiro item (ou ímpares) */
+.dropdown-menu.list .dropdown-item:nth-child(odd) {
+    color: rgb(177, 6, 6);
+}
+
+/* Letras amarelas para o segundo item (ou pares) */
+.dropdown-menu.list .dropdown-item:nth-child(even) {
+    color: yellow;
+}
+
+/* Se quiser mudar a cor quando passar o mouse */
+.dropdown-menu.list .dropdown-item:hover {
+    background-color: #f37907; /* fundo escuro ao hover */
+    color: rgb(253, 127, 2); /* ou outra cor de destaque */
+}
+
+.titulo{
+    font-size: 40px !important;
+    margin-left: 25px ;
+    margin-right: 50px;
+
+}
+
+
+.navegador{
+    font-size: 18px !important;
+    margin: 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+
+
+}
+
+body{
+    background-color:#FAE8CB !important;
+
+}
