@@ -24,7 +24,13 @@ Route::get('/redefinir-senha', function () {
     return view('Redefinir-senha');
 })->name('senha.redefinir.form');
 
+Route::get('/administrativo', function () {
+    return view('Admin.Administrativo');
+})->name('Administrativo');
+
+
 Route::post('/registro', [RegisterController::class, 'register'])->name('registro');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/esqueci-senha', [LoginController::class, 'recuperarSenha'])->name('senha.recuperar');
 Route::post('/redefinir-senha', [LoginController::class, 'atualizarSenha'])->name('senha.atualizar');
+

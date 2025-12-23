@@ -29,6 +29,20 @@
             <button type="submit">Entrar</button>
             <a href="/registro" class="register">Cadastre-se</a>
             <a href="/esqueci-senha" class="esquecer-senha">Esqueci minha senha</a>
+
+
+            @if (session('sucesso'))
+                <label class="msg-sucesso">{{ session('sucesso') }}</label>
+            @endif
+
+
+            @if (session('erro'))
+                <div class="msg-erro">
+                    <img src="{{ asset('img/alert.png') }}" alt="Erro">
+                    <span>{{ session('erro') }}</span>
+                </div>
+            @endif
+
         </form>
     </div>
 </div>

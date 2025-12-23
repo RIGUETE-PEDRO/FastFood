@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             ['descricao' => 'Cliente', 'created_at' => now(), 'updated_at' => now()],
             ['descricao' => 'Estabelecimento', 'created_at' => now(), 'updated_at' => now()],
             ['descricao' => 'Administrador', 'created_at' => now(), 'updated_at' => now()],
+            ['descricao' => 'Entregador', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }

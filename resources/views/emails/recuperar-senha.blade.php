@@ -40,6 +40,7 @@
         }
         .button:hover {
             background-color: #18a737;
+            color: white;
         }
         .footer {
             margin-top: 30px;

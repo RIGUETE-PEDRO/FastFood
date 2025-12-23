@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\AuthService;
+use App\Services\LoginService;
 use App\Mail\RecuperarSenhaMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,26 +14,43 @@ use Carbon\Carbon;
 class LoginController extends Controller
 {
     protected AuthService $authService;
+    protected LoginService $loginService;
 
-    public function __construct(AuthService $authService)
-    {
+    //construtor para injeção de dependências
+  public function __construct(
+        AuthService $authService,
+        LoginService $loginService
+    ) {
         $this->authService = $authService;
+        $this->loginService = $loginService;
     }
 
+    //função de login de usuário
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'senha');
+        $credenciais = $request->only('email', 'senha');
 
-        $usuario = $this->authService->login($credentials);
+        $usuario = $this->loginService->autenticar($credenciais);
 
-        if (!$usuario) {
+        if ($usuario === null) {
             return redirect()->back()->withErrors(['login' => 'Credenciais inválidas'])->withInput();
         }
 
+
+
         // Autenticação bem-sucedida, redirecionar para a página desejada
-        return redirect()->route('home');
+
+
+        if(!$usuario){
+            return redirect()->route('login');
+        }
+        if($usuario == true){
+            return redirect()->route('home');
+        }
+
     }
 
+    //função de recuperar senha de usuário
     public function recuperarSenha(Request $request)
     {
         // Validação do email
