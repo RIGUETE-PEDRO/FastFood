@@ -3,23 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Services\GenericBase;
+use App\Services\AdminService;
+use App\Http\Middleware\UsuarioAutenticado;
 
 class AdminController extends Controller
 {
     protected GenericBase $genericBase;
+    protected AdminService $adminService;
+    protected UsuarioAutenticado $authMiddleware;
 
-    public function __construct(GenericBase $genericBase)
+    public function __construct(GenericBase $genericBase, AdminService $adminService, UsuarioAutenticado $authMiddleware)
     {
         $this->genericBase = $genericBase;
+        $this->adminService = $adminService;
+        $this->authMiddleware = $authMiddleware;
     }
 
-    public function InfoPerfil()
+    public function infoPerfil()
     {
         $user = session('usuario_logado');
-
-        if (!$user) {
-            return redirect()->route('login.form')->with('erro', 'Você precisa fazer login primeiro.');
-        }
 
         return view('Admin.perfil', [
             'usuario' => $user,
@@ -27,13 +29,10 @@ class AdminController extends Controller
         ]);
     }
 
+
     public function nomeUsuario()
     {
         $user = session('usuario_logado');
-
-        if (!$user) {
-            return redirect()->route('login.form')->with('erro', 'Você precisa fazer login primeiro.');
-        }
 
         return view('Admin.Administrativo', [
             'usuario' => $user,
@@ -42,52 +41,9 @@ class AdminController extends Controller
         ]);
     }
 
-        public function AlterarDados()
+    public function AlterarDados()
     {
-        $user = session('usuario_logado');
-
-        $data = request()->only('nome', 'email', 'telefone');
-
-        $usuario = $this->genericBase->findById($user->id);
-
-        if (!$usuario) {
-            return redirect()->route('perfil')->with('erro', 'Usuário não encontrado.');
-        }
-
-        $usuario->nome = $data['nome'];
-        $usuario->email = $data['email'];
-        $usuario->telefone = $data['telefone'];
-
-        // Upload da imagem
-        if (request()->hasFile('url_imagem_perfil')) {
-
-            request()->validate([
-                'url_imagem_perfil' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            ]);
-
-            $file = request()->file('url_imagem_perfil');
-
-            // Apagar imagem antiga
-            if (
-                $usuario->url_imagem_perfil &&
-                file_exists(public_path('img/perfil/' . $usuario->url_imagem_perfil))
-            ) {
-                unlink(public_path('img/perfil/' . $usuario->url_imagem_perfil));
-            }
-
-            $fileName = 'perfil_' . $usuario->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-
-            $file->move(public_path('img/perfil'), $fileName);
-
-            // SALVA NA COLUNA CORRETA
-            $usuario->url_imagem_perfil = $fileName;
-        }
-
-        $usuario->save();
-
-        session(['usuario_logado' => $usuario]);
-
-        return redirect()->route('perfil')->with('sucesso', 'Dados atualizados com sucesso.');
+        return $this->adminService->InserirImagemPerfil();
     }
 
 

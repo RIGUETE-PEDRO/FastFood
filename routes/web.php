@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\GerenciamentoUsuarioController;
 
 //rota da página inicial
 Route::get('/', function () {
@@ -32,6 +33,9 @@ Route::get('/redefinir-senha', function () {
 
 //administrativo
 Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])->name('Administrativo');
+
+Route::get('/gerenciamento_Funcionario', [GerenciamentoUsuarioController::class, 'gerenciamentoFuncionario'])->name('gerenciamento_funcionarios');
+
 //logout
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 

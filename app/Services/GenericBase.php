@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\Models\Usuario;
+use App\Models\Funcionario;
 
 
 class GenericBase
@@ -17,6 +18,12 @@ class GenericBase
         return Usuario::all();
     }
 
+    public function findFuncionarios()
+    {
+        // Busca da tabela funcionario com o relacionamento usuario
+        return Funcionario::with('usuario')->get();
+    }
+
     public function alterar(Usuario $usuario, array $dados)
     {
         $usuario->update($dados);
@@ -27,6 +34,26 @@ class GenericBase
     {
         return random_int(1, 1000);
     }
+
+    public function deletar(Usuario $usuario)
+    {
+        return $usuario->delete();
+    }
+
+
+    public function listagem($rota)
+    {
+
+        $lista = $this->findAll();
+
+        return view($rota, [
+            'lista' => $lista,
+        ]);
+    }
+
+
+
+
 
 
 }

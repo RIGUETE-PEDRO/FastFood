@@ -19,7 +19,7 @@ class LoginController extends Controller
     protected GenericBase $genericBase;
 
     //construtor para injeção de dependências
-  public function __construct(
+    public function __construct(
         AuthService $authService,
         LoginService $loginService,
         GenericBase $genericBase
@@ -48,7 +48,7 @@ class LoginController extends Controller
 
         $autenticador = $this->loginService->autenticar($credenciais);
 
-        if($autenticador === false){
+        if ($autenticador === false) {
             return redirect()->back()->withErrors(['login' => 'Credenciais inválidas'])->withInput();
         }
 
@@ -57,19 +57,18 @@ class LoginController extends Controller
 
         // Autenticação bem-sucedida, redirecionar para a página desejada
 
-        if($usuario->tipo_usuario_id == 1){
+        if ($usuario->tipo_usuario_id !== 1) {
             return redirect()->route('Administrativo');
         }
 
-        if(!$autenticador){
+        if (!$autenticador) {
             return redirect()->route('login');
         }
 
 
-        if($autenticador == true){
+        if ($autenticador == true) {
             return redirect()->route('home');
         }
-
     }
 
     //função de recuperar senha de usuário
@@ -105,7 +104,6 @@ class LoginController extends Controller
 
             return redirect()->back()
                 ->with('sucesso', 'Um link de recuperação foi enviado para seu e-mail!');
-
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('erro', 'Erro ao processar solicitação: ' . $e->getMessage())
@@ -165,7 +163,6 @@ class LoginController extends Controller
 
             return redirect()->route('login.form')
                 ->with('sucesso', 'Senha redefinida com sucesso! Faça login com sua nova senha.');
-
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('erro', 'Erro ao redefinir senha: ' . $e->getMessage())
