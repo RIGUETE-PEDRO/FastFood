@@ -3,6 +3,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+use function Laravel\Prompts\table;
+
 return new class extends Migration
 {
     public function up(): void
@@ -22,6 +24,7 @@ return new class extends Migration
             $table->foreignId('tipo_usuario_id')
                   ->constrained('tipo_usuarios');
             $table->timestamps();
+            $table->string('url_imagem_perfil')->nullable();
         });
     }
 

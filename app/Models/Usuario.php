@@ -14,6 +14,7 @@ class Usuario extends Model
         'senha',
         'telefone',
         'tipo_usuario_id',
+        'url_imagem_perfil'
     ];
 
     protected $hidden = [

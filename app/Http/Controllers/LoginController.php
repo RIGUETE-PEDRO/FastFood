@@ -48,7 +48,7 @@ class LoginController extends Controller
 
         $autenticador = $this->loginService->autenticar($credenciais);
 
-        if ($autenticador === null) {
+        if($autenticador === false){
             return redirect()->back()->withErrors(['login' => 'Credenciais inválidas'])->withInput();
         }
 

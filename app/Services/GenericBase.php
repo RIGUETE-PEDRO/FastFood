@@ -23,4 +23,10 @@ class GenericBase
         return $usuario;
     }
 
+    public function gerarNumero()
+    {
+        return random_int(1, 1000);
+    }
+
+
 }

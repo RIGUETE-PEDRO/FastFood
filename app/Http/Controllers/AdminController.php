@@ -36,18 +36,19 @@ class AdminController extends Controller
         }
 
         return view('Admin.Administrativo', [
+            'usuario' => $user,
             'nomeUsuario' => $user->nome,
             'tipoUsuario' => $this->mapearTipoUsuario($user->tipo_usuario_id ?? null),
         ]);
     }
 
-    public function AlterarDados()
+        public function AlterarDados()
     {
         $user = session('usuario_logado');
 
         $data = request()->only('nome', 'email', 'telefone');
 
-        $usuario = $this->genericBase->findAll()->where('id', $user->id)->first();
+        $usuario = $this->genericBase->findById($user->id);
 
         if (!$usuario) {
             return redirect()->route('perfil')->with('erro', 'Usuário não encontrado.');
@@ -56,12 +57,39 @@ class AdminController extends Controller
         $usuario->nome = $data['nome'];
         $usuario->email = $data['email'];
         $usuario->telefone = $data['telefone'];
+
+        // Upload da imagem
+        if (request()->hasFile('url_imagem_perfil')) {
+
+            request()->validate([
+                'url_imagem_perfil' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            ]);
+
+            $file = request()->file('url_imagem_perfil');
+
+            // Apagar imagem antiga
+            if (
+                $usuario->url_imagem_perfil &&
+                file_exists(public_path('img/perfil/' . $usuario->url_imagem_perfil))
+            ) {
+                unlink(public_path('img/perfil/' . $usuario->url_imagem_perfil));
+            }
+
+            $fileName = 'perfil_' . $usuario->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+
+            $file->move(public_path('img/perfil'), $fileName);
+
+            // SALVA NA COLUNA CORRETA
+            $usuario->url_imagem_perfil = $fileName;
+        }
+
         $usuario->save();
 
         session(['usuario_logado' => $usuario]);
 
         return redirect()->route('perfil')->with('sucesso', 'Dados atualizados com sucesso.');
     }
+
 
     private function mapearTipoUsuario(?int $tipoId): string
     {
