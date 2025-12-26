@@ -227,7 +227,7 @@ body {
 
 .badge-ativo {
     background: rgba(39, 174, 95, 0.884);
-    color: var(--color-success);
+    color: white;
 }
 
 .badge-inativo {

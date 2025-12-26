@@ -42,6 +42,9 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 //perfil
 Route::get('/perfil', [AdminController::class, 'InfoPerfil'])->name('perfil');
 
+//buscar funcionários
+Route::get('/funcionarios/buscar', [GerenciamentoUsuarioController::class, 'buscarFuncionarios'])->name('funcionarios.buscar');
+
 
 //pegar dados do usuário logado
 Route::post('/perfil', [AdminController::class, 'InfoPerfil'])->name('usuario');

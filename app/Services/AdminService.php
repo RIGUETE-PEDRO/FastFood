@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Funcionario;
+
 class AdminService
 {
     protected GenericBase $genericBase;
@@ -57,6 +59,21 @@ class AdminService
         session(['usuario_logado' => $usuario]);
 
         return redirect()->route('perfil')->with('sucesso', 'Dados atualizados com sucesso.');
+    }
+
+    public function buscarFuncionarios($searchTerm)
+    {
+        $query = Funcionario::with('usuario');
+
+        if (!empty($searchTerm)) {
+            $query->whereHas('usuario', function ($q) use ($searchTerm) {
+                $q->where('nome', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('email', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('telefone', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+
+        return $query->get();
     }
 
 
