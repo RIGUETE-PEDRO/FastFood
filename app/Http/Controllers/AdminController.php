@@ -31,15 +31,18 @@ class AdminController extends Controller
 
 
     public function nomeUsuario()
-    {
-        $user = session('usuario_logado');
+{
+    $user = session('usuario_logado');
 
-        return view('Admin.Administrativo', [
-            'usuario' => $user,
-            'nomeUsuario' => $user->nome,
-            'tipoUsuario' => $this->mapearTipoUsuario($user->tipo_usuario_id ?? null),
-        ]);
-    }
+    // Pega somente o primeiro nome
+    $primeiroNome = explode(' ', trim($user->nome))[0];
+
+    return view('Admin.Administrativo', [
+        'usuario' => $user,
+        'nomeUsuario' => $primeiroNome,
+        'tipoUsuario' => $this->mapearTipoUsuario($user->tipo_usuario_id ?? null),
+    ]);
+}
 
     public function AlterarDados()
     {

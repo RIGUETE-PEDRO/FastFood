@@ -21,6 +21,9 @@ Route::get('/registro', function () {
     return view('Cadastrar');
 })->name('registro.form');
 
+//cadastro de funcionário
+Route::post('/CadastrarFuncionario', [RegisterController::class, 'registerFuncionario'])->name('CadastrarFuncionario');
+
 //esqueci minha senha
 Route::get('/esqueci-senha', function () {
     return view('Esqueci-senha');
@@ -45,6 +48,10 @@ Route::get('/perfil', [AdminController::class, 'InfoPerfil'])->name('perfil');
 //buscar funcionários
 Route::get('/funcionarios/buscar', [GerenciamentoUsuarioController::class, 'buscarFuncionarios'])->name('funcionarios.buscar');
 
+//atualizar funcionário
+Route::post('/funcionarios/{id}/atualizar', [GerenciamentoUsuarioController::class, 'atualizarFuncionario'])->name('funcionarios.atualizar');
+
+Route::post('/funcionarios/{id}/deletar', [GerenciamentoUsuarioController::class, 'deletarUsuario'])->name('funcionarios.deletar');
 
 //pegar dados do usuário logado
 Route::post('/perfil', [AdminController::class, 'InfoPerfil'])->name('usuario');
@@ -55,7 +62,7 @@ Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/esqueci-senha', [LoginController::class, 'recuperarSenha'])->name('senha.recuperar');
 Route::post('/redefinir-senha', [LoginController::class, 'atualizarSenha'])->name('senha.atualizar');
 
-Route::post('/administrativo', [AdminController::class, 'nomeUsuario'])->name('nomeUsuario');
+
 
 Route::post('/Alterar_Dados', [AdminController::class, 'AlterarDados'])->name('Alterar_Dados');
 

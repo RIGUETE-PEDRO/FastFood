@@ -67,9 +67,7 @@ class AdminService
 
         if (!empty($searchTerm)) {
             $query->whereHas('usuario', function ($q) use ($searchTerm) {
-                $q->where('nome', 'LIKE', '%' . $searchTerm . '%')
-                  ->orWhere('email', 'LIKE', '%' . $searchTerm . '%')
-                  ->orWhere('telefone', 'LIKE', '%' . $searchTerm . '%');
+                $q->where('nome', 'LIKE', '%' . $searchTerm . '%');
             });
         }
 

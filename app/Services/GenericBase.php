@@ -51,7 +51,27 @@ class GenericBase
         ]);
     }
 
+    public function delete($id){
+        $usuario = $this->findById($id);
+        return $usuario ? $usuario->delete() : false;
+    }
 
+    public function deleteFuncionarioEUsuario(int $usuarioId): bool
+    {
+        $funcionario = Funcionario::where('usuario_id', $usuarioId)->first();
+
+        // Exclui o funcionário primeiro para não violar FK
+        if ($funcionario) {
+            $funcionario->delete();
+        }
+
+        $usuario = $this->findById($usuarioId);
+        if ($usuario) {
+            return (bool) $usuario->delete();
+        }
+
+        return false;
+    }
 
 
 
