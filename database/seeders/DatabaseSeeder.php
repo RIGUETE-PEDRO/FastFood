@@ -12,6 +12,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(populando_categoria::class);
+
         // Inserir tipos de usuário padrão
         DB::table('tipo_usuarios')->insert([
             ['descricao' => 'Cliente', 'created_at' => now(), 'updated_at' => now()],

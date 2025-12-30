@@ -23,8 +23,8 @@ class GerenciamentoUsuarioController extends Controller
         $adminService = new AdminService();
         $lista = $adminService->buscarFuncionarios($searchTerm);
 
-    $usuario = session('usuario_logado');
-    $nomeUsuarioLogado = $usuario?->nome ? explode(' ', trim($usuario->nome))[0] : 'Usuário';
+        $usuario = session('usuario_logado');
+        $nomeUsuarioLogado = $usuario?->nome ? explode(' ', trim($usuario->nome))[0] : 'Usuário';
 
         return view('Admin.GerenciamentoFuncionario', [
             'lista' => $lista,

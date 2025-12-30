@@ -5,6 +5,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GerenciamentoUsuarioController;
+use App\Http\Controllers\GerenciamentoProdutoController;
 
 //rota da página inicial
 Route::get('/', function () {
@@ -39,6 +40,9 @@ Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])->name('Ad
 
 Route::get('/gerenciamento_Funcionario', [GerenciamentoUsuarioController::class, 'gerenciamentoFuncionario'])->name('gerenciamento_funcionarios');
 
+//gerenciamento de produtos
+Route::get('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])->name('gerenciamento_produtos');
+
 //logout
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
@@ -56,13 +60,13 @@ Route::post('/funcionarios/{id}/deletar', [GerenciamentoUsuarioController::class
 //pegar dados do usuário logado
 Route::post('/perfil', [AdminController::class, 'InfoPerfil'])->name('usuario');
 
+
 //rotas de autenticação
 Route::post('/registro', [RegisterController::class, 'register'])->name('registro');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/esqueci-senha', [LoginController::class, 'recuperarSenha'])->name('senha.recuperar');
 Route::post('/redefinir-senha', [LoginController::class, 'atualizarSenha'])->name('senha.atualizar');
-
-
-
 Route::post('/Alterar_Dados', [AdminController::class, 'AlterarDados'])->name('Alterar_Dados');
 
+//rota de cadastro de produto
+Route::post('/Cadastrar_Produto', [AdminController::class, 'CadastrarProduto'])->name('Cadastrar_Produto');

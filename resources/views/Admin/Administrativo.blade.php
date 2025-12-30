@@ -39,7 +39,7 @@
                             Produtos
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end list">
-                            <li><a class="dropdown-item text" href="#">Gerenciamento de produtos</a></li>
+                            <li><a class="dropdown-item text" href="{{ route('gerenciamento_produtos') }}">Gerenciamento de produtos</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
