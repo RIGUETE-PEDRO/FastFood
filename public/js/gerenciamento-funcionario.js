@@ -6,11 +6,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('createUserOverlay');
     const form = document.getElementById('formCreateUser');
 
+    // Elementos do overlay para alternar título e botão
+    const title = overlay?.querySelector('h3[name="title"]');
+    const submitBtn = form?.querySelector('button[type="submit"]');
+    const tag = overlay?.querySelector('p.overlay-badge[name="atualizarUsuario"]');
+
     const nomeInput = document.getElementById('nome');
     const emailInput = document.getElementById('email');
     const telefoneInput = document.getElementById('telefone');
     const tipoInput = document.getElementById('tipo_usuario_id');
-    const statusInput = document.getElementById('has_ativo');
+    const statusSwitch = document.getElementById('has_ativo_switch');
     const salarioInput = document.getElementById('salario');
     const senhaInput = document.getElementById('senha');
     const senhaConfirmInput = document.getElementById('senha_confirmation');
@@ -43,8 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
         emailInput && (emailInput.value = '');
         telefoneInput && (telefoneInput.value = '');
         tipoInput && (tipoInput.value = '');
-    statusInput && (statusInput.value = '');
-    salarioInput && (salarioInput.value = '');
+    if (statusSwitch) statusSwitch.checked = true;
+        salarioInput && (salarioInput.value = '');
         senhaInput && (senhaInput.value = '');
         senhaConfirmInput && (senhaConfirmInput.value = '');
 
@@ -53,6 +58,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (senhaConfirmGroup) senhaConfirmGroup.style.display = '';
         if (senhaInput) senhaInput.required = true;
         if (senhaConfirmInput) senhaConfirmInput.required = true;
+
+        // Restaurar textos padrão
+        if (title) {
+            title.textContent = 'Cadastrar funcionário';
+            tag.textContent = 'Cadastrar usuário';
+        }
+
+
+        if (submitBtn) submitBtn.textContent = 'Salvar';
+
+
+
     };
 
     openBtn?.addEventListener('click', () => {
@@ -91,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (emailInput) emailInput.value = data.email || '';
             if (telefoneInput) telefoneInput.value = data.telefone || '';
             if (tipoInput) tipoInput.value = data.tipo || '';
-            if (statusInput) statusInput.value = data.ativo ?? '';
+            if (statusSwitch) statusSwitch.checked = data.ativo == '1';
             if (salarioInput) salarioInput.value = data.salario || '';
 
             // Para edição, esconder e remover obrigatoriedade da senha
@@ -105,6 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 senhaConfirmInput.required = false;
                 senhaConfirmInput.value = '';
             }
+
+            // Trocar textos para modo edição
+            if (title) title.textContent = 'Atualizar cadastro do funcionário';
+            if (tag) tag.textContent = 'Atualizar usuário';
+            if (submitBtn) submitBtn.textContent = 'Atualizar';
 
             openOverlay();
         });
@@ -141,4 +163,24 @@ document.addEventListener('DOMContentLoaded', () => {
             row.style.display = nome.includes(searchValue) ? '' : 'none';
         });
     });
+
+    // Botão de status ativo/inativo para funcionário
+    const btnAtivoFunc = document.getElementById('btnAtivoFuncionario');
+    const btnInativoFunc = document.getElementById('btnInativoFuncionario');
+    const inputAtivoFunc = document.getElementById('has_ativo');
+
+    function setStatusFuncionario(ativo) {
+        if (!btnAtivoFunc || !btnInativoFunc || !inputAtivoFunc) return;
+        if (ativo) {
+            btnAtivoFunc.classList.add('active');
+            btnInativoFunc.classList.remove('active');
+        } else {
+            btnAtivoFunc.classList.remove('active');
+            btnInativoFunc.classList.add('active');
+        }
+        inputAtivoFunc.value = ativo ? '1' : '0';
+    }
+    btnAtivoFunc?.addEventListener('click', () => setStatusFuncionario(true));
+    btnInativoFunc?.addEventListener('click', () => setStatusFuncionario(false));
+    setStatusFuncionario(true);
 });

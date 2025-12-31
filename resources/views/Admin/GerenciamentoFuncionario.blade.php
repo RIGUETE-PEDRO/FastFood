@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciamento de Funcionários</title>
     @vite(['resources/js/app.js'])
-    <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Admin/GerenciamentoFuncionario.css') }}">
 </head>
 
@@ -174,6 +174,7 @@
                             <div class="action-buttons">
                                 <button class="btn-action btn-edit"
                                     title="Editar"
+                                    data-title="Editar funcionário"
                                     data-id="{{ $funcionario->usuario_id ?? $funcionario->id }}"
                                     data-nome="{{ $funcionario->nome }}"
                                     data-email="{{ $funcionario->email }}"
@@ -222,8 +223,8 @@
         <div class="overlay-panel">
             <div class="overlay-header">
                 <div>
-                    <p class="overlay-badge">Novo usuário</p>
-                    <h3>Cadastrar funcionário</h3>
+                    <p class="overlay-badge " name="atualizarUsuario">Novo usuário</p>
+                    <h3 name="title">Cadastrar funcionário</h3>
                     <p class="overlay-subtitle">Preencha os dados para adicionar alguém à equipe.</p>
                 </div>
                 <button type="button" class="overlay-close" id="closeCreateUser" aria-label="Fechar">
@@ -262,16 +263,14 @@
 
                     <div class="form-group">
                         <label for="has_ativo">Status</label>
-                        <select name="has_ativo" id="has_ativo" class="form-control" required>
-                            <option value="" selected disabled>Selecione</option>
-                            <option value="1">Ativo</option>
-                            <option value="0">Inativo</option>
-                        </select>
+                        <button type="button" id="btnAtivoFuncionario" class="btn-status active" data-ativo="1">Ativo</button>
+                        <button type="button" id="btnInativoFuncionario" class="btn-status" data-ativo="0">Inativo</button>
+                        <input type="hidden" name="has_ativo" id="has_ativo" value="1">
                     </div>
 
                     <div class="form-group salario-group">
                         <label for="salario">Salário</label>
-                        
+
                         <input
                             type="text"
                             name="salario"

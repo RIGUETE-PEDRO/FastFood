@@ -226,29 +226,73 @@
     justify-content: flex-end;
     gap: 12px;
 }
-.btn-secondary {
-    padding: 10px 18px;
-    background: #f4c430;
-    color: #412015;
-    border: none;
-    border-radius: 999px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-.btn-secondary:hover {
-    background: #ffe082;
-}
 .btn-primary {
-    padding: 10px 18px;
-    background: #d62828;
+    background: linear-gradient(130deg, #d62828 0%, #b22222 100%);
     color: #fff;
     border: none;
     border-radius: 999px;
     font-weight: 600;
+    padding: 12px 24px;
     cursor: pointer;
-    transition: background 0.2s;
+    box-shadow: 0 8px 20px rgba(152, 27, 30, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 .btn-primary:hover {
-    background: #981b1e;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(152, 27, 30, 0.4);
+}
+
+.btn-secondary {
+    background: #eee;
+    color: #981b1e;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
+    padding: 12px 24px;
+    cursor: pointer;
+    margin-right: 8px;
+    transition: background 0.2s, color 0.2s;
+}
+.btn-secondary:hover {
+    background: #d62828;
+    color: #fff;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+.btn-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 1.1rem;
+    box-shadow: none;
+    margin: 0;
+}
+.btn-edit {
+    background: rgba(52, 152, 219, 0.15);
+    color: #2980b9;
+}
+.btn-edit:hover {
+    background: rgba(52, 152, 219, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+.btn-delete {
+    background: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+}
+.btn-delete:hover {
+    background: rgba(231, 76, 60, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
 }

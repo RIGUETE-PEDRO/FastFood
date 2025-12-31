@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use App\Models\Usuario;
 use App\Models\Funcionario;
 
@@ -51,7 +52,8 @@ class GenericBase
         ]);
     }
 
-    public function delete($id){
+    public function delete($id)
+    {
         $usuario = $this->findById($id);
         return $usuario ? $usuario->delete() : false;
     }
@@ -74,6 +76,23 @@ class GenericBase
     }
 
 
+    public function pegarUsuarioLogado()
+    {
+        $usuario = session('usuario_logado');
+        // Retorna um array consistente com os dados do usuário logado.
+        if (!$usuario) {
+            return [
+                'nome' => 'Usuário',
+                'tipo' => null,
+                'tipo_id' => null,
+            ];
+        }
 
+        return [
+            'nome' => explode(' ', trim($usuario->nome))[0],
+            'tipo' => $usuario->tipo_descricao ?? null, // accessor do Model
+            'tipo_id' => $usuario->tipo_usuario_id ?? null,
+        ];
+    }
 
 }

@@ -22,6 +22,7 @@ Route::get('/registro', function () {
     return view('Cadastrar');
 })->name('registro.form');
 
+Route::get('/Lista_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])->name('ListaProdutos');
 //cadastro de funcionário
 Route::post('/CadastrarFuncionario', [RegisterController::class, 'registerFuncionario'])->name('CadastrarFuncionario');
 
@@ -41,7 +42,7 @@ Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])->name('Ad
 Route::get('/gerenciamento_Funcionario', [GerenciamentoUsuarioController::class, 'gerenciamentoFuncionario'])->name('gerenciamento_funcionarios');
 
 //gerenciamento de produtos
-Route::get('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])->name('gerenciamento_produtos');
+Route::post('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])->name('gerenciamento_produtos');
 
 //logout
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -69,4 +70,10 @@ Route::post('/redefinir-senha', [LoginController::class, 'atualizarSenha'])->nam
 Route::post('/Alterar_Dados', [AdminController::class, 'AlterarDados'])->name('Alterar_Dados');
 
 //rota de cadastro de produto
-Route::post('/Cadastrar_Produto', [AdminController::class, 'CadastrarProduto'])->name('Cadastrar_Produto');
+Route::post('/Cadastrar_Produto', [GerenciamentoProdutoController::class, 'cadastrarProduto'])->name('Cadastrar_Produto');
+
+
+Route::get('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])
+    ->name('gerenciamento_Produtos');
+
+    Route::post('/gerenciamento_Produtos/{id}/deletar', [GerenciamentoProdutoController::class, 'deletarProduto'])->name('deletar_produto');
