@@ -85,6 +85,7 @@ class GenericBase
                 'nome' => 'Usuário',
                 'tipo' => null,
                 'tipo_id' => null,
+                'url_imagem_perfil' => null,
             ];
         }
 
@@ -92,6 +93,7 @@ class GenericBase
             'nome' => explode(' ', trim($usuario->nome))[0],
             'tipo' => $usuario->tipo_descricao ?? null, // accessor do Model
             'tipo_id' => $usuario->tipo_usuario_id ?? null,
+            'url_imagem_perfil' => $usuario->url_imagem_perfil ?? null,
         ];
     }
 

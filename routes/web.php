@@ -6,11 +6,10 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GerenciamentoUsuarioController;
 use App\Http\Controllers\GerenciamentoProdutoController;
+use App\Http\Controllers\IndexController;
 
 //rota da página inicial
-Route::get('/', function () {
-    return view('Index');
-})->name('home');
+Route::get('/', [IndexController::class, 'index'])->name('home');
 
 //login
 Route::get('/login', function () {
@@ -78,4 +77,6 @@ Route::post('/Cadastrar_Produto', [GerenciamentoProdutoController::class, 'cadas
 Route::get('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])
     ->name('gerenciamento_Produtos');
 
-    Route::post('/gerenciamento_Produtos/{id}/deletar', [GerenciamentoProdutoController::class, 'deletarProduto'])->name('deletar_produto');
+Route::post('/gerenciamento_Produtos/{id}/deletar', [GerenciamentoProdutoController::class, 'deletarProduto'])->name('deletar_produto');
+
+Route::post('/', [IndexController::class, 'index'])->name('index');

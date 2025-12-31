@@ -102,6 +102,14 @@
     color: #412015;
     text-align: left;
 }
+
+.produtos-table th:last-child {
+    text-align: center;
+}
+.produtos-table td:last-child {
+    text-align: center;
+}
+
 .produtos-table thead {
     background: linear-gradient(135deg, rgba(244, 196, 48, 0.2), rgba(214, 40, 40, 0.15));
 }

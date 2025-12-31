@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciamento de Funcionários</title>
     @vite(['resources/js/app.js'])
-        <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Admin/GerenciamentoFuncionario.css') }}">
 </head>
 
@@ -40,7 +40,7 @@
                             Produtos
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end list">
-                            <li><a class="dropdown-item text" href="#">Gerenciamento de produtos</a></li>
+                            <li><a class="dropdown-item text" href="{{ route('gerenciamento_produtos') }}">Gerenciamento de produtos</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>

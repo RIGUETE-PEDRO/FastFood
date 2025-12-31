@@ -166,6 +166,8 @@
                 </div>
                 <form action="{{ route('Cadastrar_Produto') }}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    {{-- Para o JS saber a rota de cadastro --}}
+                    <form action="{{ route('Cadastrar_Produto') }}" method="POST" enctype="multipart/form-data" data-cadastro-action="{{ route('Cadastrar_Produto') }}">
                     <input type="hidden" name="produto_id" id="produto_id">
                     <div class="form-grid">
                         <div class="form-group">
