@@ -58,6 +58,8 @@ Route::post('/funcionarios/{id}/atualizar', [GerenciamentoUsuarioController::cla
 
 Route::post('/funcionarios/{id}/deletar', [GerenciamentoUsuarioController::class, 'deletarUsuario'])->name('funcionarios.deletar');
 
+Route::post('/atualizar_produto/{id}/atualizar', [GerenciamentoProdutoController::class, 'atualizarProduto'])->name('produtos.atualizar');
+
 //pegar dados do usuário logado
 Route::post('/perfil', [AdminController::class, 'InfoPerfil'])->name('usuario');
 

@@ -52,4 +52,15 @@ class GerenciamentoProdutoController extends Controller
 
         return redirect()->route('gerenciamento_Produtos')->with('success', 'Produto deletado com sucesso!');
     }
+
+    public function atualizarProduto(Request $request, $id)
+    {
+
+
+        $gerenciaProdutosService = new GerenciaProdutosService();
+        $gerenciaProdutosService->atualizarProduto($id, $request->all());
+
+        return redirect()->route('gerenciamento_Produtos')->with('success', 'Produto atualizado com sucesso!');
+    }
+
 }

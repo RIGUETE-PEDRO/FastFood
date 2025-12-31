@@ -119,7 +119,16 @@
                                     <div class="action-buttons">
                                         <!-- Ações na tabela: -->
                                         <button class="btn-action btn-edit"
-                                            title="Editar">
+                                            title="Editar"
+                                            data-nome="{{ $produto->nome }}"
+                                            data-preco="{{ $produto->preco }}"
+                                            data-descricao="{{ $produto->descricao }}"
+                                            data-categoria-id="{{ $produto->categoria_id }}"
+                                            data-ativo="{{ $produto->disponivel ? 1 : 0 }}"
+                                            data-imagem-url="{{ $produto->imagem_url }}"
+                                            data-action="{{ route('produtos.atualizar', $produto->id) }}"
+
+                                            >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                                 <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
                                             </svg>
@@ -149,9 +158,9 @@
             <div class="overlay-panel">
                 <div class="overlay-header">
                     <div>
-                        <p class="overlay-badge">Novo produto</p>
-                        <h3>Cadastrar produto</h3>
-                        <p class="overlay-subtitle">Preencha os dados para adicionar um produto ao cardápio.</p>
+                        <p class="overlay-badge" id="overlay-badge">Novo produto</p>
+                        <h3 id="overlay-title">Cadastrar produto</h3>
+                        <p class="overlay-subtitle" id="overlay-subtitle">Preencha os dados para adicionar um produto ao cardápio.</p>
                     </div>
                     <button type="button" class="overlay-close" id="closeCreateProduct" aria-label="Fechar">✕</button>
                 </div>
@@ -174,6 +183,9 @@
                         <div class="form-group">
                             <label for="produto-imagem">Imagem</label>
                             <input type="file" name="imagem" id="produto-imagem" class="form-control">
+                            <span style="display:block; margin-top:6px; color:#981b1e; font-weight:500;">
+                                <strong>Nome da imagem:</strong> <span id="imagem-nome"></span>
+                            </span>
                         </div>
                         <div class="form-group">
                             <label for="produto-categoria">Categoria</label>

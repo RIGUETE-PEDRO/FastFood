@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Produto;
-use Illuminate\Support\Facades\Log;
+
 
 class GerenciaProdutosService
 {
@@ -34,7 +34,7 @@ class GerenciaProdutosService
 
     public function removerProduto($id)
     {
-Log::info('Mensagem de teste');
+
         $genericBase = new GenericBase();
         if ($genericBase->pegarUsuarioLogado()['tipo'] == 'Administrador') {
 
@@ -51,4 +51,32 @@ Log::info('Mensagem de teste');
         }
 
     }
+
+    public function atualizarProduto($id, $data)
+    {
+        $produto = Produto::find($id);
+        if ($produto) {
+            $produto->nome = $data['nome'];
+            $produto->preco = str_replace(',', '.', $data['preco']);
+            $produto->descricao = $data['descricao'];
+            $produto->disponivel = $data['ativo'];
+            $produto->categoria_id = $data['categoria_id'];
+
+            // Se uma nova imagem foi enviada
+            if (isset($data['imagem']) && $data['imagem']->isValid()) {
+                // Apagar imagem antiga
+                if ($produto->imagem_url && file_exists(public_path('img/produtos/' . $produto->imagem_url))) {
+                    unlink(public_path('img/produtos/' . $produto->imagem_url));
+                }
+
+                $file = $data['imagem'];
+                $filename = uniqid('produto_') . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('img/produtos'), $filename);
+                $produto->imagem_url = $filename;
+            }
+
+            $produto->save();
+        }
+    }
+
 }

@@ -35,8 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeOverlay = () => overlay?.classList.remove('is-open');
 
     openBtn?.addEventListener('click', () => {
-        clearForm();
-        openOverlay();
+    clearForm();
+    // Modo cadastro
+    document.getElementById('overlay-badge').textContent = 'Novo produto';
+    document.getElementById('overlay-title').textContent = 'Cadastrar produto';
+    document.getElementById('overlay-subtitle').textContent = 'Preencha os dados para adicionar um produto ao cardápio.';
+    openOverlay();
     });
     closeBtn?.addEventListener('click', closeOverlay);
     cancelBtn?.addEventListener('click', closeOverlay);
@@ -48,11 +52,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.btn-edit').forEach((btn) => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
-            // Aqui você pode preencher os campos com os dados do produto
-            // Exemplo:
-            // document.getElementById('produto_id').value = btn.dataset.id;
-            // document.getElementById('produto-nome').value = btn.dataset.nome;
-            // ...
+            // Modo edição
+            document.getElementById('overlay-badge').textContent = 'Atualizando produto';
+            document.getElementById('overlay-title').textContent = 'Atualizando produto';
+            document.getElementById('overlay-subtitle').textContent = 'Altere os dados e salve para atualizar o produto.';
+            // Preencher os campos do formulário com os dados do produto
+            document.getElementById('produto_id').value = btn.closest('tr').querySelector('.btn-delete').getAttribute('data-produto-id') || '';
+            document.getElementById('produto-nome').value = btn.getAttribute('data-nome') || '';
+            document.getElementById('produto-preco').value = btn.getAttribute('data-preco') || '';
+            document.getElementById('produto-descricao').value = btn.getAttribute('data-descricao') || '';
+            document.getElementById('produto-categoria').value = btn.getAttribute('data-categoria-id') || '';
+            setStatus(btn.getAttribute('data-ativo') === '1');
+            // Preencher o nome da imagem abaixo do input
+            const imagemNome = document.getElementById('imagem-nome');
+            const imagemUrl = btn.getAttribute('data-imagem-url');
+            imagemNome.textContent = imagemUrl ? imagemUrl : '';
             openOverlay();
         });
     });
