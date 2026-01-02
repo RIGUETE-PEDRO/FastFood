@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Services\AuthService;
+use App\Services\GenericBase;
 use Illuminate\Http\Request;
+
 
 class RegisterController extends Controller
 {
@@ -17,7 +19,11 @@ class RegisterController extends Controller
 
     public function registerFuncionario(Request $request)
     {
-        $data = $request->only('nome', 'email', 'senha','senha_confirmation','telefone','tipo_usuario_id','salario','has_ativo');
+        $genericBase = new GenericBase();
+        $data = $request->only('nome', 'email', 'senha','senha_confirmation','telefone','tipo_usuario_id','has_ativo');
+
+        $salarioBruto = $request->input('salario');
+        $data['salario'] = $genericBase->normalizarMoeda($salarioBruto);
 
         $usuario = $this->authService->register($data);
 

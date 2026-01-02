@@ -57,13 +57,15 @@ class LoginController extends Controller
 
         // Autenticação bem-sucedida, redirecionar para a página desejada
 
+        if (!$autenticador) {
+            return redirect()->route('login');
+        }
+
         if ($usuario->tipo_usuario_id !== 1) {
             return redirect()->route('Administrativo');
         }
 
-        if (!$autenticador) {
-            return redirect()->route('login');
-        }
+
 
 
         if ($autenticador == true) {

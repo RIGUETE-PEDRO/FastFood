@@ -92,8 +92,10 @@ class GerenciamentoUsuarioController extends Controller
     public function atualizarFuncionario(Request $request, $id)
     {
         // Normaliza salário para formato numérico (aceita entrada com pontos, vírgulas ou "R$")
+        $genericBase = new GenericBase();
+
         $salarioBruto = $request->input('salario');
-        $salarioNormalizado = $this->normalizarMoeda($salarioBruto);
+        $salarioNormalizado = $genericBase->normalizarMoeda($salarioBruto);
         if ($salarioBruto !== null) {
             $request->merge(['salario' => $salarioNormalizado]);
         }
@@ -138,24 +140,7 @@ class GerenciamentoUsuarioController extends Controller
         return redirect()->route('gerenciamento_funcionarios')->with('sucesso', 'Funcionário atualizado com sucesso');
     }
 
-    private function normalizarMoeda(?string $valor): ?float
-    {
-        if ($valor === null || $valor === '') {
-            return null;
-        }
 
-        // Remove tudo que não for número, vírgula ou ponto
-        $limpo = preg_replace('/[^0-9,\.]/', '', $valor);
-
-        // Se tiver vírgula como separador decimal, troca por ponto
-        // Remove separadores de milhar
-        if (str_contains($limpo, ',')) {
-            $limpo = str_replace('.', '', $limpo);
-            $limpo = str_replace(',', '.', $limpo);
-        }
-
-        return is_numeric($limpo) ? (float) $limpo : null;
-    }
 
 }
 

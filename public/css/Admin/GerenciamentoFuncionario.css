@@ -51,16 +51,15 @@ body {
     align-items: center;
     gap: 8px;
     padding: 12px 24px;
-    background: linear-gradient(130deg, var(--color-primary) 0%, #b22222 100%);
+    background: linear-gradient(130deg, #d62828 0%, #b22222 100%);
     color: #fff;
     border: none;
     border-radius: 999px;
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 8px 20px rgba(152, 27, 30, 0.3);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
-
 .btn-add:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 28px rgba(152, 27, 30, 0.4);
