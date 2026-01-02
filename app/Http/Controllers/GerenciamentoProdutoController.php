@@ -40,15 +40,12 @@ class GerenciamentoProdutoController extends Controller
 
     public function deletarProduto($id)
     {
-        $genericBase = new GenericBase();
 
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
-        $tipo = is_array($usuarioLogado) ? ($usuarioLogado['tipo'] ?? null) : null;
 
-        if ($tipo === 'Administrador') {
+
             $gerenciaProdutosService = new GerenciaProdutosService();
             $gerenciaProdutosService->removerProduto($id);
-        }
+        
 
         return redirect()->route('gerenciamento_Produtos')->with('success', 'Produto deletado com sucesso!');
     }

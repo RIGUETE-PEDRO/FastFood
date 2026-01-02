@@ -1,0 +1,243 @@
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kaisei+Opti&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Vollkorn+SC:wght@400;600;700;900&display=swap');
+
+.container-produtos {
+    /* usar grid para controlar melhor linhas/colunas e garantir alturas iguais */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 20px;
+    align-items: stretch; /* cards terão a mesma altura por linha */
+    background: transparent;
+}
+
+/* produto agora tem tamanho consistente e cresce verticalmente igual aos irmãos */
+.produto {
+    box-sizing: border-box;
+    background-color: #ffffff;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    padding: 12px;
+
+    /* layout interno em coluna; empurra botão sempre para o rodapé do card */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    /* altura maior para comportar imagens grandes sem corte */
+    height: 500px;
+}
+
+/* imagem com proporção fixa e crop via object-fit */
+.container-img {
+    height: 320px; /* caixa consistente para todas as imagens */
+    width: 100%;
+    overflow: cover;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    display: block;
+    background: #f8f8f8;
+}
+.container-img {
+    height: 320px; /* caixa consistente para todas as imagens */
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    display: block;
+    background: #f8f8f8;
+}
+
+.produto img {
+    /* preencher a caixa e manter todas as imagens visualmente idênticas
+       usa cover para evitar espaços em branco e garantir uniformidade */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 6px;
+}
+
+/* opção para preservar imagem inteira sem corte (use class="no-crop" no <img>) */
+.produto img.no-crop {
+    object-fit: contain;
+    padding: 8px;
+}
+
+/* Se preferir não cortar as imagens, adicione a classe `no-crop` na tag <img>
+   e ela usará object-fit: contain mantendo a caixa igual para todas as imagens. */
+.produto img.no-crop {
+    object-fit: contain;
+    padding: 8px; /* evita que fique colada nas bordas */
+}
+
+/* opcional: container para detalhes (nome, descrição, preço) que ocupará espaço controlado */
+.produto .detalhes {
+    flex: 1 1 auto; /* cresce para preencher espaço entre imagem e botão */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* conteúdo do produto alinhado e o botão fixo na base do card */
+.preco-conteiner {
+    display: block;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.lanche {
+    font-family: "Amatic SC", sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 1.6em;
+    color: #000000;
+    display: block;
+    text-align: center;
+    width: 100%;
+    margin: 0.25rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ingredientes: hover reveal */
+.ingredientes-wrap{
+    position: relative;
+    margin: 8px 0;
+}
+.ingredientes{
+    cursor: pointer;
+    color: #333;
+    font-weight: 600;
+}
+
+/* setinha indicando expandir */
+.ingredientes::after{
+    content: "\25BE"; /* ▾ */
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 0.9em;
+    transition: transform .2s ease;
+}
+.ingredientes-wrap.is-open .ingredientes::after{
+    transform: rotate(180deg);
+}
+
+.ingredientes-lista{
+    position: absolute;
+    left: 0;
+    top: 24px;
+    z-index: 30;
+    width: 100%;
+    max-width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    padding: 0 8px;
+    opacity: 0;
+    transition: max-height .25s ease, opacity .2s ease, padding .2s ease;
+    font-size: 0.95rem;
+    color: #222;
+    box-sizing: border-box;
+}
+
+/* Abrir ingredientes apenas ao clicar (classe adicionada via JS) */
+.ingredientes-wrap.is-open .ingredientes-lista{
+    /* fixed size panel so all ingredient boxes look identical */
+    max-height: 160px; /* fixed visible height */
+    height: 160px;
+    overflow: auto; /* scroll if content exceeds box */
+    opacity: 1;
+    padding: 8px;
+}
+
+/* para telas pequenas, posicionar relativo dentro do fluxo (não absolute) */
+@media (max-width: 480px){
+    .ingredientes-lista{ position: relative; top: 0; max-height: none; opacity: 1; padding: 0; border: none; box-shadow: none; }
+}
+
+/* empurra o botão para o final do card, garantindo alinhamento entre cards */
+.button-adicionar {
+    font-family: "Kaisei Opti", serif;
+    background-color: rgb(9, 98, 187);
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+    /* garante que o botão fique sempre na mesma linha (base do card) */
+    margin-top: auto;
+    align-self: stretch;
+    width: 100%;
+}
+
+/* hover do botão permanece */
+.button-adicionar:hover {
+    background-color: rgb(25, 0, 255);
+    transition: 0.3s;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}
+
+/* responsividade: 3 cols / 2 cols / 1 col */
+/* responsividade usando grid */
+@media (max-width: 1200px) {
+    .container-produtos { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 900px) {
+    .container-produtos { grid-template-columns: repeat(2, 1fr); }
+    .produto { height: 420px; }
+}
+@media (max-width: 480px) {
+    .container-produtos { grid-template-columns: 1fr; }
+    .produto { height: auto; }
+}
+
+.valor{
+     font-family: "Kaisei Opti", serif;
+    font-size: 1.2em;
+    font-weight: 700;
+    color: red;
+}
+
+.conteiner-info{
+    border: 2px solid rgb(0, 0, 0) !important;
+    border-radius: 8px !important;
+    background-color: #acaba9!important;
+
+}
+
+.btn-cancelar{
+    background-color: #ff0000 !important;
+    border-radius: 5px !important;
+    color: white !important;
+    padding: 10px 15px !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+.btn-cancelar:hover {
+    background-color: #cc0000 !important;
+    transition: 0.3s !important;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px !important;
+}
+
+.btn-confirmar{
+    background-color: #003780 !important;
+    border-radius: 5px !important;
+    color: white !important;
+    padding: 10px 15px !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+.btn-confirmar:hover {
+    background-color: #002060 !important;
+    transition: 0.3s !important;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px !important;
+}

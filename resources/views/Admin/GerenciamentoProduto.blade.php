@@ -180,7 +180,7 @@
                         </div>
                         <div class="form-group">
                             <label for="produto-descricao">Descrição</label>
-                            <textarea name="descricao" id="produto-descricao" class="form-control" required></textarea>
+                            <textarea name="descricao" id="produto-descricao" class="form-control"></textarea>
                         </div>
                         <div class="form-group">
                             <label for="produto-imagem">Imagem</label>

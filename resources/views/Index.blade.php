@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Inicial</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Home</title>
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Index.css') }}">
 </head>
 
 <body>
@@ -20,25 +22,28 @@
             <div class="collapse navbar-collapse" id="navbarScroll">
                 <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll navbar" style="--bs-scroll-height: 100px;">
                     <li class="nav-item">
-                        <a class="nav-link text navegador" href="#">Principal</a>
+                        <a class="nav-link text navegador" href="{{ route('home') }}">Principal</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active text" aria-current="page" href="#">Lanches</a>
+                        <a class="nav-link active text" aria-current="page" href="{{ route('Lanches') }}">Lanches</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text navegador" href="#">Pizzas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text navegador" href="#">Bebidas</a>
+                        <a class="nav-link text navegador" href="{{ route('Porcao') }}">Porção</a>
+
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text navegador" href="{{ route('Bebidas') }}">Bebidas</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text navegador" href="#">Pedidos</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text navegador" href="#">Entregas</a>
-                    </li>
+
                     <li class="nav-item dropdown">
                         <a class="nav-link text navegador" href="#">Carrinho</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link disabled" aria-disabled="true"></a>
                     </li>
@@ -47,15 +52,15 @@
                 <!-- Área de ações/auth (alinhada à direita) -->
                 <!-- largura fixa para evitar mudança de layout quando alterna entre logado/deslogado -->
                 <div class="d-flex align-items-center ms-auto" style="width:220px; max-width:220px; flex-shrink:0; justify-content:flex-end; gap:8px;">
-                    @auth
+                    @if(!empty($usuario))
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="circulo_maior me-2">
                                 <img class="profile-image" id="preview-image"
-                                    src="{{ $usuario['url_imagem_perfil'] ? asset('img/perfil/' . $usuario['url_imagem_perfil']) : asset('img/person.png') }}"
-                                    alt="Foto do usuário" style="width:36px;height:36px;object-fit:cover;border-radius:50%;">
+                                    src="{{ isset($usuario['url_imagem_perfil']) && $usuario['url_imagem_perfil'] ? asset('img/perfil/' . $usuario['url_imagem_perfil']) : asset('img/person.png') }}"
+                                    alt="Foto do usuário">
                             </div>
-                            <span class="text text-truncate" style="max-width:120px;display:inline-block;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $usuario['nome'] }}</span>
+                            <span class="text text-truncate" style="max-width:120px;display:inline-block;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ is_array($usuario) ? $usuario['nome'] : ($usuario->nome ?? '') }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end list">
                             <li><a class="dropdown-item text" href="{{ route('perfil') }}">Perfil</a></li>
@@ -66,15 +71,85 @@
                             <li><a class="dropdown-item text" href="{{ route('logout') }}">Sair</a></li>
                         </ul>
                     </div>
-                    @endauth
-
-                    @guest
+                    @else
                     <a class="btn btn-primary rounded-pill px-3 py-1 ms-3" href="{{ route('login.form') }}">Entrar</a>
-                    @endguest
+                    @endif
                 </div>
             </div>
         </div>
     </nav>
+
+    <main>
+
+    <div>carrousel</div>
+
+        <div class="container-produtos mt-4">
+            @foreach ($produtos as $produto)
+
+            <div class="produto" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}">
+                <div class="container-img">
+                    <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="">
+                </div>
+                <div class="preco-conteiner">
+                    <label class="lanche">{{ $produto->nome }}</label>
+                    <label class="preco">Preço</label>
+                    <br>
+                    <label class="valor">R${{ $produto->preco }}</label>
+                    <br>
+                </div>
+                @if(!empty($produto->descricao))
+                <div class="ingredientes-wrap">
+                    <span class="ingredientes">ingredientes:</span>
+                    <div class="ingredientes-lista">{{ $produto->descricao }}</div>
+                </div>
+                @else
+                <br>
+                <br>
+                @endif
+                <div>
+                    <button type="button" class="button-adicionar">Adicionar ao carrinho</button>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        <!-- Modal: Adicionar ao carrinho -->
+           <div class="modal fade " id="addToCartModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content conteiner-info">
+                    <form method="POST" action="#">
+                        <div class="modal-header">
+                            <h5 class="modal-title text_modal">Adicionar ao carrinho</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="cart_produto_id" name="produto_id" value="">
+
+                            <div class="mb-3">
+                                <label class="form-label text_modal">Produto</label>
+                                <input type="text" class="form-control" id="cart_produto_nome" value="" readonly disabled>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text_modal" for="cart_quantidade">Quantidade</label>
+                                <input type="number" class="form-control" id="cart_quantidade" name="quantidade" min="1" value="1" required>
+                            </div>
+
+                            <div class="mb-0 ">
+                                <label class="form-label text_modal" for="cart_observacao">Observação (opcional)</label>
+                                <textarea class="form-control" id="cart_observacao" name="observacao" rows="3" placeholder="Ex: sem cebola, bem passado..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-cancelar " data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-confirmar">Confirmar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
 
 </body>
 

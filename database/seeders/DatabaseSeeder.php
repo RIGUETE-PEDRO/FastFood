@@ -13,7 +13,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(populando_categoria::class);
-
+        $this->call(popula_status::class);
+        $this->call(popular_municipios::class);
         // Inserir tipos de usuário padrão
         DB::table('tipo_usuarios')->insert([
             ['descricao' => 'Cliente', 'created_at' => now(), 'updated_at' => now()],

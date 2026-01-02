@@ -26,6 +26,8 @@ class GerenciaProdutosService
             $filename = uniqid('produto_') . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('img/produtos'), $filename);
             $produto->imagem_url = $filename;
+        }else{
+            $produto->imagem_url = 'sem_imagem.jpg';
         }
 
         $produto->save();
@@ -36,20 +38,21 @@ class GerenciaProdutosService
     {
 
         $genericBase = new GenericBase();
+
         if ($genericBase->pegarUsuarioLogado()['tipo'] == 'Administrador') {
 
             $produto = Produto::find($id);
+
             if ($produto) {
                 // Apagar imagem do produto
-                if ($produto->imagem_url && file_exists(public_path('img/produtos/' . $produto->imagem_url))) {
-                    unlink(public_path('img/produtos/' . $produto->imagem_url));
+                if($produto->imagem_url && $produto->imagem_url !== 'sem_imagem.jpg'){
+                    if ($produto->imagem_url && file_exists(public_path('img/produtos/' . $produto->imagem_url))) {
+                        unlink(public_path('img/produtos/' . $produto->imagem_url));
+                    }
                 }
                 $produto->delete();
             }
-        }else{
-            throw new \Exception("Ação não autorizada. Apenas administradores podem deletar produtos.");
         }
-
     }
 
     public function atualizarProduto($id, $data)
@@ -65,8 +68,10 @@ class GerenciaProdutosService
             // Se uma nova imagem foi enviada
             if (isset($data['imagem']) && $data['imagem']->isValid()) {
                 // Apagar imagem antiga
-                if ($produto->imagem_url && file_exists(public_path('img/produtos/' . $produto->imagem_url))) {
-                    unlink(public_path('img/produtos/' . $produto->imagem_url));
+                if($produto->imagem_url && $produto->imagem_url !== 'sem_imagem.jpg'){
+                    if ($produto->imagem_url && file_exists(public_path('img/produtos/' . $produto->imagem_url))) {
+                        unlink(public_path('img/produtos/' . $produto->imagem_url));
+                    }
                 }
 
                 $file = $data['imagem'];

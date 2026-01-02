@@ -6,7 +6,11 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GerenciamentoUsuarioController;
 use App\Http\Controllers\GerenciamentoProdutoController;
+use App\Http\Controllers\LanchesController;
+use App\Http\Controllers\PizzaController;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\BebidasController;
+use App\Http\Controllers\PorcaoController;
 
 //rota da página inicial
 Route::get('/', [IndexController::class, 'index'])->name('home');
@@ -51,6 +55,20 @@ Route::get('/perfil', [AdminController::class, 'InfoPerfil'])->name('perfil');
 
 //buscar funcionários
 Route::get('/funcionarios/buscar', [GerenciamentoUsuarioController::class, 'buscarFuncionarios'])->name('funcionarios.buscar');
+
+Route::get('/Lanches',[LanchesController::class, 'Lanches'])->name('Lanches');
+
+Route::get('/Pizza', [PizzaController::class, 'Pizza'])->name('Pizza');
+
+Route::get('/Bebidas', [BebidasController::class, 'Bebidas'])->name('Bebidas');
+
+Route::get('/porcao', [PorcaoController::class, 'porcao'])->name('Porcao');
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+//Rotas POST
+
+
 
 //atualizar funcionário
 Route::post('/funcionarios/{id}/atualizar', [GerenciamentoUsuarioController::class, 'atualizarFuncionario'])->name('funcionarios.atualizar');

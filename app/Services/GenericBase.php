@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Usuario;
 use App\Models\Funcionario;
-
+use App\Models\Produto;
 
 class GenericBase
 {
@@ -12,6 +12,18 @@ class GenericBase
     public function findById(int $id)
     {
         return Usuario::find($id);
+    }
+
+    public function findByProdutos($categoria)
+    {
+        return Produto::whereHas('categoria', function ($query) use ($categoria) {
+            $query->where('nome', $categoria)->where('disponivel', true);
+        })->get();
+    }
+
+    public function pegarProdutos()
+    {
+        return Produto::where('disponivel', true)->get();
     }
 
     public function findAll()
@@ -52,11 +64,14 @@ class GenericBase
         ]);
     }
 
+
     public function delete($id)
     {
         $usuario = $this->findById($id);
         return $usuario ? $usuario->delete() : false;
     }
+
+
 
     public function deleteFuncionarioEUsuario(int $usuarioId): bool
     {
@@ -79,14 +94,9 @@ class GenericBase
     public function pegarUsuarioLogado()
     {
         $usuario = session('usuario_logado');
-        // Retorna um array consistente com os dados do usuário logado.
+        // Se não tiver sessão, considera deslogado.
         if (!$usuario) {
-            return [
-                'nome' => 'Usuário',
-                'tipo' => null,
-                'tipo_id' => null,
-                'url_imagem_perfil' => null,
-            ];
+            return null;
         }
 
         return [
@@ -96,5 +106,4 @@ class GenericBase
             'url_imagem_perfil' => $usuario->url_imagem_perfil ?? null,
         ];
     }
-
 }

@@ -11,7 +11,9 @@ class IndexController extends Controller
         $genericBase = new GenericBase();
         $usuarioLogado = $genericBase->pegarUsuarioLogado();
 
-        return view('Index', ['usuario' => $usuarioLogado]);
+        $produtos = $genericBase->pegarProdutos();
+
+        return view('Index', ['usuario' => $usuarioLogado, 'produtos' => $produtos]);
 
     }
 }
