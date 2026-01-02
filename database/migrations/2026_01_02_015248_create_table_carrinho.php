@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pedido', function (Blueprint $table) {
+        Schema::create('carrinho', function (Blueprint $table) {
             $table->id();
             $table->foreignId('usuario_id')->constrained('usuarios');
             $table->foreignId('produto_id')->constrained('produtos');
@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('observacao')->nullable();
             $table->decimal('preco_total', 8, 2);
             $table->timestamps();
+            $table->boolean('selecionado')->default(false);
         });
     }
 
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pedido');
+        Schema::dropIfExists('carrinho');
     }
 };
