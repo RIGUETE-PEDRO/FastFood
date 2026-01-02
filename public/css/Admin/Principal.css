@@ -156,3 +156,35 @@ body {
     color: #000000;
 }
 
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 14px 20px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideIn 0.4s forwards, fadeOut 0.4s forwards 4.6s;
+}
+
+.toast-success {
+    background-color: #28a745;
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}

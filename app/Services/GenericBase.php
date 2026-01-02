@@ -100,6 +100,7 @@ class GenericBase
         }
 
         return [
+            'id' => $usuario->id ?? null,
             'nome' => explode(' ', trim($usuario->nome))[0],
             'tipo' => $usuario->tipo_descricao ?? null, // accessor do Model
             'tipo_id' => $usuario->tipo_usuario_id ?? null,

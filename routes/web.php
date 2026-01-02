@@ -11,6 +11,7 @@ use App\Http\Controllers\PizzaController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\BebidasController;
 use App\Http\Controllers\PorcaoController;
+use App\Http\Controllers\ProdutosController;
 
 //rota da página inicial
 Route::get('/', [IndexController::class, 'index'])->name('home');
@@ -67,8 +68,7 @@ Route::get('/porcao', [PorcaoController::class, 'porcao'])->name('Porcao');
 ////////////////////////////////////////////////////////////////////////////////////////
 
 //Rotas POST
-
-
+Route::post('/carrinho/adicionar', [ProdutosController::class, 'adicionarAoCarrinho'])->name('carrinho.adicionar');
 
 //atualizar funcionário
 Route::post('/funcionarios/{id}/atualizar', [GerenciamentoUsuarioController::class, 'atualizarFuncionario'])->name('funcionarios.atualizar');

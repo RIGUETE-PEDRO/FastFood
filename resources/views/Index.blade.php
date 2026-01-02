@@ -28,7 +28,7 @@
                         <a class="nav-link active text" aria-current="page" href="{{ route('Lanches') }}">Lanches</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text navegador" href="#">Pizzas</a>
+                        <a class="nav-link text navegador" href="{{ route('Pizza') }}">Pizzas</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text navegador" href="{{ route('Porcao') }}">Porção</a>
@@ -81,7 +81,13 @@
 
     <main>
 
-    <div>carrousel</div>
+        <div>carrousel</div>
+
+        @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+        @endif
 
         <div class="container-produtos mt-4">
             @foreach ($produtos as $produto)
@@ -114,10 +120,10 @@
         </div>
 
         <!-- Modal: Adicionar ao carrinho -->
-           <div class="modal fade " id="addToCartModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade " id="addToCartModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content conteiner-info">
-                    <form method="POST" action="#">
+                    <form method="POST" action="{{ route('carrinho.adicionar') }}">
                         <div class="modal-header">
                             <h5 class="modal-title text_modal">Adicionar ao carrinho</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
