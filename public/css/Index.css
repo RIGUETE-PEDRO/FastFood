@@ -205,31 +205,133 @@
     color: red;
 }
 
+/* ================================
+   Modal "Adicionar ao carrinho"
+   (padronizado com o overlay do Admin)
+   ================================ */
+#addToCartModal .modal-dialog{
+    max-width: 600px;
+}
+
+#addToCartModal .modal-content{
+    border: none;
+    border-radius: 20px;
+    padding: 0;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+#addToCartModal .modal-header{
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 22px 22px 12px 22px;
+    border-bottom: none;
+}
+
+#addToCartModal .modal-title{
+    margin: 0;
+    font-size: 1.5em;
+    color: #981b1e;
+    font-weight: 700;
+}
+
+#addToCartModal .btn-close{
+    background-color: rgba(152, 27, 30, 0.08);
+    border-radius: 12px;
+    padding: 10px;
+    opacity: 1;
+}
+
+#addToCartModal .btn-close:hover{
+    background-color: rgba(152, 27, 30, 0.15);
+}
+
+#addToCartModal .modal-body{
+    padding: 0 22px 10px 22px;
+}
+
+#addToCartModal .form-label{
+    font-weight: 600;
+    color: #981b1e;
+}
+
+#addToCartModal .form-control{
+    border-radius: 12px;
+    border: 2px solid rgba(152, 27, 30, 0.15);
+}
+
+#addToCartModal .form-control:focus{
+    outline: none;
+    border-color: #d62828;
+    box-shadow: 0 0 0 3px rgba(214, 40, 40, 0.12);
+}
+
+#addToCartModal .modal-footer{
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 12px 22px 22px 22px;
+    border-top: none;
+}
+
+/* Botões do modal: aproximar do estilo do overlay */
+#addToCartModal .btn{
+    border-radius: 999px;
+    font-weight: 600;
+    padding: 10px 18px;
+}
+
+#addToCartModal .btn-primary{
+    background: linear-gradient(130deg, #d62828 0%, #b22222 100%);
+    border: none;
+    box-shadow: 0 8px 20px rgba(152, 27, 30, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#addToCartModal .btn-primary:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(152, 27, 30, 0.4);
+}
+
+#addToCartModal .btn-outline-secondary{
+    border: none;
+    background: #eee;
+    color: #981b1e;
+}
+
+#addToCartModal .btn-outline-secondary:hover{
+    background: #d62828;
+    color: #fff;
+}
+
 .conteiner-info{
-    border: 2px solid rgb(0, 0, 0) !important;
-    border-radius: 8px !important;
-    background-color: #acaba9!important;
+    padding: 10px !important;
+    border-radius: 20px !important;
+    background-color: #ffffff!important;
 
 }
 
 .btn-cancelar{
-    background-color: #ff0000 !important;
-    border-radius: 5px !important;
-    color: white !important;
+    background-color: #EEEEEE !important;
+    border-radius: 99px !important;
+    color: #cc0000 !important;
     padding: 10px 15px !important;
     border: none !important;
     cursor: pointer !important;
+
 }
 
 .btn-cancelar:hover {
     background-color: #cc0000 !important;
     transition: 0.3s !important;
+    color: white !important;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px !important;
 }
 
 .btn-confirmar{
-    background-color: #003780 !important;
-    border-radius: 5px !important;
+    background-color: #cc0000 !important;
+    border-radius: 99px !important;
     color: white !important;
     padding: 10px 15px !important;
     border: none !important;
@@ -237,7 +339,17 @@
 }
 
 .btn-confirmar:hover {
-    background-color: #002060 !important;
+    background-color: #cc0000 !important;
     transition: 0.3s !important;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px !important;
+    transform: translateY(-5px);
+
 }
+
+
+.text_modal {
+    font-family: "Kaisei Opti", serif;
+    color: #B61B1E;
+}
+
+
