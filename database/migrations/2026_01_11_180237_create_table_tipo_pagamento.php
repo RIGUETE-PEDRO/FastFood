@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pedidos_aceitos', function (Blueprint $table) {
+        Schema::create('tipo_pagamento', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('carrinho_id')->constrained('carrinho');
-            $table->foreignId('endereco_id')->constrained('endereco');
-            $table->foreignId('status_id')->constrained('status_pedido');
             $table->timestamps();
+            $table->string('tipo_pagamento');
         });
     }
 
@@ -25,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pedidos_aceitos');
+        Schema::dropIfExists('table_tipo_pagamento');
     }
 };
