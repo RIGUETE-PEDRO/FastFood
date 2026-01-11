@@ -36,16 +36,18 @@
                         <td>R${{ $item->produto->preco }}</td>
                         <td>R${{ $item->preco_total }}</td>
                         <td>
-                            <form action="{{ route('carrinho.atualizarQuantidade', $item->id) }}" method="POST">
+                            <form data-qty-form action="{{ route('carrinho.atualizarQuantidade', $item->id) }}" method="POST">
                                 @csrf
                                 @method('PUT')
                                 <button type="submit" name="acao" value="menos">−</button>
+                                <!-- ...existing code... -->
                                 <input
                                     type="number"
                                     name="quantidade"
-                                    value="{{ $item->quantidade }}"
                                     min="1"
-                                    oninput="this.form.submit()">
+                                    value="{{ $item->quantidade }}"
+                                    />
+                                <!-- ...existing code... -->
 
                                 <button type="submit" name="acao" value="mais">+</button>
                             </form>
