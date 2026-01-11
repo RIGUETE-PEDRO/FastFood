@@ -86,7 +86,7 @@
             @foreach ($pizzas as $pizza)
 
 
-            <div class="produto" data-produto-id="{{ $pizza->id }}" data-produto-nome="{{ $pizza->nome }}">
+            <div class="produto" data-produto-id="{{ $pizza->id }}" data-produto-nome="{{ $pizza->nome }}" data-produto-preco="{{ $pizza->preco }}">
                 <div class="container-img">
                     <img src="{{ asset('img/produtos/' . $pizza->imagem_url) }}" alt="">
                 </div>
@@ -117,13 +117,14 @@
            <div class="modal fade " id="addToCartModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content conteiner-info">
-                    <form method="POST" action="#">
+                    <form method="POST" action="{{ route('carrinho.adicionar') }}">
                         <div class="modal-header">
                             <h5 class="modal-title text_modal">Adicionar ao carrinho</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                         </div>
                         <div class="modal-body">
                             <input type="hidden" id="cart_produto_id" name="produto_id" value="">
+                            <input type="hidden" id="cart_preco" name="preco" value="">
 
                             <div class="mb-3">
                                 <label class="form-label text_modal">Produto</label>

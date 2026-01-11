@@ -42,7 +42,7 @@
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link text navegador" href="#">Carrinho</a>
+                        <a class="nav-link text navegador" href="{{ route('carrinho') }}">Carrinho</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link disabled" aria-disabled="true"></a>
@@ -92,7 +92,7 @@
         <div class="container-produtos mt-4">
             @foreach ($produtos as $produto)
 
-            <div class="produto" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}">
+            <div class="produto" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
                 <div class="container-img">
                     <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="">
                 </div>
@@ -127,11 +127,12 @@
                         <div class="modal-header">
                             <h5 class="modal-title text_modal">Adicionar ao carrinho</h5>
 
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            <button type="button" class="btn-close btn-close-custom" data-bs-dismiss="modal" aria-label="Fechar"></button>
                         </div>
-                       
+
                         <div class="modal-body">
                             <input type="hidden" id="cart_produto_id" name="produto_id" value="">
+                            <input type="hidden" id="cart_preco" name="preco" value="">
 
                             <div class="mb-3">
                                 <label class="form-label text_modal">Produto</label>

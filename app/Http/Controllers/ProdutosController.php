@@ -25,4 +25,25 @@ class ProdutosController extends Controller
         return redirect(url()->previous())
             ->with('success', 'Produto adicionado ao carrinho com sucesso!');
     }
+
+    public function verCarrinho()
+    {
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        $carrinhoItems = $genericBase->pegarItensCarrinho($usuarioLogado['id']);
+
+        return view('Carrinho', [
+            'usuario' => $usuarioLogado,
+            'carrinho' => $carrinhoItems,
+        ]);
+    }
+
+    public function removerDoCarrinho($id)
+    {
+        $pedidoService = new PedidoService();
+        $pedidoService->removerProdutoDoCarrinho($id);
+
+        return redirect()->route('carrinho')
+            ->with('success', 'Produto removido do carrinho com sucesso!');
+    }
 }

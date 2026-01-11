@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Usuario;
 use App\Models\Funcionario;
 use App\Models\Produto;
+use App\Models\Carrinho;
 
 class GenericBase
 {
@@ -127,4 +128,14 @@ class GenericBase
 
         return is_numeric($limpo) ? (float) $limpo : null;
     }
+
+
+    public function pegarItensCarrinho($usuarioId)
+    {
+        return Carrinho::with('produto')
+            ->where('usuario_id', $usuarioId)
+            ->get();
+    }
+
+
 }

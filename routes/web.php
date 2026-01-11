@@ -66,9 +66,16 @@ Route::get('/Bebidas', [BebidasController::class, 'Bebidas'])->name('Bebidas');
 Route::get('/porcao', [PorcaoController::class, 'porcao'])->name('Porcao');
 
 ////////////////////////////////////////////////////////////////////////////////////////
+Route::get('/carrinho', [ProdutosController::class, 'verCarrinho'])->name('carrinho');
+
+
 
 //Rotas POST
 Route::post('/carrinho/adicionar', [ProdutosController::class, 'adicionarAoCarrinho'])->name('carrinho.adicionar');
+
+Route::post('/carrinho/{id}/remover', [ProdutosController::class, 'removerDoCarrinho'])->name('carrinho.remover');
+
+
 
 //atualizar funcionário
 Route::post('/funcionarios/{id}/atualizar', [GerenciamentoUsuarioController::class, 'atualizarFuncionario'])->name('funcionarios.atualizar');

@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const inputProdutoId = modalEl.querySelector('#cart_produto_id');
   const inputProdutoNome = modalEl.querySelector('#cart_produto_nome');
+  const inputPreco = modalEl.querySelector('#cart_preco');
   const inputQtd = modalEl.querySelector('#cart_quantidade');
   const inputObs = modalEl.querySelector('#cart_observacao');
 
@@ -33,9 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const produtoId = card.getAttribute('data-produto-id');
     const produtoNome = card.getAttribute('data-produto-nome') || '';
+  const produtoPreco = card.getAttribute('data-produto-preco') || '';
 
     if (inputProdutoId) inputProdutoId.value = produtoId || '';
     if (inputProdutoNome) inputProdutoNome.value = produtoNome;
+  if (inputPreco) inputPreco.value = produtoPreco;
 
     if (inputQtd) inputQtd.value = '1';
     if (inputObs) inputObs.value = '';
