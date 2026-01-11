@@ -15,11 +15,12 @@
 <body>
 
     <main>
+        <div class="voltar-link">
+            <a href="{{ route('index') }}">voltar</a>
+        </div>
         <div class="table-corpo">
             <h1>Carrinho</h1>
-            <div>
-                <a href="{{ route('index') }}">voltar</a>
-            </div>
+
             <table class="table">
                 @if ($carrinho->isEmpty())
                 <div class="empty-state">
@@ -39,20 +40,36 @@
                 @else
                 <thead>
                     <tr class="title-table">
+                        <th>Adicionar</th>
                         <th>Imagem</th>
                         <th>Produto</th>
                         <th>Preço unitário</th>
                         <th>Preço total</th>
                         <th>Quantidade</th>
-                        <th>Adicionar</th>
                         <th>Ação</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($carrinho as $item)
                     <tr>
+                        <td>
+                            <form action="{{ route('carrinho.toggle', $item->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <label class="cbx-container">
+                                    <input
+                                        type="checkbox"
+                                        class="cbx"
+                                        name="ativo"
+                                        value="1"
+                                        {{ $item->selecionado ? 'checked' : '' }}
+                                        onchange="this.form.submit()">
+                                    <span class="cbx-custom"></span>
+                                </label>
+                            </form>
+                        </td>
                         <td><img src="{{ asset('img/produtos/' . $item->produto->imagem_url) }}" style="width:48px; height:48px; object-fit:cover; border-radius:8px;"></td>
-                        <td>{{ $item->produto->nome }}</td>
+                        <td >{{ $item->produto->nome }}</td>
                         <td>R${{ $item->produto->preco }}</td>
                         <td>R${{ $item->preco_total }}</td>
                         <td>
@@ -70,19 +87,7 @@
                                 <button type="submit" name="acao" value="mais" class="button positivo">+</button>
                             </form>
                         </td>
-                        <td>
-                            <form action="{{ route('carrinho.toggle', $item->id) }}" method="POST">
-                                @csrf
-                                @method('PUT')
 
-                                <input
-                                    type="checkbox"
-                                    name="ativo"
-                                    value="1"
-                                    {{ $item->selecionado ? 'checked' : '' }}
-                                    onchange="this.form.submit()">
-                            </form>
-                        </td>
 
                         <td>
                             <form method="POST" action="{{ route('carrinho.remover', $item->id) }}">
@@ -95,6 +100,14 @@
                 </tbody>
                 @endif
             </table>
+            <div class="finalizar-compra">
+
+                <button class="btn btn-primary">Finalizar Compra</button>
+                <span class="total-compra">
+                    Total: R$ {{ $carrinho->where('selecionado', true)->sum('preco_total') }}
+                </span>
+
+            </div>
         </div>
     </main>
 </body>

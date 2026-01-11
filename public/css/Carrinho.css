@@ -51,9 +51,12 @@ main {
     padding: 0 18px 14px 18px;
 }
 
-.table-corpo a {
-    color: var(--ml-blue);
+.voltar-link a {
+    color: white;
     text-decoration: none;
+    background-color: red;
+    border-radius: 8px;
+    padding: 10px;
     font-weight: 800;
 }
 
@@ -74,7 +77,7 @@ table {
 }
 
 .table thead th {
-     background: rgba(255, 188, 3, 0.85);
+    background: rgba(255, 188, 3, 0.85);
     color: #111827;
     font-weight: 900;
     font-size: 0.75rem;
@@ -203,7 +206,7 @@ button.btn.btn-danger:active {
     padding: 38px 18px;
     text-align: center;
     color: var(--ml-muted);
-    background: rgba(255, 230, 0, 0.10);
+    background: rgba(255, 230, 0, 0.1);
 }
 
 .empty-state svg {
@@ -214,4 +217,140 @@ button.btn.btn-danger:active {
     color: var(--ml-text);
     margin: 10px 0 6px 0;
     font-weight: 900;
+}
+
+.finalizar-compra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* total à esquerda, botão à direita */
+    gap: 14px;
+    padding: 16px 18px;
+    background: #fafafa;
+    border-top: 1px solid var(--ml-border);
+}
+
+/* Mantém o total do lado esquerdo */
+.finalizar-compra .total-compra {
+    order: 1;
+}
+
+/* Botão do lado direito */
+.finalizar-compra button,
+.finalizar-compra .btn.btn-primary {
+    order: 2;
+    margin-left: auto;
+    background: var(--ml-blue);
+    border: 0;
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(52, 131, 250, 0.25);
+    transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.finalizar-compra button:hover,
+.finalizar-compra .btn.btn-primary:hover {
+    filter: brightness(1.03);
+    transform: translateY(-1px);
+}
+
+.finalizar-compra button:active,
+.finalizar-compra .btn.btn-primary:active {
+    transform: translateY(0);
+}
+
+.total-compra {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: var(--ml-text);
+}
+
+@media (max-width: 640px) {
+    .finalizar-compra {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .finalizar-compra button,
+    .finalizar-compra .btn.btn-primary {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .finalizar-compra .total-compra {
+        width: 100%;
+        text-align: left;
+    }
+}
+
+.voltar-link {
+    margin-bottom: 16px;
+}
+
+.voltar-link a:hover {
+    background-color: var(--ml-red-dark);
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+/* Checkbox (selecionar item) - estilo Mercado Livre */
+.cbx-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cbx-container input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.cbx-custom {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #cbd5e1; /* cinza claro */
+    border-radius: 6px;
+    position: relative;
+    background: #fff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+    transition: transform 0.12s ease, border-color 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease;
+    cursor: pointer;
+}
+
+/* Hover/foco */
+.cbx-container:hover .cbx-custom {
+    border-color: rgba(52, 131, 250, 0.75);
+    box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.12);
+}
+
+.cbx-container input:focus-visible + .cbx-custom {
+    border-color: rgba(52, 131, 250, 0.85);
+    box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.18);
+}
+
+/* Checked */
+.cbx-container input:checked + .cbx-custom {
+    background: linear-gradient(180deg, var(--ml-green), var(--ml-green-dark));
+    border-color: rgba(0, 138, 66, 0.95);
+}
+
+.cbx-container input:checked + .cbx-custom::after {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 3px;
+    width: 6px;
+    height: 11px;
+    border: solid #fff;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+/* Micro animação ao clicar */
+.cbx-container input:active + .cbx-custom {
+    transform: scale(0.96);
 }
