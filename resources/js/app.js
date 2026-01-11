@@ -1,4 +1,5 @@
 import './bootstrap';
+import './carrinho-finalizar-modal';
 import * as bootstrap from 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 

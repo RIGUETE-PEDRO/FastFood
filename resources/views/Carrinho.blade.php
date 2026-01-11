@@ -102,11 +102,109 @@
             </table>
             <div class="finalizar-compra">
 
-                <button class="btn btn-primary">Finalizar Compra</button>
+                <button id="btnFinalizarCompra" type="button" class="btn btn-primary">Finalizar Compra</button>
                 <span class="total-compra">
                     Total: R$ {{ $carrinho->where('selecionado', true)->sum('preco_total') }}
                 </span>
 
+            </div>
+        </div>
+
+        <!-- Modal 1: escolher tipo -->
+        <div id="finalizarModal" class="ff-modal" aria-hidden="true">
+            <div class="ff-modal__overlay" aria-hidden="true"></div>
+            <div class="ff-modal__card" role="dialog" aria-modal="true" aria-labelledby="finalizarModalTitle">
+                <div class="ff-modal__header">
+                    <h2 id="finalizarModalTitle">Como você quer receber?</h2>
+                    <button type="button" class="ff-modal__close" data-modal-close aria-label="Fechar">×</button>
+                </div>
+
+                <form id="tipoEntregaForm" method="POST" action="#">
+                    @csrf
+
+                    <p class="ff-modal__hint">Escolha uma opção para continuar.</p>
+
+                    <div class="ff-choice">
+                        <label class="ff-choice__item">
+                            <input type="radio" name="tipo_entrega" value="retirar" checked>
+                            <span>
+                                <strong>Retirar no local</strong>
+                                <small>Você vai informar o número da mesa no próximo passo.</small>
+                            </span>
+                        </label>
+
+                        <label class="ff-choice__item">
+                            <input type="radio" name="tipo_entrega" value="entrega">
+                            <span>
+                                <strong>Entrega</strong>
+                                <small>Você vai informar o endereço no próximo passo.</small>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div id="tipoEntregaErro" class="ff-modal__error" aria-live="polite"></div>
+
+                    <div class="ff-modal__footer">
+                        <button type="button" class="ff-btn ff-btn--ghost" data-modal-close>Cancelar</button>
+                        <button type="submit" class="ff-btn ff-btn--primary">Continuar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal 2A: mesa -->
+        <div id="mesaModal" class="ff-modal" aria-hidden="true">
+            <div class="ff-modal__overlay" aria-hidden="true"></div>
+            <div class="ff-modal__card" role="dialog" aria-modal="true" aria-labelledby="mesaModalTitle">
+                <div class="ff-modal__header">
+                    <h2 id="mesaModalTitle">Informe a mesa</h2>
+                    <button type="button" class="ff-modal__close" data-modal-close aria-label="Fechar">×</button>
+                </div>
+
+                <form id="mesaForm" method="POST" action="#">
+                    @csrf
+                    <input type="hidden" name="tipo_entrega" value="retirar">
+
+                    <div class="ff-field">
+                        <label for="mesa">Número da mesa</label>
+                        <input id="mesa" name="mesa" type="text" inputmode="numeric" placeholder="Ex: 12" required>
+                    </div>
+
+                    <div id="mesaErro" class="ff-modal__error" aria-live="polite"></div>
+
+                    <div class="ff-modal__footer">
+                        <button type="button" class="ff-btn ff-btn--ghost" data-modal-back>Voltar</button>
+                        <button type="submit" class="ff-btn ff-btn--primary">Confirmar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal 2B: endereço -->
+        <div id="enderecoModal" class="ff-modal" aria-hidden="true">
+            <div class="ff-modal__overlay" aria-hidden="true"></div>
+            <div class="ff-modal__card" role="dialog" aria-modal="true" aria-labelledby="enderecoModalTitle">
+                <div class="ff-modal__header">
+                    <h2 id="enderecoModalTitle">Informe o endereço de entrega</h2>
+                    <button type="button" class="ff-modal__close" data-modal-close aria-label="Fechar">×</button>
+                </div>
+
+                <form id="enderecoForm" method="POST" action="#">
+                    @csrf
+                    <input type="hidden" name="tipo_entrega" value="entrega">
+
+                    <div class="ff-field">
+                        <label for="endereco">Endereço</label>
+                        <input id="endereco" name="endereco" type="text" placeholder="Rua, número, bairro..." required>
+                    </div>
+
+                    <div id="enderecoErro" class="ff-modal__error" aria-live="polite"></div>
+
+                    <div class="ff-modal__footer">
+                        <button type="button" class="ff-btn ff-btn--ghost" data-modal-back>Voltar</button>
+                        <button type="submit" class="ff-btn ff-btn--primary">Confirmar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </main>

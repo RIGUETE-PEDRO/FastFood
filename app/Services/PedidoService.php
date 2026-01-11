@@ -25,7 +25,7 @@ class PedidoService
         $precoUnitario = (float) $produto->preco;
         $precoTotal = $quantidadeNormalizada * $precoUnitario;
 
-        if ($GenericBase->findByProdutosIsUsuario($produtoId, $usuarioId, $precoTotal)) {
+        if ($GenericBase->findByProdutosIsUsuario($produtoId, $usuarioId)) {
             $itemCarrinho = Carrinho::where('usuario_id', $usuarioId)
                 ->where('produto_id', $produtoId)
                 ->first();

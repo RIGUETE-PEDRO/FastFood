@@ -354,3 +354,199 @@ button.btn.btn-danger:active {
 .cbx-container input:active + .cbx-custom {
     transform: scale(0.96);
 }
+
+/* ===== Modal Finalizar Compra ===== */
+.ff-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 9999;
+}
+
+.ff-modal.is-open {
+    display: block;
+}
+
+.ff-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.ff-modal__card {
+    position: relative;
+    width: min(520px, calc(100vw - 32px));
+    margin: 10vh auto 0 auto;
+    background: var(--ml-card);
+    border: 1px solid var(--ml-border);
+    border-radius: 14px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+}
+
+.ff-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--ml-yellow);
+    border-bottom: 1px solid rgba(17, 24, 39, 0.12);
+}
+
+.ff-modal__header h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: #111827;
+}
+
+.ff-modal__close {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 0;
+    background: rgba(17, 24, 39, 0.10);
+    color: #111827;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.ff-modal__close:hover {
+    background: rgba(17, 24, 39, 0.16);
+}
+
+.ff-modal form {
+    padding: 14px 16px 16px 16px;
+}
+
+.ff-modal__hint {
+    margin: 0 0 12px 0;
+    color: var(--ml-muted);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.ff-choice {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.ff-choice__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--ml-border);
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.ff-choice__item input[type="radio"] {
+    accent-color: var(--ml-blue);
+    transform: translateY(2px);
+}
+
+.ff-choice__item strong {
+    display: block;
+    font-weight: 900;
+    color: var(--ml-text);
+}
+
+.ff-choice__item small {
+    display: block;
+    color: var(--ml-muted);
+    margin-top: 2px;
+}
+
+/* Destaque quando selecionado */
+.ff-choice__item:has(input:checked) {
+    border-color: rgba(52, 131, 250, 0.45);
+    box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.12);
+}
+
+.ff-field {
+    display: grid;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.ff-field label {
+    font-weight: 800;
+    color: var(--ml-text);
+    font-size: 0.92rem;
+}
+
+.ff-field input {
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--ml-border);
+    padding: 0 12px;
+    outline: none;
+    font-size: 0.98rem;
+}
+
+.ff-field input:focus {
+    border-color: rgba(52, 131, 250, 0.65);
+    box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.15);
+}
+
+.ff-modal__error {
+    min-height: 18px;
+    margin-top: 10px;
+    color: var(--ml-red-dark);
+    font-weight: 800;
+}
+
+.ff-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.ff-btn {
+    height: 40px;
+    border-radius: 10px;
+    border: 0;
+    padding: 0 16px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.ff-btn--ghost {
+    background: #f3f4f6;
+    color: var(--ml-text);
+}
+
+.ff-btn--ghost:hover {
+    filter: brightness(0.98);
+}
+
+.ff-btn--primary {
+    background: var(--ml-blue);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(52, 131, 250, 0.25);
+}
+
+.ff-btn--primary:hover {
+    filter: brightness(1.03);
+}
+
+@media (max-width: 480px) {
+    .ff-modal__card {
+        margin-top: 8vh;
+    }
+
+    .ff-modal__footer {
+        flex-direction: column;
+    }
+
+    .ff-btn {
+        width: 100%;
+    }
+}
