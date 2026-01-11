@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Usuario extends Model
+class Usuario extends Authenticatable
 {
     protected $table = 'usuarios';
 
@@ -22,6 +23,11 @@ class Usuario extends Model
     protected $hidden = [
         'senha',
     ];
+
+    public function getAuthPassword()
+    {
+        return $this->senha;
+    }
 
     /**
      * Relacionamento com Funcionario (um usuário pode ser um funcionário)

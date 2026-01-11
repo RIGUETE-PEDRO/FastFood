@@ -16,11 +16,15 @@
     <main>
         <div class="container">
             <h1>Carrinho</h1>
+            <div>
+                <a href="{{ route('index') }}">voltar</a>
+            </div>
             <table class="table">
                 <thead>
                     <tr>
                         <th>Produto</th>
-                        <th>Preço</th>
+                        <th>Preço unitário</th>
+                        <th>Preço total</th>
                         <th>Quantidade</th>
                         <th>Ação</th>
                     </tr>
@@ -30,11 +34,25 @@
                     <tr>
                         <td>{{ $item->produto->nome }}</td>
                         <td>R${{ $item->produto->preco }}</td>
-                        <td>{{ $item->quantidade }}</td>
+                        <td>R${{ $item->preco_total }}</td>
+                        <td>
+                            <form action="{{ route('carrinho.atualizarQuantidade', $item->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" name="acao" value="menos">−</button>
+                                <input
+                                    type="number"
+                                    name="quantidade"
+                                    value="{{ $item->quantidade }}"
+                                    min="1"
+                                    oninput="this.form.submit()">
+
+                                <button type="submit" name="acao" value="mais">+</button>
+                            </form>
+                        </td>
                         <td>
                             <form method="POST" action="{{ route('carrinho.remover', $item->id) }}">
                                 @csrf
-                                @method('DELETE')
                                 <button type="submit" class="btn btn-danger">Remover</button>
                             </form>
                         </td>

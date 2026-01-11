@@ -137,5 +137,11 @@ class GenericBase
             ->get();
     }
 
+    public function findByProdutosIsUsuario($produtoId, $usuarioId,$precoTotal)
+    {
+        return Carrinho::where('produto_id', $produtoId)
+            ->where('usuario_id', $usuarioId)->where('valor_total', $precoTotal)
+            ->first();
+    }
 
 }

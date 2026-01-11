@@ -41,18 +41,18 @@ Route::get('/redefinir-senha', function () {
 })->name('senha.redefinir.form');
 
 //administrativo
-Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])->name('Administrativo');
+Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])->name('Administrativo')->middleware('auth');
 
-Route::get('/gerenciamento_Funcionario', [GerenciamentoUsuarioController::class, 'gerenciamentoFuncionario'])->name('gerenciamento_funcionarios');
+Route::get('/gerenciamento_Funcionario', [GerenciamentoUsuarioController::class, 'gerenciamentoFuncionario'])->name('gerenciamento_funcionarios')->middleware('auth');
 
 //gerenciamento de produtos
-Route::post('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])->name('gerenciamento_produtos');
+Route::post('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])->name('gerenciamento_produtos')->middleware('auth');
 
 //logout
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 //perfil
-Route::get('/perfil', [AdminController::class, 'InfoPerfil'])->name('perfil');
+Route::get('/perfil', [AdminController::class, 'InfoPerfil'])->name('perfil')->middleware('auth');
 
 //buscar funcionários
 Route::get('/funcionarios/buscar', [GerenciamentoUsuarioController::class, 'buscarFuncionarios'])->name('funcionarios.buscar');
@@ -66,26 +66,27 @@ Route::get('/Bebidas', [BebidasController::class, 'Bebidas'])->name('Bebidas');
 Route::get('/porcao', [PorcaoController::class, 'porcao'])->name('Porcao');
 
 ////////////////////////////////////////////////////////////////////////////////////////
-Route::get('/carrinho', [ProdutosController::class, 'verCarrinho'])->name('carrinho');
+Route::get('/carrinho', [ProdutosController::class, 'verCarrinho'])->name('carrinho')->middleware('auth');
 
 
 
 //Rotas POST
-Route::post('/carrinho/adicionar', [ProdutosController::class, 'adicionarAoCarrinho'])->name('carrinho.adicionar');
+Route::post('/carrinho/adicionar', [ProdutosController::class, 'adicionarAoCarrinho'])->name('carrinho.adicionar')->middleware('auth');
 
-Route::post('/carrinho/{id}/remover', [ProdutosController::class, 'removerDoCarrinho'])->name('carrinho.remover');
+Route::post('/carrinho/{id}/remover', [ProdutosController::class, 'removerDoCarrinho'])->name('carrinho.remover')->middleware('auth');
 
+Route::put('/carrinho/{id}/atualizarQuantidade', [ProdutosController::class, 'atualizarQuantidade'])->name('carrinho.atualizarQuantidade')->middleware('auth');
 
 
 //atualizar funcionário
-Route::post('/funcionarios/{id}/atualizar', [GerenciamentoUsuarioController::class, 'atualizarFuncionario'])->name('funcionarios.atualizar');
+Route::post('/funcionarios/{id}/atualizar', [GerenciamentoUsuarioController::class, 'atualizarFuncionario'])->name('funcionarios.atualizar')->middleware('auth');
 
-Route::post('/funcionarios/{id}/deletar', [GerenciamentoUsuarioController::class, 'deletarUsuario'])->name('funcionarios.deletar');
+Route::post('/funcionarios/{id}/deletar', [GerenciamentoUsuarioController::class, 'deletarUsuario'])->name('funcionarios.deletar')->middleware('auth');
 
-Route::post('/atualizar_produto/{id}/atualizar', [GerenciamentoProdutoController::class, 'atualizarProduto'])->name('produtos.atualizar');
+Route::post('/atualizar_produto/{id}/atualizar', [GerenciamentoProdutoController::class, 'atualizarProduto'])->name('produtos.atualizar')->middleware('auth');
 
 //pegar dados do usuário logado
-Route::post('/perfil', [AdminController::class, 'InfoPerfil'])->name('usuario');
+Route::post('/perfil', [AdminController::class, 'InfoPerfil'])->name('usuario')->middleware('auth');
 
 
 //rotas de autenticação
@@ -100,8 +101,8 @@ Route::post('/Cadastrar_Produto', [GerenciamentoProdutoController::class, 'cadas
 
 
 Route::get('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])
-    ->name('gerenciamento_Produtos');
+    ->name('gerenciamento_Produtos')->middleware('auth');
 
-Route::post('/gerenciamento_Produtos/{id}/deletar', [GerenciamentoProdutoController::class, 'deletarProduto'])->name('deletar_produto');
+Route::post('/gerenciamento_Produtos/{id}/deletar', [GerenciamentoProdutoController::class, 'deletarProduto'])->name('deletar_produto')->middleware('auth');
 
 Route::post('/', [IndexController::class, 'index'])->name('index');

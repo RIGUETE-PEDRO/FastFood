@@ -8,6 +8,7 @@ use App\Mail\RecuperarSenhaMail;
 use App\Services\GenericBase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -32,7 +33,7 @@ class LoginController extends Controller
 
     public function logout()
     {
-
+        Auth::logout();
         session()->forget('usuario_logado');
         return redirect()->route('home');
     }
@@ -54,6 +55,9 @@ class LoginController extends Controller
 
         // Salvar usuário na sessão
         session(['usuario_logado' => $usuario]);
+
+    // Também autentica via Auth do Laravel (habilita auth()->id() globalmente)
+    Auth::login($usuario);
 
         // Autenticação bem-sucedida, redirecionar para a página desejada
 
