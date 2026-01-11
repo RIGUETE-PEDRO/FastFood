@@ -21,6 +21,7 @@
                     <tr>
                         <th>Produto</th>
                         <th>Preço</th>
+                        <th>Quantidade</th>
                         <th>Ação</th>
                     </tr>
                 </thead>
@@ -29,6 +30,7 @@
                     <tr>
                         <td>{{ $item->produto->nome }}</td>
                         <td>R${{ $item->produto->preco }}</td>
+                        <td>{{ $item->quantidade }}</td>
                         <td>
                             <form method="POST" action="{{ route('carrinho.remover', $item->id) }}">
                                 @csrf
