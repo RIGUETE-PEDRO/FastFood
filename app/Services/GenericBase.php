@@ -140,7 +140,7 @@ class GenericBase
     public function findByProdutosIsUsuario($produtoId, $usuarioId,$precoTotal)
     {
         return Carrinho::where('produto_id', $produtoId)
-            ->where('usuario_id', $usuarioId)->where('valor_total', $precoTotal)
+            ->where('usuario_id', $usuarioId)->where('preco_total', $precoTotal)
             ->first();
     }
 

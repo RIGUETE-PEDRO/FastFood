@@ -58,6 +58,8 @@ class ProdutosController extends Controller
             ->with('success', 'Produto removido do carrinho com sucesso!');
     }
 
+
+    
     public function atualizarQuantidade(Request $request, $id)
     {
         $pedidoService = new PedidoService();
@@ -66,6 +68,8 @@ class ProdutosController extends Controller
         return redirect()->route('carrinho')
             ->with('success', 'Quantidade do produto atualizada com sucesso!');
     }
+
+
 
     public function toggleSelecionar(Request $request, $id)
     {

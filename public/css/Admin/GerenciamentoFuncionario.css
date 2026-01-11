@@ -139,6 +139,8 @@ body {
 
 .table-responsive {
     overflow-x: auto;
+    width: 100%;
+    border-collapse: collapse;
 }
 
 .funcionarios-table {
