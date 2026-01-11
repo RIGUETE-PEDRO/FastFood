@@ -77,6 +77,7 @@ Route::post('/carrinho/{id}/remover', [ProdutosController::class, 'removerDoCarr
 
 Route::put('/carrinho/{id}/atualizarQuantidade', [ProdutosController::class, 'atualizarQuantidade'])->name('carrinho.atualizarQuantidade')->middleware('auth');
 
+Route::put('/carrinho/{id}/selecionar', [ProdutosController::class, 'toggleSelecionar'])->name('carrinho.toggle')->middleware('auth');
 
 //atualizar funcionário
 Route::post('/funcionarios/{id}/atualizar', [GerenciamentoUsuarioController::class, 'atualizarFuncionario'])->name('funcionarios.atualizar')->middleware('auth');

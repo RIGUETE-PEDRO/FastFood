@@ -66,4 +66,17 @@ class ProdutosController extends Controller
         return redirect()->route('carrinho')
             ->with('success', 'Quantidade do produto atualizada com sucesso!');
     }
+
+    public function toggleSelecionar(Request $request, $id)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login.form')->with('erro', 'Você precisa fazer login.');
+        }
+
+        $pedidoService = new PedidoService();
+        $pedidoService->toggleSelecionarProdutoNoCarrinho($id);
+
+        return redirect()->route('carrinho')
+            ->with('success', 'Item do carrinho atualizado com sucesso!');
+    }
 }

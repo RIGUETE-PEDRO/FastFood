@@ -95,4 +95,20 @@ class PedidoService
 
         return back();
     }
+
+    public function toggleSelecionarProdutoNoCarrinho($id)
+    {
+        if (!Auth::check()) {
+            abort(401);
+        }
+
+        $itemCarrinho = Carrinho::where('id', $id)
+            ->where('usuario_id', Auth::id())
+            ->firstOrFail();
+
+        $itemCarrinho->selecionado = !$itemCarrinho->selecionado;
+        $itemCarrinho->save();
+
+        return back();
+    }
 }
