@@ -81,9 +81,7 @@ class PedidoService
             if ($request->acao === 'menos' && $itemCarrinho->quantidade > 1) {
                 $itemCarrinho->quantidade--;
             }
-        }
-        // Se digitou a quantidade
-        elseif ($request->filled('quantidade')) {
+        } elseif ($request->filled('quantidade')) {
 
             $quantidadeNormalizada = max(1, (int) $request->quantidade);
             $itemCarrinho->quantidade = $quantidadeNormalizada;
