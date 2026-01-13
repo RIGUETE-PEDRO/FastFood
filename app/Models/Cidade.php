@@ -18,4 +18,5 @@ class Cidade extends Model
     {
         return $this->hasMany(Endereco::class, 'cidade_id');
     }
+    
 }
