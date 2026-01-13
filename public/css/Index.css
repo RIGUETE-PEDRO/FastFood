@@ -49,6 +49,14 @@
     background: #f8f8f8;
 }
 
+.aviso{
+    font-family: "Kaisei Opti", serif;
+    font-size: 0.7em;
+    color: red;
+    margin-top: 4px;
+    margin-left: 10em;
+}
+
 .produto img {
     /* preencher a caixa e manter todas as imagens visualmente idênticas
        usa cover para evitar espaços em branco e garantir uniformidade */
