@@ -11,7 +11,8 @@ use App\Http\Controllers\PizzaController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\BebidasController;
 use App\Http\Controllers\PorcaoController;
-use App\Http\Controllers\ProdutosController;
+use App\Http\Controllers\CarrinhoController;
+use App\Http\Controllers\PedidoController;
 
 //rota da página inicial
 Route::get('/', [IndexController::class, 'index'])->name('home');
@@ -66,18 +67,35 @@ Route::get('/Bebidas', [BebidasController::class, 'Bebidas'])->name('Bebidas');
 Route::get('/porcao', [PorcaoController::class, 'porcao'])->name('Porcao');
 
 ////////////////////////////////////////////////////////////////////////////////////////
-Route::get('/carrinho', [ProdutosController::class, 'verCarrinho'])->name('carrinho')->middleware('auth');
+Route::get('/carrinho', [CarrinhoController::class, 'verCarrinho'])->name('carrinho')->middleware('auth');
+
+Route::post('/carrinho/adicionar', [CarrinhoController::class, 'adicionarAoCarrinho'])->name('carrinho.adicionar')->middleware('auth');
+
+Route::post('/carrinho/endereco', [CarrinhoController::class, 'pegarEndereco'])->name('carrinho.endereco')->middleware('auth');
+Route::post('/carrinho/pagamento', [CarrinhoController::class, 'registrarPagamento'])->name('carrinho.pagamento')->middleware('auth');
+
+Route::post('/carrinho/selecionarCidade', [CarrinhoController::class, 'selecionarCidade'])->name('cidade.buscar')->middleware('auth');
 
 
+Route::post('/carrinho/{id}/remover', [CarrinhoController::class, 'removerDoCarrinho'])->name('carrinho.remover')->middleware('auth');
 
-//Rotas POST
-Route::post('/carrinho/adicionar', [ProdutosController::class, 'adicionarAoCarrinho'])->name('carrinho.adicionar')->middleware('auth');
+Route::put('/carrinho/{id}/atualizarQuantidade', [CarrinhoController::class, 'atualizarQuantidade'])->name('carrinho.atualizarQuantidade')->middleware('auth');
 
-Route::post('/carrinho/{id}/remover', [ProdutosController::class, 'removerDoCarrinho'])->name('carrinho.remover')->middleware('auth');
+Route::put('/carrinho/{id}/selecionar', [CarrinhoController::class, 'toggleSelecionar'])->name('carrinho.toggle')->middleware('auth');
 
-Route::put('/carrinho/{id}/atualizarQuantidade', [ProdutosController::class, 'atualizarQuantidade'])->name('carrinho.atualizarQuantidade')->middleware('auth');
+Route::get('/carrinho/{id}/deletar', function ($id) {
+    return redirect()->route('carrinho');
+})->middleware('auth');
 
-Route::put('/carrinho/{id}/selecionar', [ProdutosController::class, 'toggleSelecionar'])->name('carrinho.toggle')->middleware('auth');
+Route::match(['post', 'delete'], '/carrinho/{id}/deletar', [CarrinhoController::class, 'deletarEndereco'])->name('endereco.excluir')->middleware('auth');
+
+//////////////////////////////////////////
+Route::get('/pedido', [PedidoController::class, 'verPedido'])->name('pedido')->middleware('auth');
+
+
+/////////////////////////////
+
+
 
 //atualizar funcionário
 Route::post('/funcionarios/{id}/atualizar', [GerenciamentoUsuarioController::class, 'atualizarFuncionario'])->name('funcionarios.atualizar')->middleware('auth');

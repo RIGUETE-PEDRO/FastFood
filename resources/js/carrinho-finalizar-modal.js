@@ -8,7 +8,12 @@
     const tipoModal = document.getElementById('finalizarModal');
     const mesaModal = document.getElementById('mesaModal');
     const enderecoModal = document.getElementById('enderecoModal');
-    if (!tipoModal || !mesaModal || !enderecoModal) return;
+    const enderecoNovoModal = document.getElementById('enderecoNovoModal');
+    const pagamentoModal = document.getElementById('pagamentoModal');
+
+    if (!tipoModal || !mesaModal || !enderecoModal || !enderecoNovoModal || !pagamentoModal) return;
+
+    const modals = [tipoModal, mesaModal, enderecoModal, enderecoNovoModal, pagamentoModal];
 
     const btnAbrir = document.getElementById('btnFinalizarCompra');
 
@@ -20,8 +25,40 @@
     const mesaErro = document.getElementById('mesaErro');
 
     const enderecoForm = document.getElementById('enderecoForm');
-    const enderecoInput = document.getElementById('endereco');
-    const enderecoErro = document.getElementById('enderecoErro');
+    const enderecoSelecionadoErro = document.getElementById('enderecoSelecionadoErro');
+
+    const enderecoNovoForm = document.getElementById('enderecoNovoForm');
+    const enderecoNovoErro = document.getElementById('enderecoNovoErro');
+    const enderecoNovoCampos = {
+        bairro: document.getElementById('novo_bairro'),
+        rua: document.getElementById('novo_rua'),
+        numero: document.getElementById('novo_numero'),
+        complemento: document.getElementById('novo_complemento'),
+    };
+
+    function radiosEnderecos() {
+        return enderecoForm ? [...enderecoForm.querySelectorAll('input[name="endereco_opcao"]')] : [];
+    }
+
+    function temEnderecosSalvos() {
+        return radiosEnderecos().length > 0;
+    }
+
+    function focusPrimeiroEndereco() {
+        const primeiro = radiosEnderecos()[0];
+        if (primeiro) primeiro.focus();
+    }
+
+    function focusNovoEndereco() {
+        if (enderecoNovoCampos.bairro) {
+            enderecoNovoCampos.bairro.focus();
+        }
+    }
+
+    function focusPagamento() {
+        const primeiro = pagamentoModal.querySelector('input[name="pagamento_metodo"]');
+        if (primeiro) primeiro.focus();
+    }
 
     function openModal(el) {
         el.classList.add('is-open');
@@ -33,16 +70,23 @@
         el.setAttribute('aria-hidden', 'true');
     }
 
-    function closeAll() {
-        closeModal(tipoModal);
-        closeModal(mesaModal);
-        closeModal(enderecoModal);
-        if (tipoErro) tipoErro.textContent = '';
-        if (mesaErro) mesaErro.textContent = '';
-        if (enderecoErro) enderecoErro.textContent = '';
+    function algumModalAberto() {
+        return modals.some((m) => m.classList.contains('is-open'));
     }
 
-    function abrir() {
+    function limparErros() {
+        if (tipoErro) tipoErro.textContent = '';
+        if (mesaErro) mesaErro.textContent = '';
+        if (enderecoSelecionadoErro) enderecoSelecionadoErro.textContent = '';
+        if (enderecoNovoErro) enderecoNovoErro.textContent = '';
+    }
+
+    function closeAll() {
+        modals.forEach(closeModal);
+        limparErros();
+    }
+
+    function abrirFluxo() {
         closeAll();
         openModal(tipoModal);
         const primeiro = tipoModal.querySelector('input[name="tipo_entrega"]');
@@ -57,34 +101,68 @@
     if (btnAbrir) {
         btnAbrir.addEventListener('click', (e) => {
             e.preventDefault();
-            abrir();
+            abrirFluxo();
         });
     }
 
-    // Fechar (X/overlay/cancelar) em qualquer modal
-    [tipoModal, mesaModal, enderecoModal].forEach((m) => {
-        m.querySelectorAll('[data-modal-close]').forEach((b) => b.addEventListener('click', closeAll));
-        const ov = m.querySelector('.ff-modal__overlay');
-        if (ov) ov.addEventListener('click', closeAll);
+    modals.forEach((m) => {
+        m.querySelectorAll('[data-modal-close]').forEach((btn) => {
+            btn.addEventListener('click', closeAll);
+        });
+
+        const overlay = m.querySelector('.ff-modal__overlay');
+        if (overlay) {
+            overlay.addEventListener('click', closeAll);
+        }
     });
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && (tipoModal.classList.contains('is-open') || mesaModal.classList.contains('is-open') || enderecoModal.classList.contains('is-open'))) {
+        if (e.key === 'Escape' && algumModalAberto()) {
             closeAll();
         }
     });
 
-    // Voltar do modal 2 para modal 1
-    [mesaModal, enderecoModal].forEach((m) => {
-        m.querySelectorAll('[data-modal-back]').forEach((b) =>
-            b.addEventListener('click', () => {
-                closeModal(m);
-                openModal(tipoModal);
-            })
-        );
+    document.querySelectorAll('[data-modal-back]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.dataset.modalBack || 'finalizarModal';
+            const current = btn.closest('.ff-modal');
+            if (current) closeModal(current);
+            const targetModal = document.getElementById(targetId);
+            if (targetModal) {
+                openModal(targetModal);
+                if (targetModal === tipoModal) {
+                    const primeiro = tipoModal.querySelector('input[name="tipo_entrega"]');
+                    if (primeiro) primeiro.focus();
+                } else if (targetModal === enderecoModal) {
+                    focusPrimeiroEndereco();
+                } else if (targetModal === enderecoNovoModal) {
+                    focusNovoEndereco();
+                } else if (targetModal === pagamentoModal) {
+                    focusPagamento();
+                }
+            }
+        });
     });
 
-    // Modal 1 -> abre modal 2A ou 2B
+    document.querySelectorAll('[data-modal-open]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.dataset.modalOpen;
+            if (!targetId) return;
+            const targetModal = document.getElementById(targetId);
+            if (!targetModal) return;
+            const current = btn.closest('.ff-modal');
+            if (current) closeModal(current);
+            openModal(targetModal);
+            if (targetModal === enderecoNovoModal) {
+                focusNovoEndereco();
+            } else if (targetModal === enderecoModal) {
+                focusPrimeiroEndereco();
+            } else if (targetModal === pagamentoModal) {
+                focusPagamento();
+            }
+        });
+    });
+
     if (tipoForm) {
         tipoForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -95,19 +173,21 @@
             }
             if (tipoErro) tipoErro.textContent = '';
 
+            closeModal(tipoModal);
+
             if (tipo === 'retirar') {
-                closeModal(tipoModal);
                 openModal(mesaModal);
                 if (mesaInput) mesaInput.focus();
-            } else {
-                closeModal(tipoModal);
+            } else if (temEnderecosSalvos()) {
                 openModal(enderecoModal);
-                if (enderecoInput) enderecoInput.focus();
+                focusPrimeiroEndereco();
+            } else {
+                openModal(enderecoNovoModal);
+                focusNovoEndereco();
             }
         });
     }
 
-    // Modal mesa: valida e envia
     if (mesaForm) {
         mesaForm.addEventListener('submit', (e) => {
             const mesa = (mesaInput?.value || '').trim();
@@ -122,18 +202,138 @@
         });
     }
 
-    // Modal endereço: valida e envia
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    const suportaAjaxEndereco = typeof window.fetch === 'function' && Boolean(csrfToken);
+
     if (enderecoForm) {
-        enderecoForm.addEventListener('submit', (e) => {
-            const end = (enderecoInput?.value || '').trim();
-            if (!end) {
+        const enderecoSubmitBtn = enderecoForm.querySelector('button[type="submit"]');
+
+        enderecoForm.addEventListener('submit', async (e) => {
+            const selecionado = enderecoForm.querySelector('input[name="endereco_opcao"]:checked');
+            if (!selecionado) {
                 e.preventDefault();
-                if (enderecoErro) enderecoErro.textContent = 'Digite o endereço de entrega.';
-                enderecoInput?.focus();
+                if (temEnderecosSalvos()) {
+                    if (enderecoSelecionadoErro) {
+                        enderecoSelecionadoErro.textContent = 'Selecione um endereço para continuar.';
+                    }
+                    focusPrimeiroEndereco();
+                } else {
+                    openModal(enderecoNovoModal);
+                    focusNovoEndereco();
+                }
                 return;
             }
-            if (enderecoErro) enderecoErro.textContent = '';
+
+            if (enderecoSelecionadoErro) enderecoSelecionadoErro.textContent = '';
+
+            if (!suportaAjaxEndereco) {
+                return;
+            }
+
+            e.preventDefault();
+
+            const textoOriginal = enderecoSubmitBtn?.textContent;
+            if (enderecoSubmitBtn) {
+                enderecoSubmitBtn.disabled = true;
+                enderecoSubmitBtn.textContent = 'Confirmando...';
+            }
+
+            try {
+                const resposta = await fetch(enderecoForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: new FormData(enderecoForm),
+                });
+
+                const payload = await resposta.json().catch(() => ({}));
+
+                if (!resposta.ok || !payload?.status) {
+                    if (enderecoSelecionadoErro) {
+                        enderecoSelecionadoErro.textContent = payload?.mensagem || 'Não foi possível confirmar o endereço.';
+                    }
+                    openModal(enderecoModal);
+                    focusPrimeiroEndereco();
+                    return;
+                }
+
+                closeAll();
+                openModal(pagamentoModal);
+                focusPagamento();
+            } catch (error) {
+                if (enderecoSelecionadoErro) {
+                    enderecoSelecionadoErro.textContent = 'Não foi possível confirmar o endereço. Tente novamente.';
+                }
+                openModal(enderecoModal);
+                focusPrimeiroEndereco();
+            } finally {
+                if (enderecoSubmitBtn) {
+                    enderecoSubmitBtn.disabled = false;
+                    enderecoSubmitBtn.textContent = textoOriginal || 'Usar endereço selecionado';
+                }
+            }
+        });
+    }
+
+    if (enderecoNovoForm) {
+        enderecoNovoForm.addEventListener('submit', (e) => {
+            const obrigatorios = [
+                { chave: 'bairro', rotulo: 'Bairro' },
+                { chave: 'rua', rotulo: 'Rua' },
+            ];
+
+            const faltando = obrigatorios.filter(({ chave }) => {
+                const campo = enderecoNovoCampos[chave];
+                if (!campo) return true;
+                return !campo.value.trim();
+            });
+
+            if (faltando.length) {
+                e.preventDefault();
+                if (enderecoNovoErro) {
+                    const etiquetas = faltando.map(({ rotulo }) => rotulo).join(' e ');
+                    enderecoNovoErro.textContent = `Preencha os campos obrigatórios: ${etiquetas}.`;
+                }
+
+                const primeiro = faltando[0]?.chave;
+                const campoFoco = primeiro ? enderecoNovoCampos[primeiro] : null;
+                if (campoFoco) campoFoco.focus();
+                return;
+            }
+
+            if (enderecoNovoErro) enderecoNovoErro.textContent = '';
             closeAll();
         });
+    }
+
+    const autoModalId = document.body?.dataset?.openModal;
+    if (autoModalId) {
+        const targetModal = document.getElementById(autoModalId);
+        if (targetModal) {
+            closeAll();
+
+            if (autoModalId === 'enderecoModal' || autoModalId === 'enderecoNovoModal' || autoModalId === 'pagamentoModal') {
+                const entregaRadio = tipoModal.querySelector('input[name="tipo_entrega"][value="entrega"]');
+                if (entregaRadio) entregaRadio.checked = true;
+            }
+
+            openModal(targetModal);
+
+            if (targetModal === enderecoModal) {
+                focusPrimeiroEndereco();
+            } else if (targetModal === enderecoNovoModal) {
+                focusNovoEndereco();
+            } else if (targetModal === mesaModal) {
+                mesaInput?.focus();
+            } else if (targetModal === tipoModal) {
+                const primeiro = tipoModal.querySelector('input[name="tipo_entrega"]');
+                if (primeiro) primeiro.focus();
+            } else if (targetModal === pagamentoModal) {
+                focusPagamento();
+            }
+        }
     }
 })();
