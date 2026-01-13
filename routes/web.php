@@ -72,7 +72,7 @@ Route::get('/carrinho', [CarrinhoController::class, 'verCarrinho'])->name('carri
 Route::post('/carrinho/adicionar', [CarrinhoController::class, 'adicionarAoCarrinho'])->name('carrinho.adicionar')->middleware('auth');
 
 Route::post('/carrinho/endereco', [CarrinhoController::class, 'pegarEndereco'])->name('carrinho.endereco')->middleware('auth');
-Route::post('/carrinho/pagamento', [CarrinhoController::class, 'registrarPagamento'])->name('carrinho.pagamento')->middleware('auth');
+Route::post('/carrinho/pagamento', [CarrinhoController::class, 'registrarPedido'])->name('carrinho.Pedido')->middleware('auth');
 
 Route::post('/carrinho/selecionarCidade', [CarrinhoController::class, 'selecionarCidade'])->name('cidade.buscar')->middleware('auth');
 

@@ -8,9 +8,10 @@ class Pedido extends Model
     protected $table = 'pedidos';
     protected $fillable = [
         'usuario_id',
-        'status_id',
-        'forma_pagamento_id',
-        'total',
+        'status',
+        'tipo_pagamento_id',
+        'valor_total',
         'observacoes_pagamento',
+        'endereco_id',
     ];
 }

@@ -20,7 +20,6 @@ return new class extends Migration
             $table->foreignId('status')->constrained('status')->default(1);
             $table->foreignId('tipo_pagamento_id')->constrained('tipo_pagamento');
             $table->foreignId('endereco_id')->constrained('endereco');
-            $table->foreignId('item_pedido_id')->constrained('item_pedido');
             $table->string('observacoes_pagamento')->nullable();
         });
     }

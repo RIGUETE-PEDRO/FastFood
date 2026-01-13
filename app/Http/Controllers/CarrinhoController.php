@@ -8,7 +8,7 @@ use App\Services\GenericBase;
 use App\Models\Endereco;
 use App\Models\Cidade;
 use Illuminate\Support\Facades\Auth;
-
+use PHPUnit\Runner\ResultCache\ResultCache;
 
 class CarrinhoController extends Controller
 {
@@ -131,22 +131,27 @@ class CarrinhoController extends Controller
         return $redirect->with($resultado['tipo'], $resultado['mensagem']);
     }
 
-    public function registrarPagamento(Request $request)
+    public function registrarPedido(Request $request)
     {
         if (!Auth::check()) {
             return redirect()->route('login.form')->with('erro', 'Você precisa fazer login.');
         }
 
-        $carrinhoService = new CarrinhoService();
-        $resultado = $carrinhoService->registrarPagamento($request);
+        $enderecoId = $request->endereco_id
+            ?? session('checkout.endereco_id')
+            ?? $request->endereco_opcao;
 
+
+
+        $carrinhoService = new CarrinhoService();
+        $resultado = $carrinhoService->registraPedido($request , $enderecoId);
+        if($resultado != null){
+            $carrinhoService->limparCarrinhoAposPedido($request,$resultado);
+        }
+        
         $redirect = redirect()->route('pedido');
 
-        if (!$resultado['status']) {
-            $redirect = redirect()->route('carrinho')->withInput();
-        }
-
-        return $redirect->with($resultado['tipo'], $resultado['mensagem']);
+        return $redirect->with($resultado);
     }
 
     public function selecionarCidade(Request $request)

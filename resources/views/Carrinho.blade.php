@@ -317,7 +317,7 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                 <button type="button" class="ff-modal__close" data-modal-close aria-label="Fechar">×</button>
             </div>
 
-            <form id="pagamentoForm" method="POST" action="{{ route('carrinho.pagamento') }}">
+            <form id="pagamentoForm" method="POST" action="{{ route('carrinho.Pedido') }}">
                 @csrf
 
                 <p class="ff-modal__hint">Selecione a forma de pagamento para seguir com o pedido.</p>

@@ -2,14 +2,18 @@
 
 namespace App\Services;
 
+use App\Enum\Pagamento;
+use App\Enum\StatusPedidos;
 use App\Models\Carrinho;
 use App\Models\Endereco;
 use App\Models\Produto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use App\Models\Pedido;
 use App\Models\Cidade;
-
+use App\Models\FormaPagamento;
+use App\Models\ItemPedido;
 
 class CarrinhoService
 {
@@ -273,22 +277,75 @@ class CarrinhoService
         ];
     }
 
-    public function registrarPagamento(Request $request)
-    {
-        $metodo = $request->input('pagamento_metodo');
-        $observacoes = $request->input('observacoes_pagamento');
+    public function limparCarrinhoAposPedido($request,$resultado){
+        $usuarioId = Auth::id();
+
+        $carrinhoItems = Carrinho::where('selecionado', true)
+            ->where('usuario_id', $usuarioId)
+            ->get();
 
 
+        foreach ($carrinhoItems as $item) {
+            $precoUnitario = $item->preco_total / $item->quantidade;
 
+            ItemPedido::create([
+                'usuario_id' => $usuarioId,
+                'produto_id' => $item->produto_id,
+                'quantidade' => $item->quantidade,
+                'preco_unitario' => $precoUnitario,
+                'pedido_id' => $resultado,
+            ]);
+        }
 
+        Carrinho::where('usuario_id', $usuarioId)->where('selecionado', true)->delete();
 
 
     }
+    
 
-    public function registrarPedido($usuarioId)
+    public function registraPedido($request , $enderecoId)
     {
+        if (!Auth::check()) {
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => 'Você precisa fazer login.',
+            ];
+        }
+
+        $usuarioId = Auth::id();
+
+        $valor_total = Carrinho::where('usuario_id', $usuarioId)
+            ->where('selecionado', true)
+            ->sum('preco_total');
+
+        $pagamentoMetodo = $request->input('pagamento_metodo');
+        $pagamentoenum = Pagamento::fromString($pagamentoMetodo);
+
+
+    try{
+        $pedido = Pedido::create([
+            'usuario_id' => $usuarioId,
+            'endereco_id' => $enderecoId,
+            'tipo_pagamento_id' => $pagamentoenum->value,
+            'observacoes_pagamento' => $request->input('observacoes_pagamento'),
+            'valor_total' => $valor_total,
+            'status' => StatusPedidos::PENDENTE->value
+        ]);
+
+        $resposta = $pedido->id;
+        return $resposta;
+
+    } catch (\Exception $e) {
+        throw new \Exception('Erro ao registrar o pedido.');
+    }
+    $resposta = false;
+
+    return $resposta;
 
     }
+
+
 
 
 }
