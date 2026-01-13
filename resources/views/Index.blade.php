@@ -38,7 +38,7 @@
                         <a class="nav-link text navegador" href="{{ route('Bebidas') }}">Bebidas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text navegador" href="#">Pedidos</a>
+                        <a class="nav-link text navegador" href="{{ route('pedidos') }}">Pedidos</a>
                     </li>
 
                     <li class="nav-item dropdown">

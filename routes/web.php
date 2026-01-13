@@ -90,7 +90,8 @@ Route::get('/carrinho/{id}/deletar', function ($id) {
 Route::match(['post', 'delete'], '/carrinho/{id}/deletar', [CarrinhoController::class, 'deletarEndereco'])->name('endereco.excluir')->middleware('auth');
 
 //////////////////////////////////////////
-Route::get('/pedido', [PedidoController::class, 'verPedido'])->name('pedido')->middleware('auth');
+Route::get('/pedidos', [PedidoController::class, 'verPedido'])->name('pedidos')->middleware('auth');
+
 
 
 /////////////////////////////
