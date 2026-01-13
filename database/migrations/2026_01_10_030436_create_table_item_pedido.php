@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('status_pedido', function (Blueprint $table) {
+        Schema::create('item_pedido', function (Blueprint $table) {
             $table->id();
-            $table->string('descricao');
             $table->timestamps();
+            $table->decimal('preco_unitario', 8, 2);
+            $table->integer('quantidade');
+            $table->foreignId('produto_id')->constrained('produtos');
+            $table->foreignId('usuario_id')->constrained('usuarios');
         });
     }
 
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('status_pedido');
+        Schema::dropIfExists('item_pedido');
     }
 };

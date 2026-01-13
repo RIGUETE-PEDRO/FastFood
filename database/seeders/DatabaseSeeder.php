@@ -21,9 +21,9 @@ class DatabaseSeeder extends Seeder
             ['descricao' => 'Entregador', 'created_at' => now(), 'updated_at' => now()],
 
         ]);
-        
+
         $this->call(populando_categoria::class);
-        $this->call(popula_status::class);
+   
         $this->call(popular_municipios::class);
         $this->call(popula_banco::class);
     }

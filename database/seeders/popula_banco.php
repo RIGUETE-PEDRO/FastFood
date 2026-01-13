@@ -18,25 +18,25 @@ class popula_banco extends Seeder
                 'tipo_pagamento' => 'Cartão de Crédito',
                 'created_at' => now(),
                 'updated_at' => now(),
-                'descricao' => null,
+
             ],
             [
                 'tipo_pagamento' => 'Cartão de Débito',
                 'created_at' => now(),
                 'updated_at' => now(),
-                'descricao' => null,
+
             ],
             [
                 'tipo_pagamento' => 'Pix',
                 'created_at' => now(),
                 'updated_at' => now(),
-                'descricao' => null,
+
             ],
             [
                 'tipo_pagamento' => 'Dinheiro',
                 'created_at' => now(),
                 'updated_at' => now(),
-                'descricao' => null,
+                
             ],
         ]);
 

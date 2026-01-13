@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Carrinho;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,12 +17,13 @@ return new class extends Migration
             $table->timestamps();
             $table->foreignId('usuario_id')->constrained('usuarios');
             $table->decimal('valor_total', 8, 2);
-            $table->string('status')->default('Pendente');
+            $table->foreignId('status')->constrained('status')->default(1);
             $table->foreignId('tipo_pagamento_id')->constrained('tipo_pagamento');
             $table->foreignId('endereco_id')->constrained('endereco');
+            $table->foreignId('item_pedido_id')->constrained('item_pedido');
+            $table->string('observacoes_pagamento')->nullable();
         });
     }
-
     /**
      * Reverse the migrations.
      */

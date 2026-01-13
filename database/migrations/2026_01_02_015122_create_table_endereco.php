@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('bairro');
             $table->foreignId('cidade_id')->constrained('cidade');
             $table->timestamps();
+            $table->foreignId('usuario_id')->constrained('usuarios');
         });
     }
 
