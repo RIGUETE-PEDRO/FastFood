@@ -18,21 +18,25 @@ class popula_banco extends Seeder
                 'tipo_pagamento' => 'Cartão de Crédito',
                 'created_at' => now(),
                 'updated_at' => now(),
+                'descricao' => null,
             ],
             [
                 'tipo_pagamento' => 'Cartão de Débito',
                 'created_at' => now(),
                 'updated_at' => now(),
+                'descricao' => null,
             ],
             [
                 'tipo_pagamento' => 'Pix',
                 'created_at' => now(),
                 'updated_at' => now(),
+                'descricao' => null,
             ],
             [
                 'tipo_pagamento' => 'Dinheiro',
                 'created_at' => now(),
                 'updated_at' => now(),
+                'descricao' => null,
             ],
         ]);
 
@@ -89,6 +93,34 @@ class popula_banco extends Seeder
                 'updated_at' => now(),
                 'disponivel' => true,
                 'imagem_url' => 'personPadrao.svg',
+            ],
+        ]);
+
+        DB::table('status')->insert([
+            [
+                'status' => 'Pendente',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'status' => 'Em Preparação',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'status' => 'Em Trânsito',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'status' => 'Entregue',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'status' => 'Recusado',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ]);
     }
