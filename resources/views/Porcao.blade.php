@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Pizzas</title>
+    <title>Porção</title>
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Index.css') }}">
@@ -38,11 +38,11 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text navegador" href="#">Pedidos</a>
+                        <a class="nav-link text navegador" href="{{ route('pedidos') }}">Pedidos</a>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link text navegador" href="#">Carrinho</a>
+                        <a class="nav-link text navegador" href="{{ route('carrinho') }}">Carrinho</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link disabled" aria-disabled="true"></a>

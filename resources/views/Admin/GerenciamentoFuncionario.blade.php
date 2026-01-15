@@ -54,7 +54,7 @@
                     <li class="nav-item dropdown ms-auto">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="circulo_maior">
-                                <img class="profile-image" id="preview-image" src="{{ $usuario->url_imagem_perfil ? asset('img/perfil/' . $usuario->url_imagem_perfil) : asset('img/person.avif') }}" alt="Foto do usuário">
+                                <img class="profile-image" id="preview-image" src="{{ $usuario->url_imagem_perfil ? asset('img/perfil/' . $usuario->url_imagem_perfil) : asset('img/person.png') }}" alt="Foto do usuário">
                                 <label for="foto-upload" class="profile-image-overlay">
                             </div>
                             <span class="ms-2 text">{{ $nomeUsuario }}</span>
