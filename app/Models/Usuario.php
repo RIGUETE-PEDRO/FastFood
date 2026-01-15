@@ -77,4 +77,9 @@ class Usuario extends Authenticatable
             default => 'Outro',
         };
     }
+
+    public function pedidos()
+    {
+        return $this->hasMany(Pedido::class, 'usuario_id');
+    }
 }

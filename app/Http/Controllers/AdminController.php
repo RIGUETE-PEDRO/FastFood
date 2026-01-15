@@ -23,7 +23,7 @@ class AdminController extends Controller
     {
         $user = session('usuario_logado');
 
-        return view('Admin.perfil', [
+        return view('Perfil', [
             'usuario' => $user,
             'tipoUsuario' => $this->mapearTipoUsuario($user->tipo_usuario_id ?? null),
         ]);

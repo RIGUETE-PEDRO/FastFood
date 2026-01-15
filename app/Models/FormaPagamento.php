@@ -9,4 +9,9 @@ class FormaPagamento extends Model
     protected $fillable = [
         'tipo_pagamento',
     ];
+
+    public function pedidos()
+    {
+        return $this->hasMany(Pedido::class, 'tipo_pagamento_id');
+    }
 }

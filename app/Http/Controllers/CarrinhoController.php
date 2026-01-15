@@ -149,7 +149,7 @@ class CarrinhoController extends Controller
             $carrinhoService->limparCarrinhoAposPedido($request,$resultado);
         }
         
-        $redirect = redirect()->route('pedido');
+        $redirect = redirect()->route('pedidos');
 
         return $redirect->with($resultado);
     }

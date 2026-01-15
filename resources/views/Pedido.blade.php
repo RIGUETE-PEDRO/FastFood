@@ -84,40 +84,93 @@
         <div class="container mt-4 conteinner-pedidos">
             <h1>Meus Pedidos</h1>
 
-    @if($pedidos->isEmpty())
-        <p>Você não possui pedidos.</p>
-    @else
-        <table border="1" cellpadding="10">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Data</th>
-                    <th>Status</th>
-                    <th>Total</th>
-                    <th>Itens</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($pedidos as $pedido)
-                    <tr>
-                        <td>{{ $pedido->id }}</td>
-                        <td>{{ $pedido->created_at->format('d/m/Y H:i') }}</td>
-                        <td>{{ $pedido->status }}</td>
-                        <td>R$ {{ number_format($pedido->valor_total, 2, ',', '.') }}</td>
-                        <td>
-                            <ul>
-                                @foreach($pedido->produto as $produtos)
-                                    <li>{{ $produtos->nome }} x {{ $produtos->pivot->quantidade }} (R$ {{ number_format($produtos->pivot->preco_unitario, 2, ',', '.') }})</li>
-                                @endforeach
-                            </ul>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
+            @if($pedidos->isEmpty())
+                <p class="text-muted">Você não possui pedidos.</p>
+            @else
+                <div class="lista-pedidos mt-3">
+                    @foreach($pedidos as $pedido)
+                        @php
+                            $statusTexto = strtoupper((string) optional($pedido->statusRelacionamento)->status);
+                            $statusClasse = match ($statusTexto) {
+                                'PENDENTE' => 'badge-status badge-status--pendente',
+                                'EM PREPARO', 'PREPARANDO' => 'badge-status badge-status--preparo',
+                                'ENTREGUE' => 'badge-status badge-status--entregue',
+                                'CANCELADO' => 'badge-status badge-status--cancelado',
+                                default => 'badge-status badge-status--padrao',
+                            };
+                        @endphp
 
-            
+                        <article class="pedido-card">
+                            <header class="pedido-card__header">
+                                <div>
+                                    <h2 class="pedido-card__titulo">Pedido #{{ $pedido->id }}</h2>
+                                    <span class="pedido-card__subtitulo">Realizado em {{ optional($pedido->created_at)->format('d/m/Y \à\s H:i') ?? 'N/D' }}</span>
+                                </div>
+                                <span class="{{ $statusClasse }}">{{ $statusTexto !== '' ? $statusTexto : 'STATUS INDEFINIDO' }}</span>
+                            </header>
+
+                            <section class="pedido-card__secao">
+                                <h3 class="pedido-card__secao-titulo">Resumo</h3>
+                                <dl class="pedido-dados">
+                                    <div>
+                                        <dt>Método de pagamento</dt>
+                                        <dd>{{ optional($pedido->formaPagamento)->tipo_pagamento ?? 'Não informado' }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Valor total</dt>
+                                        <dd>R$ {{ number_format((float) $pedido->valor_total, 2, ',', '.') }}</dd>
+                                    </div>
+                                </dl>
+                            </section>
+
+                            <section class="pedido-card__secao">
+                                <h3 class="pedido-card__secao-titulo">Endereço de entrega</h3>
+                                <dl class="pedido-endereco">
+                                    <div>
+                                        <dt>Logradouro</dt>
+                                        <dd>{{ optional($pedido->endereco)->logradouro ?? 'Não informado' }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Número</dt>
+                                        <dd>{{ optional($pedido->endereco)->numero ?? 's/n' }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Bairro</dt>
+                                        <dd>{{ optional($pedido->endereco)->bairro ?? 'Não informado' }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Complemento</dt>
+                                        <dd>{{ optional($pedido->endereco)->complemento ?? '—' }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Cidade</dt>
+                                        <dd>{{ optional(optional($pedido->endereco)->cidade)->nome ?? 'Não informado' }}</dd>
+                                    </div>
+                                </dl>
+                            </section>
+
+                            @if($pedido->itens->isNotEmpty())
+                                <section class="pedido-card__secao">
+                                    <h3 class="pedido-card__secao-titulo">Itens do pedido</h3>
+                                    <ul class="pedido-itens">
+                                        @foreach($pedido->itens as $item)
+                                            <li class="pedido-itens__linha">
+                                                <div>
+                                                    <span class="pedido-itens__titulo">{{ optional($item->produto)->nome ?? 'Produto removido' }}</span>
+                                                    <span class="pedido-itens__detalhe">{{ $item->quantidade }}× R$ {{ number_format((float) $item->preco_unitario, 2, ',', '.') }}</span>
+                                                </div>
+                                                <strong>R$ {{ number_format((float) $item->quantidade * (float) $item->preco_unitario, 2, ',', '.') }}</strong>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </section>
+                            @endif
+                        </article>
+                    @endforeach
+                </div>
+            @endif
+
+
         </div>
     </main>
 </body>
