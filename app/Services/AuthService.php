@@ -51,6 +51,29 @@ class AuthService
             ->with('sucesso', 'Cadastro realizado com sucesso!');
     }
 
+    public function autenticarAdm($usuario)
+    {
+        $usuarioExistente = Usuario::where('email', $usuario['email'])->first();
+
+        if ($usuarioExistente && Hash::check($usuario['senha'], $usuarioExistente->senha)) {
+            // Verifica se o usuário é um funcionário
+            $funcionario = Funcionario::where('usuario_id', $usuarioExistente->id)->first();
+            if ($funcionario) {
+                // Verifica se o funcionário está ativo
+                if ($funcionario->has_ativo) {
+                    return $usuarioExistente;
+                } else {
+                    return redirect('AcessoNegado')->with('erro', 'Credenciais inválidas ou usuário não tem permisão ativo.');
+                }
+            } else {
+                return redirect('AcessoNegado')->with('erro', 'Credenciais inválidas ou usuário não tem permisão ativo.');
+            }
+        }
+
+        return redirect('AcessoNegado')->with('erro', 'Credenciais inválidas ou usuário não tem permisão ativo.');
+       
+    }
+
 
 
 

@@ -13,6 +13,7 @@ use App\Http\Controllers\BebidasController;
 use App\Http\Controllers\PorcaoController;
 use App\Http\Controllers\CarrinhoController;
 use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\PedidosFeitosController;
 
 //rota da página inicial
 Route::get('/', [IndexController::class, 'index'])->name('home');
@@ -29,7 +30,9 @@ Route::get('/registro', function () {
 
 Route::get('/Lista_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])->name('ListaProdutos');
 //cadastro de funcionário
-Route::post('/CadastrarFuncionario', [RegisterController::class, 'registerFuncionario'])->name('CadastrarFuncionario');
+Route::post('/CadastrarFuncionario', [RegisterController::class, 'registerFuncionario'])
+    ->name('CadastrarFuncionario')
+    ->middleware(['auth', 'admin.access']);
 
 //esqueci minha senha
 Route::get('/esqueci-senha', function () {
@@ -42,12 +45,31 @@ Route::get('/redefinir-senha', function () {
 })->name('senha.redefinir.form');
 
 //administrativo
-Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])->name('Administrativo')->middleware('auth');
+Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])
+    ->name('Administrativo')
+    ->middleware(['auth', 'admin.access']);
 
-Route::get('/gerenciamento_Funcionario', [GerenciamentoUsuarioController::class, 'gerenciamentoFuncionario'])->name('gerenciamento_funcionarios')->middleware('auth');
+Route::get('/gerenciamento_Funcionario', [GerenciamentoUsuarioController::class, 'gerenciamentoFuncionario'])
+    ->name('gerenciamento_funcionarios')
+    ->middleware(['auth', 'admin.access']);
+
+Route::get('/Pedidos.Administrativo', [PedidosFeitosController::class, 'verPedidosAdmin'])
+    ->name('Pedidos.Administrativo')
+    ->middleware(['auth', 'admin.access']);
+
+Route::patch('/Pedidos.Administrativo/{pedido}/status', [PedidosFeitosController::class, 'atualizarStatus'])
+    ->name('Pedidos.StatusAtualizar')
+    ->middleware(['auth', 'admin.access']);
+
+Route::post('/Pedidos.Administrativo/{pedido}/avancar', [PedidosFeitosController::class, 'avancarStatus'])
+    ->name('Pedidos.StatusAvancar')
+    ->middleware(['auth', 'admin.access']);
+
 
 //gerenciamento de produtos
-Route::post('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])->name('gerenciamento_produtos')->middleware('auth');
+Route::post('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])
+    ->name('gerenciamento_produtos')
+    ->middleware(['auth', 'admin.access']);
 
 //logout
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -92,6 +114,9 @@ Route::match(['post', 'delete'], '/carrinho/{id}/deletar', [CarrinhoController::
 //////////////////////////////////////////
 Route::get('/pedidos', [PedidoController::class, 'verPedido'])->name('pedidos')->middleware('auth');
 
+Route::get('/AcessoNegado', function () {
+    return view('Admin.PermisaoNegada');
+})->name('AcessoNegado');
 
 
 /////////////////////////////
@@ -99,11 +124,17 @@ Route::get('/pedidos', [PedidoController::class, 'verPedido'])->name('pedidos')-
 
 
 //atualizar funcionário
-Route::post('/funcionarios/{id}/atualizar', [GerenciamentoUsuarioController::class, 'atualizarFuncionario'])->name('funcionarios.atualizar')->middleware('auth');
+Route::post('/funcionarios/{id}/atualizar', [GerenciamentoUsuarioController::class, 'atualizarFuncionario'])
+    ->name('funcionarios.atualizar')
+    ->middleware(['auth', 'admin.access']);
 
-Route::post('/funcionarios/{id}/deletar', [GerenciamentoUsuarioController::class, 'deletarUsuario'])->name('funcionarios.deletar')->middleware('auth');
+Route::post('/funcionarios/{id}/deletar', [GerenciamentoUsuarioController::class, 'deletarUsuario'])
+    ->name('funcionarios.deletar')
+    ->middleware(['auth', 'admin.access']);
 
-Route::post('/atualizar_produto/{id}/atualizar', [GerenciamentoProdutoController::class, 'atualizarProduto'])->name('produtos.atualizar')->middleware('auth');
+Route::post('/atualizar_produto/{id}/atualizar', [GerenciamentoProdutoController::class, 'atualizarProduto'])
+    ->name('produtos.atualizar')
+    ->middleware(['auth', 'admin.access']);
 
 //pegar dados do usuário logado
 Route::post('/perfil', [AdminController::class, 'InfoPerfil'])->name('usuario')->middleware('auth');
@@ -117,12 +148,17 @@ Route::post('/redefinir-senha', [LoginController::class, 'atualizarSenha'])->nam
 Route::post('/Alterar_Dados', [AdminController::class, 'AlterarDados'])->name('Alterar_Dados');
 
 //rota de cadastro de produto
-Route::post('/Cadastrar_Produto', [GerenciamentoProdutoController::class, 'cadastrarProduto'])->name('Cadastrar_Produto');
+Route::post('/Cadastrar_Produto', [GerenciamentoProdutoController::class, 'cadastrarProduto'])
+    ->name('Cadastrar_Produto')
+    ->middleware(['auth', 'admin.access']);
 
 
 Route::get('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])
-    ->name('gerenciamento_Produtos')->middleware('auth');
+    ->name('gerenciamento_Produtos')
+    ->middleware(['auth', 'admin.access']);
 
-Route::post('/gerenciamento_Produtos/{id}/deletar', [GerenciamentoProdutoController::class, 'deletarProduto'])->name('deletar_produto')->middleware('auth');
+Route::post('/gerenciamento_Produtos/{id}/deletar', [GerenciamentoProdutoController::class, 'deletarProduto'])
+    ->name('deletar_produto')
+    ->middleware(['auth', 'admin.access']);
 
 Route::post('/', [IndexController::class, 'index'])->name('index');

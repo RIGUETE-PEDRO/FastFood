@@ -12,7 +12,7 @@
     @endphp
     <div class="profile-page__wrapper">
         <div class="profile-page__topbar">
-            <a href="{{ route('Administrativo') }}" class="profile-back-link">&larr; Voltar</a>
+            <a href="{{ $perfilReturnUrl ?? route('home') }}" class="profile-back-link">&larr; Voltar</a>
         </div>
 
         @if(session('sucesso'))
@@ -97,7 +97,7 @@
 
                     <div class="profile-form__actions">
                         <button type="submit" class="btn btn-primary">Salvar alterações</button>
-                        <a href="{{ route('Administrativo') }}" class="btn btn-ghost">Cancelar</a>
+                        <a href="{{ $perfilReturnUrl ?? route('home') }}" class="btn btn-ghost">Cancelar</a>
                     </div>
                 </form>
             </section>

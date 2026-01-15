@@ -26,7 +26,7 @@
                         <a class="nav-link text navegador" href="{{ route('gerenciamento_funcionarios') }}">Gerenciamento de Funcionarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text navegador" href="#">Pedidos</a>
+                        <a class="nav-link text navegador" href="{{ route('Pedidos.Administrativo') }}">Pedidos</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text navegador" href="#">Cardápio</a>
