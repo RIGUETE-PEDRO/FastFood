@@ -87,6 +87,7 @@ class CarrinhoService
 
             if ($request->acao === 'menos') {
                 $itemCarrinho->quantidade--;
+                //se for menor que 1, não atualiza e retorna erro
                 if ($itemCarrinho->quantidade < 1) {
 
                     return false;
