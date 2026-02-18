@@ -16,6 +16,10 @@
     <div class="ff-shell">
         @include('layouts.sidebar')
         <div class="ff-main">
+            <button type="button" class="ff-sidebar-toggle" data-sidebar-toggle aria-label="Abrir menu">
+                <span class="ff-sidebar-toggle__icon">&#9776;</span>
+                Menu
+            </button>
     <main>
 
         <div>carrousel</div>
