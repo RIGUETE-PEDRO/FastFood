@@ -85,8 +85,12 @@ class CarrinhoService
                 $itemCarrinho->quantidade++;
             }
 
-            if ($request->acao === 'menos' && $itemCarrinho->quantidade > 1) {
+            if ($request->acao === 'menos') {
                 $itemCarrinho->quantidade--;
+                if ($itemCarrinho->quantidade < 1) {
+
+                    return false;
+                }
             }
         } elseif ($request->filled('quantidade')) {
 
@@ -174,9 +178,9 @@ class CarrinhoService
             ];
         }
 
-    $bairro = trim((string) $request->input('bairro'));
-    $rua = trim((string) $request->input('rua'));
-    $cidadeId = $request->input('cidade_id');
+        $bairro = trim((string) $request->input('bairro'));
+        $rua = trim((string) $request->input('rua'));
+        $cidadeId = $request->input('cidade_id');
 
         if ($bairro === '' || $rua === '') {
             Session::flash('checkout.modal', 'enderecoNovoModal');
@@ -277,7 +281,8 @@ class CarrinhoService
         ];
     }
 
-    public function limparCarrinhoAposPedido($request,$resultado){
+    public function limparCarrinhoAposPedido($request, $resultado)
+    {
         $usuarioId = Auth::id();
 
         $carrinhoItems = Carrinho::where('selecionado', true)
@@ -298,12 +303,10 @@ class CarrinhoService
         }
 
         Carrinho::where('usuario_id', $usuarioId)->where('selecionado', true)->delete();
-
-
     }
-    
 
-    public function registraPedido($request , $enderecoId)
+
+    public function registraPedido($request, $enderecoId)
     {
         if (!Auth::check()) {
             return [
@@ -323,29 +326,23 @@ class CarrinhoService
         $pagamentoenum = Pagamento::fromString($pagamentoMetodo);
 
 
-    try{
-        $pedido = Pedido::create([
-            'usuario_id' => $usuarioId,
-            'endereco_id' => $enderecoId,
-            'tipo_pagamento_id' => $pagamentoenum->value,
-            'observacoes_pagamento' => $request->input('observacoes_pagamento'),
-            'valor_total' => $valor_total,
-            'status' => StatusPedidos::PENDENTE->value
-        ]);
+        try {
+            $pedido = Pedido::create([
+                'usuario_id' => $usuarioId,
+                'endereco_id' => $enderecoId,
+                'tipo_pagamento_id' => $pagamentoenum->value,
+                'observacoes_pagamento' => $request->input('observacoes_pagamento'),
+                'valor_total' => $valor_total,
+                'status' => StatusPedidos::PENDENTE->value
+            ]);
 
-        $resposta = $pedido->id;
+            $resposta = $pedido->id;
+            return $resposta;
+        } catch (\Exception $e) {
+            throw new \Exception('Erro ao registrar o pedido.');
+        }
+        $resposta = false;
+
         return $resposta;
-
-    } catch (\Exception $e) {
-        throw new \Exception('Erro ao registrar o pedido.');
     }
-    $resposta = false;
-
-    return $resposta;
-
-    }
-
-
-
-
 }

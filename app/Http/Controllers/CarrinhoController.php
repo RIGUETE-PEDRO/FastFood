@@ -75,10 +75,15 @@ class CarrinhoController extends Controller
     public function atualizarQuantidade(Request $request, $id)
     {
         $carrinhoService = new CarrinhoService();
-        $carrinhoService->atualizarQuantidadeProdutoNoCarrinho($request, $id);
+        $atualizou = $carrinhoService->atualizarQuantidadeProdutoNoCarrinho($request, $id);
 
-        return redirect()->route('carrinho')
-            ->with('success', 'Quantidade do produto atualizada com sucesso!');
+            if (!$atualizou) {
+                return redirect()->route('carrinho')
+                    ->with('error', 'A quantidade mínima é 1, não é permitido 0.');
+            }else{
+                return redirect()->route('carrinho')
+                    ->with('success', 'Quantidade do produto atualizada com sucesso!');
+            }
     }
 
 
@@ -148,7 +153,7 @@ class CarrinhoController extends Controller
         if($resultado != null){
             $carrinhoService->limparCarrinhoAposPedido($request,$resultado);
         }
-        
+
         $redirect = redirect()->route('pedidos');
 
         return $redirect->with($resultado);
