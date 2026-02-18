@@ -15,16 +15,14 @@ class GerenciamentoProdutoController extends Controller
 
     public function gerenciamentoProduto()
     {
-        $autenticar = new AuthService();
         $usuario = session('usuario_logado');
-        $autenticar->autenticarAdm($usuario);
         $nomeUsuario = $usuario ? explode(' ', trim($usuario->nome))[0] : 'Usuário';
 
         $produtos = Produto::with('categoria')->get(); // Busca todos os produtos com a categoria relacionada
         $categorias = Categoria::all(); // Busca todas as categorias para o select
 
         // Se você usa autenticação e quer passar o usuário/nome:
-        
+
         return view('Admin.GerenciamentoProduto', [
             'produtos' => $produtos,
             'categorias' => $categorias,
@@ -49,7 +47,7 @@ class GerenciamentoProdutoController extends Controller
 
             $gerenciaProdutosService = new GerenciaProdutosService();
             $gerenciaProdutosService->removerProduto($id);
-        
+
 
         return redirect()->route('gerenciamento_Produtos')->with('success', 'Produto deletado com sucesso!');
     }

@@ -28,6 +28,13 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
 
 <body @if ($modalReabrir) data-open-modal="{{ $modalReabrir }}" @endif>
 
+    <div class="ff-shell">
+        @include('layouts.sidebar')
+        <div class="ff-main">
+            <button type="button" class="ff-sidebar-toggle" data-sidebar-toggle aria-label="Abrir menu">
+                <span class="ff-sidebar-toggle__icon">&#9776;</span> Menu
+            </button>
+
     <main>
         <div class="voltar-link">
             <a href="{{ route('index') }}">voltar</a>
@@ -374,6 +381,8 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
         @method('DELETE')
     </form>
     @endforeach
+        </div>
+    </div>
 </body>
 
 </html>
