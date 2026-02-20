@@ -11,6 +11,10 @@ class Categoria extends Model
     protected $fillable = [
         'nome',
     ];
+    
+    protected $guarded = [
+        'deleted'
+    ];
 
     public function produtos()
     {

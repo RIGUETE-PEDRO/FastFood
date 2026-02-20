@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mensagens\ErroMensagens;
+use App\Mensagens\PassMensagens;
 use App\Services\GenericBase;
 
 use App\Services\AdminService;
@@ -58,18 +60,18 @@ class GerenciamentoUsuarioController extends Controller
 
         if (!$usuario) {
             return redirect()->route('gerenciamento_funcionarios')
-                ->with('erro', 'Usuário não encontrado');
+                ->with('erro', ErroMensagens::USUARIO_NAO_ENCONTRADO);
         }
 
         $ok = $genericBase->deleteFuncionarioEUsuario($id);
 
         if (!$ok) {
             return redirect()->route('gerenciamento_funcionarios')
-                ->with('erro', 'Não foi possível excluir o usuário');
+                ->with('erro', ErroMensagens::ERRO_DELETAR_USUARIO);
         }
 
         return redirect()->route('gerenciamento_funcionarios')
-            ->with('sucesso', 'Usuário deletado com sucesso');
+            ->with('sucesso', PassMensagens::DELETE_SUCESSO);
     }
 
 
@@ -80,7 +82,7 @@ class GerenciamentoUsuarioController extends Controller
 
         if (!$usuario) {
             return redirect()->route('gerenciamento.usuarios')
-                ->with('erro', 'Usuário não encontrado');
+                ->with('erro', ErroMensagens::USUARIO_NAO_ENCONTRADO);
         }
 
         return view('Admin.alterar_usuario', [
@@ -112,7 +114,7 @@ class GerenciamentoUsuarioController extends Controller
 
         $usuario = Usuario::find($id);
         if (!$usuario) {
-            return redirect()->back()->with('erro', 'Usuário não encontrado');
+            return redirect()->back()->with('erro', ErroMensagens::USUARIO_NAO_ENCONTRADO);
         }
 
         // Atualiza dados do usuário
@@ -137,7 +139,7 @@ class GerenciamentoUsuarioController extends Controller
             $funcionario->save();
         }
 
-        return redirect()->route('gerenciamento_funcionarios')->with('sucesso', 'Funcionário atualizado com sucesso');
+        return redirect()->route('gerenciamento_funcionarios')->with('sucesso', PassMensagens::ATUALIZAR_FUNCIONARIO_SUCESSO);
     }
 
 

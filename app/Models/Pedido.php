@@ -16,6 +16,12 @@ class Pedido extends Model
         'observacoes_pagamento',
         'endereco_id',
     ];
+
+
+    protected $guarded = [
+        'deleted'
+    ];
+
     public function itens()
     {
         return $this->hasMany(ItemPedido::class, 'pedido_id');

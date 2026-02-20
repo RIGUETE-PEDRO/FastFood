@@ -16,6 +16,10 @@ class Produto extends Model
         'categoria_id',
     ];
 
+    protected $guarded = [
+        'deleted'
+    ];
+
     public function categoria()
     {
         return $this->belongsTo(Categoria::class, 'categoria_id');

@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
-use App\Enum\StatusPedidos;
+use App\Enum\StatusPedidos as EnumsStatusPedidos;
 use App\Models\Pedido;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\Rules\Enum;
 
 class PedidosFeitosService
 {
@@ -25,7 +26,7 @@ class PedidosFeitosService
     /**
      * Atualiza o status do pedido.
      */
-    public function atualizarStatus(Pedido $pedido, StatusPedidos $status): Pedido
+    public function atualizarStatus(Pedido $pedido, EnumsStatusPedidos $status): Pedido
     {
         $pedido->status = $status->value;
         $pedido->save();
@@ -42,12 +43,12 @@ class PedidosFeitosService
     /**
      * Retorna o próximo status válido para avançar o pedido.
      */
-    public function proximoStatus(StatusPedidos $status): ?StatusPedidos
+    public function proximoStatus(EnumsStatusPedidos $status): ?EnumsStatusPedidos
     {
         return match ($status) {
-            StatusPedidos::PENDENTE => StatusPedidos::EM_PREPARO,
-            StatusPedidos::EM_PREPARO => StatusPedidos::A_CAMINHO,
-            StatusPedidos::A_CAMINHO => StatusPedidos::ENTREGUE,
+            EnumsStatusPedidos::PENDENTE => EnumsStatusPedidos::EM_PREPARO,
+            EnumsStatusPedidos::EM_PREPARO => EnumsStatusPedidos::A_CAMINHO,
+            EnumsStatusPedidos::A_CAMINHO => EnumsStatusPedidos::ENTREGUE,
             default => null,
         };
     }
@@ -55,14 +56,14 @@ class PedidosFeitosService
     /**
      * Retorna o rótulo amigável do status.
      */
-    public function rotulo(StatusPedidos $status): string
+    public function rotulo(EnumsStatusPedidos $status): string
     {
         return match ($status) {
-            StatusPedidos::PENDENTE => 'Pendente',
-            StatusPedidos::EM_PREPARO => 'Em preparo',
-            StatusPedidos::A_CAMINHO => 'A caminho',
-            StatusPedidos::ENTREGUE => 'Entregue',
-            StatusPedidos::CANCELADO => 'Cancelado',
+            EnumsStatusPedidos::PENDENTE => 'Pendente',
+            EnumsStatusPedidos::EM_PREPARO => 'Em preparo',
+            EnumsStatusPedidos::A_CAMINHO => 'A caminho',
+            EnumsStatusPedidos::ENTREGUE => 'Entregue',
+            EnumsStatusPedidos::CANCELADO => 'Cancelado',
         };
     }
 
@@ -71,11 +72,11 @@ class PedidosFeitosService
      */
     public function opcoesStatus(): array
     {
-        return array_map(function (StatusPedidos $status) {
+        return array_map(function (EnumsStatusPedidos $status) {
             return [
                 'value' => $status->value,
                 'label' => $this->rotulo($status),
             ];
-        }, StatusPedidos::cases());
+        }, EnumsStatusPedidos::cases());
     }
 }

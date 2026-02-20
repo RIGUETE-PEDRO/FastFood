@@ -16,8 +16,12 @@ class Carrinho extends Model
         'quantidade',
         'observacao',
         'preco_total',
+
     ];
 
+    protected $guarded = [
+        'deleted'
+    ];
 
 
     public function usuario()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Mensagens\ErroMensagens;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,7 @@ class VerificaPerfilAdmin
 
         if (!in_array((int) $usuario->tipo_usuario_id, $tiposPermitidos, true)) {
             return redirect()->route('AcessoNegado')
-                ->with('erro', 'Você não tem permissão para acessar essa área.');
+                ->with('erro', ErroMensagens::CREDENCIAIS_INVALIDAS);
         }
 
         return $next($request);

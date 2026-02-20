@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mensagens\ErroMensagens;
+use App\Mensagens\PassMensagens;
 use Illuminate\Http\Request;
 use App\Services\CarrinhoService;
 use App\Services\GenericBase;
 use App\Models\Endereco;
 use App\Models\Cidade;
+use Error;
 use Illuminate\Support\Facades\Auth;
+use Mockery\Generator\StringManipulation\Pass\Pass;
 use PHPUnit\Runner\ResultCache\ResultCache;
 
 class CarrinhoController extends Controller
@@ -21,21 +25,21 @@ class CarrinhoController extends Controller
 
         $usuario = Auth::user();
         if (!$usuario) {
-            return redirect()->route('login.form')->with('erro', 'Você precisa fazer login para adicionar ao carrinho.');
+            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
         $carrinhoService = new CarrinhoService();
         $carrinhoService->adicionarProdutoAoCarrinho($usuario, $produtoId, $quantidade, $observacao, $preco);
 
         return redirect(url()->previous())
-            ->with('success', 'Produto adicionado ao carrinho com sucesso!');
+            ->with('success', PassMensagens::PRODUTO_ADICIONADO_SUCESSO);
     }
 
     public function verCarrinho()
     {
         $usuario = Auth::user();
         if (!$usuario) {
-            return redirect()->route('login.form')->with('erro', 'Você precisa fazer login para ver o carrinho.');
+            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
         $genericBase = new GenericBase();
@@ -60,14 +64,14 @@ class CarrinhoController extends Controller
     public function removerDoCarrinho($id)
     {
         if (!Auth::check()) {
-            return redirect()->route('login.form')->with('erro', 'Você precisa fazer login.');
+            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
         $carrinhoService = new CarrinhoService();
         $carrinhoService->removerProdutoDoCarrinho($id);
 
         return redirect()->route('carrinho')
-            ->with('success', 'Produto removido do carrinho com sucesso!');
+            ->with('success', PassMensagens::REMOVER_CARRINHO_SUCESSO);
     }
 
 
@@ -79,10 +83,10 @@ class CarrinhoController extends Controller
 
             if (!$atualizou) {
                 return redirect()->route('carrinho')
-                    ->with('error', 'A quantidade mínima é 1, não é permitido 0.');
+                    ->with('error', ErroMensagens::QUANTIDADE_MINIMA);
             }else{
                 return redirect()->route('carrinho')
-                    ->with('success', 'Quantidade do produto atualizada com sucesso!');
+                    ->with('success', PassMensagens::QUANTIDADE_ATUALIZADA_SUCESSO);
             }
     }
 
@@ -91,7 +95,7 @@ class CarrinhoController extends Controller
     public function deletarEndereco($id)
     {
         if (!Auth::check()) {
-            return redirect()->route('login.form')->with('erro', 'Você precisa fazer login.');
+            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
         $carrinhoService = new CarrinhoService();
@@ -104,7 +108,7 @@ class CarrinhoController extends Controller
     public function toggleSelecionar(Request $request, $id)
     {
         if (!Auth::check()) {
-            return redirect()->route('login.form')->with('erro', 'Você precisa fazer login.');
+            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
         $carrinhoService = new CarrinhoService();
@@ -116,7 +120,7 @@ class CarrinhoController extends Controller
     public function pegarEndereco(Request $request)
     {
         if (!Auth::check()) {
-            return redirect()->route('login.form')->with('erro', 'Você precisa fazer login.');
+            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
         $carrinhoService = new CarrinhoService();
@@ -139,7 +143,7 @@ class CarrinhoController extends Controller
     public function registrarPedido(Request $request)
     {
         if (!Auth::check()) {
-            return redirect()->route('login.form')->with('erro', 'Você precisa fazer login.');
+            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
         $enderecoId = $request->endereco_id
@@ -162,7 +166,7 @@ class CarrinhoController extends Controller
     public function selecionarCidade(Request $request)
     {
         if (!Auth::check()) {
-            return redirect()->route('login.form')->with('erro', 'Você precisa fazer login.');
+            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
         $carrinhoService = new CarrinhoService();

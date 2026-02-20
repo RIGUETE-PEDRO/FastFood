@@ -21,6 +21,13 @@ class Funcionario extends Model
         'salario' => 'decimal:2'
     ];
 
+    protected $guarded = [
+        'deleted'
+    ];
+
+     /**
+     * Relacionamento com Usuario
+     */
     /**
      * Relacionamento com Usuario
      */

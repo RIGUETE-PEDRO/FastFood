@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('preco_total', 8, 2);
             $table->timestamps();
             $table->boolean('selecionado')->default(false);
+            $table->boolean("deleted")->default(false);
         });
     }
 

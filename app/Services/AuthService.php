@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Funcionario;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Hash;
+use App\Mensagens\ErroMessages;
+use App\Mensagens\PassMensagens;
 
 class AuthService
 {
@@ -13,17 +15,17 @@ class AuthService
     {
         // Verifica se o email já está cadastrado
         if (Usuario::where('email', $data['email'])->exists()) {
-            return redirect()->back()->with('erro', 'esse E-mail já encontra cadastrado.');
+            return redirect()->back()->with('erro', ErroMessages::Email_JA_CADASTRADO);
         }
 
          // Verifica o tamanho da senha
         if (strlen($data['senha']) < 6) {
-            return redirect()->back()->with('erro', 'A senha deve ter pelo menos 6 caracteres.');
+            return redirect()->back()->with('erro', ErroMessages::MIN_CARACTERES_SENHA);
         }
 
         // Verifica se as senhas coincidem
         if ($data['senha'] !== $data['senha_confirmation']) {
-            return redirect()->back()->with('erro', 'As senhas não coincidem.');
+            return redirect()->back()->with('erro', ErroMessages::SENHAS_NAO_COINCIDEM);
         }
 
         // Cria o novo usuário no banco de dados
@@ -48,7 +50,7 @@ class AuthService
 
         // Retorna sucesso
         return redirect()->back()
-            ->with('sucesso', 'Cadastro realizado com sucesso!');
+            ->with('sucesso', PassMensagens::CADASTRO_REALIZADO);
     }
 
     public function autenticarAdm($usuario)
@@ -63,15 +65,14 @@ class AuthService
                 if ($funcionario->has_ativo) {
                     return $usuarioExistente;
                 } else {
-                    return redirect('AcessoNegado')->with('erro', 'Credenciais inválidas ou usuário não tem permisão ativo.');
+                    return redirect('AcessoNegado')->with('erro', ErroMessages::CREDENCIAIS_INVALIDAS);
                 }
             } else {
-                return redirect('AcessoNegado')->with('erro', 'Credenciais inválidas ou usuário não tem permisão ativo.');
+                return redirect('AcessoNegado')->with('erro', ErroMessages::CREDENCIAIS_INVALIDAS);
             }
         }
 
-        return redirect('AcessoNegado')->with('erro', 'Credenciais inválidas ou usuário não tem permisão ativo.');
-       
+        return redirect('AcessoNegado')->with('erro', ErroMessages::CREDENCIAIS_INVALIDAS);
     }
 
 

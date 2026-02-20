@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('ingredientes')->nullable();
             $table->boolean('disponivel')->default(true);
             $table->timestamps();
+            $table->boolean("deleted")->default(false);
         });
     }
 

@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Funcionario;
+use App\Mensagens\ErroMessages;
+use App\Mensagens\PassMensagens;
 
 class AdminService
 {
@@ -58,7 +60,7 @@ class AdminService
 
         session(['usuario_logado' => $usuario]);
 
-        return redirect()->route('perfil')->with('sucesso', 'Dados atualizados com sucesso.');
+        return redirect()->route('perfil')->with('sucesso', "Dados " . PassMensagens::ATUALIZADO_SUCESSO);
     }
 
     public function buscarFuncionarios($searchTerm)

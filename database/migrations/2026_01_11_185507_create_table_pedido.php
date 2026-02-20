@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('tipo_pagamento_id')->constrained('tipo_pagamento');
             $table->foreignId('endereco_id')->constrained('endereco');
             $table->string('observacoes_pagamento')->nullable();
+            $table->boolean("deleted")->default(false);
         });
     }
     /**

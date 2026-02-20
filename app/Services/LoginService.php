@@ -3,6 +3,8 @@
 namespace App\Services;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Hash;
+use App\Mensagens\ErroMensagens;
+use App\Mensagens\PassMensagens;
 
 class LoginService
 {
@@ -15,12 +17,12 @@ class LoginService
 
             if (!$usuario || !Hash::check($credenciais['senha'], $usuario->senha)) {
 
-                 redirect()->back()->with('erro', 'Credenciais inválidas.');
+                 redirect()->back()->with('erro', ErroMensagens::CREDENCIAIS_INVALIDAS);
                  return $autenticou = false;
             }
 
             if (!Usuario::where('email', $credenciais['email'])->exists()) {
-                 redirect()->back()->with('erro', 'E-mail não cadastrado.');
+                 redirect()->back()->with('erro', ErroMensagens::EMAIL_NAO_CADASTRADO);
                 return $autenticou = false;
             }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\AuthService;
 use App\Services\GenericBase;
 use Illuminate\Http\Request;
+use App\Mensagens\ErroMensagens;
 
 
 class RegisterController extends Controller
@@ -29,7 +30,7 @@ class RegisterController extends Controller
 
         if (!$usuario) {
             return redirect()->back()
-                ->with('erro', 'Erro ao registrar funcionário')
+                ->with('erro', ErroMensagens::ERRO_REGISTRAR_FUNCIONARIO)
                 ->withInput();
         }
 
@@ -47,7 +48,7 @@ class RegisterController extends Controller
 
         if (!$usuario) {
             return redirect()->back()
-                ->with('erro', 'Erro ao registrar usuário')
+                ->with('erro', ErroMensagens::ERRO_REGISTRAR_USUARIO)
                 ->withInput();
         }
 

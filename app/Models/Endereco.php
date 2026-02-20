@@ -18,6 +18,10 @@ class Endereco extends Model
         'usuario_id',
     ];
 
+    protected $guarded = [
+        'deleted'
+    ];
+
     // Relação com a cidade
     public function cidade()
     {

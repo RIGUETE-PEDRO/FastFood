@@ -10,6 +10,7 @@ class Status extends Model
         'status',
     ];
 
+
      public function pedidos()
     {
         return $this->hasMany(Pedido::class, 'status');

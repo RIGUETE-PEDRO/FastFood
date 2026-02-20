@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Services\AuthService;
 use App\Services\LoginService;
 use App\Mail\RecuperarSenhaMail;
+use App\Mensagens\ErroMensagens;
+use App\Mensagens\PassMensagens;
 use App\Services\GenericBase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -50,7 +52,7 @@ class LoginController extends Controller
         $autenticador = $this->loginService->autenticar($credenciais);
 
         if ($autenticador === false) {
-            return redirect()->back()->withErrors(['login' => 'Credenciais inválidas'])->withInput();
+            return redirect()->back()->withErrors(['login' => ErroMensagens::CREDENCIAIS_INVALIDAS])->withInput();
         }
 
         // Salvar usuário na sessão
@@ -84,9 +86,9 @@ class LoginController extends Controller
         $request->validate([
             'email' => 'required|email|exists:usuarios,email',
         ], [
-            'email.required' => 'O e-mail é obrigatório.',
-            'email.email' => 'Digite um e-mail válido.',
-            'email.exists' => 'Este e-mail não está cadastrado em nosso sistema.',
+            'email.required' => ErroMensagens::EMAIL_OBRIGATORIO,
+            'email.email' => ErroMensagens::EMAIL_NAO_VALIDO,
+            'email.exists' => ErroMensagens::EMAIL_NAO_CADASTRADDO,
         ]);
 
         try {
@@ -109,10 +111,10 @@ class LoginController extends Controller
             Mail::to($request->email)->send(new RecuperarSenhaMail($token, $request->email));
 
             return redirect()->back()
-                ->with('sucesso', 'Um link de recuperação foi enviado para seu e-mail!');
+                ->with('sucesso', PassMensagens::ENVIAR_LINK_RECUPERACAO);
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('erro', 'Erro ao processar solicitação: ' . $e->getMessage())
+                ->with('erro', ErroMensagens::ERRO_PROCESSAR . $e->getMessage())
                 ->withInput();
         }
     }
@@ -125,12 +127,12 @@ class LoginController extends Controller
             'email' => 'required|email|exists:usuarios,email',
             'password' => 'required|string|min:6|confirmed',
         ], [
-            'email.required' => 'O e-mail é obrigatório.',
-            'email.email' => 'Digite um e-mail válido.',
-            'email.exists' => 'Este e-mail não está cadastrado.',
-            'password.required' => 'A senha é obrigatória.',
-            'password.min' => 'A senha deve ter no mínimo 6 caracteres.',
-            'password.confirmed' => 'As senhas não coincidem.',
+            'email.required' => ErroMensagens::EMAIL_OBRIGATORIO,
+            'email.email' => ErroMensagens::EMAIL_NAO_VALIDO,
+            'email.exists' => ErroMensagens::EMAIL_NAO_CADASTRADDO,
+            'password.required' => ErroMensagens::SENHA_OBRIGATORIA,
+            'password.min' => ErroMensagens::MIN_CARACTERES_SENHA,
+            'password.confirmed' => ErroMensagens::SENHAS_NAO_COINCIDEM,
         ]);
 
         try {
@@ -142,7 +144,7 @@ class LoginController extends Controller
 
             if (!$resetRecord) {
                 return redirect()->back()
-                    ->with('erro', 'Token inválido ou expirado.')
+                    ->with('erro', ErroMensagens::TOKEN_EXPIRADO)
                     ->withInput();
             }
 
@@ -150,7 +152,7 @@ class LoginController extends Controller
             $createdAt = Carbon::parse($resetRecord->created_at);
             if ($createdAt->addMinutes(60)->isPast()) {
                 return redirect()->back()
-                    ->with('erro', 'Este link de recuperação expirou. Solicite um novo.')
+                    ->with('erro', ErroMensagens::LINK_EXPIRADO)
                     ->withInput();
             }
 
@@ -168,10 +170,10 @@ class LoginController extends Controller
                 ->delete();
 
             return redirect()->route('login.form')
-                ->with('sucesso', 'Senha redefinida com sucesso! Faça login com sua nova senha.');
+                ->with('sucesso', PassMensagens::SENHA_REDEFINIDA_SUCESSO);
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('erro', 'Erro ao redefinir senha: ' . $e->getMessage())
+                ->with('erro', ErroMensagens::ERRO_REDEFINIR_SENHA . $e->getMessage())
                 ->withInput();
         }
     }

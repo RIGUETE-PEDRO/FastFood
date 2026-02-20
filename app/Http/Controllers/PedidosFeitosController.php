@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Enum\StatusPedidos;
+use App\Enum\StatusPedidos as EnumsStatusPedidos;
+use App\Mensagens\PassMensagens;
 use App\Models\Pedido;
 use App\Services\PedidosFeitosService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-
+use Illuminate\Validation\Rules\Enum;
 
 class PedidosFeitosController extends Controller
 {
@@ -25,7 +26,7 @@ class PedidosFeitosController extends Controller
         $pedidosCollection = $this->service->listarPedidos();
 
         $pedidos = $pedidosCollection->map(function (Pedido $pedido) {
-            $statusEnum = StatusPedidos::tryFrom((int) $pedido->status) ?? StatusPedidos::PENDENTE;
+            $statusEnum = EnumsStatusPedidos::tryFrom((int) $pedido->status) ?? EnumsStatusPedidos::PENDENTE;
 
             $pedido->status_enum = $statusEnum;
             $pedido->status_label = $this->service->rotulo($statusEnum);
@@ -38,39 +39,39 @@ class PedidosFeitosController extends Controller
         $dashboardCards = [
             [
                 'label' => 'Pedidos pendentes',
-                'valor' => $contagens->get(StatusPedidos::PENDENTE->value, 0),
+                'valor' => $contagens->get(EnumsStatusPedidos::PENDENTE->value, 0),
                 'accent' => 'card-resumo--pendente',
             ],
             [
                 'label' => 'Em preparo',
-                'valor' => $contagens->get(StatusPedidos::EM_PREPARO->value, 0),
+                'valor' => $contagens->get(EnumsStatusPedidos::EM_PREPARO->value, 0),
                 'accent' => 'card-resumo--preparo',
             ],
             [
                 'label' => 'A caminho',
-                'valor' => $contagens->get(StatusPedidos::A_CAMINHO->value, 0),
+                'valor' => $contagens->get(EnumsStatusPedidos::A_CAMINHO->value, 0),
                 'accent' => 'card-resumo--expedicao',
             ],
             [
                 'label' => 'Entregues',
-                'valor' => $contagens->get(StatusPedidos::ENTREGUE->value, 0),
+                'valor' => $contagens->get(EnumsStatusPedidos::ENTREGUE->value, 0),
                 'accent' => 'card-resumo--entregue',
             ],
         ];
 
         $statusOptions = $this->service->opcoesStatus();
         $statusLabels = collect($statusOptions)->pluck('label', 'value')->toArray();
-        $statusTimeline = array_map(function (StatusPedidos $status) {
+        $statusTimeline = array_map(function (EnumsStatusPedidos $status) {
             return [
                 'enum' => $status,
                 'value' => $status->value,
                 'label' => $this->service->rotulo($status),
             ];
-        }, array_values(array_filter(StatusPedidos::cases(), fn (StatusPedidos $status) => $status !== StatusPedidos::CANCELADO)));
+        }, array_values(array_filter(EnumsStatusPedidos::cases(), fn (EnumsStatusPedidos $status) => $status !== EnumsStatusPedidos::CANCELADO)));
 
         $pedidosPorStatus = [
-            'abertos' => $pedidos->filter(fn (Pedido $pedido) => in_array($pedido->status_enum, [StatusPedidos::PENDENTE, StatusPedidos::EM_PREPARO, StatusPedidos::A_CAMINHO], true))->values(),
-            'finalizados' => $pedidos->filter(fn (Pedido $pedido) => in_array($pedido->status_enum, [StatusPedidos::ENTREGUE, StatusPedidos::CANCELADO], true))->values(),
+            'abertos' => $pedidos->filter(fn (Pedido $pedido) => in_array($pedido->status_enum, [EnumsStatusPedidos::PENDENTE, EnumsStatusPedidos::EM_PREPARO, EnumsStatusPedidos::A_CAMINHO], true))->values(),
+            'finalizados' => $pedidos->filter(fn (Pedido $pedido) => in_array($pedido->status_enum, [EnumsStatusPedidos::ENTREGUE, EnumsStatusPedidos::CANCELADO], true))->values(),
         ];
 
         return view('Admin.Pedidos', [
@@ -93,31 +94,31 @@ class PedidosFeitosController extends Controller
             'status' => ['required', Rule::in(array_column($this->service->opcoesStatus(), 'value'))],
         ]);
 
-        $novoStatus = StatusPedidos::from((int) $dados['status']);
+        $novoStatus = EnumsStatusPedidos::from((int) $dados['status']);
 
         $pedidoAtualizado = $this->service->atualizarStatus($pedido, $novoStatus);
 
         if ($request->wantsJson()) {
             return response()->json([
-                'message' => 'Status atualizado com sucesso.',
+                'message' => PassMensagens::ATUALIZADO_STATUS,
                 'pedido' => $pedidoAtualizado,
             ]);
         }
 
-        return redirect()->back()->with('sucesso', 'Status atualizado para ' . $this->service->rotulo($novoStatus) . '.');
+        return redirect()->back()->with('sucesso', PassMensagens::ATUALIZADO_STATUS . ' ' . $this->service->rotulo($novoStatus) . '.');
     }
 
     public function avancarStatus(Pedido $pedido): RedirectResponse
     {
-        $statusAtual = StatusPedidos::tryFrom((int) $pedido->status) ?? StatusPedidos::PENDENTE;
+        $statusAtual = EnumsStatusPedidos::tryFrom((int) $pedido->status_enum) ?? EnumsStatusPedidos::PENDENTE;
         $proximo = $this->service->proximoStatus($statusAtual);
 
         if (!$proximo) {
-            return redirect()->back()->with('erro', 'O pedido já está no status final.');
+            return redirect()->back()->with('erro', PassMensagens::ATUALIZADO_STATUS_FINAL);
         }
 
         $this->service->atualizarStatus($pedido, $proximo);
 
-        return redirect()->back()->with('sucesso', 'Status avançado para ' . $this->service->rotulo($proximo) . '.');
+        return redirect()->back()->with('sucesso', PassMensagens::STATUS_AVANCADO . ' ' . $this->service->rotulo($proximo) . '.');
     }
 }

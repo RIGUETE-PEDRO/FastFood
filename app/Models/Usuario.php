@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enum\TipoUsuario;
 
 class Usuario extends Authenticatable
 {
@@ -18,6 +18,10 @@ class Usuario extends Authenticatable
         'telefone',
         'tipo_usuario_id',
         'url_imagem_perfil'
+    ];
+
+    protected $guarded = [
+        'deleted'
     ];
 
     protected $hidden = [
@@ -69,13 +73,11 @@ class Usuario extends Authenticatable
      */
     public function getTipoDescricaoAttribute(): string
     {
-        return match ($this->tipo_usuario_id) {
-            1 => 'Cliente',
-            2 => 'Estabelecimento',
-            3 => 'Administrador',
-            4 => 'Entregador',
-            default => 'Outro',
-        };
+        // Tenta converter o ID salvo no banco para o Enum
+        $tipoEnum = TipoUsuario::tryFrom((int) $this->tipo_usuario_id);
+
+        // Se conseguir, retorna a label do Enum; senão, "Outro"
+        return $tipoEnum?->label() ?? 'Outro';
     }
 
     public function pedidos()

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Enum\Pagamento;
-use App\Enum\StatusPedidos;
+use App\Enum\StatusPedidos as EnumsStatusPedidos;
 use App\Models\Carrinho;
 use App\Models\Endereco;
 use App\Models\Produto;
@@ -14,6 +14,8 @@ use App\Models\Pedido;
 use App\Models\Cidade;
 use App\Models\FormaPagamento;
 use App\Models\ItemPedido;
+use App\Mensagens\ErroMessages;
+use App\Mensagens\PassMensagens;
 
 class CarrinhoService
 {
@@ -25,7 +27,7 @@ class CarrinhoService
 
         $usuarioId = is_array($usuario) ? ($usuario['id'] ?? null) : ($usuario->id ?? null);
         if (!$usuarioId) {
-            throw new \InvalidArgumentException('Usuário inválido para adicionar ao carrinho.');
+            throw new \InvalidArgumentException("Usuário inválido" . ErroMessages::PRECISA_ESTA_LOGADO);
         }
 
         $produto = Produto::findOrFail($produtoId);
@@ -108,7 +110,7 @@ class CarrinhoService
         return back();
     }
 
-    public function selecionarCidade(Request $request)
+    public function selecionarCidade()
     {
         $cidade = Cidade::all();
 
@@ -140,7 +142,7 @@ class CarrinhoService
             return [
                 'status' => false,
                 'tipo' => 'error',
-                'mensagem' => 'Faça login para selecionar um endereço.',
+                'mensagem' => ErroMessages::NAO_LOGADO_ENDERECO,
             ];
         }
 
@@ -156,7 +158,7 @@ class CarrinhoService
                 return [
                     'status' => false,
                     'tipo' => 'error',
-                    'mensagem' => 'Não encontramos o endereço selecionado. Escolha outro ou cadastre um novo.',
+                    'mensagem' => ErroMessages::NAO_ENCONTRAMOS_ENDERECO,
                 ];
             }
 
@@ -167,7 +169,7 @@ class CarrinhoService
             return [
                 'status' => true,
                 'tipo' => 'success',
-                'mensagem' => 'Endereço selecionado com sucesso!',
+                'mensagem' => "endereco " . PassMensagens::SELECIONADO_SUCESSO,
                 'endereco' => [
                     'id' => $endereco->id,
                     'logradouro' => $endereco->logradouro,
@@ -188,7 +190,7 @@ class CarrinhoService
             return [
                 'status' => false,
                 'tipo' => 'error',
-                'mensagem' => 'Informe pelo menos bairro e rua para cadastrar um novo endereço.',
+                'mensagem' => ErroMessages::NAO_ENCONTRAMOS_ENDERECO,
             ];
         }
 
@@ -197,7 +199,7 @@ class CarrinhoService
             return [
                 'status' => false,
                 'tipo' => 'error',
-                'mensagem' => 'Selecione uma cidade válida.',
+                'mensagem' => ErroMessages::NAO_ENCONTRAMOS_ENDERECO,
             ];
         }
 
@@ -217,7 +219,7 @@ class CarrinhoService
         return [
             'status' => true,
             'tipo' => 'success',
-            'mensagem' => 'Endereço cadastrado com sucesso!',
+            'mensagem' => "Endereço " . PassMensagens::CADASTRADO_SUCESSO,
             'endereco' => [
                 'id' => $endereco->id,
                 'logradouro' => $endereco->logradouro,
@@ -261,7 +263,7 @@ class CarrinhoService
             return [
                 'status' => false,
                 'tipo' => 'error',
-                'mensagem' => 'Endereço não encontrado para exclusão.',
+                'mensagem' => ErroMessages::ENDEREÇO_NAO_ENCONTRADO . ' para exclusão.',
             ];
         }
 
@@ -278,7 +280,7 @@ class CarrinhoService
         return [
             'status' => true,
             'tipo' => 'success',
-            'mensagem' => 'Endereço excluído com sucesso.',
+            'mensagem' => "Endereço " . PassMensagens::DELETE_SUCESSO,
         ];
     }
 
@@ -313,7 +315,7 @@ class CarrinhoService
             return [
                 'status' => false,
                 'tipo' => 'error',
-                'mensagem' => 'Você precisa fazer login.',
+                'mensagem' => ErroMessages::PRECISA_ESTA_LOGADO,
             ];
         }
 
@@ -334,7 +336,7 @@ class CarrinhoService
                 'tipo_pagamento_id' => $pagamentoenum->value,
                 'observacoes_pagamento' => $request->input('observacoes_pagamento'),
                 'valor_total' => $valor_total,
-                'status' => StatusPedidos::PENDENTE->value
+                'status' => EnumsStatusPedidos::PENDENTE->value
             ]);
 
             $resposta = $pedido->id;

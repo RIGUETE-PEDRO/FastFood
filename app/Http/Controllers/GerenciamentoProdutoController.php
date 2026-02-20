@@ -1,5 +1,7 @@
 <?php
 namespace App\Http\Controllers;
+
+use App\Mensagens\PassMensagens;
 use App\Models\Produto;
 use App\Models\Categoria;
 use App\Services\GerenciaProdutosService;
@@ -37,7 +39,7 @@ class GerenciamentoProdutoController extends Controller
         $gerenciaProdutosService = new GerenciaProdutosService();
         $gerenciaProdutosService->criarProduto($request);
 
-        return redirect()->route('ListaProdutos')->with('success', 'Produto cadastrado com sucesso!');
+        return redirect()->route('ListaProdutos')->with('success', PassMensagens::CADASTRAR_PRODUTO_SUCESSO);
     }
 
     public function deletarProduto($id)
@@ -49,7 +51,7 @@ class GerenciamentoProdutoController extends Controller
             $gerenciaProdutosService->removerProduto($id);
 
 
-        return redirect()->route('gerenciamento_Produtos')->with('success', 'Produto deletado com sucesso!');
+        return redirect()->route('gerenciamento_Produtos')->with('success', PassMensagens::DELETE_SUCESSO);
     }
 
     public function atualizarProduto(Request $request, $id)
@@ -59,7 +61,7 @@ class GerenciamentoProdutoController extends Controller
         $gerenciaProdutosService = new GerenciaProdutosService();
         $gerenciaProdutosService->atualizarProduto($id, $request->all());
 
-        return redirect()->route('gerenciamento_Produtos')->with('success', 'Produto atualizado com sucesso!');
+        return redirect()->route('gerenciamento_Produtos')->with('success', PassMensagens::ATUALIZADO_SUCESSO);
     }
 
 }

@@ -25,6 +25,7 @@ return new class extends Migration
                   ->constrained('tipo_usuarios');
             $table->timestamps();
             $table->string('url_imagem_perfil')->nullable();
+            $table->boolean("deleted")->default(false);
         });
     }
 

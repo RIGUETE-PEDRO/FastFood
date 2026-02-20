@@ -18,6 +18,8 @@ return new class extends Migration
             $table->boolean('has_ativo')->default(true);
             $table->double('salario', 8, 2);
             $table->timestamps();
+            $table->boolean("deleted")->default(false);
+            
         });
     }
 

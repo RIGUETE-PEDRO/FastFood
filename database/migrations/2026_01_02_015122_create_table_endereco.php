@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('cidade_id')->constrained('cidade');
             $table->timestamps();
             $table->foreignId('usuario_id')->constrained('usuarios');
+            $table->boolean("deleted")->default(false);
         });
     }
 

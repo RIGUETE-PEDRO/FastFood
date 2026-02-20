@@ -14,6 +14,10 @@ class ItemPedido extends Model
         'pedido_id',
     ];
 
+    protected $guarded = [
+        'deleted'
+    ];
+
     public function produto()
     {
         return $this->belongsTo(Produto::class, 'produto_id');

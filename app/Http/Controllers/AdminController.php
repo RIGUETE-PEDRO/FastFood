@@ -7,6 +7,7 @@ use App\Services\AdminService;
 use App\Http\Middleware\UsuarioAutenticado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use App\Enum\TipoUsuario as EnumsTipoUsuario;
 
 class AdminController extends Controller
 {
@@ -75,13 +76,7 @@ class AdminController extends Controller
 
     private function mapearTipoUsuario(?int $tipoId): string
     {
-        $tipos = [
-            1 => 'Administrador',
-            2 => 'Funcionário',
-            3 => 'Cliente',
-            4 => 'Entregador',
-        ];
 
-        return $tipos[$tipoId] ?? 'Usuário';
+        return EnumsTipoUsuario::tryFrom($tipoId)?->label() ?? 'Usuário';
     }
 }
