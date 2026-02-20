@@ -14,7 +14,7 @@ use App\Models\Pedido;
 use App\Models\Cidade;
 use App\Models\FormaPagamento;
 use App\Models\ItemPedido;
-use App\Mensagens\ErroMessages;
+use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
 
 class CarrinhoService
@@ -27,7 +27,7 @@ class CarrinhoService
 
         $usuarioId = is_array($usuario) ? ($usuario['id'] ?? null) : ($usuario->id ?? null);
         if (!$usuarioId) {
-            throw new \InvalidArgumentException("Usuário inválido" . ErroMessages::PRECISA_ESTA_LOGADO);
+            throw new \InvalidArgumentException("Usuário inválido" . ErroMensagens::PRECISA_ESTA_LOGADO);
         }
 
         $produto = Produto::findOrFail($produtoId);
@@ -142,7 +142,7 @@ class CarrinhoService
             return [
                 'status' => false,
                 'tipo' => 'error',
-                'mensagem' => ErroMessages::NAO_LOGADO_ENDERECO,
+                'mensagem' => ErroMensagens::NAO_LOGADO_ENDERECO,
             ];
         }
 
@@ -158,7 +158,7 @@ class CarrinhoService
                 return [
                     'status' => false,
                     'tipo' => 'error',
-                    'mensagem' => ErroMessages::NAO_ENCONTRAMOS_ENDERECO,
+                    'mensagem' => ErroMensagens::NAO_ENCONTRAMOS_ENDERECO,
                 ];
             }
 
@@ -190,7 +190,7 @@ class CarrinhoService
             return [
                 'status' => false,
                 'tipo' => 'error',
-                'mensagem' => ErroMessages::NAO_ENCONTRAMOS_ENDERECO,
+                'mensagem' => ErroMensagens::NAO_ENCONTRAMOS_ENDERECO,
             ];
         }
 
@@ -199,7 +199,7 @@ class CarrinhoService
             return [
                 'status' => false,
                 'tipo' => 'error',
-                'mensagem' => ErroMessages::NAO_ENCONTRAMOS_ENDERECO,
+                'mensagem' => ErroMensagens::NAO_ENCONTRAMOS_ENDERECO,
             ];
         }
 
@@ -263,7 +263,7 @@ class CarrinhoService
             return [
                 'status' => false,
                 'tipo' => 'error',
-                'mensagem' => ErroMessages::ENDEREÇO_NAO_ENCONTRADO . ' para exclusão.',
+                'mensagem' => ErroMensagens::ENDEREÇO_NAO_ENCONTRADO . ' para exclusão.',
             ];
         }
 
@@ -315,7 +315,7 @@ class CarrinhoService
             return [
                 'status' => false,
                 'tipo' => 'error',
-                'mensagem' => ErroMessages::PRECISA_ESTA_LOGADO,
+                'mensagem' => ErroMensagens::PRECISA_ESTA_LOGADO,
             ];
         }
 
