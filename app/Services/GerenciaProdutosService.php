@@ -39,7 +39,9 @@ class GerenciaProdutosService
 
         $genericBase = new GenericBase();
 
-        if ($genericBase->pegarUsuarioLogado()['tipo'] == 'Administrador') {
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+
+        if (($usuarioLogado['tipo'] ?? null) === 'Administrador') {
 
             $produto = Produto::find($id);
 

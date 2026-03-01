@@ -25,12 +25,13 @@ class GerenciamentoUsuarioController extends Controller
         $adminService = new AdminService();
         $lista = $adminService->buscarFuncionarios($searchTerm);
 
-        $usuario = session('usuario_logado');
-        $nomeUsuarioLogado = $usuario?->nome ? explode(' ', trim($usuario->nome))[0] : 'Usuário';
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        $nomeUsuarioLogado = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
 
         return view('Admin.GerenciamentoFuncionario', [
             'lista' => $lista,
-            'usuario' => $usuario,
+            'usuario' => $usuarioLogado,
             'nomeUsuario' => $nomeUsuarioLogado
         ]);
     }
@@ -41,13 +42,14 @@ class GerenciamentoUsuarioController extends Controller
         $adminService = new AdminService();
         $lista = $adminService->listarFuncionarios();
 
-        $usuario = session('usuario_logado');
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
 
-        $primeiroNome = explode(' ', trim($usuario->nome))[0];
+        $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
 
         return view('Admin.GerenciamentoFuncionario', [
             'lista' => $lista,
-            'usuario' => $usuario,
+            'usuario' => $usuarioLogado,
             'nomeUsuario' => $primeiroNome
         ]);
     }

@@ -100,13 +100,21 @@ class GenericBase
             return null;
         }
 
-        return [
-            'id' => $usuario->id ?? null,
-            'nome' => explode(' ', trim($usuario->nome))[0],
-            'tipo' => $usuario->tipo_descricao ?? null, // accessor do Model
-            'tipo_id' => $usuario->tipo_usuario_id ?? null,
-            'url_imagem_perfil' => $usuario->url_imagem_perfil ?? null,
-        ];
+        // Normaliza para manter compatibilidade: alguns pontos do projeto
+        // acessam como objeto ($usuario->nome) e outros como array ($usuario['tipo']).
+        if ($usuario instanceof Usuario) {
+            $primeiroNome = '';
+            if (!empty($usuario->nome)) {
+                $primeiroNome = explode(' ', trim((string) $usuario->nome))[0] ?? '';
+            }
+
+            // Atributos auxiliares (não persistidos no banco)
+            $usuario->setAttribute('primeiro_nome', $primeiroNome);
+            $usuario->setAttribute('tipo', $usuario->tipo_descricao ?? null);
+            $usuario->setAttribute('tipo_id', $usuario->tipo_usuario_id ?? null);
+        }
+
+        return $usuario;
     }
 
 

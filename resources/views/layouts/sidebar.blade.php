@@ -4,7 +4,8 @@
         || request()->routeIs('Pedidos.Administrativo')
         || request()->routeIs('gerenciamento_Produtos')
         || request()->routeIs('Cadastrar_Produto')
-        || request()->routeIs('deletar_produto');
+        || request()->routeIs('deletar_produto')
+        || request()->routeIs('mesas.index');
 @endphp
 
 <nav class="ff-sidebar d-flex flex-column">
@@ -35,6 +36,9 @@
             <li class="nav-item">
                 <span class="nav-link disabled">Entregas</span>
             </li>
+            <li>
+                <a href="{{ route('mesas.index')}}" class="nav-link {{ request()->routeIs('mesas.index')|| request()->routeIs('mesas.index') ? 'active' : ''}}">Mesas</a>
+            </li>
         </ul>
     @else
         <ul class="nav nav-pills flex-column mb-auto ff-sidebar__nav">
@@ -59,6 +63,7 @@
             <li class="nav-item">
                 <a href="{{ route('carrinho') }}" class="nav-link {{ request()->routeIs('carrinho') ? 'active' : '' }}">Carrinho</a>
             </li>
+
         </ul>
     @endif
 
@@ -73,7 +78,7 @@
                                  alt="Foto do usuário">
                         </div>
                         <span class="text text-truncate" style="max-width:120px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                            {{ is_array($usuario) ? ($usuario['nome'] ?? '') : ($usuario->nome ?? '') }}
+                            {{ is_array($usuario) ? ($usuario['nome'] ?? '') : ($usuario->primeiro_nome ?? ($usuario->nome ?? '')) }}
                         </span>
                     </div>
                 </button>

@@ -22,4 +22,14 @@ class ItemPedido extends Model
     {
         return $this->belongsTo(Produto::class, 'produto_id');
     }
+
+    public function pedido()
+    {
+        return $this->belongsTo(Pedido::class, 'pedido_id');
+    }
+
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'usuario_id');
+    }
 }

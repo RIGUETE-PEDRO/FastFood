@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enum\StatusPedidos as EnumsStatusPedidos;
 use App\Mensagens\PassMensagens;
 use App\Models\Pedido;
+use App\Services\GenericBase;
 use App\Services\PedidosFeitosService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -20,8 +21,9 @@ class PedidosFeitosController extends Controller
 
     public function verPedidosAdmin()
     {
-        $usuario = session('usuario_logado');
-        $primeiroNome = $usuario ? explode(' ', trim($usuario->nome))[0] : null;
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : null;
 
         $pedidosCollection = $this->service->listarPedidos();
 
@@ -82,9 +84,9 @@ class PedidosFeitosController extends Controller
             'pedidosPorStatus' => $pedidosPorStatus,
             'dashboardCards' => $dashboardCards,
             'totalPedidos' => $pedidosCollection->count(),
-            'usuario' => $usuario,
+            'usuario' => $usuarioLogado,
             'nomeUsuario' => $primeiroNome,
-            'tipoUsuario' => $usuario?->tipo_descricao ?? null,
+            'tipoUsuario' => $usuarioLogado?->tipo_descricao ?? null,
         ]);
     }
 

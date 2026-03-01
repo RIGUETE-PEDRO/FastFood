@@ -17,8 +17,10 @@ class GerenciamentoProdutoController extends Controller
 
     public function gerenciamentoProduto()
     {
-        $usuario = session('usuario_logado');
-        $nomeUsuario = $usuario ? explode(' ', trim($usuario->nome))[0] : 'Usuário';
+
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        $nomeUsuario = $usuarioLogado ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
 
         $produtos = Produto::with('categoria')->get(); // Busca todos os produtos com a categoria relacionada
         $categorias = Categoria::all(); // Busca todas as categorias para o select
@@ -28,7 +30,7 @@ class GerenciamentoProdutoController extends Controller
         return view('Admin.GerenciamentoProduto', [
             'produtos' => $produtos,
             'categorias' => $categorias,
-            'usuario' => $usuario,
+            'usuario' => $usuarioLogado,
             'nomeUsuario' => $nomeUsuario,
         ]);
     }

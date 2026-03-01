@@ -10,7 +10,6 @@ use App\Services\GenericBase;
 use App\Models\Endereco;
 use App\Models\Cidade;
 use Error;
-use Illuminate\Support\Facades\Auth;
 use Mockery\Generator\StringManipulation\Pass\Pass;
 use PHPUnit\Runner\ResultCache\ResultCache;
 
@@ -23,13 +22,14 @@ class CarrinhoController extends Controller
         $observacao = $request->input('observacao');
         $preco = $request->input('preco');
 
-        $usuario = Auth::user();
-        if (!$usuario) {
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        if (!$usuarioLogado) {
             return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
         $carrinhoService = new CarrinhoService();
-        $carrinhoService->adicionarProdutoAoCarrinho($usuario, $produtoId, $quantidade, $observacao, $preco);
+        $carrinhoService->adicionarProdutoAoCarrinho($usuarioLogado, $produtoId, $quantidade, $observacao, $preco);
 
         return redirect(url()->previous())
             ->with('success', PassMensagens::PRODUTO_ADICIONADO_SUCESSO);
@@ -37,23 +37,23 @@ class CarrinhoController extends Controller
 
     public function verCarrinho()
     {
-        $usuario = Auth::user();
-        if (!$usuario) {
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        if (!$usuarioLogado) {
             return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
-        $genericBase = new GenericBase();
-        $carrinhoItems = $genericBase->pegarItensCarrinho($usuario->id);
+        $carrinhoItems = $genericBase->pegarItensCarrinho($usuarioLogado->id);
 
         $enderecos = Endereco::with('cidade')
-            ->where('usuario_id', $usuario->id)
+            ->where('usuario_id', $usuarioLogado->id)
             ->orderByDesc('created_at')
             ->get();
 
         $cidades = Cidade::orderBy('nome')->get();
 
         return view('Carrinho', [
-            'usuario' => $usuario,
+            'usuario' => $usuarioLogado,
             'carrinho' => $carrinhoItems,
             'enderecos' => $enderecos,
             'enderecoSelecionadoId' => session('checkout.endereco_id'),
@@ -63,7 +63,9 @@ class CarrinhoController extends Controller
 
     public function removerDoCarrinho($id)
     {
-        if (!Auth::check()) {
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        if (!$usuarioLogado) {
             return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
@@ -94,7 +96,9 @@ class CarrinhoController extends Controller
 
     public function deletarEndereco($id)
     {
-        if (!Auth::check()) {
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        if (!$usuarioLogado) {
             return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
@@ -107,7 +111,9 @@ class CarrinhoController extends Controller
 
     public function toggleSelecionar(Request $request, $id)
     {
-        if (!Auth::check()) {
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        if (!$usuarioLogado) {
             return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
@@ -119,7 +125,9 @@ class CarrinhoController extends Controller
 
     public function pegarEndereco(Request $request)
     {
-        if (!Auth::check()) {
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        if (!$usuarioLogado) {
             return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
@@ -142,7 +150,9 @@ class CarrinhoController extends Controller
 
     public function registrarPedido(Request $request)
     {
-        if (!Auth::check()) {
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        if (!$usuarioLogado) {
             return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
@@ -165,7 +175,9 @@ class CarrinhoController extends Controller
 
     public function selecionarCidade(Request $request)
     {
-        if (!Auth::check()) {
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        if (!$usuarioLogado) {
             return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 

@@ -10,6 +10,7 @@ class Pedido extends Model
     protected $table = 'pedidos';
     protected $fillable = [
         'usuario_id',
+        'mesa_id',
         'status',
         'tipo_pagamento_id',
         'valor_total',
@@ -40,6 +41,11 @@ class Pedido extends Model
     public function endereco()
     {
         return $this->belongsTo(Endereco::class, 'endereco_id');
+    }
+
+    public function mesa()
+    {
+        return $this->belongsTo(Mesa::class, 'mesa_id');
     }
 
     public function formaPagamento()

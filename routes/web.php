@@ -14,6 +14,7 @@ use App\Http\Controllers\PorcaoController;
 use App\Http\Controllers\CarrinhoController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PedidosFeitosController;
+use App\Http\Controllers\MesaController;
 
 
 ///////////////////////////////////////////////////////
@@ -150,10 +151,20 @@ Route::get('/carrinho/{id}/deletar', function ($id) {
 Route::match(['post', 'delete'], '/carrinho/{id}/deletar', [CarrinhoController::class, 'deletarEndereco'])->name('endereco.excluir')->middleware('auth');
 
 
+///////////////////////////////////////////////////////
+/* GERENCIAMENTO DE MESAS */
+///////////////////////////////////////////////////////
+Route::middleware(['auth', 'admin.access'])->group(function () {
+    // Listagem das mesas (Página Principal)
+    Route::get('/mesas', [MesaController::class, 'Mesa'])->name('mesas.index');
 
+    // Cadastro de nova mesa
+    Route::post('/mesas/cadastrar', [MesaController::class, 'cadastrarMesa'])->name('mesas.store');
 
-
-
+    // Remoção de mesa (Usando POST para facilitar o uso com o <select>)
+    // Alteramos para POST para que o ID venha de dentro do formulário, não da URL
+    Route::post('/mesas/remover', [MesaController::class, 'removerMesa'])->name('mesas.destroy');
+});
 
 ///////////////////////////////////////////////////////
 /* ACESSO NEGADO */

@@ -24,7 +24,8 @@ class AdminController extends Controller
 
     public function infoPerfil(Request $request)
     {
-        $user = session('usuario_logado');
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
 
         $previousUrl = URL::previous();
         $currentUrl = $request->fullUrl();
@@ -46,8 +47,8 @@ class AdminController extends Controller
         $perfilReturnUrl = session('perfil_return_url', $fallbackUrl);
 
         return view('Perfil', [
-            'usuario' => $user,
-            'tipoUsuario' => $this->mapearTipoUsuario($user->tipo_usuario_id ?? null),
+            'usuario' => $usuarioLogado,
+            'tipoUsuario' => $this->mapearTipoUsuario($usuarioLogado->tipo_usuario_id ?? null),
             'perfilReturnUrl' => $perfilReturnUrl,
         ]);
     }
@@ -55,16 +56,17 @@ class AdminController extends Controller
 
     public function nomeUsuario()
     {
-        $user = session('usuario_logado');
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
 
         // Pega somente o primeiro nome
-        $primeiroNome = explode(' ', trim($user->nome))[0];
+        $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
 
 
         return view('Admin.Administrativo', [
-            'usuario' => $user,
+            'usuario' => $usuarioLogado,
             'nomeUsuario' => $primeiroNome,
-            'tipoUsuario' => $this->mapearTipoUsuario($user->tipo_usuario_id ?? null),
+            'tipoUsuario' => $this->mapearTipoUsuario($usuarioLogado->tipo_usuario_id ?? null),
         ]);
     }
 
