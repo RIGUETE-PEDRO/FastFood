@@ -34,6 +34,9 @@
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalRemoverMesa">
                                 Remover Mesa
                             </button>
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarMesa">
+                                Editar Mesa
+                            </button>
                         </div>
                     </header>
 
@@ -57,6 +60,50 @@
 
                                         <div class="mb-3">
                                             <label for="status" class="form-label">Status Inicial</label>
+                                            <select name="status" id="status" class="form-select">
+                                                <option value="disponivel">Livre</option>
+                                                <option value="ocupada">Ocupada</option>
+                                                <option value="reservada">Reservada</option>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">Salvar Mesa</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="modalEditarMesa" tabindex="-1" aria-labelledby="modalEditarMesaLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalEditarMesaLabel">Editar Mesa</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+
+                                <form action="{{ route('mesas.update') }}" method="POST">
+                                    @csrf
+                                    <div class="modal-body">
+                                        <label class="form-label">Selecione a Mesa para editar</label>
+                                        <select name="mesa_id" class="form-select" required>
+                                            <option value="">-- Selecione --</option>
+                                            @foreach ($mesas as $mesa)
+                                            <option value="{{ $mesa->id }}">Mesa {{ $mesa->numero_da_mesa }}</option>
+                                            @endforeach
+                                        </select>
+
+                                        <div class="mb-3">
+                                            <label for="numero_da_mesa" class="form-label">Alterar número da Mesa Para</label>
+                                            <input type="number" name="numero_da_mesa" id="numero_da_mesa" class="form-control" placeholder="Ex: 10" required>
+                                        </div>
+
+
+                                        <div class="mb-3">
+                                            <label for="status" class="form-label">Novo Status</label>
                                             <select name="status" id="status" class="form-select">
                                                 <option value="disponivel">Livre</option>
                                                 <option value="ocupada">Ocupada</option>

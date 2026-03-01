@@ -164,6 +164,9 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
     // Remoção de mesa (Usando POST para facilitar o uso com o <select>)
     // Alteramos para POST para que o ID venha de dentro do formulário, não da URL
     Route::post('/mesas/remover', [MesaController::class, 'removerMesa'])->name('mesas.destroy');
+
+    // Rota para atualizar mesa (se necessário, pode ser implementada depois)
+    Route::post('/mesas/atualizar', [MesaController::class, 'atualizarMesa'])->name('mesas.update');
 });
 
 ///////////////////////////////////////////////////////

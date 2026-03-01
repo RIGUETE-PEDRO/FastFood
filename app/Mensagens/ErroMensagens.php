@@ -31,5 +31,6 @@ class ErroMensagens{
     public const QUANTIDADE_MINIMA = 'A quantidade mínima é 1, não é permitido 0.';
     public const NUMERO_MESA_INVALIDO = 'O número da mesa deve ser maior que zero.';
     public const SEM_ID_MESA = 'Nenhuma mesa selecionada para remoção.';
+    public const NUMERO_JA_EXISTENTE = 'Já existe uma mesa com esse número. Por favor, escolha outro número.';
 
 }

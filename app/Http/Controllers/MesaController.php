@@ -49,18 +49,23 @@ class MesaController extends Controller
 
     public function removerMesa(Request $request)
     {
-        // 1. Pega o ID que vem do <select name="mesa_id">
+
         $id = $request->input('mesa_id');
 
-        // 2. Valida se o ID foi enviado
+
         if (!$id) {
             return redirect()->back()->with('error', ErroMensagens::SEM_ID_MESA);
         }
 
-        // 3. Chama o seu Service (que você já criou)
+
         $mesasService = new MesasService();
         $mesasService->removerMesa($id);
 
         return redirect()->route('mesas.index')->with('success', PassMensagens::MESA_REMOVIDA_SUCESSO);
+    }
+
+    public function atualizarMesa(Request $request)
+    {
+        /*method nao implementado */
     }
 }
