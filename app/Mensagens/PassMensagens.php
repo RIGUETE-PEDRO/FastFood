@@ -19,7 +19,10 @@ class PassMensagens{
     public const ATUALIZAR_CARRINHO_SUCESSO = 'Produto atualizado no carrinho com sucesso.';
     public const QUANTIDADE_ATUALIZADA_SUCESSO = 'Quantidade do produto atualizada com sucesso!';
     public const PRODUTO_ADICIONADO_SUCESSO = 'Produto adicionado ao carrinho com sucesso!';
+    public const PEDIDO_REALIZADO_SUCESSO = 'Pedido realizado com sucesso!';
     public const MESA_CADASTRADA_SUCESSO = 'Mesa cadastrada com sucesso!';
     public const MESA_REMOVIDA_SUCESSO = 'Mesa removida com sucesso!';
+    public const MESA_ATUALIZADA_SUCESSO = 'Mesa atualizada com sucesso!';
+    public const MESA_SELECIONADA_SUCESSO = 'Mesa selecionada com sucesso!';
 
 }

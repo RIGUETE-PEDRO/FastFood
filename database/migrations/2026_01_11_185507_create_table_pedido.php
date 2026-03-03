@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('valor_total', 8, 2);
             $table->foreignId('status')->constrained('status')->default(1);
             $table->foreignId('tipo_pagamento_id')->constrained('tipo_pagamento');
-            $table->foreignId('endereco_id')->constrained('endereco');
+            $table->foreignId('endereco_id')->nullable()->constrained('endereco')->nullOnDelete();
             $table->string('observacoes_pagamento')->nullable();
             $table->boolean("deleted")->default(false);
         });

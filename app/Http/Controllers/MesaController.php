@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
+use App\Models\Produto;
 use App\Services\GenericBase;
 use App\Services\MesasService;
 use Illuminate\Http\Request;
@@ -18,10 +19,10 @@ class MesaController extends Controller
         $usuarioLogado = $genericBase->pegarUsuarioLogado();
         $mesasService = new MesasService();
         $mesas = $mesasService->pegarMesas();
-
+        $produtos = collect();
         //carregar pedidos das messas
 
-        return view('Admin.Mesa', ['usuario' => $usuarioLogado, 'mesas' => $mesas]);
+        return view('Admin.Mesa', ['usuario' => $usuarioLogado, 'mesas' => $mesas,'produtos'=>$produtos]);
     }
 
     public function cadastrarMesa(Request $request)
@@ -32,10 +33,11 @@ class MesaController extends Controller
         if ($request->input('numero_da_mesa') < 1) {
             return redirect()->back()->with('error', ErroMensagens::NUMERO_MESA_INVALIDO);
         }
+        $response = $mesasService->cadastrarMesa($request);
+        if ($response) {
+            return $response;
+        }
 
-
-
-        $mesasService->cadastrarMesa($request);
         return redirect()->back()->with('success', PassMensagens::MESA_CADASTRADA_SUCESSO);
     }
 
@@ -66,6 +68,20 @@ class MesaController extends Controller
 
     public function atualizarMesa(Request $request)
     {
-        /*method nao implementado */
+        $mesasService = new MesasService();
+        $response = $mesasService->atualizarMesa($request);
+        if ($response) {
+            return $response;
+        }
+
+        return redirect()->back()->with('success', PassMensagens::MESA_ATUALIZADA_SUCESSO);
+    }
+
+    public function detalhesMesa($id)
+    {
+        $mesasService = new MesasService();
+        $produtos = $mesasService->pegarProdutosMesa($id);
+
+        return view('Admin.DetalhesMesa', ['produtos' => $produtos]);
     }
 }

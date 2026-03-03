@@ -12,6 +12,7 @@ class ItemPedido extends Model
         'produto_id',
         'usuario_id',
         'pedido_id',
+        'mesa_id',
     ];
 
     protected $guarded = [
@@ -31,5 +32,10 @@ class ItemPedido extends Model
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'usuario_id');
+    }
+
+    public function mesa()
+    {
+        return $this->belongsTo(Mesa::class, 'mesa_id');
     }
 }

@@ -16,6 +16,8 @@ use App\Models\FormaPagamento;
 use App\Models\ItemPedido;
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
+use App\Models\Mesa;
+use Illuminate\Support\Facades\Log;
 
 class CarrinhoService
 {
@@ -164,6 +166,8 @@ class CarrinhoService
 
             Session::put('checkout.endereco_id', $endereco->id);
             Session::put('checkout.cidade_id', optional($endereco->cidade)->id);
+            Session::put('checkout.tipo_entrega', 'entrega');
+            Session::forget('checkout.mesa_id');
             Session::flash('checkout.modal', 'pagamentoModal');
 
             return [
@@ -214,6 +218,8 @@ class CarrinhoService
 
         Session::put('checkout.endereco_id', $endereco->id);
         Session::put('checkout.cidade_id', $cidadeId);
+        Session::put('checkout.tipo_entrega', 'entrega');
+        Session::forget('checkout.mesa_id');
         Session::flash('checkout.modal', 'pagamentoModal');
 
         return [
@@ -288,6 +294,8 @@ class CarrinhoService
     {
         $usuarioId = Auth::id();
 
+        $mesaId = Session::get('checkout.mesa_id');
+
         $carrinhoItems = Carrinho::where('selecionado', true)
             ->where('usuario_id', $usuarioId)
             ->get();
@@ -302,6 +310,7 @@ class CarrinhoService
                 'quantidade' => $item->quantidade,
                 'preco_unitario' => $precoUnitario,
                 'pedido_id' => $resultado,
+                'mesa_id' => $mesaId,
             ]);
         }
 
@@ -319,13 +328,54 @@ class CarrinhoService
             ];
         }
 
+        $mesaId = Session::get('checkout.mesa_id');
+        $tipoEntrega = $request->input('tipo_entrega') ?? Session::get('checkout.tipo_entrega');
+        if (!$tipoEntrega) {
+            $tipoEntrega = $mesaId ? 'retirar' : 'entrega';
+        }
+
         $usuarioId = Auth::id();
 
         $valor_total = Carrinho::where('usuario_id', $usuarioId)
             ->where('selecionado', true)
             ->sum('preco_total');
 
+        if ($valor_total <= 0) {
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => 'Selecione pelo menos um produto para finalizar.',
+            ];
+        }
+
+        if ($tipoEntrega === 'entrega' && !$enderecoId) {
+            Session::flash('checkout.modal', 'enderecoModal');
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => 'Selecione um endereço para entrega.',
+            ];
+        }
+
+        if ($tipoEntrega === 'retirar' && !$mesaId) {
+            Session::flash('checkout.modal', 'mesaModal');
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => 'Selecione uma mesa para retirada.',
+            ];
+        }
+
         $pagamentoMetodo = $request->input('pagamento_metodo');
+        if (!$pagamentoMetodo) {
+            Session::flash('checkout.modal', 'pagamentoModal');
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => 'Selecione uma forma de pagamento.',
+            ];
+        }
+
         $pagamentoenum = Pagamento::fromString($pagamentoMetodo);
 
 
@@ -339,13 +389,73 @@ class CarrinhoService
                 'status' => EnumsStatusPedidos::PENDENTE->value
             ]);
 
-            $resposta = $pedido->id;
-            return $resposta;
+            return [
+                'status' => true,
+                'tipo' => 'success',
+                'mensagem' => PassMensagens::PEDIDO_REALIZADO_SUCESSO,
+                'pedido_id' => $pedido->id,
+            ];
         } catch (\Exception $e) {
-            throw new \Exception('Erro ao registrar o pedido.');
-        }
-        $resposta = false;
+            Log::error('Erro ao registrar o pedido', [
+                'usuario_id' => $usuarioId,
+                'endereco_id' => $enderecoId,
+                'mesa_id' => $mesaId,
+                'tipo_entrega' => $tipoEntrega,
+                'exception' => $e,
+            ]);
 
-        return $resposta;
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => 'Erro ao registrar o pedido. Verifique os dados e tente novamente.',
+            ];
+        }
+    }
+
+    public function selecionarMesaNoCarrinho($id){
+        if (!Auth::check()) {
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => ErroMensagens::PRECISA_ESTA_LOGADO,
+            ];
+        }
+
+        $mesa = Mesa::find($id);
+        if (!$mesa) {
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => 'Mesa não encontrada.',
+            ];
+        }
+
+        $status = (string) $mesa->status;
+        $statusNormalizado = mb_strtolower($status);
+        $statusPermitidos = [
+            'disponivel',
+            'disponível',
+            'reservada',
+        ];
+
+        if (!in_array($statusNormalizado, $statusPermitidos, true)) {
+            Session::flash('checkout.modal', 'mesaModal');
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => 'Mesa indisponível para retirada.',
+            ];
+        }
+
+        Session::put('checkout.mesa_id', $mesa->id);
+        Session::flash('checkout.modal', 'pagamentoModal');
+
+        return [
+            'status' => true,
+            'tipo' => 'success',
+            'mensagem' => PassMensagens::MESA_SELECIONADA_SUCESSO,
+        ];
+
+
     }
 }

@@ -150,7 +150,7 @@ Route::get('/carrinho/{id}/deletar', function ($id) {
 
 Route::match(['post', 'delete'], '/carrinho/{id}/deletar', [CarrinhoController::class, 'deletarEndereco'])->name('endereco.excluir')->middleware('auth');
 
-
+Route::post('/carrinho/mesa', [CarrinhoController::class, 'selecionarMesa'])->name('carrinho.mesa')->middleware('auth');
 ///////////////////////////////////////////////////////
 /* GERENCIAMENTO DE MESAS */
 ///////////////////////////////////////////////////////
@@ -167,6 +167,8 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
 
     // Rota para atualizar mesa (se necessário, pode ser implementada depois)
     Route::post('/mesas/atualizar', [MesaController::class, 'atualizarMesa'])->name('mesas.update');
+
+    Route::get('/mesas/{id}', [MesaController::class, 'detalhesMesa'])->name('mesas.detalhes');
 });
 
 ///////////////////////////////////////////////////////

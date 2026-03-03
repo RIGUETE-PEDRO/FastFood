@@ -39,6 +39,11 @@ body {
   margin: 0 auto;
 }
 
+
+
+
+
+
 .mesas-header {
   display: flex;
   align-items: flex-start;
@@ -317,4 +322,19 @@ body {
   .sala {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
+}
+
+.status-ocupada {
+    color: white;
+    background-color: red;
+}
+
+.status-disponivel {
+    color: white;
+    background-color: green;
+}
+
+.status-reservada {
+    color: black;
+    background-color: gold;
 }

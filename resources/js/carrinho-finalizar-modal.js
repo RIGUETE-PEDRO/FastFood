@@ -188,19 +188,7 @@
         });
     }
 
-    if (mesaForm) {
-        mesaForm.addEventListener('submit', (e) => {
-            const mesa = (mesaInput?.value || '').trim();
-            if (!mesa) {
-                e.preventDefault();
-                if (mesaErro) mesaErro.textContent = 'Digite o número da mesa.';
-                mesaInput?.focus();
-                return;
-            }
-            if (mesaErro) mesaErro.textContent = '';
-            closeAll();
-        });
-    }
+    
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     const suportaAjaxEndereco = typeof window.fetch === 'function' && Boolean(csrfToken);

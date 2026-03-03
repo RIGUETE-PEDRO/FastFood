@@ -9,6 +9,7 @@ use App\Services\CarrinhoService;
 use App\Services\GenericBase;
 use App\Models\Endereco;
 use App\Models\Cidade;
+use App\Models\Mesa;
 use Error;
 use Mockery\Generator\StringManipulation\Pass\Pass;
 use PHPUnit\Runner\ResultCache\ResultCache;
@@ -37,6 +38,18 @@ class CarrinhoController extends Controller
 
     public function verCarrinho()
     {
+        $statusPermitidos = [
+            'disponivel',
+            'Disponivel',
+            'Disponível',
+            'reservada',
+            'Reservada',
+        ];
+
+        $mesa = Mesa::query()
+            ->whereIn('status', $statusPermitidos)
+            ->orderBy('numero_da_mesa')
+            ->get();
         $genericBase = new GenericBase();
         $usuarioLogado = $genericBase->pegarUsuarioLogado();
         if (!$usuarioLogado) {
@@ -58,6 +71,7 @@ class CarrinhoController extends Controller
             'enderecos' => $enderecos,
             'enderecoSelecionadoId' => session('checkout.endereco_id'),
             'cidades' => $cidades,
+            'mesas' => $mesa
         ]);
     }
 
@@ -77,6 +91,29 @@ class CarrinhoController extends Controller
     }
 
 
+    public function selecionarMesa(Request $request)
+    {
+        $genericBase = new GenericBase();
+        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        if (!$usuarioLogado) {
+            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
+        }
+
+        $mesaId = $request->input('mesa_id');
+        if (!$mesaId) {
+            return redirect()->route('carrinho')->with('error', ErroMensagens::SEM_ID_MESA);
+        }
+
+        $carrinhoService = new CarrinhoService();
+        $resultado = $carrinhoService->selecionarMesaNoCarrinho($mesaId);
+
+        if (!($resultado['status'] ?? false)) {
+            return redirect()->route('carrinho')->with('error', $resultado['mensagem'] ?? 'Mesa inválida.');
+        }
+
+        return redirect()->route('carrinho')
+            ->with('success', PassMensagens::MESA_SELECIONADA_SUCESSO);
+    }
 
     public function atualizarQuantidade(Request $request, $id)
     {
@@ -164,13 +201,17 @@ class CarrinhoController extends Controller
 
         $carrinhoService = new CarrinhoService();
         $resultado = $carrinhoService->registraPedido($request , $enderecoId);
-        if($resultado != null){
-            $carrinhoService->limparCarrinhoAposPedido($request,$resultado);
+
+        if (!($resultado['status'] ?? false)) {
+            return redirect()->route('carrinho')->with($resultado['tipo'] ?? 'error', $resultado['mensagem'] ?? ErroMensagens::ERRO_PROCESSAR);
         }
 
-        $redirect = redirect()->route('pedidos');
+        $pedidoId = $resultado['pedido_id'] ?? null;
+        if ($pedidoId) {
+            $carrinhoService->limparCarrinhoAposPedido($request, $pedidoId);
+        }
 
-        return $redirect->with($resultado);
+        return redirect()->route('pedidos')->with($resultado['tipo'] ?? 'success', $resultado['mensagem'] ?? PassMensagens::PEDIDO_REALIZADO_SUCESSO);
     }
 
     public function selecionarCidade(Request $request)

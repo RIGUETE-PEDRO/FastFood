@@ -61,9 +61,9 @@
                                         <div class="mb-3">
                                             <label for="status" class="form-label">Status Inicial</label>
                                             <select name="status" id="status" class="form-select">
-                                                <option value="disponivel">Livre</option>
-                                                <option value="ocupada">Ocupada</option>
-                                                <option value="reservada">Reservada</option>
+                                                <option value="Disponivel">Livre</option>
+                                                <option value="Ocupada">Ocupada</option>
+                                                <option value="Reservada">Reservada</option>
                                             </select>
                                         </div>
 
@@ -90,7 +90,7 @@
                                     <div class="modal-body">
                                         <label class="form-label">Selecione a Mesa para editar</label>
                                         <select name="mesa_id" class="form-select" required>
-                                            <option value="">-- Selecione --</option>
+                                            <option value="">Selecione a Mesa para editar</option>
                                             @foreach ($mesas as $mesa)
                                             <option value="{{ $mesa->id }}">Mesa {{ $mesa->numero_da_mesa }}</option>
                                             @endforeach
@@ -98,16 +98,16 @@
 
                                         <div class="mb-3">
                                             <label for="numero_da_mesa" class="form-label">Alterar número da Mesa Para</label>
-                                            <input type="number" name="numero_da_mesa" id="numero_da_mesa" class="form-control" placeholder="Ex: 10" required>
+                                            <input type="number" name="numero_da_mesa" id="numero_da_mesa" class="form-control" placeholder="Ex: 10">
                                         </div>
 
 
                                         <div class="mb-3">
                                             <label for="status" class="form-label">Novo Status</label>
                                             <select name="status" id="status" class="form-select">
-                                                <option value="disponivel">Livre</option>
-                                                <option value="ocupada">Ocupada</option>
-                                                <option value="reservada">Reservada</option>
+                                                <option value="Disponivel">Livre</option>
+                                                <option value="Ocupada">Ocupada</option>
+                                                <option value="Reservada">Reservada</option>
                                             </select>
                                         </div>
 
@@ -133,9 +133,9 @@
                                     @csrf
                                     <div class="modal-body">
                                         <div class="mb-3">
-                                            <label class="form-label">Selecione a Mesa para remover</label>
+                                            <label class="form-label">Selecione a mesa para remover</label>
                                             <select name="mesa_id" class="form-select" required>
-                                                <option value="">-- Selecione --</option>
+                                                <option value=""> Selecione </option>
                                                 @foreach ($mesas as $mesa)
                                                 <option value="{{ $mesa->id }}">Mesa {{ $mesa->numero_da_mesa }}</option>
                                                 @endforeach
@@ -152,11 +152,33 @@
                         </div>
                     </div>
 
+                    <div class="modal fade" id="modalDetalheMesa" tabindex="-1" aria-labelledby="modalDetalheMesaLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalDetalheMesaLabel">Detalhes da Mesa</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+
+                                    @foreach ($produtos as $produto)
+                                    <p><strong>Produto:</strong> {{ $produto->nome }} - Preço: R$ {{ number_format((float) $produto->preco, 2, ',', '.') }}</p>
+                                    @endforeach
+
+                                    <p><strong>Número da Mesa:</strong> <span id="detalhe-numero"></span></p>
+                                    <p><strong>Status:</strong> <span id="detalhe-status"></span></p>
+                                    <p><strong>Preço Atual:</strong> R$ <span id="detalhe-preco"></span></p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="sala" role="list" aria-label="Mesas">
                         @forelse ($mesas as $mesa)
                         <article class="mesa-card" role="listitem">
                             <div class="mesa-card__top">
-                                <span class="mesa-badge">
+                                <span class="mesa-badge status-{{ strtolower($mesa->status) }}">
                                     Status: {{ $mesa->status }}
                                 </span>
                             </div>
@@ -173,9 +195,14 @@
 
                             <div class="mesa-card__footer">
                                 <button type="button" class="mesa-btn">
-                                    Abrir
+                                    Editar
                                 </button>
-                                <button type="button" class="mesa-btn mesa-btn--ghost">
+                                <button
+                                    type="button"
+                                    class="mesa-btn mesa-btn--ghost btn-detalhes"
+                                    data-id="{{ $mesa->id }}"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalDetalheMesa">
                                     Detalhes
                                 </button>
                             </div>
