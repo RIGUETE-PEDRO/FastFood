@@ -194,6 +194,8 @@ body {
 .ff-shell {
     display: flex;
     min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
 }
 
 .ff-sidebar {
@@ -210,8 +212,17 @@ body {
     position: sticky;
     top: 0;
     min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
     height: 100vh;
+    height: 100svh;
+    height: 100dvh;
     overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    padding-bottom: 24px;
 }
 
 .ff-main {
@@ -307,7 +318,7 @@ body.ff-sidebar-collapsed .ff-main {
     position: fixed;
     top: 16px;
     left: 16px;
-    z-index: 1030;
+    z-index: 1060;
     display: none;
     border-radius: 999px;
     padding: 8px 14px;
@@ -331,4 +342,158 @@ body.ff-sidebar-collapsed .ff-sidebar-toggle {
 
 body.ff-sidebar-collapsed .ff-sidebar__close {
     display: none;
+}
+
+.ff-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1040;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+}
+
+@media (max-width: 768px) {
+    .ff-shell {
+        min-height: 100vh;
+        min-height: 100svh;
+        min-height: 100dvh;
+    }
+
+    .ff-main {
+        padding: 72px 16px calc(96px + env(safe-area-inset-bottom, 0px));
+        min-height: 100vh;
+        min-height: 100svh;
+        min-height: 100dvh;
+    }
+
+    .ff-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        height: 100svh;
+        height: 100dvh;
+        min-height: 100vh;
+        min-height: 100svh;
+        min-height: 100dvh;
+        z-index: 1050;
+        transform: translateX(0);
+        transition: transform 0.2s ease;
+        margin-left: 0;
+        padding-bottom: 0;
+        overflow: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        display: grid !important;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+    }
+
+    .ff-sidebar__brand {
+        margin-bottom: 14px;
+    }
+
+    .ff-sidebar__nav {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 10px;
+        margin-bottom: 0 !important;
+        padding-right: 4px;
+    }
+
+    .ff-sidebar__footer {
+        flex: 0 0 auto;
+        position: relative;
+        margin-top: 0 !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        z-index: 2;
+        padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+        background: rgba(0, 0, 0, 0.14);
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 12px;
+        backdrop-filter: blur(8px);
+    }
+
+    .ff-sidebar .circulo_maior {
+        width: 56px;
+        height: 56px;
+    }
+
+    .ff-sidebar .profile-image {
+        width: 46px;
+        height: 46px;
+    }
+
+    body.ff-sidebar-collapsed .ff-sidebar {
+        transform: translateX(-105%);
+    }
+
+    body.ff-sidebar-collapsed .ff-sidebar-toggle {
+        display: inline-flex;
+    }
+
+    body:not(.ff-sidebar-collapsed) .ff-sidebar-toggle {
+        display: none;
+    }
+
+    body:not(.ff-sidebar-collapsed) .ff-sidebar-overlay {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+/* Quando qualquer modal do carrinho estiver aberto, não deixar o botão Menu aparecer por cima */
+body.ff-modal-open .ff-sidebar-toggle {
+    display: none !important;
+}
+
+body:has(.ff-modal.is-open) .ff-sidebar-toggle {
+    display: none !important;
+}
+
+@supports (-webkit-touch-callout: none) {
+    @media (max-width: 768px) {
+        .ff-sidebar {
+            height: 100vh;
+            height: 100svh;
+            height: 100dvh;
+        }
+
+        .ff-main {
+            min-height: 100vh;
+            min-height: 100svh;
+            min-height: 100dvh;
+        }
+    }
+}
+
+@supports (padding: constant(safe-area-inset-bottom)) {
+    @media (max-width: 768px) {
+        .ff-main {
+            padding-bottom: calc(96px + constant(safe-area-inset-bottom));
+        }
+
+        .ff-sidebar__footer {
+            padding-bottom: calc(16px + constant(safe-area-inset-bottom));
+        }
+
+        .ff-sidebar__nav {
+            padding-bottom: calc(10px + constant(safe-area-inset-bottom));
+            margin-bottom: 0 !important;
+        }
+
+        .ff-sidebar__footer {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+    }
 }

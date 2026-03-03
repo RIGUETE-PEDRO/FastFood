@@ -24,12 +24,47 @@ body {
     color: var(--ml-text);
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     overflow-x: hidden;
+    overflow-y: auto;
 }
 
 main {
     max-width: 1100px;
     margin: 28px auto;
-    padding: 0 16px;
+    padding: 0 16px calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 768px) {
+    main {
+        padding-bottom: calc(156px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .finalizar-compra {
+        padding-bottom: calc(44px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .table-corpo {
+        overflow: visible;
+    }
+}
+
+@supports (padding: constant(safe-area-inset-bottom)) {
+    main {
+        padding-bottom: calc(16px + constant(safe-area-inset-bottom));
+    }
+
+    @media (max-width: 768px) {
+        main {
+            padding-bottom: calc(156px + constant(safe-area-inset-bottom));
+        }
+
+        .finalizar-compra {
+            padding-bottom: calc(44px + constant(safe-area-inset-bottom));
+        }
+
+        .table-corpo {
+            overflow: visible;
+        }
+    }
 }
 
 .table-corpo {
@@ -121,8 +156,100 @@ table {
     background: rgba(52, 131, 250, 0.05);
 }
 
+@media (max-width: 768px) {
+    .table {
+        border: 0;
+    }
+
+    .table thead {
+        display: none;
+    }
+
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid var(--ml-border);
+        padding: 14px 14px;
+    }
+
+    .table tbody tr:hover {
+        background: transparent;
+    }
+
+    .table tbody td {
+        border-bottom: 0;
+        padding: 10px 0;
+        text-align: right;
+        display: grid;
+        grid-template-columns: minmax(118px, 42%) 1fr;
+        align-items: center;
+        column-gap: 12px;
+    }
+
+    .table tbody td::before {
+        content: attr(data-label);
+        text-align: left;
+        font-weight: 900;
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ml-muted);
+    }
+
+    .table tbody td > form,
+    .table tbody td > img {
+        justify-self: end;
+    }
+
+    .table tbody td[data-label="Produto"] {
+        text-align: left;
+    }
+
+    .table tbody td[data-label="Imagem"] {
+        text-align: right;
+    }
+
+    .table td img {
+        width: 64px !important;
+        height: 64px !important;
+        border-radius: 12px !important;
+    }
+
+    form[data-qty-form] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .button {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        font-size: 20px;
+    }
+
+    .input-quantidade {
+        width: 74px;
+        height: 40px;
+        border-radius: 12px;
+    }
+
+    .btn.btn-danger,
+    button.btn.btn-danger {
+        padding: 12px 14px;
+    }
+}
+
 /* Produto */
-.table td:nth-child(2) {
+.table td:nth-child(3) {
     text-align: left;
     font-weight: 800;
 }

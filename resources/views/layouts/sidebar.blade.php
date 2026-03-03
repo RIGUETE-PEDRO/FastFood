@@ -93,11 +93,46 @@
             <a class="btn btn-light w-100" href="{{ route('login.form') }}">Entrar</a>
         @endif
     </div>
-    <script>
+</nav>
+
+<button type="button" class="ff-sidebar-overlay" data-sidebar-toggle aria-label="Fechar menu" tabindex="-1"></button>
+
+<script>
+    (function () {
+        var collapsedClass = 'ff-sidebar-collapsed';
+        var mq = window.matchMedia('(max-width: 768px)');
+
+        function ensureMobileDefault() {
+            if (mq.matches && !document.body.classList.contains(collapsedClass)) {
+                document.body.classList.add(collapsedClass);
+            }
+        }
+
+        ensureMobileDefault();
+
         document.addEventListener('click', function (event) {
             var toggle = event.target.closest('[data-sidebar-toggle]');
-            if (!toggle) return;
-            document.body.classList.toggle('ff-sidebar-collapsed');
+            if (toggle) {
+                document.body.classList.toggle(collapsedClass);
+                return;
+            }
+
+            var sidebarLink = event.target.closest('.ff-sidebar a.nav-link');
+            if (sidebarLink && mq.matches) {
+                document.body.classList.add(collapsedClass);
+            }
         });
-    </script>
-</nav>
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key !== 'Escape') return;
+            if (!mq.matches) return;
+            document.body.classList.add(collapsedClass);
+        });
+
+        if (mq.addEventListener) {
+            mq.addEventListener('change', ensureMobileDefault);
+        } else if (mq.addListener) {
+            mq.addListener(ensureMobileDefault);
+        }
+    })();
+</script>

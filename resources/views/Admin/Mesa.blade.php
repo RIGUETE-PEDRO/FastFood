@@ -176,7 +176,7 @@
                                     Editar
                                 </button>
                                 <a href="{{ route('mesas.detalhes', $mesa->id) }}" class="mesa-btn mesa-btn--ghost">
-                                    Detalhes
+                                    Dar baixa
                                 </a>
                             </div>
                         </article>

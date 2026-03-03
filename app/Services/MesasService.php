@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Enum\StatusPedidos;
 use App\Models\Mesa;
 use App\Mensagens\ErroMensagens;
 use App\Models\ItemPedido;
+use App\Models\Pedido;
 use App\Models\Produto;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -13,6 +15,28 @@ use Illuminate\Support\Facades\DB;
 
 class MesasService extends GenericBase
 {
+    private function finalizarPedidosDaMesa(int $mesaId): void
+    {
+        $pedidoIds = ItemPedido::query()
+            ->where('mesa_id', $mesaId)
+            ->whereNotNull('pedido_id')
+            ->pluck('pedido_id')
+            ->unique()
+            ->values();
+
+        if ($pedidoIds->isEmpty()) {
+            return;
+        }
+
+        Pedido::query()
+            ->whereIn('id', $pedidoIds)
+            ->whereNotIn('status', [
+                StatusPedidos::ENTREGUE->value,
+                StatusPedidos::CANCELADO->value,
+            ])
+            ->update(['status' => StatusPedidos::ENTREGUE->value]);
+    }
+
     public function pegarMesas()
     {
         return Mesa::all();
@@ -135,6 +159,8 @@ class MesasService extends GenericBase
             ->exists();
 
         if (!$restamAbertos) {
+            $this->finalizarPedidosDaMesa((int) $mesaId);
+
             ItemPedido::query()
                 ->where('mesa_id', $mesaId)
                 ->where('status_da_comanda', 'pago')
@@ -263,6 +289,8 @@ class MesasService extends GenericBase
                 ->exists();
 
             if (!$restamAbertos) {
+                $this->finalizarPedidosDaMesa((int) $mesaId);
+
                 ItemPedido::query()
                     ->where('mesa_id', $mesaId)
                     ->where('status_da_comanda', 'pago')

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Carrinho</title>
     @vite(['resources/js/app.js'])
@@ -75,7 +75,7 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                         <tbody>
                             @foreach ($carrinho as $item)
                             <tr>
-                                <td>
+                                <td data-label="Selecionar">
                                     <form action="{{ route('carrinho.toggle', $item->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')
@@ -85,13 +85,13 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                                         </label>
                                     </form>
                                 </td>
-                                <td>
+                                <td data-label="Imagem">
                                     <img src="{{ asset('img/produtos/' . $item->produto->imagem_url) }}" style="width:48px; height:48px; object-fit:cover; border-radius:8px;" alt="{{ $item->produto->nome }}">
                                 </td>
-                                <td>{{ $item->produto->nome }}</td>
-                                <td>R${{ $item->produto->preco }}</td>
-                                <td>R${{ $item->preco_total }}</td>
-                                <td>
+                                <td data-label="Produto">{{ $item->produto->nome }}</td>
+                                <td data-label="Preço unitário">R${{ $item->produto->preco }}</td>
+                                <td data-label="Preço total">R${{ $item->preco_total }}</td>
+                                <td data-label="Quantidade">
                                     <form data-qty-form action="{{ route('carrinho.atualizarQuantidade', $item->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')
@@ -100,7 +100,7 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                                         <button type="submit" name="acao" value="mais" class="button positivo">+</button>
                                     </form>
                                 </td>
-                                <td>
+                                <td data-label="Ação">
                                     <form method="POST" action="{{ route('carrinho.remover', $item->id) }}">
                                         @csrf
                                         <button type="submit" class="btn btn-danger">Remover</button>
