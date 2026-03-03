@@ -58,8 +58,8 @@ class LoginController extends Controller
         // Salvar usuário na sessão
         session(['usuario_logado' => $usuario]);
 
-    // Também autentica via Auth do Laravel (habilita auth()->id() globalmente)
-    Auth::login($usuario);
+        // Também autentica via Auth do Laravel (habilita auth()->id() globalmente)
+        Auth::login($usuario);
 
         // Autenticação bem-sucedida, redirecionar para a página desejada
 

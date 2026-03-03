@@ -11,20 +11,22 @@ use App\Mensagens\ErroMensagens;
 class RegisterController extends Controller
 {
     protected AuthService $authService;
+    protected GenericBase $genericBase;
 
-    public function __construct(AuthService $authService)
+    public function __construct(AuthService $authService, GenericBase $genericBase)
     {
         $this->authService = $authService;
+        $this->genericBase = $genericBase;
     }
 
 
     public function registerFuncionario(Request $request)
     {
-        $genericBase = new GenericBase();
+
         $data = $request->only('nome', 'email', 'senha','senha_confirmation','telefone','tipo_usuario_id','has_ativo');
 
         $salarioBruto = $request->input('salario');
-        $data['salario'] = $genericBase->normalizarMoeda($salarioBruto);
+        $data['salario'] = $this->genericBase->normalizarMoeda($salarioBruto);
 
         $usuario = $this->authService->register($data);
 

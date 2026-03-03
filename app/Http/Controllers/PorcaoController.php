@@ -6,11 +6,18 @@ use App\Services\GenericBase;
 
 class PorcaoController extends Controller
 {
+
+    protected GenericBase $genericBase;
+
+    public function __construct(GenericBase $genericBase)
+    {
+        $this->genericBase = $genericBase;
+    }
     public function porcao()
     {
-        $genericBase = new GenericBase();
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
-        $porcao = $genericBase->findByProdutos('Porções');
+
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $porcao = $this->genericBase->findByProdutos('Porções');
 
         return view('Porcao', [
             'usuario' => $usuarioLogado,

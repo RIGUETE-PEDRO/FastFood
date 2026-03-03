@@ -17,16 +17,22 @@ use Illuminate\Http\Request;
 class GerenciamentoUsuarioController extends Controller
 {
 
+    protected GenericBase $genericBase;
+    protected AdminService $adminService;
+
+    public function __construct(GenericBase $genericBase, AdminService $adminService)
+    {
+        $this->genericBase = $genericBase;
+        $this->adminService = $adminService;
+    }
 
     public function buscarFuncionarios(Request $request)
     {
         $searchTerm = $request->input('search');
 
-        $adminService = new AdminService();
-        $lista = $adminService->buscarFuncionarios($searchTerm);
+        $lista = $this->adminService->buscarFuncionarios($searchTerm);
 
-        $genericBase = new GenericBase();
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
         $nomeUsuarioLogado = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
 
         return view('Admin.GerenciamentoFuncionario', [
@@ -39,11 +45,9 @@ class GerenciamentoUsuarioController extends Controller
 
     public function gerenciamentoFuncionario()
     {
-        $adminService = new AdminService();
-        $lista = $adminService->listarFuncionarios();
 
-        $genericBase = new GenericBase();
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        $lista = $this->adminService->listarFuncionarios();
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
 
         $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
 
@@ -57,15 +61,15 @@ class GerenciamentoUsuarioController extends Controller
 
     public function deletarUsuario($id)
     {
-        $genericBase = new GenericBase();
-        $usuario = $genericBase->findById($id);
+
+        $usuario = $this->genericBase->findById($id);
 
         if (!$usuario) {
-            return redirect()->route('gerenciamento_funcionarios')
+            return  redirect()->route('gerenciamento_funcionarios')
                 ->with('erro', ErroMensagens::USUARIO_NAO_ENCONTRADO);
         }
 
-        $ok = $genericBase->deleteFuncionarioEUsuario($id);
+        $ok = $this->genericBase->deleteFuncionarioEUsuario($id);
 
         if (!$ok) {
             return redirect()->route('gerenciamento_funcionarios')
@@ -79,8 +83,7 @@ class GerenciamentoUsuarioController extends Controller
 
     public function alteraUsuario($id)
     {
-        $genericBase = new GenericBase();
-        $usuario = $genericBase->findById($id);
+        $usuario = $this->genericBase->findById($id);
 
         if (!$usuario) {
             return redirect()->route('gerenciamento.usuarios')
@@ -96,10 +99,11 @@ class GerenciamentoUsuarioController extends Controller
     public function atualizarFuncionario(Request $request, $id)
     {
         // Normaliza salário para formato numérico (aceita entrada com pontos, vírgulas ou "R$")
-        $genericBase = new GenericBase();
+
 
         $salarioBruto = $request->input('salario');
-        $salarioNormalizado = $genericBase->normalizarMoeda($salarioBruto);
+        $salarioNormalizado = $this->genericBase->normalizarMoeda($salarioBruto);
+        
         if ($salarioBruto !== null) {
             $request->merge(['salario' => $salarioNormalizado]);
         }
@@ -143,8 +147,4 @@ class GerenciamentoUsuarioController extends Controller
 
         return redirect()->route('gerenciamento_funcionarios')->with('sucesso', PassMensagens::ATUALIZAR_FUNCIONARIO_SUCESSO);
     }
-
-
-
 }
-

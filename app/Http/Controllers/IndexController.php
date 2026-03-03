@@ -6,12 +6,17 @@ use App\Services\GenericBase;
 
 class IndexController extends Controller
 {
+    protected GenericBase $genericBase;
+
+    public function __construct(GenericBase $genericBase)
+    {
+        $this->genericBase = $genericBase;
+    }
+
     public function index()
     {
-        $genericBase = new GenericBase();
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
-
-        $produtos = $genericBase->pegarProdutos();
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $produtos = $this->genericBase->pegarProdutos();
 
         return view('Index', ['usuario' => $usuarioLogado, 'produtos' => $produtos]);
 

@@ -6,11 +6,18 @@ use App\Services\GenericBase;
 
 class LanchesController extends Controller
 {
+    protected GenericBase $genericBase;
+
+    public function __construct(GenericBase $genericBase)
+    {
+        $this->genericBase = $genericBase;
+    }
+
     public function Lanches()
     {
-        $genericBase = new GenericBase();
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
-        $lanches = $genericBase->findByProdutos('Lanches');
+
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $lanches = $this->genericBase->findByProdutos('Lanches');
 
         return view('Lanches', [
             'usuario' => $usuarioLogado,

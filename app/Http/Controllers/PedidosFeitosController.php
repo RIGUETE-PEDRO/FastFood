@@ -15,14 +15,18 @@ use Illuminate\Validation\Rules\Enum;
 
 class PedidosFeitosController extends Controller
 {
-    public function __construct(private PedidosFeitosService $service)
+    protected GenericBase $genericBase;
+    protected PedidosFeitosService $service;
+
+    public function __construct(GenericBase $genericBase, PedidosFeitosService $service)
     {
+        $this->genericBase = $genericBase;
+        $this->service = $service;
     }
 
     public function verPedidosAdmin()
     {
-        $genericBase = new GenericBase();
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
         $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : null;
 
         $pedidosCollection = $this->service->listarPedidos();

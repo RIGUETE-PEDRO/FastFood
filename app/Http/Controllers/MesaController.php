@@ -13,26 +13,32 @@ use Illuminate\Http\Request;
 
 class MesaController extends Controller
 {
+    protected GenericBase $genericBase;
+    protected MesasService $mesasService;
+
+
+    public function __construct(GenericBase $genericBase, MesasService $mesasService)
+    {
+        $this->genericBase = $genericBase;
+        $this->mesasService = $mesasService;
+    }
+
+
     public function Mesa()
     {
 
-        $genericBase = new GenericBase();
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
-        $mesasService = new MesasService();
-        $mesas = $mesasService->pegarMesas();
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $mesas = $this->mesasService->pegarMesas();
 
         return view('Admin.Mesa', ['usuario' => $usuarioLogado, 'mesas' => $mesas]);
     }
 
     public function cadastrarMesa(Request $request)
     {
-
-        $mesasService = new MesasService();
-
         if ($request->input('numero_da_mesa') < 1) {
             return redirect()->back()->with('error', ErroMensagens::NUMERO_MESA_INVALIDO);
         }
-        $response = $mesasService->cadastrarMesa($request);
+        $response = $this->mesasService->cadastrarMesa($request);
         if ($response) {
             return $response;
         }
@@ -42,9 +48,7 @@ class MesaController extends Controller
 
     public function ListarMesa(Request $request)
     {
-        $mesasService = new MesasService();
-        $mesas = $mesasService->pegarMesas();
-
+        $mesas = $this->mesasService->pegarMesas();
         return view('Admin.Mesa', ['mesas' => $mesas]);
     }
 
@@ -58,17 +62,14 @@ class MesaController extends Controller
             return redirect()->back()->with('error', ErroMensagens::SEM_ID_MESA);
         }
 
-
-        $mesasService = new MesasService();
-        $mesasService->removerMesa($id);
+        $this->mesasService->removerMesa($id);
 
         return redirect()->route('mesas.index')->with('success', PassMensagens::MESA_REMOVIDA_SUCESSO);
     }
 
     public function atualizarMesa(Request $request)
     {
-        $mesasService = new MesasService();
-        $response = $mesasService->atualizarMesa($request);
+        $response = $this->mesasService->atualizarMesa($request);
         if ($response) {
             return $response;
         }
@@ -78,10 +79,9 @@ class MesaController extends Controller
 
     public function detalhesMesa($id)
     {
-        $genericBase = new GenericBase();
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
 
-        $mesasService = new MesasService();
+        $mesasService = $this->mesasService;
         $mesa = $mesasService->pegarMesaPorId($id);
 
         if (!$mesa) {

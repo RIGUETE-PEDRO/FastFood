@@ -8,25 +8,25 @@ use App\Services\PedidoService;
 
 class PedidoController extends Controller
 {
+    protected GenericBase $genericBase;
+    protected PedidoService $PedidoService;
+
+    public function __construct(GenericBase $genericBase, PedidoService $PedidoService)
+    {
+        $this->genericBase = $genericBase;
+        $this->PedidoService = $PedidoService;
+    }
+
     public function verpedido()
     {
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
 
-        $genericBase = new GenericBase();
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
 
-        $PedidoService = new PedidoService();
-        $pedido = $PedidoService->pegarPedidosDoUsuario($usuarioLogado);
+        $pedido = $this->PedidoService->pegarPedidosDoUsuario($usuarioLogado);
 
         return view('Pedido', [
             'usuario' => $usuarioLogado,
             'pedidos' => $pedido,
         ]);
     }
-
-
-  
-
-
-
-
 }

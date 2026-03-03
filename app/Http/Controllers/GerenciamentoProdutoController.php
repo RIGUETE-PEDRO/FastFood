@@ -13,19 +13,24 @@ use Illuminate\Http\Request;
 
 class GerenciamentoProdutoController extends Controller
 {
+    protected GenericBase $genericBase;
+    protected AuthService $authService;
+    protected GerenciaProdutosService $gerenciaProdutosService;
 
+    public function __construct(GenericBase $genericBase, AuthService $authService, GerenciaProdutosService $gerenciaProdutosService)
+    {
+        $this->genericBase = $genericBase;
+        $this->authService = $authService;
+        $this->gerenciaProdutosService = $gerenciaProdutosService;
+    }
 
+    /*precisa ser revisto porque deve ser no service e nao no controller*/
     public function gerenciamentoProduto()
     {
-
-        $genericBase = new GenericBase();
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
         $nomeUsuario = $usuarioLogado ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
-
-        $produtos = Produto::with('categoria')->get(); 
+        $produtos = Produto::with('categoria')->get();
         $categorias = Categoria::all();
-
-
 
         return view('Admin.GerenciamentoProduto', [
             'produtos' => $produtos,
@@ -38,32 +43,19 @@ class GerenciamentoProdutoController extends Controller
 
     public function cadastrarProduto(Request $request)
     {
-        $gerenciaProdutosService = new GerenciaProdutosService();
-        $gerenciaProdutosService->criarProduto($request);
-
+        $this->gerenciaProdutosService->criarProduto($request);
         return redirect()->route('ListaProdutos')->with('success', PassMensagens::CADASTRAR_PRODUTO_SUCESSO);
     }
 
     public function deletarProduto($id)
     {
-
-
-
-            $gerenciaProdutosService = new GerenciaProdutosService();
-            $gerenciaProdutosService->removerProduto($id);
-
-
+        $this->gerenciaProdutosService->removerProduto($id);
         return redirect()->route('gerenciamento_Produtos')->with('success', PassMensagens::DELETE_SUCESSO);
     }
 
     public function atualizarProduto(Request $request, $id)
     {
-
-
-        $gerenciaProdutosService = new GerenciaProdutosService();
-        $gerenciaProdutosService->atualizarProduto($id, $request->all());
-
+        $this->gerenciaProdutosService->atualizarProduto($id, $request->all());
         return redirect()->route('gerenciamento_Produtos')->with('success', PassMensagens::ATUALIZADO_SUCESSO);
     }
-
 }
