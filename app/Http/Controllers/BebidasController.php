@@ -7,11 +7,17 @@ use App\Services\GenericBase;
 
 class BebidasController extends Controller
 {
+    protected GenericBase $genericBase;
+
+    public function __construct(GenericBase $genericBase)
+    {
+        $this->genericBase = $genericBase;
+    }
+
     public function Bebidas()
     {
-        $genericBase = new GenericBase();
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
-        $bebidas = $genericBase->findByProdutos('Bebidas');
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $bebidas = $this->genericBase->findByProdutos('Bebidas');
 
         return view('Bebida', [
             'usuario' => $usuarioLogado,

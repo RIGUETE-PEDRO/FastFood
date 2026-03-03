@@ -24,8 +24,8 @@ class AdminController extends Controller
 
     public function infoPerfil(Request $request)
     {
-        $genericBase = new GenericBase();
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
 
         $previousUrl = URL::previous();
         $currentUrl = $request->fullUrl();
@@ -56,9 +56,8 @@ class AdminController extends Controller
 
     public function nomeUsuario()
     {
-        $genericBase = new GenericBase();
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
-
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+    
         // Pega somente o primeiro nome
         $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
 
