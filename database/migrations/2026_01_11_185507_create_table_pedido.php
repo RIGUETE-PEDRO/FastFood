@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('usuario_id')->constrained('usuarios');
             $table->decimal('valor_total', 8, 2);
             $table->foreignId('status')->constrained('status')->default(1);
-            $table->foreignId('tipo_pagamento_id')->constrained('tipo_pagamento');
+            $table->foreignId('tipo_pagamento_id')->nullable()->constrained('tipo_pagamento')->nullOnDelete();
             $table->foreignId('endereco_id')->nullable()->constrained('endereco')->nullOnDelete();
             $table->string('observacoes_pagamento')->nullable();
             $table->boolean("deleted")->default(false);

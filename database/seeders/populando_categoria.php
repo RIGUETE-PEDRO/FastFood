@@ -13,13 +13,14 @@ class populando_categoria extends Seeder
      */
     public function run(): void
     {
-        // Inserir dados na tabela categoria
-        DB::table('categoria_produto')->insert([
-            ['nome' => 'Lanches', 'created_at' => now(), 'updated_at' => now()],
-            ['nome' => 'Pizzas', 'created_at' => now(), 'updated_at' => now()],
-            ['nome' => 'Porções', 'created_at' => now(), 'updated_at' => now()],
-            ['nome' => 'Bebidas', 'created_at' => now(), 'updated_at' => now()],
-        ]);
+        // Categorias (idempotente)
+        $categorias = ['Lanches', 'Pizzas', 'Porções', 'Bebidas'];
+        foreach ($categorias as $nome) {
+            DB::table('categoria_produto')->updateOrInsert(
+                ['nome' => $nome],
+                ['created_at' => now(), 'updated_at' => now()]
+            );
+        }
 
 
     }

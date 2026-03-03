@@ -17,6 +17,8 @@ return new class extends Migration
                 ->after('usuario_id')
                 ->constrained('mesas')
                 ->nullOnDelete();
+
+            $table->index(['mesa_id', 'status_da_comanda']);
         });
     }
 
@@ -26,6 +28,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('item_pedido', function (Blueprint $table) {
+            $table->dropIndex(['mesa_id', 'status_da_comanda']);
             $table->dropConstrainedForeignId('mesa_id');
         });
     }

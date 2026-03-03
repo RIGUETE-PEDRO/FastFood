@@ -309,12 +309,37 @@ class CarrinhoService
                 'produto_id' => $item->produto_id,
                 'quantidade' => $item->quantidade,
                 'preco_unitario' => $precoUnitario,
+                'status_da_comanda' => 'em_aberto',
+                'pago_em' => null,
                 'pedido_id' => $resultado,
                 'mesa_id' => $mesaId,
             ]);
         }
 
+        if ($mesaId) {
+            $mesa = Mesa::find($mesaId);
+            if ($mesa) {
+                $totalAberto = (float) ItemPedido::query()
+                    ->where('mesa_id', $mesaId)
+                    ->where('status_da_comanda', 'em_aberto')
+                    ->get()
+                    ->sum(function ($item) {
+                        return ((float) $item->preco_unitario) * ((int) $item->quantidade);
+                    });
+
+                $mesa->preco = $totalAberto;
+                $mesa->status = 'Ocupada';
+                $mesa->save();
+            }
+        }
+
         Carrinho::where('usuario_id', $usuarioId)->where('selecionado', true)->delete();
+
+        Session::forget('checkout.mesa_id');
+        Session::forget('checkout.endereco_id');
+        Session::forget('checkout.tipo_entrega');
+        Session::forget('checkout.pagamento');
+        Session::forget('checkout.modal');
     }
 
 
@@ -366,25 +391,28 @@ class CarrinhoService
             ];
         }
 
-        $pagamentoMetodo = $request->input('pagamento_metodo');
-        if (!$pagamentoMetodo) {
-            Session::flash('checkout.modal', 'pagamentoModal');
-            return [
-                'status' => false,
-                'tipo' => 'error',
-                'mensagem' => 'Selecione uma forma de pagamento.',
-            ];
-        }
+        $pagamentoenum = null;
+        if ($tipoEntrega === 'entrega') {
+            $pagamentoMetodo = $request->input('pagamento_metodo');
+            if (!$pagamentoMetodo) {
+                Session::flash('checkout.modal', 'pagamentoModal');
+                return [
+                    'status' => false,
+                    'tipo' => 'error',
+                    'mensagem' => 'Selecione uma forma de pagamento.',
+                ];
+            }
 
-        $pagamentoenum = Pagamento::fromString($pagamentoMetodo);
+            $pagamentoenum = Pagamento::fromString($pagamentoMetodo);
+        }
 
 
         try {
             $pedido = Pedido::create([
                 'usuario_id' => $usuarioId,
                 'endereco_id' => $enderecoId,
-                'tipo_pagamento_id' => $pagamentoenum->value,
-                'observacoes_pagamento' => $request->input('observacoes_pagamento'),
+                'tipo_pagamento_id' => $pagamentoenum ? $pagamentoenum->value : null,
+                'observacoes_pagamento' => $tipoEntrega === 'entrega' ? $request->input('observacoes_pagamento') : null,
                 'valor_total' => $valor_total,
                 'status' => EnumsStatusPedidos::PENDENTE->value
             ]);
@@ -448,7 +476,11 @@ class CarrinhoService
         }
 
         Session::put('checkout.mesa_id', $mesa->id);
-        Session::flash('checkout.modal', 'pagamentoModal');
+        Session::put('checkout.tipo_entrega', 'retirar');
+        Session::forget('checkout.endereco_id');
+        Session::forget('checkout.cidade_id');
+        Session::forget('checkout.pagamento');
+        Session::forget('checkout.modal');
 
         return [
             'status' => true,

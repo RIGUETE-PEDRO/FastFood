@@ -11,7 +11,7 @@ return new class extends Migration
     {
         Schema::create('tipo_usuarios', function (Blueprint $table) {
             $table->id();
-            $table->string('descricao');
+            $table->string('descricao')->unique();
             $table->timestamps();
         });
 

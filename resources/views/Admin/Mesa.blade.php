@@ -152,28 +152,6 @@
                         </div>
                     </div>
 
-                    <div class="modal fade" id="modalDetalheMesa" tabindex="-1" aria-labelledby="modalDetalheMesaLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="modalDetalheMesaLabel">Detalhes da Mesa</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-
-                                    @foreach ($produtos as $produto)
-                                    <p><strong>Produto:</strong> {{ $produto->nome }} - Preço: R$ {{ number_format((float) $produto->preco, 2, ',', '.') }}</p>
-                                    @endforeach
-
-                                    <p><strong>Número da Mesa:</strong> <span id="detalhe-numero"></span></p>
-                                    <p><strong>Status:</strong> <span id="detalhe-status"></span></p>
-                                    <p><strong>Preço Atual:</strong> R$ <span id="detalhe-preco"></span></p>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="sala" role="list" aria-label="Mesas">
                         @forelse ($mesas as $mesa)
                         <article class="mesa-card" role="listitem">
@@ -197,14 +175,9 @@
                                 <button type="button" class="mesa-btn">
                                     Editar
                                 </button>
-                                <button
-                                    type="button"
-                                    class="mesa-btn mesa-btn--ghost btn-detalhes"
-                                    data-id="{{ $mesa->id }}"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalDetalheMesa">
+                                <a href="{{ route('mesas.detalhes', $mesa->id) }}" class="mesa-btn mesa-btn--ghost">
                                     Detalhes
-                                </button>
+                                </a>
                             </div>
                         </article>
                         @empty

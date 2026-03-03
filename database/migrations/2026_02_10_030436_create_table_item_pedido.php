@@ -16,6 +16,8 @@ return new class extends Migration
             $table->timestamps();
             $table->decimal('preco_unitario', 8, 2);
             $table->integer('quantidade');
+            $table->string('status_da_comanda')->default('em_aberto');
+            $table->timestamp('pago_em')->nullable();
             $table->foreignId('produto_id')->constrained('produtos');
             $table->foreignId('usuario_id')->constrained('usuarios');
             $table->foreignId('pedido_id')->constrained('pedidos');

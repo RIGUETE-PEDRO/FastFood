@@ -22,10 +22,10 @@ class GerenciamentoProdutoController extends Controller
         $usuarioLogado = $genericBase->pegarUsuarioLogado();
         $nomeUsuario = $usuarioLogado ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
 
-        $produtos = Produto::with('categoria')->get(); // Busca todos os produtos com a categoria relacionada
-        $categorias = Categoria::all(); // Busca todas as categorias para o select
+        $produtos = Produto::with('categoria')->get(); 
+        $categorias = Categoria::all();
 
-        // Se você usa autenticação e quer passar o usuário/nome:
+
 
         return view('Admin.GerenciamentoProduto', [
             'produtos' => $produtos,

@@ -5,7 +5,7 @@
         || request()->routeIs('gerenciamento_Produtos')
         || request()->routeIs('Cadastrar_Produto')
         || request()->routeIs('deletar_produto')
-        || request()->routeIs('mesas.index');
+    || request()->routeIs('mesas.*');
 @endphp
 
 <nav class="ff-sidebar d-flex flex-column">
@@ -37,7 +37,7 @@
                 <span class="nav-link disabled">Entregas</span>
             </li>
             <li>
-                <a href="{{ route('mesas.index')}}" class="nav-link {{ request()->routeIs('mesas.index')|| request()->routeIs('mesas.index') ? 'active' : ''}}">Mesas</a>
+                <a href="{{ route('mesas.index')}}" class="nav-link {{ request()->routeIs('mesas.*') ? 'active' : ''}}">Mesas</a>
             </li>
         </ul>
     @else

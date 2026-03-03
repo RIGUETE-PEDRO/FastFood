@@ -13,32 +13,13 @@ class popula_banco extends Seeder
      */
     public function run(): void
     {
-        DB::table('tipo_pagamento')->insert([
-            [
-                'tipo_pagamento' => 'Cartão de Crédito',
-                'created_at' => now(),
-                'updated_at' => now(),
-
-            ],
-            [
-                'tipo_pagamento' => 'Cartão de Débito',
-                'created_at' => now(),
-                'updated_at' => now(),
-
-            ],
-            [
-                'tipo_pagamento' => 'Pix',
-                'created_at' => now(),
-                'updated_at' => now(),
-
-            ],
-            [
-                'tipo_pagamento' => 'Dinheiro',
-                'created_at' => now(),
-                'updated_at' => now(),
-                
-            ],
-        ]);
+        $pagamentos = ['Cartão de Crédito', 'Cartão de Débito', 'Pix', 'Dinheiro'];
+        foreach ($pagamentos as $tipo) {
+            DB::table('tipo_pagamento')->updateOrInsert(
+                ['tipo_pagamento' => $tipo],
+                ['created_at' => now(), 'updated_at' => now()]
+            );
+        }
 
         DB::table('usuarios')->insert([
             [
@@ -96,32 +77,12 @@ class popula_banco extends Seeder
             ],
         ]);
 
-        DB::table('status')->insert([
-            [
-                'status' => 'Pendente',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'status' => 'Em Preparação',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'status' => 'Em Trânsito',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'status' => 'Entregue',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'status' => 'Recusado',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        $statusList = ['Pendente', 'Em Preparação', 'Em Trânsito', 'Entregue', 'Recusado'];
+        foreach ($statusList as $status) {
+            DB::table('status')->updateOrInsert(
+                ['status' => $status],
+                ['created_at' => now(), 'updated_at' => now()]
+            );
+        }
     }
 }

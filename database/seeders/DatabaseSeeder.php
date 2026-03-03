@@ -13,17 +13,17 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        // Inserir tipos de usuário padrão
-        DB::table('tipo_usuarios')->insert([
-            ['descricao' => 'Cliente', 'created_at' => now(), 'updated_at' => now()],
-            ['descricao' => 'Estabelecimento', 'created_at' => now(), 'updated_at' => now()],
-            ['descricao' => 'Administrador', 'created_at' => now(), 'updated_at' => now()],
-            ['descricao' => 'Entregador', 'created_at' => now(), 'updated_at' => now()],
-
-        ]);
+        // Tipos de usuário (idempotente: não duplica por causa do UNIQUE)
+        $tipos = ['Cliente', 'Estabelecimento', 'Administrador', 'Entregador'];
+        foreach ($tipos as $descricao) {
+            DB::table('tipo_usuarios')->updateOrInsert(
+                ['descricao' => $descricao],
+                ['created_at' => now(), 'updated_at' => now()]
+            );
+        }
 
         $this->call(populando_categoria::class);
-   
+
         $this->call(popular_municipios::class);
         $this->call(popula_banco::class);
     }

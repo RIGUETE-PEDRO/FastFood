@@ -10,9 +10,7 @@ use App\Services\GenericBase;
 use App\Models\Endereco;
 use App\Models\Cidade;
 use App\Models\Mesa;
-use Error;
-use Mockery\Generator\StringManipulation\Pass\Pass;
-use PHPUnit\Runner\ResultCache\ResultCache;
+
 
 class CarrinhoController extends Controller
 {
@@ -111,8 +109,17 @@ class CarrinhoController extends Controller
             return redirect()->route('carrinho')->with('error', $resultado['mensagem'] ?? 'Mesa inválida.');
         }
 
-        return redirect()->route('carrinho')
-            ->with('success', PassMensagens::MESA_SELECIONADA_SUCESSO);
+        $pedidoResultado = $carrinhoService->registraPedido($request, null);
+        if (!($pedidoResultado['status'] ?? false)) {
+            return redirect()->route('carrinho')->with($pedidoResultado['tipo'] ?? 'error', $pedidoResultado['mensagem'] ?? ErroMensagens::ERRO_PROCESSAR);
+        }
+
+        $pedidoId = $pedidoResultado['pedido_id'] ?? null;
+        if ($pedidoId) {
+            $carrinhoService->limparCarrinhoAposPedido($request, $pedidoId);
+        }
+
+        return redirect()->route('pedidos')->with($pedidoResultado['tipo'] ?? 'success', $pedidoResultado['mensagem'] ?? PassMensagens::PEDIDO_REALIZADO_SUCESSO);
     }
 
     public function atualizarQuantidade(Request $request, $id)

@@ -169,6 +169,9 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
     Route::post('/mesas/atualizar', [MesaController::class, 'atualizarMesa'])->name('mesas.update');
 
     Route::get('/mesas/{id}', [MesaController::class, 'detalhesMesa'])->name('mesas.detalhes');
+
+    // Conta da mesa (comanda)
+    Route::post('/mesas/{id}/conta/abater', [MesaController::class, 'abaterItensContaMesa'])->name('mesas.conta.abater');
 });
 
 ///////////////////////////////////////////////////////

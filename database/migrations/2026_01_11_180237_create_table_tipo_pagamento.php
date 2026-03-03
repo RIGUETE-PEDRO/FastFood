@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tipo_pagamento', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('tipo_pagamento');
+            $table->string('tipo_pagamento')->unique();
         });
     }
 
