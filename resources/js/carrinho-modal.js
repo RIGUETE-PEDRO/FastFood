@@ -26,10 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Delega clique para funcionar em todas as páginas sem repetir código
   document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.button-adicionar');
-    if (!btn) return;
+    const trigger = e.target.closest('.button-adicionar, .container-img');
+    if (!trigger) return;
 
-    const card = findProdutoCard(btn);
+    const card = findProdutoCard(trigger);
     if (!card) return;
 
     const produtoId = card.getAttribute('data-produto-id');

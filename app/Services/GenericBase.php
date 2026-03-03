@@ -17,9 +17,22 @@ class GenericBase
 
     public function findByProdutos($categoria)
     {
-        return Produto::whereHas('categoria', function ($query) use ($categoria) {
-            $query->where('nome', $categoria)->where('disponivel', true);
-        })->get();
+        $categorias = is_array($categoria) ? $categoria : [$categoria];
+
+        // Normaliza variações comuns de "Porções" para evitar lista vazia por diferença de acento/plural.
+        if (in_array('Porcao', $categorias, true) || in_array('Porcao', array_map('strval', $categorias), true)) {
+            $categorias[] = 'Porções';
+            $categorias[] = 'Porção';
+            $categorias[] = 'Porcoes';
+        }
+
+        return Produto::query()
+            ->where('disponivel', true)
+            ->whereHas('categoria', function ($query) use ($categorias) {
+                $query->whereIn('nome', $categorias)
+                    ->where('deleted', false);
+            })
+            ->get();
     }
 
     public function pegarProdutos()

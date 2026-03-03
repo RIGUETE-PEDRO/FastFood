@@ -212,16 +212,15 @@ body {
 }
 
 .acordeao-pedidos__conteudo {
-    overflow: hidden;
-    max-height: 0;
-    opacity: 0;
-    transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
     padding: 0 1.25rem;
 }
 
 .acordeao-pedidos__conteudo.is-open {
     padding: 1.25rem;
-    opacity: 1;
+}
+
+.acordeao-pedidos__conteudo[hidden] {
+    display: none;
 }
 
 .pedido-card {
@@ -276,6 +275,54 @@ body {
     margin-bottom: 1.25rem;
     position: relative;
     z-index: 1;
+}
+
+.pedido-card__header-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.pedido-collapse {
+    border: none;
+}
+
+.pedido-collapse__summary {
+    list-style: none;
+    cursor: pointer;
+}
+
+.pedido-collapse__summary::-webkit-details-marker {
+    display: none;
+}
+
+.pedido-collapse__summary:focus-visible {
+    outline: 3px solid rgba(255, 122, 26, 0.35);
+    outline-offset: 4px;
+    border-radius: 14px;
+}
+
+.pedido-collapse__chevron {
+    display: inline-flex;
+    width: 28px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    background: rgba(255, 255, 255, 0.7);
+    color: #7a5a21;
+    transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.pedido-collapse[open] .pedido-collapse__chevron {
+    transform: rotate(180deg);
+    background: rgba(255, 237, 213, 0.9);
+}
+
+.pedido-collapse__content {
+    padding-top: 0.5rem;
 }
 
 .pedido-card__titulo {
@@ -525,6 +572,58 @@ body {
     background: #198754;
     color: #fff;
     box-shadow: 0 10px 20px -18px rgba(25, 135, 84, 0.9);
+}
+
+.btn-avancar-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.btn-avancar-status .btn-avancar-status__loading {
+    display: none;
+}
+
+.btn-avancar-status .btn-avancar-status__icon {
+    font-size: 1.1rem;
+    line-height: 1;
+    transform: translateX(0);
+    transition: transform 0.15s ease;
+}
+
+.btn-avancar-status:hover .btn-avancar-status__icon {
+    transform: translateX(2px);
+}
+
+.btn-avancar-status:active {
+    transform: translateY(1px);
+}
+
+.btn-avancar-status.is-loading {
+    cursor: progress;
+    opacity: 0.9;
+}
+
+.btn-avancar-status.is-loading .btn-avancar-status__text,
+.btn-avancar-status.is-loading .btn-avancar-status__icon {
+    display: none;
+}
+
+.btn-avancar-status.is-loading .btn-avancar-status__loading {
+    display: inline;
+}
+
+.btn-avancar-status:disabled,
+.btn-avancar-status[disabled] {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .pedido-card__secao--acoes form button.btn.btn-primary {

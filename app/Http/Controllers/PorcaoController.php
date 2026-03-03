@@ -10,7 +10,7 @@ class PorcaoController extends Controller
     {
         $genericBase = new GenericBase();
         $usuarioLogado = $genericBase->pegarUsuarioLogado();
-        $porcao = $genericBase->findByProdutos('Porcao');
+        $porcao = $genericBase->findByProdutos('Porções');
 
         return view('Porcao', [
             'usuario' => $usuarioLogado,

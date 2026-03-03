@@ -112,7 +112,9 @@ class PedidosFeitosController extends Controller
 
     public function avancarStatus(Pedido $pedido): RedirectResponse
     {
-        $statusAtual = EnumsStatusPedidos::tryFrom((int) $pedido->status_enum) ?? EnumsStatusPedidos::PENDENTE;
+        // Nesta rota o Route Model Binding retorna o model sem atributos "derivados" (ex: status_enum).
+        // O status persistido fica em $pedido->status.
+        $statusAtual = EnumsStatusPedidos::tryFrom((int) $pedido->status) ?? EnumsStatusPedidos::PENDENTE;
         $proximo = $this->service->proximoStatus($statusAtual);
 
         if (!$proximo) {

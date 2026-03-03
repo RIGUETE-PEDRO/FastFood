@@ -33,16 +33,13 @@
         <div class="container-produtos mt-4">
             @foreach ($produtos as $produto)
 
-            <div class="produto" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
+            <div class="produto produto--interactive" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
                 <div class="container-img">
-                    <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="">
+                    <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" loading="lazy">
+                    <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $produto->preco, 2, ',', '.') }}</span>
                 </div>
                 <div class="preco-conteiner">
                     <label class="lanche">{{ $produto->nome }}</label>
-                    <label class="preco">Preço</label>
-                    <br>
-                    <label class="valor">R${{ $produto->preco }}</label>
-                    <br>
                 </div>
                 @if(!empty($produto->descricao))
                 <div class="ingredientes-wrap">

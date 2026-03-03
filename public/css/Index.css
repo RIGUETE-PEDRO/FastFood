@@ -30,6 +30,26 @@
     height: 500px;
 }
 
+/* Card mais moderno e interativo */
+.produto--interactive{
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.produto--interactive:hover{
+    transform: translateY(-4px);
+    border-color: rgba(0,0,0,0.10);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+}
+
+.produto--interactive:focus-within{
+    outline: 2px solid rgba(9, 98, 187, 0.35);
+    outline-offset: 2px;
+}
+
 /* imagem com proporção fixa e crop via object-fit */
 .container-img {
     height: 320px; /* caixa consistente para todas as imagens */
@@ -65,6 +85,29 @@
     object-fit: cover;
     display: block;
     border-radius: 6px;
+    transition: transform .35s ease;
+}
+
+.produto--interactive:hover img{
+    transform: scale(1.06);
+}
+
+.container-img{
+    position: relative;
+}
+
+.produto-badge{
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.62);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: .2px;
+    backdrop-filter: blur(6px);
 }
 
 /* opção para preservar imagem inteira sem corte (use class="no-crop" no <img>) */
@@ -172,7 +215,7 @@
 /* empurra o botão para o final do card, garantindo alinhamento entre cards */
 .button-adicionar {
     font-family: "Kaisei Opti", serif;
-    background-color: rgb(9, 98, 187);
+    background: linear-gradient(135deg, rgb(9, 98, 187), rgb(25, 0, 255));
     color: white;
     padding: 10px 15px;
     border: none;
@@ -183,13 +226,23 @@
     margin-top: auto;
     align-self: stretch;
     width: 100%;
+
+    transition: transform .12s ease, box-shadow .18s ease, filter .18s ease;
 }
 
 /* hover do botão permanece */
 .button-adicionar:hover {
-    background-color: rgb(25, 0, 255);
-    transition: 0.3s;
+    filter: brightness(1.02);
     box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}
+
+.button-adicionar:active{
+    transform: translateY(1px) scale(0.99);
+}
+
+.button-adicionar:focus-visible{
+    outline: 2px solid rgba(255, 123, 0, 0.7);
+    outline-offset: 2px;
 }
 
 /* responsividade: 3 cols / 2 cols / 1 col */
@@ -210,7 +263,7 @@
      font-family: "Kaisei Opti", serif;
     font-size: 1.2em;
     font-weight: 700;
-    color: red;
+    color: #1f2937;
 }
 
 /* ================================

@@ -103,6 +103,7 @@
 
 body {
     background-color: #fae8cb !important;
+    overflow-x: hidden;
 }
 
 .circulo_maior {
@@ -205,6 +206,12 @@ body {
         rgba(255, 0, 0, 1) 90%
     );
     color: rgba(255, 251, 6, 0.915);
+
+    position: sticky;
+    top: 0;
+    min-height: 100vh;
+    height: 100vh;
+    overflow-x: hidden;
 }
 
 .ff-main {
@@ -248,6 +255,9 @@ body {
     padding: 8px 10px;
     transition: background-color 0.25s ease, color 0.25s ease,
         transform 0.2s ease, box-shadow 0.2s ease;
+
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .ff-sidebar__nav .nav-link.active {

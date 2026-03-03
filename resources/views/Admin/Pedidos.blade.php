@@ -94,12 +94,12 @@
             </section>
 
             <section class="acordeao-pedidos">
-                <button class="acordeao-pedidos__gatilho" type="button" data-target="#pedidosFinalizados" aria-expanded="false">
+                <button class="acordeao-pedidos__gatilho" type="button" data-target="#pedidosFinalizados" aria-controls="pedidosFinalizados" aria-expanded="false">
                     <span>Pedidos finalizados</span>
                     <span class="acordeao-pedidos__contador">{{ count($pedidosPorStatus['finalizados'] ?? []) }}</span>
                     <span class="acordeao-pedidos__icone" aria-hidden="true"></span>
                 </button>
-                <div class="acordeao-pedidos__conteudo" id="pedidosFinalizados">
+                <div class="acordeao-pedidos__conteudo" id="pedidosFinalizados" hidden>
                     @forelse(($pedidosPorStatus['finalizados'] ?? collect()) as $pedido)
                         @include('Admin.partials.pedido-card', [
                             'pedido' => $pedido,
@@ -107,6 +107,8 @@
                             'statusTimeline' => $statusTimeline,
                             'statusLabels' => $statusLabels,
                             'desabilitarAcoes' => true,
+                            'colapsavel' => true,
+                            'iniciarRecolhido' => true,
                         ])
                     @empty
                         <div class="card shadow-sm">
@@ -131,24 +133,45 @@
                     return;
                 }
 
+                const abrir = () => {
+                    botao.setAttribute('aria-expanded', 'true');
+                    conteudo.hidden = false;
+                    conteudo.classList.add('is-open');
+                };
+
+                const fechar = () => {
+                    botao.setAttribute('aria-expanded', 'false');
+                    conteudo.classList.remove('is-open');
+                    conteudo.hidden = true;
+                };
+
                 botao.addEventListener('click', () => {
                     const expandido = botao.getAttribute('aria-expanded') === 'true';
-                    botao.setAttribute('aria-expanded', String(!expandido));
-
                     if (expandido) {
-                        conteudo.classList.remove('is-open');
-                        conteudo.style.maxHeight = '0px';
+                        fechar();
                     } else {
-                        conteudo.classList.add('is-open');
-                        conteudo.style.maxHeight = `${conteudo.scrollHeight}px`;
+                        abrir();
                     }
                 });
 
-                // Ajusta altura caso já esteja marcado como aberto no HTML
+                // Estado inicial: por padrão vem fechado; se no futuro quiser abrir via HTML, funciona também
                 if (botao.getAttribute('aria-expanded') === 'true') {
-                    conteudo.classList.add('is-open');
-                    conteudo.style.maxHeight = `${conteudo.scrollHeight}px`;
+                    abrir();
+                } else {
+                    conteudo.hidden = true;
                 }
+            });
+
+            document.querySelectorAll('form[data-disable-on-submit]').forEach((form) => {
+                form.addEventListener('submit', () => {
+                    const botao = form.querySelector('[data-avancar-button]');
+                    if (!botao) {
+                        return;
+                    }
+
+                    botao.classList.add('is-loading');
+                    botao.setAttribute('disabled', 'disabled');
+                });
             });
         });
     </script>

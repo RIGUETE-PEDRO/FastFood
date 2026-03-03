@@ -27,16 +27,13 @@
             @foreach ($pizzas as $pizza)
 
 
-            <div class="produto" data-produto-id="{{ $pizza->id }}" data-produto-nome="{{ $pizza->nome }}" data-produto-preco="{{ $pizza->preco }}">
+            <div class="produto produto--interactive" data-produto-id="{{ $pizza->id }}" data-produto-nome="{{ $pizza->nome }}" data-produto-preco="{{ $pizza->preco }}">
                 <div class="container-img">
-                    <img src="{{ asset('img/produtos/' . $pizza->imagem_url) }}" alt="">
+                    <img src="{{ asset('img/produtos/' . $pizza->imagem_url) }}" alt="{{ $pizza->nome }}" loading="lazy">
+                    <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $pizza->preco, 2, ',', '.') }}</span>
                 </div>
                 <div class="preco-conteiner">
                     <label class="lanche">{{ $pizza->nome }}</label>
-                    <label class="preco">Preço</label>
-                    <br>
-                    <label class="valor">R${{ $pizza->preco }}</label>
-                    <br>
                 </div>
                 @if(!empty($pizza->descricao))
                 <div class="ingredientes-wrap">

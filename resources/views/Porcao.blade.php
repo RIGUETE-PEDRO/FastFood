@@ -24,24 +24,21 @@
 
 
         <div class="container-produtos mt-4">
-            @foreach ($porcao as $porcaos)
+            @forelse ($porcao as $porcaos)
 
 
-            <div class="produto" data-produto-id="{{ $porcaos->id }}" data-produto-nome="{{ $porcaos->nome }}" data-produto-preco="{{ $porcaos->preco }}">
+            <div class="produto produto--interactive" data-produto-id="{{ $porcaos->id }}" data-produto-nome="{{ $porcaos->nome }}" data-produto-preco="{{ $porcaos->preco }}">
                 <div class="container-img">
-                    <img src="{{ asset('img/produtos/' . $porcaos->imagem_url) }}" alt="">
+                    <img src="{{ asset('img/produtos/' . $porcaos->imagem_url) }}" alt="{{ $porcaos->nome }}" loading="lazy">
+                    <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $porcaos->preco, 2, ',', '.') }}</span>
                 </div>
                 <div class="preco-conteiner">
-                    <label class="lanche">{{ $porcao->nome }}</label>
-                    <label class="preco">Preço</label>
-                    <br>
-                    <label class="valor">R${{ $porcao->preco }}</label>
-                    <br>
+                    <label class="lanche">{{ $porcaos->nome }}</label>
                 </div>
-                 @if(!empty($pizza->descricao))
+                 @if(!empty($porcaos->descricao))
                 <div class="ingredientes-wrap">
                     <span class="ingredientes">ingredientes:</span>
-                    <div class="ingredientes-lista">{{ $pizza->descricao }}</div>
+                    <div class="ingredientes-lista">{{ $porcaos->descricao }}</div>
                 </div>
                 @else
                 <br>
@@ -51,7 +48,11 @@
                     <button type="button" class="button-adicionar">Adicionar ao carrinho</button>
                 </div>
             </div>
-            @endforeach
+            @empty
+                <div class="alert alert-warning" role="alert">
+                    Nenhuma porção disponível no momento.
+                </div>
+            @endforelse
         </div>
 
         <!-- Modal: Adicionar ao carrinho -->
