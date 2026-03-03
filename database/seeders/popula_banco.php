@@ -73,7 +73,7 @@ class popula_banco extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
                 'disponivel' => true,
-                'imagem_url' => 'personPadrao.svg',
+                'imagem_url' => 'sem_imagem.jpg',
             ],
         ]);
 

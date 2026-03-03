@@ -21,48 +21,48 @@ use App\Http\Controllers\MesaController;
 /* GERENCIAMENTO DE PERFIL */
 ///////////////////////////////////////////////////////
 
-    Route::get('/', [IndexController::class, 'index'])->name('home');
+Route::get('/', [IndexController::class, 'index'])->name('home');
 
-    //perfil
-    Route::post('/perfil', [AdminController::class, 'InfoPerfil'])->name('usuario')->middleware('auth');
+//perfil
+Route::post('/perfil', [AdminController::class, 'InfoPerfil'])->name('usuario')->middleware('auth');
 
-    //login
-    Route::get('/login', function () {
-        return view('Login');
-    })->name('login.form');
+//login
+Route::get('/login', function () {
+    return view('Login');
+})->name('login.form');
 
-    //cadastro
-    Route::get('/registro', function () {
-        return view('Cadastrar');
-    })->name('registro.form');
+//cadastro
+Route::get('/registro', function () {
+    return view('Cadastrar');
+})->name('registro.form');
 
-    //lista de produtos
-    Route::get('/Lista_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])->name('ListaProdutos');
+//lista de produtos
+Route::get('/Lista_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])->name('ListaProdutos');
 
-    //cadastro de funcionário
-    Route::post('/CadastrarFuncionario', [RegisterController::class, 'registerFuncionario'])
-        ->name('CadastrarFuncionario')
-        ->middleware(['auth', 'admin.access']);
+//cadastro de funcionário
+Route::post('/CadastrarFuncionario', [RegisterController::class, 'registerFuncionario'])
+    ->name('CadastrarFuncionario')
+    ->middleware(['auth', 'admin.access']);
 
-    //esqueci minha senha
-    Route::get('/esqueci-senha', function () {
-        return view('Esqueci-senha');
-    })->name('senha.form');
+//esqueci minha senha
+Route::get('/esqueci-senha', function () {
+    return view('Esqueci-senha');
+})->name('senha.form');
 
-    //redifinir senha
-    Route::get('/redefinir-senha', function () {
-        return view('Redefinir-senha');
-    })->name('senha.redefinir.form');
+//redifinir senha
+Route::get('/redefinir-senha', function () {
+    return view('Redefinir-senha');
+})->name('senha.redefinir.form');
 
 
-    //logout
-    Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+//logout
+Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    //perfil
-    Route::get('/perfil', [AdminController::class, 'InfoPerfil'])->name('perfil')->middleware('auth');
+//perfil
+Route::get('/perfil', [AdminController::class, 'InfoPerfil'])->name('perfil')->middleware('auth');
 
-    //buscar funcionários
-    Route::get('/funcionarios/buscar', [GerenciamentoUsuarioController::class, 'buscarFuncionarios'])->name('funcionarios.buscar');
+//buscar funcionários
+Route::get('/funcionarios/buscar', [GerenciamentoUsuarioController::class, 'buscarFuncionarios'])->name('funcionarios.buscar');
 /////////////////////////////////////////////////////////
 
 
@@ -70,26 +70,21 @@ use App\Http\Controllers\MesaController;
 /* PROCESSO DOS PEDIDOS */
 ///////////////////////////////////////////////////////
 //administrativo
-Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])
-    ->name('Administrativo')
-    ->middleware(['auth', 'admin.access']);
+Route::middleware(['auth', 'admin.access'])->group(function () {
+    Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])
+        ->name('Administrativo');
 
+    Route::get('/Pedidos.Administrativo', [PedidosFeitosController::class, 'verPedidosAdmin'])
+        ->name('Pedidos.Administrativo');
 
+    Route::patch('/Pedidos.Administrativo/{pedido}/status', [PedidosFeitosController::class, 'atualizarStatus'])
+        ->name('Pedidos.StatusAtualizar');
 
-Route::get('/Pedidos.Administrativo', [PedidosFeitosController::class, 'verPedidosAdmin'])
-    ->name('Pedidos.Administrativo')
-    ->middleware(['auth', 'admin.access']);
+    Route::post('/Pedidos.Administrativo/{pedido}/avancar', [PedidosFeitosController::class, 'avancarStatus'])
+        ->name('Pedidos.StatusAvancar');
 
-Route::patch('/Pedidos.Administrativo/{pedido}/status', [PedidosFeitosController::class, 'atualizarStatus'])
-    ->name('Pedidos.StatusAtualizar')
-    ->middleware(['auth', 'admin.access']);
-
-Route::post('/Pedidos.Administrativo/{pedido}/avancar', [PedidosFeitosController::class, 'avancarStatus'])
-    ->name('Pedidos.StatusAvancar')
-    ->middleware(['auth', 'admin.access']);
-
-Route::get('/pedidos', [PedidoController::class, 'verPedido'])->name('pedidos')->middleware('auth');
-
+    Route::get('/pedidos', [PedidoController::class, 'verPedido'])->name('pedidos')->middleware('auth');
+});
 
 ///////////////////////////////////////////////////////
 /* GERENCIAMENTO DE PRODUTOS */
@@ -102,7 +97,7 @@ Route::post('/Cadastrar_Produto', [GerenciamentoProdutoController::class, 'cadas
     ->name('Cadastrar_Produto')
     ->middleware(['auth', 'admin.access']);
 
- Route::get('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])
+Route::get('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])
     ->name('gerenciamento_Produtos')
     ->middleware(['auth', 'admin.access']);
 
@@ -116,7 +111,7 @@ Route::post('/gerenciamento_Produtos/{id}/deletar', [GerenciamentoProdutoControl
 ///////////////////////////////////////////////////////
 /* GERENCIAMENTO DO USUARIO */
 ///////////////////////////////////////////////////////
-Route::get('/Lanches',[LanchesController::class, 'Lanches'])->name('Lanches');
+Route::get('/Lanches', [LanchesController::class, 'Lanches'])->name('Lanches');
 
 Route::get('/Pizza', [PizzaController::class, 'Pizza'])->name('Pizza');
 
@@ -128,29 +123,32 @@ Route::get('/porcao', [PorcaoController::class, 'porcao'])->name('Porcao');
 ///////////////////////////////////////////////////////
 /* GERENCIAMENTO DE CARRINHO */
 ///////////////////////////////////////////////////////
-Route::get('/carrinho', [CarrinhoController::class, 'verCarrinho'])->name('carrinho')->middleware('auth');
 
-Route::post('/carrinho/adicionar', [CarrinhoController::class, 'adicionarAoCarrinho'])->name('carrinho.adicionar')->middleware('auth');
+Route::middleware(['auth', 'admin.access'])->group(function () {
+    Route::get('/carrinho', [CarrinhoController::class, 'verCarrinho'])->name('carrinho');
 
-Route::post('/carrinho/endereco', [CarrinhoController::class, 'pegarEndereco'])->name('carrinho.endereco')->middleware('auth');
-Route::post('/carrinho/pagamento', [CarrinhoController::class, 'registrarPedido'])->name('carrinho.Pedido')->middleware('auth');
+    Route::post('/carrinho/adicionar', [CarrinhoController::class, 'adicionarAoCarrinho'])->name('carrinho.adicionar');
 
-Route::post('/carrinho/selecionarCidade', [CarrinhoController::class, 'selecionarCidade'])->name('cidade.buscar')->middleware('auth');
+    Route::post('/carrinho/endereco', [CarrinhoController::class, 'pegarEndereco'])->name('carrinho.endereco');
+    Route::post('/carrinho/pagamento', [CarrinhoController::class, 'registrarPedido'])->name('carrinho.Pedido');
+
+    Route::post('/carrinho/selecionarCidade', [CarrinhoController::class, 'selecionarCidade'])->name('cidade.buscar');
 
 
-Route::post('/carrinho/{id}/remover', [CarrinhoController::class, 'removerDoCarrinho'])->name('carrinho.remover')->middleware('auth');
+    Route::post('/carrinho/{id}/remover', [CarrinhoController::class, 'removerDoCarrinho'])->name('carrinho.remover');
 
-Route::put('/carrinho/{id}/atualizarQuantidade', [CarrinhoController::class, 'atualizarQuantidade'])->name('carrinho.atualizarQuantidade')->middleware('auth');
+    Route::put('/carrinho/{id}/atualizarQuantidade', [CarrinhoController::class, 'atualizarQuantidade'])->name('carrinho.atualizarQuantidade');
 
-Route::put('/carrinho/{id}/selecionar', [CarrinhoController::class, 'toggleSelecionar'])->name('carrinho.toggle')->middleware('auth');
+    Route::put('/carrinho/{id}/selecionar', [CarrinhoController::class, 'toggleSelecionar'])->name('carrinho.toggle');
 
-Route::get('/carrinho/{id}/deletar', function ($id) {
-    return redirect()->route('carrinho');
-})->middleware('auth');
+    Route::get('/carrinho/{id}/deletar', function ($id) {
+        return redirect()->route('carrinho');
+    });
 
-Route::match(['post', 'delete'], '/carrinho/{id}/deletar', [CarrinhoController::class, 'deletarEndereco'])->name('endereco.excluir')->middleware('auth');
+    Route::match(['post', 'delete'], '/carrinho/{id}/deletar', [CarrinhoController::class, 'deletarEndereco'])->name('endereco.excluir');
 
-Route::post('/carrinho/mesa', [CarrinhoController::class, 'selecionarMesa'])->name('carrinho.mesa')->middleware('auth');
+    Route::post('/carrinho/mesa', [CarrinhoController::class, 'selecionarMesa'])->name('carrinho.mesa');
+});
 ///////////////////////////////////////////////////////
 /* GERENCIAMENTO DE MESAS */
 ///////////////////////////////////////////////////////
@@ -191,22 +189,21 @@ Route::get('/AcessoNegado', function () {
 /* GERENCIAMENTO DE FUNCIONARIO */
 ///////////////////////////////////////////////////////
 
-Route::get('/gerenciamento_Funcionario', [GerenciamentoUsuarioController::class, 'gerenciamentoFuncionario'])
-    ->name('gerenciamento_funcionarios')
-    ->middleware(['auth', 'admin.access']);
+Route::middleware(['auth', 'admin.access'])->group(function () {
+    Route::get('/gerenciamento_Funcionario', [GerenciamentoUsuarioController::class, 'gerenciamentoFuncionario'])
+        ->name('gerenciamento_funcionarios');
 
-Route::post('/funcionarios/{id}/atualizar', [GerenciamentoUsuarioController::class, 'atualizarFuncionario'])
-    ->name('funcionarios.atualizar')
-    ->middleware(['auth', 'admin.access']);
+    Route::post('/funcionarios/{id}/atualizar', [GerenciamentoUsuarioController::class, 'atualizarFuncionario'])
+        ->name('funcionarios.atualizar');
 
-Route::post('/funcionarios/{id}/deletar', [GerenciamentoUsuarioController::class, 'deletarUsuario'])
-    ->name('funcionarios.deletar')
-    ->middleware(['auth', 'admin.access']);
 
-Route::post('/atualizar_produto/{id}/atualizar', [GerenciamentoProdutoController::class, 'atualizarProduto'])
-    ->name('produtos.atualizar')
-    ->middleware(['auth', 'admin.access']);
+    Route::post('/funcionarios/{id}/deletar', [GerenciamentoUsuarioController::class, 'deletarUsuario'])
+        ->name('funcionarios.deletar');
 
+
+    Route::post('/atualizar_produto/{id}/atualizar', [GerenciamentoProdutoController::class, 'atualizarProduto'])
+        ->name('produtos.atualizar');
+});
 //pegar dados do usuário logado
 
 

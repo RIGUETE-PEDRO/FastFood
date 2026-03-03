@@ -15,6 +15,39 @@ use Illuminate\Support\Facades\DB;
 
 class MesasService extends GenericBase
 {
+    private function normalizarMetodoPagamento(?string $metodo): ?string
+    {
+        $metodo = trim((string) $metodo);
+        if ($metodo === '') {
+            return null;
+        }
+
+        return match ($metodo) {
+            'cartao_credito', 'cartao_debito', 'cartao' => 'cartao',
+            default => $metodo,
+        };
+    }
+
+    private function combinarMetodosPagamento(?string $existente, ?string $novo): ?string
+    {
+        $novoNormalizado = $this->normalizarMetodoPagamento($novo);
+        if ($novoNormalizado === null) {
+            return $existente;
+        }
+
+        $partes = collect(preg_split('/\s*\+\s*/', (string) $existente) ?: [])
+            ->map(fn ($m) => $this->normalizarMetodoPagamento($m))
+            ->filter(fn ($m) => !empty($m))
+            ->values()
+            ->all();
+
+        if (!in_array($novoNormalizado, $partes, true)) {
+            $partes[] = $novoNormalizado;
+        }
+
+        return implode(' + ', $partes);
+    }
+
     private function finalizarPedidosDaMesa(int $mesaId): void
     {
         $pedidoIds = ItemPedido::query()
@@ -129,7 +162,7 @@ class MesasService extends GenericBase
             if ($qtd === $max) {
                 $item->status_da_comanda = 'pago';
                 $item->pago_em = $agora;
-                $item->pagamento_metodo = $pagamentoMetodo;
+                $item->pagamento_metodo = $this->combinarMetodosPagamento($item->pagamento_metodo, $pagamentoMetodo);
                 $item->save();
                 continue;
             }
@@ -140,7 +173,7 @@ class MesasService extends GenericBase
                 'quantidade' => $qtd,
                 'status_da_comanda' => 'pago',
                 'pago_em' => $agora,
-                'pagamento_metodo' => $pagamentoMetodo,
+                'pagamento_metodo' => $this->combinarMetodosPagamento(null, $pagamentoMetodo),
                 'produto_id' => $item->produto_id,
                 'usuario_id' => $item->usuario_id,
                 'pedido_id' => $item->pedido_id,
@@ -262,7 +295,7 @@ class MesasService extends GenericBase
                     $novoPagoCents = $pagoCents + $pagarAgora;
 
                     $target->valor_pago = round($novoPagoCents / 100, 2);
-                    $target->pagamento_metodo = $pagamentoMetodo;
+                    $target->pagamento_metodo = $this->combinarMetodosPagamento($target->pagamento_metodo, $pagamentoMetodo);
 
                     if ($novoPagoCents >= $unitCents) {
                         $target->status_da_comanda = 'pago';
