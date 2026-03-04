@@ -70,7 +70,7 @@
     <div class="mt-auto ff-sidebar__footer">
         @if(isset($usuario) && $usuario)
             <div class="dropdown w-100">
-                <button class="btn ff-sidebar__user-btn dropdown-toggle w-100 d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn ff-sidebar__user-btn w-100 d-flex align-items-center justify-content-between" type="button" aria-haspopup="true" aria-expanded="false">
                     <div class="d-flex align-items-center me-2">
                         <div class="circulo_maior me-2">
                             <img class="profile-image" id="preview-image"

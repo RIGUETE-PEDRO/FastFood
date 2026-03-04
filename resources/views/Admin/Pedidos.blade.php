@@ -20,7 +20,12 @@
                 Menu
             </button>
 
-    <main class="container py-4 pedidos-admin">
+    <main
+        class="container py-4 pedidos-admin"
+        id="pedidos-admin-root"
+        data-polling-url="{{ route('Pedidos.Poll') }}"
+        data-checksum="{{ $realtimeChecksum ?? '' }}"
+    >
         <header class="cabecalho-pedidos mb-4">
             <div class="cabecalho-pedidos__titulo">
                 <span class="cabecalho-pedidos__etiqueta">Painel de pedidos</span>
@@ -71,150 +76,6 @@
             ])
         </div>
     </main>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const pollingUrl = "{{ route('Pedidos.Poll') }}";
-            let checksumAtual = "{{ $realtimeChecksum ?? '' }}";
-            let atualizandoConteudo = false;
-            const badgeTotal = document.getElementById('pedidos-total-badge');
-            const resumoWrapper = document.getElementById('pedidos-resumo-wrapper');
-            const listaWrapper = document.getElementById('pedidos-lista-wrapper');
-
-            const inicializarInteracoes = () => {
-                const gatilhos = document.querySelectorAll('.acordeao-pedidos__gatilho');
-
-                gatilhos.forEach((botao) => {
-                    const seletor = botao.dataset.target;
-                    const conteudo = document.querySelector(seletor);
-
-                    if (!conteudo) {
-                        return;
-                    }
-
-                    const abrir = () => {
-                        botao.setAttribute('aria-expanded', 'true');
-                        conteudo.hidden = false;
-                        conteudo.classList.add('is-open');
-                    };
-
-                    const fechar = () => {
-                        botao.setAttribute('aria-expanded', 'false');
-                        conteudo.classList.remove('is-open');
-                        conteudo.hidden = true;
-                    };
-
-                    botao.addEventListener('click', () => {
-                        const expandido = botao.getAttribute('aria-expanded') === 'true';
-                        if (expandido) {
-                            fechar();
-                        } else {
-                            abrir();
-                        }
-                    });
-
-                    if (botao.getAttribute('aria-expanded') === 'true') {
-                        abrir();
-                    } else {
-                        conteudo.hidden = true;
-                    }
-                });
-
-                document.querySelectorAll('form[data-disable-on-submit]').forEach((form) => {
-                    if (form.dataset.enhanced === '1') {
-                        return;
-                    }
-
-                    form.dataset.enhanced = '1';
-                    form.addEventListener('submit', () => {
-                        const botao = form.querySelector('[data-avancar-button]');
-                        if (!botao) {
-                            return;
-                        }
-
-                        botao.classList.add('is-loading');
-                        botao.setAttribute('disabled', 'disabled');
-                    });
-                });
-            };
-
-            const atualizarConteudo = async () => {
-                const resposta = await fetch(`${pollingUrl}?full=1&t=${Date.now()}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    },
-                    credentials: 'same-origin',
-                    cache: 'no-store'
-                });
-
-                if (!resposta.ok) {
-                    return;
-                }
-
-                const dados = await resposta.json();
-                if (!dados || !dados.checksum) {
-                    return;
-                }
-
-                if (typeof dados.resumoHtml === 'string' && resumoWrapper) {
-                    resumoWrapper.innerHTML = dados.resumoHtml;
-                }
-
-                if (typeof dados.listaHtml === 'string' && listaWrapper) {
-                    listaWrapper.innerHTML = dados.listaHtml;
-                }
-
-                if (badgeTotal && dados.totalLabel) {
-                    badgeTotal.textContent = dados.totalLabel;
-                }
-
-                checksumAtual = dados.checksum;
-                inicializarInteracoes();
-            };
-
-            const verificarMudancas = async () => {
-                if (atualizandoConteudo || document.visibilityState !== 'visible') {
-                    return;
-                }
-
-                try {
-                    const resposta = await fetch(`${pollingUrl}?t=${Date.now()}`, {
-                        method: 'GET',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        },
-                        credentials: 'same-origin',
-                        cache: 'no-store'
-                    });
-
-                    if (!resposta.ok) {
-                        return;
-                    }
-
-                    const dados = await resposta.json();
-                    if (!dados || !dados.checksum) {
-                        return;
-                    }
-
-                    if (checksumAtual && dados.checksum !== checksumAtual) {
-                        atualizandoConteudo = true;
-                        await atualizarConteudo();
-                        atualizandoConteudo = false;
-                    } else {
-                        checksumAtual = dados.checksum;
-                    }
-                } catch (_) {
-                    // Ignora falhas temporárias de rede para não poluir a UI.
-                    atualizandoConteudo = false;
-                }
-            };
-
-            inicializarInteracoes();
-            window.setInterval(verificarMudancas, 8000);
-        });
-    </script>
         </div>
     </div>
 </body>
