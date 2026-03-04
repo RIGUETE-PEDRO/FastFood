@@ -10,9 +10,9 @@ class AdminService
 {
     protected GenericBase $genericBase;
 
-    public function __construct()
+    public function __construct( GenericBase $genericBase)
     {
-        $this->genericBase = new GenericBase();
+        $this->genericBase = $genericBase;
     }
 
     public function InserirImagemPerfil()

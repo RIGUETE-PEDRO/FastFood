@@ -7,10 +7,17 @@ use App\Models\Produto;
 
 class GerenciaProdutosService
 {
+    protected GenericBase $genericBase;
+
+    public function __construct(GenericBase $genericBase)
+    {
+        $this->genericBase = $genericBase;
+    }
+
     public function criarProduto($request)
     {
         $preco = str_replace(',', '.', $request->preco);
-        $produto = new Produto(
+        $produto = Produto::create(
             [
                 'nome' => $request->input('nome'),
                 'preco' => $preco,
@@ -36,10 +43,7 @@ class GerenciaProdutosService
 
     public function removerProduto($id)
     {
-
-        $genericBase = new GenericBase();
-
-        $usuarioLogado = $genericBase->pegarUsuarioLogado();
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
 
         if (($usuarioLogado['tipo'] ?? null) === 'Administrador') {
 

@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Funcionario;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Hash;
-use App\Mensagens\ErroMessages;
+use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
 
 class AuthService
@@ -15,17 +15,17 @@ class AuthService
     {
         // Verifica se o email já está cadastrado
         if (Usuario::where('email', $data['email'])->exists()) {
-            return redirect()->back()->with('erro', ErroMessages::Email_JA_CADASTRADO);
+            return redirect()->back()->with('erro', ErroMensagens::EMAIL_JA_CADASTRADO);
         }
 
          // Verifica o tamanho da senha
         if (strlen($data['senha']) < 6) {
-            return redirect()->back()->with('erro', ErroMessages::MIN_CARACTERES_SENHA);
+            return redirect()->back()->with('erro', ErroMensagens::MIN_CARACTERES_SENHA);
         }
 
         // Verifica se as senhas coincidem
         if ($data['senha'] !== $data['senha_confirmation']) {
-            return redirect()->back()->with('erro', ErroMessages::SENHAS_NAO_COINCIDEM);
+            return redirect()->back()->with('erro', ErroMensagens::SENHAS_NAO_COINCIDEM);
         }
 
         // Cria o novo usuário no banco de dados
@@ -65,14 +65,14 @@ class AuthService
                 if ($funcionario->has_ativo) {
                     return $usuarioExistente;
                 } else {
-                    return redirect('AcessoNegado')->with('erro', ErroMessages::CREDENCIAIS_INVALIDAS);
+                    return redirect('AcessoNegado')->with('erro', ErroMensagens::CREDENCIAIS_INVALIDAS);
                 }
             } else {
-                return redirect('AcessoNegado')->with('erro', ErroMessages::CREDENCIAIS_INVALIDAS);
+                return redirect('AcessoNegado')->with('erro', ErroMensagens::CREDENCIAIS_INVALIDAS);
             }
         }
 
-        return redirect('AcessoNegado')->with('erro', ErroMessages::CREDENCIAIS_INVALIDAS);
+        return redirect('AcessoNegado')->with('erro', ErroMensagens::CREDENCIAIS_INVALIDAS);
     }
 
 

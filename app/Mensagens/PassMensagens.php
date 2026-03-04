@@ -24,5 +24,6 @@ class PassMensagens{
     public const MESA_REMOVIDA_SUCESSO = 'Mesa removida com sucesso!';
     public const MESA_ATUALIZADA_SUCESSO = 'Mesa atualizada com sucesso!';
     public const MESA_SELECIONADA_SUCESSO = 'Mesa selecionada com sucesso!';
+    public const PAGAMENTO_REALIZADO_SUCESSO = 'Pagamento realizado com sucesso!';
 
 }

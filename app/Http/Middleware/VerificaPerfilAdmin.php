@@ -18,12 +18,12 @@ class VerificaPerfilAdmin
 
         if (!$usuario) {
             return redirect()->route('login.form')
-                ->with('erro', 'Faça login para acessar esta área.');
+                ->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
         $tiposPermitidos = array_map('intval', $tiposPermitidos);
         if (empty($tiposPermitidos)) {
-            $tiposPermitidos = [2, 3]; // 2 = Estabelecimento, 3 = Administrador
+            $tiposPermitidos = [2, 3];
         }
 
         if (!in_array((int) $usuario->tipo_usuario_id, $tiposPermitidos, true)) {

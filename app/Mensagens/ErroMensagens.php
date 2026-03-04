@@ -8,7 +8,7 @@ class ErroMensagens{
     public const NAO_LOGADO_ENDERECO = 'Faça login para selecionar um endereço.';
     public const ENDEREÇO_NAO_ENCONTRADO = 'Endereço não encontrado';
     public const PRECISA_ESTA_LOGADO = 'Faça login para acessar essa funcionalidade.';
-    public const Email_JA_CADASTRADO = 'Esse E-mail já encontra cadastrado.';
+    public const EMAIL_JA_CADASTRADO = 'Esse E-mail já encontra cadastrado.';
     public const SENHA_INVALIDA = 'Senha inválida.';
     public const USUARIO_NAO_ENCONTRADO = 'Usuário não encontrado.';
 
@@ -32,5 +32,9 @@ class ErroMensagens{
     public const NUMERO_MESA_INVALIDO = 'O número da mesa deve ser maior que zero.';
     public const SEM_ID_MESA = 'Nenhuma mesa selecionada para remoção.';
     public const NUMERO_JA_EXISTENTE = 'Já existe uma mesa com esse número. Por favor, escolha outro número.';
-
+    public const VALOR_PAGAMENTO_EXCEDE_TOTAL = 'O valor digitado não pode ser maior que o total selecionado.';
+    public const ERRO_ABATER_ITENS = 'Ocorreu um erro ao abater os itens. Por favor, tente novamente.';
+    public const NENHUM_ITEM_SELECIONADO = 'Nenhum item válido selecionado para abater.';
+    public const DIGITE_VALOR_PAGAMENTO_TOTAL = 'Digite o valor total do pagamento para abater.';
+    public const SELECIONE_FORMA_PAGAMENTO = 'Selecione uma forma de pagamento para abater.';
 }

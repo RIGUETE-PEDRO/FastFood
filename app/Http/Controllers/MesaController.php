@@ -113,7 +113,7 @@ class MesaController extends Controller
         $metodosPermitidos = ['cartao_credito', 'cartao_debito', 'pix', 'dinheiro'];
 
         if ($pagamentoMetodo === '' || !in_array($pagamentoMetodo, $metodosPermitidos, true)) {
-            return redirect()->back()->with('error', 'Selecione uma forma de pagamento para abater.');
+            return redirect()->back()->with('error', ErroMensagens::SELECIONE_FORMA_PAGAMENTO);
         }
 
         $parseValor = function (string $raw): ?float {
@@ -144,7 +144,7 @@ class MesaController extends Controller
 
         $valorPagamento = $parseValor($valorPagamentoRaw);
         if ($valorPagamento === null) {
-            return redirect()->back()->with('error', 'Digite o valor total do pagamento para abater.');
+            return redirect()->back()->with('error', ErroMensagens::DIGITE_VALOR_PAGAMENTO_TOTAL);
         }
 
         $itens = ItemPedido::query()
@@ -154,7 +154,7 @@ class MesaController extends Controller
             ->get(['id', 'preco_unitario', 'quantidade', 'valor_pago']);
 
         if ($itens->isEmpty()) {
-            return redirect()->back()->with('error', 'Nenhum item válido selecionado para abater.');
+            return redirect()->back()->with('error', ErroMensagens::NENHUM_ITEM_SELECIONADO);
         }
 
         $totalCalculado = 0.0;
@@ -162,7 +162,7 @@ class MesaController extends Controller
             $qtdMax = (int) $item->quantidade;
             $qtd = (int) ($quantidades[$item->id] ?? 0);
             if ($qtd < 1 || $qtd > $qtdMax) {
-                return redirect()->back()->with('error', 'Informe uma quantidade válida para cada item selecionado.');
+                return redirect()->back()->with('error', ErroMensagens::QUANTIDADE_MINIMA);
             }
 
             $unit = (float) $item->preco_unitario;
@@ -172,7 +172,7 @@ class MesaController extends Controller
             // Se existe valor_pago, este item deve ser unidade (qtdMax=1). Considera apenas o restante.
             if ($valorPago > 0) {
                 if ($qtdMax !== 1 || $qtd !== 1) {
-                    return redirect()->back()->with('error', 'Para itens com pagamento parcial, abata a quantidade 1 (unidade).');
+                    return redirect()->back()->with('error', ErroMensagens::QUANTIDADE_MINIMA);
                 }
 
                 $restante = $unit - $valorPago;
@@ -186,7 +186,7 @@ class MesaController extends Controller
         }
 
         if (round($valorPagamento, 2) > round($totalCalculado, 2)) {
-            return redirect()->back()->with('error', 'O valor digitado não pode ser maior que o total selecionado.');
+            return redirect()->back()->with('error', ErroMensagens::VALOR_PAGAMENTO_EXCEDE_TOTAL);
         }
 
         $mesasService = new MesasService();
@@ -200,6 +200,6 @@ class MesaController extends Controller
             return redirect()->back()->with('error', $erro);
         }
 
-        return redirect()->back()->with('success', 'Itens abatidos (pagos) com sucesso.');
+        return redirect()->back()->with('success', PassMensagens::PAGAMENTO_REALIZADO_SUCESSO);
     }
 }

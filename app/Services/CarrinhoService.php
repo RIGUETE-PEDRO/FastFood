@@ -21,9 +21,17 @@ use Illuminate\Support\Facades\Log;
 
 class CarrinhoService
 {
+    protected GenericBase $genericBase;
+
+    public function __construct(GenericBase $genericBase)
+    {
+        $this->genericBase = $genericBase;
+    }
+
+
+
     public function adicionarProdutoAoCarrinho($usuario, $produtoId, $quantidade, $observacao, $preco)
     {
-        $GenericBase = new GenericBase();
         $quantidadeNormalizada = $quantidade;
 
 
@@ -36,7 +44,7 @@ class CarrinhoService
         $precoUnitario = (float) $produto->preco;
         $precoTotal = $quantidadeNormalizada * $precoUnitario;
 
-        if ($GenericBase->findByProdutosIsUsuario($produtoId, $usuarioId)) {
+        if ($this->genericBase->findByProdutosIsUsuario($produtoId, $usuarioId)) {
             $itemCarrinho = Carrinho::where('usuario_id', $usuarioId)
                 ->where('produto_id', $produtoId)
                 ->first();
