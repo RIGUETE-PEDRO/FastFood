@@ -6,6 +6,11 @@
     border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
+.conteinner-pedidos h1 {
+    margin-bottom: 18px;
+    color: #0f172a;
+}
+
 .lista-pedidos {
     display: grid;
     gap: 24px;
@@ -173,6 +178,11 @@
 }
 
 @media (max-width: 768px) {
+    .conteinner-pedidos {
+        padding: 18px;
+        border-radius: 14px;
+    }
+
     .pedido-card {
         padding: 20px;
     }
@@ -189,5 +199,25 @@
 
     .pedido-itens__linha strong {
         align-self: flex-end;
+    }
+}
+
+@media (max-width: 480px) {
+    .conteinner-pedidos {
+        padding: 14px;
+    }
+
+    .pedido-card {
+        padding: 14px;
+        border-radius: 14px;
+    }
+
+    .pedido-card__titulo {
+        font-size: 1.05rem;
+    }
+
+    .pedido-dados,
+    .pedido-endereco {
+        grid-template-columns: 1fr;
     }
 }

@@ -28,19 +28,14 @@
                 <p class="texto-suave mb-0">Acompanhe o avanço de cada pedido e atualize o status conforme o preparo.</p>
             </div>
             <div class="cabecalho-pedidos__dados">
-                <span class="badge-total">{{ $totalPedidos }} pedidos ativos</span>
+                <span class="badge-total" id="pedidos-total-badge">{{ $totalPedidos }} pedidos ativos</span>
                 <span class="badge-perfil">{{ $tipoUsuario ?? 'Equipe' }}</span>
             </div>
         </header>
 
-        <section class="resumo-pedidos mb-4">
-            @foreach($dashboardCards as $card)
-                <article class="card-resumo {{ $card['accent'] }}">
-                    <span class="card-resumo__rotulo">{{ $card['label'] }}</span>
-                    <strong class="card-resumo__valor">{{ $card['valor'] }}</strong>
-                </article>
-            @endforeach
-        </section>
+        <div id="pedidos-resumo-wrapper">
+            @include('Admin.partials.pedidos-resumo-cards', ['dashboardCards' => $dashboardCards])
+        </div>
 
         @if(session('sucesso'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -66,113 +61,158 @@
             </div>
         @endif
 
-        @if($pedidos->isEmpty())
-            <div class="card shadow-sm">
-                <div class="card-body text-center py-5">
-                    <h2 class="titulo-card">Nenhum pedido no momento</h2>
-                    <p class="texto-suave mb-0">Assim que os clientes realizarem pedidos eles aparecerão aqui.</p>
-                </div>
-            </div>
-        @else
-            <section class="lista-pedidos-admin">
-                <h2 class="secao-titulo">Pedidos em andamento</h2>
-                @forelse(($pedidosPorStatus['abertos'] ?? collect()) as $pedido)
-                    @include('Admin.partials.pedido-card', [
-                        'pedido' => $pedido,
-                        'statusOptions' => $statusOptions,
-                        'statusTimeline' => $statusTimeline,
-                        'statusLabels' => $statusLabels,
-                        'desabilitarAcoes' => false,
-                    ])
-                @empty
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-body text-center py-4">
-                            <p class="texto-suave mb-0">Nenhum pedido em preparo ou a caminho agora.</p>
-                        </div>
-                    </div>
-                @endforelse
-            </section>
-
-            <section class="acordeao-pedidos">
-                <button class="acordeao-pedidos__gatilho" type="button" data-target="#pedidosFinalizados" aria-controls="pedidosFinalizados" aria-expanded="false">
-                    <span>Pedidos finalizados</span>
-                    <span class="acordeao-pedidos__contador">{{ count($pedidosPorStatus['finalizados'] ?? []) }}</span>
-                    <span class="acordeao-pedidos__icone" aria-hidden="true"></span>
-                </button>
-                <div class="acordeao-pedidos__conteudo" id="pedidosFinalizados" hidden>
-                    @forelse(($pedidosPorStatus['finalizados'] ?? collect()) as $pedido)
-                        @include('Admin.partials.pedido-card', [
-                            'pedido' => $pedido,
-                            'statusOptions' => $statusOptions,
-                            'statusTimeline' => $statusTimeline,
-                            'statusLabels' => $statusLabels,
-                            'desabilitarAcoes' => true,
-                            'colapsavel' => true,
-                            'iniciarRecolhido' => true,
-                        ])
-                    @empty
-                        <div class="card shadow-sm">
-                            <div class="card-body text-center py-4">
-                                <p class="texto-suave mb-0">Nenhum pedido entregue ou cancelado ainda.</p>
-                            </div>
-                        </div>
-                    @endforelse
-                </div>
-            </section>
-        @endif
+        <div id="pedidos-lista-wrapper">
+            @include('Admin.partials.pedidos-lista', [
+                'pedidos' => $pedidos,
+                'pedidosPorStatus' => $pedidosPorStatus,
+                'statusOptions' => $statusOptions,
+                'statusTimeline' => $statusTimeline,
+                'statusLabels' => $statusLabels,
+            ])
+        </div>
     </main>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const gatilhos = document.querySelectorAll('.acordeao-pedidos__gatilho');
+            const pollingUrl = "{{ route('Pedidos.Poll') }}";
+            let checksumAtual = "{{ $realtimeChecksum ?? '' }}";
+            let atualizandoConteudo = false;
+            const badgeTotal = document.getElementById('pedidos-total-badge');
+            const resumoWrapper = document.getElementById('pedidos-resumo-wrapper');
+            const listaWrapper = document.getElementById('pedidos-lista-wrapper');
 
-            gatilhos.forEach((botao) => {
-                const seletor = botao.dataset.target;
-                const conteudo = document.querySelector(seletor);
+            const inicializarInteracoes = () => {
+                const gatilhos = document.querySelectorAll('.acordeao-pedidos__gatilho');
 
-                if (!conteudo) {
-                    return;
-                }
+                gatilhos.forEach((botao) => {
+                    const seletor = botao.dataset.target;
+                    const conteudo = document.querySelector(seletor);
 
-                const abrir = () => {
-                    botao.setAttribute('aria-expanded', 'true');
-                    conteudo.hidden = false;
-                    conteudo.classList.add('is-open');
-                };
-
-                const fechar = () => {
-                    botao.setAttribute('aria-expanded', 'false');
-                    conteudo.classList.remove('is-open');
-                    conteudo.hidden = true;
-                };
-
-                botao.addEventListener('click', () => {
-                    const expandido = botao.getAttribute('aria-expanded') === 'true';
-                    if (expandido) {
-                        fechar();
-                    } else {
-                        abrir();
-                    }
-                });
-
-                // Estado inicial: por padrão vem fechado; se no futuro quiser abrir via HTML, funciona também
-                if (botao.getAttribute('aria-expanded') === 'true') {
-                    abrir();
-                } else {
-                    conteudo.hidden = true;
-                }
-            });
-
-            document.querySelectorAll('form[data-disable-on-submit]').forEach((form) => {
-                form.addEventListener('submit', () => {
-                    const botao = form.querySelector('[data-avancar-button]');
-                    if (!botao) {
+                    if (!conteudo) {
                         return;
                     }
 
-                    botao.classList.add('is-loading');
-                    botao.setAttribute('disabled', 'disabled');
+                    const abrir = () => {
+                        botao.setAttribute('aria-expanded', 'true');
+                        conteudo.hidden = false;
+                        conteudo.classList.add('is-open');
+                    };
+
+                    const fechar = () => {
+                        botao.setAttribute('aria-expanded', 'false');
+                        conteudo.classList.remove('is-open');
+                        conteudo.hidden = true;
+                    };
+
+                    botao.addEventListener('click', () => {
+                        const expandido = botao.getAttribute('aria-expanded') === 'true';
+                        if (expandido) {
+                            fechar();
+                        } else {
+                            abrir();
+                        }
+                    });
+
+                    if (botao.getAttribute('aria-expanded') === 'true') {
+                        abrir();
+                    } else {
+                        conteudo.hidden = true;
+                    }
                 });
-            });
+
+                document.querySelectorAll('form[data-disable-on-submit]').forEach((form) => {
+                    if (form.dataset.enhanced === '1') {
+                        return;
+                    }
+
+                    form.dataset.enhanced = '1';
+                    form.addEventListener('submit', () => {
+                        const botao = form.querySelector('[data-avancar-button]');
+                        if (!botao) {
+                            return;
+                        }
+
+                        botao.classList.add('is-loading');
+                        botao.setAttribute('disabled', 'disabled');
+                    });
+                });
+            };
+
+            const atualizarConteudo = async () => {
+                const resposta = await fetch(`${pollingUrl}?full=1&t=${Date.now()}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin',
+                    cache: 'no-store'
+                });
+
+                if (!resposta.ok) {
+                    return;
+                }
+
+                const dados = await resposta.json();
+                if (!dados || !dados.checksum) {
+                    return;
+                }
+
+                if (typeof dados.resumoHtml === 'string' && resumoWrapper) {
+                    resumoWrapper.innerHTML = dados.resumoHtml;
+                }
+
+                if (typeof dados.listaHtml === 'string' && listaWrapper) {
+                    listaWrapper.innerHTML = dados.listaHtml;
+                }
+
+                if (badgeTotal && dados.totalLabel) {
+                    badgeTotal.textContent = dados.totalLabel;
+                }
+
+                checksumAtual = dados.checksum;
+                inicializarInteracoes();
+            };
+
+            const verificarMudancas = async () => {
+                if (atualizandoConteudo || document.visibilityState !== 'visible') {
+                    return;
+                }
+
+                try {
+                    const resposta = await fetch(`${pollingUrl}?t=${Date.now()}`, {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        credentials: 'same-origin',
+                        cache: 'no-store'
+                    });
+
+                    if (!resposta.ok) {
+                        return;
+                    }
+
+                    const dados = await resposta.json();
+                    if (!dados || !dados.checksum) {
+                        return;
+                    }
+
+                    if (checksumAtual && dados.checksum !== checksumAtual) {
+                        atualizandoConteudo = true;
+                        await atualizarConteudo();
+                        atualizandoConteudo = false;
+                    } else {
+                        checksumAtual = dados.checksum;
+                    }
+                } catch (_) {
+                    // Ignora falhas temporárias de rede para não poluir a UI.
+                    atualizandoConteudo = false;
+                }
+            };
+
+            inicializarInteracoes();
+            window.setInterval(verificarMudancas, 8000);
         });
     </script>
         </div>

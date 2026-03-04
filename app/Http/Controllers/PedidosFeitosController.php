@@ -26,6 +26,88 @@ class PedidosFeitosController extends Controller
 
     public function verPedidosAdmin()
     {
+        return view('Admin.Pedidos', $this->montarDadosPainel());
+    }
+
+    public function atualizarStatus(Request $request, Pedido $pedido): JsonResponse|RedirectResponse
+    {
+        $dados = $request->validate([
+            'status' => ['required', Rule::in(array_column($this->service->opcoesStatus(), 'value'))],
+        ]);
+
+        $novoStatus = EnumsStatusPedidos::from((int) $dados['status']);
+
+        $pedidoAtualizado = $this->service->atualizarStatus($pedido, $novoStatus);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => PassMensagens::ATUALIZADO_STATUS,
+                'pedido' => $pedidoAtualizado,
+            ]);
+        }
+
+        return redirect()->back()->with('sucesso', PassMensagens::ATUALIZADO_STATUS . ' ' . $this->service->rotulo($novoStatus) . '.');
+    }
+
+    public function avancarStatus(Pedido $pedido): RedirectResponse
+    {
+        // Nesta rota o Route Model Binding retorna o model sem atributos "derivados" (ex: status_enum).
+        // O status persistido fica em $pedido->status.
+        $statusAtual = EnumsStatusPedidos::tryFrom((int) $pedido->status) ?? EnumsStatusPedidos::PENDENTE;
+        $proximo = $this->service->proximoStatus($statusAtual);
+
+        if (!$proximo) {
+            return redirect()->back()->with('erro', PassMensagens::ATUALIZADO_STATUS_FINAL);
+        }
+
+        $this->service->atualizarStatus($pedido, $proximo);
+
+        return redirect()->back()->with('sucesso', PassMensagens::STATUS_AVANCADO . ' ' . $this->service->rotulo($proximo) . '.');
+    }
+
+    public function pollResumo(Request $request): JsonResponse
+    {
+        $snapshot = Pedido::query()
+            ->select(['id', 'status', 'updated_at'])
+            ->orderByDesc('updated_at')
+            ->get()
+            ->map(fn (Pedido $pedido) => [
+                'id' => (int) $pedido->id,
+                'status' => (int) $pedido->status,
+                'updated_at' => optional($pedido->updated_at)?->toIso8601String(),
+            ])
+            ->values();
+
+        $checksum = md5($snapshot->toJson());
+
+        if (!$request->boolean('full')) {
+            return response()->json([
+                'checksum' => $checksum,
+                'total' => $snapshot->count(),
+            ]);
+        }
+
+        $dados = $this->montarDadosPainel();
+
+        return response()->json([
+            'checksum' => $dados['realtimeChecksum'] ?? $checksum,
+            'total' => $dados['totalPedidos'] ?? $snapshot->count(),
+            'totalLabel' => ($dados['totalPedidos'] ?? $snapshot->count()) . ' pedidos ativos',
+            'resumoHtml' => view('Admin.partials.pedidos-resumo-cards', [
+                'dashboardCards' => $dados['dashboardCards'],
+            ])->render(),
+            'listaHtml' => view('Admin.partials.pedidos-lista', [
+                'pedidos' => $dados['pedidos'],
+                'pedidosPorStatus' => $dados['pedidosPorStatus'],
+                'statusOptions' => $dados['statusOptions'],
+                'statusTimeline' => $dados['statusTimeline'],
+                'statusLabels' => $dados['statusLabels'],
+            ])->render(),
+        ]);
+    }
+
+    private function montarDadosPainel(): array
+    {
         $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
         $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : null;
 
@@ -80,7 +162,16 @@ class PedidosFeitosController extends Controller
             'finalizados' => $pedidos->filter(fn (Pedido $pedido) => in_array($pedido->status_enum, [EnumsStatusPedidos::ENTREGUE, EnumsStatusPedidos::CANCELADO], true))->values(),
         ];
 
-        return view('Admin.Pedidos', [
+        $realtimeChecksum = md5($pedidosCollection
+            ->map(fn (Pedido $pedido) => [
+                'id' => (int) $pedido->id,
+                'status' => (int) $pedido->status,
+                'updated_at' => optional($pedido->updated_at)?->toIso8601String(),
+            ])
+            ->values()
+            ->toJson());
+
+        return [
             'pedidos' => $pedidos,
             'statusOptions' => $statusOptions,
             'statusTimeline' => $statusTimeline,
@@ -88,45 +179,10 @@ class PedidosFeitosController extends Controller
             'pedidosPorStatus' => $pedidosPorStatus,
             'dashboardCards' => $dashboardCards,
             'totalPedidos' => $pedidosCollection->count(),
+            'realtimeChecksum' => $realtimeChecksum,
             'usuario' => $usuarioLogado,
             'nomeUsuario' => $primeiroNome,
             'tipoUsuario' => $usuarioLogado?->tipo_descricao ?? null,
-        ]);
-    }
-
-    public function atualizarStatus(Request $request, Pedido $pedido): JsonResponse|RedirectResponse
-    {
-        $dados = $request->validate([
-            'status' => ['required', Rule::in(array_column($this->service->opcoesStatus(), 'value'))],
-        ]);
-
-        $novoStatus = EnumsStatusPedidos::from((int) $dados['status']);
-
-        $pedidoAtualizado = $this->service->atualizarStatus($pedido, $novoStatus);
-
-        if ($request->wantsJson()) {
-            return response()->json([
-                'message' => PassMensagens::ATUALIZADO_STATUS,
-                'pedido' => $pedidoAtualizado,
-            ]);
-        }
-
-        return redirect()->back()->with('sucesso', PassMensagens::ATUALIZADO_STATUS . ' ' . $this->service->rotulo($novoStatus) . '.');
-    }
-
-    public function avancarStatus(Pedido $pedido): RedirectResponse
-    {
-        // Nesta rota o Route Model Binding retorna o model sem atributos "derivados" (ex: status_enum).
-        // O status persistido fica em $pedido->status.
-        $statusAtual = EnumsStatusPedidos::tryFrom((int) $pedido->status) ?? EnumsStatusPedidos::PENDENTE;
-        $proximo = $this->service->proximoStatus($statusAtual);
-
-        if (!$proximo) {
-            return redirect()->back()->with('erro', PassMensagens::ATUALIZADO_STATUS_FINAL);
-        }
-
-        $this->service->atualizarStatus($pedido, $proximo);
-
-        return redirect()->back()->with('sucesso', PassMensagens::STATUS_AVANCADO . ' ' . $this->service->rotulo($proximo) . '.');
+        ];
     }
 }

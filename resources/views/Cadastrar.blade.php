@@ -14,6 +14,9 @@
     </div>
 
     <div class="container">
+        <div class="brand-mini" aria-label="Logo FlashFood">
+            <img src="{{ asset('img/login-imagem.png') }}" alt="Logo FlashFood">
+        </div>
         <h1>Cadastro</h1>
 
 

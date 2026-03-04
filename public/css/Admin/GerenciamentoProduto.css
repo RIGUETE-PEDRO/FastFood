@@ -133,7 +133,7 @@
     background: rgba(0, 0, 0, 0.35);
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     padding: 32px 16px;
     opacity: 0;
     pointer-events: none;
@@ -152,6 +152,14 @@
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
     transform: translateY(-12px);
     transition: transform 0.25s;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+}
+
+@supports not (height: 100dvh) {
+    .overlay-panel {
+        max-height: calc(100vh - 32px);
+    }
 }
 .overlay-backdrop.is-open .overlay-panel {
     transform: translateY(0);
@@ -303,4 +311,90 @@
     background: rgba(231, 76, 60, 0.25);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+@media (max-width: 768px) {
+    .gerenciamento-container {
+        padding: 24px 14px;
+    }
+
+    .page-title {
+        font-size: 1.35rem;
+    }
+
+    .table-header {
+        padding: 18px 14px;
+    }
+
+    .table-responsive {
+        overflow: visible;
+    }
+
+    .produtos-table thead {
+        display: none;
+    }
+
+    .produtos-table,
+    .produtos-table tbody,
+    .produtos-table tr,
+    .produtos-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .produtos-table tbody tr {
+        margin: 0 10px 12px;
+        padding: 12px;
+        border: 1px solid rgba(152, 27, 30, 0.12);
+        border-radius: 14px;
+        background: #fff;
+    }
+
+    .produtos-table td {
+        padding: 8px 0;
+        text-align: left !important;
+        border: 0;
+    }
+
+    .produtos-table td::before {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #7d5646;
+        font-weight: 700;
+    }
+
+    .produtos-table td:nth-child(1)::before { content: 'Imagem'; }
+    .produtos-table td:nth-child(2)::before { content: 'Nome'; }
+    .produtos-table td:nth-child(3)::before { content: 'Preço'; }
+    .produtos-table td:nth-child(4)::before { content: 'Status'; }
+    .produtos-table td:nth-child(5)::before { content: 'Categoria'; }
+    .produtos-table td:nth-child(6)::before { content: 'Ações'; }
+
+    .produtos-table td:nth-child(1) img {
+        width: 56px !important;
+        height: 56px !important;
+    }
+
+    .action-buttons {
+        justify-content: flex-start;
+    }
+
+    .overlay-panel {
+        padding: 20px;
+        max-height: calc(100dvh - 20px);
+    }
+
+    .overlay-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        margin-right: 0;
+    }
 }

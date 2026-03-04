@@ -511,7 +511,11 @@ button.btn.btn-danger:active {
 }
 
 .ff-modal.is-open {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
 }
 
 .ff-modal__overlay {
@@ -523,12 +527,20 @@ button.btn.btn-danger:active {
 .ff-modal__card {
     position: relative;
     width: min(520px, calc(100vw - 32px));
-    margin: 10vh auto 0 auto;
+    margin: 0;
     background: var(--ml-card);
     border: 1px solid var(--ml-border);
     border-radius: 14px;
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
     overflow: hidden;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+}
+
+@supports not (height: 100dvh) {
+    .ff-modal__card {
+        max-height: calc(100vh - 32px);
+    }
 }
 
 .ff-modal__header {
@@ -871,7 +883,8 @@ button.btn.btn-danger:active {
 
 @media (max-width: 480px) {
     .ff-modal__card {
-        margin-top: 8vh;
+        width: calc(100vw - 20px);
+        max-height: calc(100dvh - 20px);
     }
 
     .ff-modal__footer {

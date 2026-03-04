@@ -3,12 +3,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Kaisei+Opti&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Vollkorn+SC:wght@400;600;700;900&display=swap');
 
+:root {
+    --ff-surface: #ffffff;
+    --ff-border: #e5e7eb;
+    --ff-text: #111827;
+    --ff-muted: #475569;
+    --ff-primary: #1d4ed8;
+    --ff-primary-dark: #1e40af;
+    --ff-danger: #cc0000;
+}
+
+html,
+body {
+    overflow-x: hidden;
+}
+
 .container-produtos {
     /* usar grid para controlar melhor linhas/colunas e garantir alturas iguais */
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    padding: 20px;
+    gap: 16px;
+    padding: 12px;
     align-items: stretch; /* cards terão a mesma altura por linha */
     background: transparent;
 }
@@ -16,8 +31,8 @@
 /* produto agora tem tamanho consistente e cresce verticalmente igual aos irmãos */
 .produto {
     box-sizing: border-box;
-    background-color: #ffffff;
-    border: 1px solid #e6e6e6;
+    background-color: var(--ff-surface);
+    border: 1px solid var(--ff-border);
     border-radius: 8px;
     padding: 12px;
 
@@ -26,8 +41,7 @@
     flex-direction: column;
     justify-content: flex-start;
 
-    /* altura maior para comportar imagens grandes sem corte */
-    height: 500px;
+    min-height: 420px;
 }
 
 /* Card mais moderno e interativo */
@@ -54,7 +68,7 @@
 .container-img {
     height: 320px; /* caixa consistente para todas as imagens */
     width: 100%;
-    overflow: cover;
+    overflow: hidden;
     border-radius: 8px;
     margin-bottom: 12px;
     display: block;
@@ -71,10 +85,11 @@
 
 .aviso{
     font-family: "Kaisei Opti", serif;
-    font-size: 0.7em;
-    color: red;
+    font-size: 0.78rem;
+    color: var(--ff-danger);
     margin-top: 4px;
-    margin-left: 10em;
+    margin-left: 0;
+    display: block;
 }
 
 .produto img {
@@ -148,9 +163,8 @@
     text-align: center;
     width: 100%;
     margin: 0.25rem 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 /* ingredientes: hover reveal */
@@ -209,13 +223,13 @@
 
 /* para telas pequenas, posicionar relativo dentro do fluxo (não absolute) */
 @media (max-width: 480px){
-    .ingredientes-lista{ position: relative; top: 0; max-height: none; opacity: 1; padding: 0; border: none; box-shadow: none; }
+    .ingredientes-lista{ position: relative; top: 0; border: 1px solid #e6e6e6; box-shadow: none; }
 }
 
 /* empurra o botão para o final do card, garantindo alinhamento entre cards */
 .button-adicionar {
     font-family: "Kaisei Opti", serif;
-    background: linear-gradient(135deg, rgb(9, 98, 187), rgb(25, 0, 255));
+    background: linear-gradient(135deg, var(--ff-primary), var(--ff-primary-dark));
     color: white;
     padding: 10px 15px;
     border: none;
@@ -228,6 +242,7 @@
     width: 100%;
 
     transition: transform .12s ease, box-shadow .18s ease, filter .18s ease;
+    min-height: 44px;
 }
 
 /* hover do botão permanece */
@@ -252,11 +267,14 @@
 }
 @media (max-width: 900px) {
     .container-produtos { grid-template-columns: repeat(2, 1fr); }
-    .produto { height: 420px; }
+    .container-img { height: 260px; }
+    .produto { min-height: 380px; }
 }
 @media (max-width: 480px) {
     .container-produtos { grid-template-columns: 1fr; }
-    .produto { height: auto; }
+    .container-img { height: 220px; }
+    .produto { min-height: 0; }
+    .produto-badge { font-size: 0.85rem; padding: 6px 9px; }
 }
 
 .valor{
@@ -270,8 +288,39 @@
    Modal "Adicionar ao carrinho"
    (padronizado com o overlay do Admin)
    ================================ */
+#addToCartModal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 1200;
+}
+
+#addToCartModal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+}
+
+#addToCartModal .modal-dialog {
+    width: min(600px, 100%);
+    margin: 0;
+}
+
+#addToCartModal .modal-content {
+    width: 100%;
+}
+
+.modal-backdrop.show {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1190;
+}
+
 #addToCartModal .modal-dialog{
     max-width: 600px;
+    margin: 16px auto;
 }
 
 #addToCartModal .modal-content{
@@ -279,33 +328,68 @@
     border-radius: 20px;
     padding: 0;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+}
+
+@supports not (height: 100dvh) {
+    #addToCartModal .modal-content {
+        max-height: calc(100vh - 32px);
+    }
 }
 
 #addToCartModal .modal-header{
+    position: relative;
     display: flex;
     justify-content: space-between;
     gap: 16px;
-    align-items: flex-start;
-    padding: 22px 22px 12px 22px;
+    align-items: center;
+    padding: 18px 56px 12px 22px;
     border-bottom: none;
 }
 
 #addToCartModal .modal-title{
     margin: 0;
-    font-size: 1.5em;
+    font-size: clamp(1.15rem, 2.2vw, 1.45rem);
     color: #981b1e;
     font-weight: 700;
+    line-height: 1.2;
 }
 
 #addToCartModal .btn-close{
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 38px;
+    height: 38px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background-color: rgba(152, 27, 30, 0.08);
     border-radius: 12px;
-    padding: 10px;
+    padding: 0;
     opacity: 1;
+    cursor: pointer;
+    background-image: none;
+    color: #7f1d1d;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#addToCartModal .btn-close::before {
+    content: "×";
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
 }
 
 #addToCartModal .btn-close:hover{
     background-color: rgba(152, 27, 30, 0.15);
+}
+
+#addToCartModal .btn-close:focus-visible {
+    outline: 2px solid rgba(214, 40, 40, 0.5);
+    outline-offset: 2px;
 }
 
 #addToCartModal .modal-body{
@@ -378,6 +462,7 @@
     border-radius: 99px !important;
     color: #cc0000 !important;
     padding: 10px 15px !important;
+    min-height: 44px;
     border: none !important;
     cursor: pointer !important;
 
@@ -395,6 +480,7 @@
     border-radius: 99px !important;
     color: white !important;
     padding: 10px 15px !important;
+    min-height: 44px;
     border: none !important;
     cursor: pointer !important;
 }
@@ -411,6 +497,44 @@
 .text_modal {
     font-family: "Kaisei Opti", serif;
     color: #B61B1E;
+}
+
+@media (max-width: 768px) {
+    #addToCartModal .modal-dialog {
+        margin: 10px;
+        max-width: calc(100% - 20px);
+    }
+
+    #addToCartModal .modal-header,
+    #addToCartModal .modal-body,
+    #addToCartModal .modal-footer {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    #addToCartModal .modal-header {
+        padding-right: 52px;
+    }
+
+    #addToCartModal .modal-footer {
+        flex-direction: column;
+    }
+
+    #addToCartModal .modal-footer .btn {
+        width: 100%;
+    }
+
+    .ingredientes-lista {
+        position: relative;
+        top: 0;
+        margin-top: 8px;
+        width: 100%;
+    }
+
+    .ingredientes-wrap.is-open .ingredientes-lista {
+        height: auto;
+        max-height: 140px;
+    }
 }
 
 

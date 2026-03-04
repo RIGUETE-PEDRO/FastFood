@@ -55,6 +55,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content conteiner-info">
                     <form method="POST" action="{{ route('carrinho.adicionar') }}">
+                        @csrf
                         <div class="modal-header">
                             <h5 class="modal-title text_modal">Adicionar ao carrinho</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>

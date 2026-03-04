@@ -1,5 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Anton&display=swap");
 
+:root {
+    --ff-bg: #fff6e7;
+    --ff-text: #1f2937;
+    --ff-brand-start: #d62828;
+    --ff-brand-mid: #ff7b00;
+    --ff-brand-end: #b91c1c;
+    --ff-accent: #0b2e5b;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -69,23 +78,19 @@
 
 /* Define a cor de fundo do dropdown */
 .dropdown-menu.list {
-    background-color: #bf0a0a; /* fundo preto */
+    background-color: rgba(255, 248, 215, 0.95);
+    border: 1px solid rgba(255, 245, 170, 0.55);
 }
 
-/* Letras vermelhas para o primeiro e terceiro item (ou ímpares) */
-.dropdown-menu.list .dropdown-item:nth-child(odd) {
-    color: rgb(177, 6, 6);
-}
-
-/* Letras amarelas para o segundo item (ou pares) */
-.dropdown-menu.list .dropdown-item:nth-child(even) {
-    color: yellow;
+/* Cor uniforme dos itens */
+.dropdown-menu.list .dropdown-item {
+    color: #5f2d12;
 }
 
 /* Se quiser mudar a cor quando passar o mouse */
 .dropdown-menu.list .dropdown-item:hover {
-    background-color: #f37907; /* fundo escuro ao hover */
-    color: rgb(253, 127, 2); /* ou outra cor de destaque */
+    background-color: rgba(255, 238, 182, 0.9);
+    color: #4a1f0c;
 }
 
 .titulo {
@@ -102,8 +107,16 @@
 }
 
 body {
-    background-color: #fae8cb !important;
+    background-color: var(--ff-bg) !important;
+    color: var(--ff-text);
     overflow-x: hidden;
+}
+
+img,
+svg,
+video {
+    max-width: 100%;
+    height: auto;
 }
 
 .circulo_maior {
@@ -135,8 +148,8 @@ body {
 }
 
 .dashboard {
-    display: flex;
-    justify-content: space-between; /* espaça os painéis igualmente */
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px; /* distância entre eles */
 }
 
@@ -228,6 +241,13 @@ body {
 .ff-main {
     flex: 1;
     padding: 16px 24px;
+    min-width: 0;
+}
+
+.ff-main main {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .ff-sidebar__brand {
@@ -260,15 +280,44 @@ body {
 }
 
 .ff-sidebar__nav .nav-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
     color: rgba(255, 251, 6, 0.915);
     border-radius: 8px;
-    margin-bottom: 4px;
-    padding: 8px 10px;
+    margin-bottom: 0;
+    padding: 11px 12px;
+    font-size: 1rem;
+    line-height: 1.35;
+    min-height: 44px;
     transition: background-color 0.25s ease, color 0.25s ease,
         transform 0.2s ease, box-shadow 0.2s ease;
 
     white-space: normal;
     overflow-wrap: anywhere;
+}
+
+.ff-sidebar__nav {
+    align-items: stretch;
+}
+
+.ff-sidebar__nav .nav-item,
+.ff-sidebar__nav li {
+    width: 100%;
+    display: flex;
+    margin: 0 0 6px 0;
+}
+
+.ff-sidebar__nav li {
+    cursor: pointer;
+}
+
+.ff-sidebar__nav li > .nav-link {
+    flex: 1 1 auto;
+}
+
+.ff-sidebar__nav li:last-child {
+    margin-bottom: 0;
 }
 
 .ff-sidebar__nav .nav-link.active {
@@ -294,15 +343,68 @@ body {
     padding: 8px;
 }
 
+.ff-sidebar__footer .dropdown {
+    position: relative;
+}
+
 .ff-sidebar__user-btn {
-    background-color: rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    color: rgba(255, 251, 6, 0.915);
+    background-color: transparent;
+    border: 1px solid rgba(255, 245, 170, 0.45);
+    color: #fff7cc;
+    min-height: 52px;
 }
 
 .ff-sidebar__user-btn:focus,
 .ff-sidebar__user-btn:hover {
-    background-color: rgba(0, 0, 0, 0.25);
+    background-color: rgba(255, 248, 215, 0.15);
+}
+
+.ff-sidebar__user-btn > .d-flex {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.ff-sidebar__user-name {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 1rem !important;
+    line-height: 1.2;
+}
+
+/* Dropdown do usuário: fechado por padrão */
+.ff-sidebar__footer .dropdown-menu {
+    display: none;
+    margin-top: 0;
+    background-color: transparent;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 245, 170, 0.55);
+    border-radius: 10px;
+    overflow: hidden;
+    top: auto;
+    bottom: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    transform-origin: bottom;
+}
+
+.ff-sidebar__footer .dropdown-menu.show {
+    display: block;
+}
+
+.ff-sidebar__footer .dropdown-item {
+    padding: 10px 12px;
+    font-size: 0.98rem;
+    color: #5f2d12;
+}
+
+.ff-sidebar__footer .dropdown-item:hover {
+    background-color: rgba(255, 238, 182, 0.22);
+    color: #4a1f0c;
 }
 
 /* Estado colapsado da sidebar */
@@ -326,6 +428,7 @@ body.ff-sidebar-collapsed .ff-main {
     background: #ff7b00;
     color: #fffce0;
     font-weight: 600;
+    min-height: 44px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
     display: none;
     align-items: center;
@@ -355,6 +458,13 @@ body.ff-sidebar-collapsed .ff-sidebar__close {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.18s ease;
+    touch-action: none;
+}
+
+@media (max-width: 960px) {
+    .dashboard {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 768px) {
@@ -372,6 +482,7 @@ body.ff-sidebar-collapsed .ff-sidebar__close {
     }
 
     .ff-sidebar {
+        width: min(92vw, 340px);
         position: fixed;
         top: 0;
         left: 0;
@@ -382,7 +493,7 @@ body.ff-sidebar-collapsed .ff-sidebar__close {
         min-height: 100svh;
         min-height: 100dvh;
         z-index: 1050;
-        transform: translateX(0);
+        transform: translateX(-105%);
         transition: transform 0.2s ease;
         margin-left: 0;
         padding-bottom: 0;
@@ -391,6 +502,18 @@ body.ff-sidebar-collapsed .ff-sidebar__close {
         overscroll-behavior: contain;
         display: grid !important;
         grid-template-rows: auto minmax(0, 1fr) auto;
+    }
+
+    body.ff-sidebar-open .ff-sidebar {
+        transform: translateX(0);
+    }
+
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .painel {
+        padding: 16px;
     }
 
     .ff-sidebar__brand {
@@ -407,6 +530,12 @@ body.ff-sidebar-collapsed .ff-sidebar__close {
         padding-right: 4px;
     }
 
+    .ff-sidebar__nav .nav-link {
+        font-size: 1.02rem;
+        padding: 12px 14px;
+        min-height: 46px;
+    }
+
     .ff-sidebar__footer {
         flex: 0 0 auto;
         position: relative;
@@ -416,8 +545,8 @@ body.ff-sidebar-collapsed .ff-sidebar__close {
         opacity: 1 !important;
         z-index: 2;
         padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-        background: rgba(0, 0, 0, 0.14);
-        border-top: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 245, 207, 0.2);
+        border-top: 1px solid rgba(255, 247, 198, 0.45);
         border-radius: 12px;
         backdrop-filter: blur(8px);
     }
@@ -440,11 +569,40 @@ body.ff-sidebar-collapsed .ff-sidebar__close {
         display: inline-flex;
     }
 
-    body:not(.ff-sidebar-collapsed) .ff-sidebar-toggle {
+    body.ff-sidebar-open .ff-sidebar-toggle {
         display: none;
     }
 
-    body:not(.ff-sidebar-collapsed) .ff-sidebar-overlay {
+    body.ff-sidebar-open .ff-sidebar-overlay {
+        opacity: 1;
+        pointer-events: auto;
+        touch-action: none;
+    }
+
+    /* Com sidebar aberta no mobile, bloqueia interação no conteúdo ao fundo */
+    body.ff-sidebar-open .ff-main {
+        pointer-events: none;
+        user-select: none;
+    }
+
+    body.ff-sidebar-open .ff-sidebar,
+    body.ff-sidebar-open .ff-sidebar * {
+        pointer-events: auto;
+        user-select: auto;
+    }
+
+    /* Trava reforçada (controlada via JS) */
+    body.ff-sidebar-open .ff-main {
+        pointer-events: none !important;
+        user-select: none !important;
+    }
+
+    body.ff-sidebar-open .ff-sidebar {
+        z-index: 1100;
+    }
+
+    body.ff-sidebar-open .ff-sidebar-overlay {
+        z-index: 1090;
         opacity: 1;
         pointer-events: auto;
     }
@@ -452,6 +610,10 @@ body.ff-sidebar-collapsed .ff-sidebar__close {
 
 /* Quando qualquer modal do carrinho estiver aberto, não deixar o botão Menu aparecer por cima */
 body.ff-modal-open .ff-sidebar-toggle {
+    display: none !important;
+}
+
+body.modal-open .ff-sidebar-toggle {
     display: none !important;
 }
 

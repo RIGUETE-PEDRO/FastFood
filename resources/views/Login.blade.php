@@ -15,6 +15,9 @@
 
 
     <div class="container">
+        <div class="brand-mini" aria-label="Logo FlashFood">
+            <img src="{{ asset('img/login-imagem.png') }}" alt="Logo FlashFood">
+        </div>
         <h1>Login</h1>
         <form action="{{ route('login') }}" method="POST">
             @csrf

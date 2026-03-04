@@ -83,7 +83,13 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
     Route::post('/Pedidos.Administrativo/{pedido}/avancar', [PedidosFeitosController::class, 'avancarStatus'])
         ->name('Pedidos.StatusAvancar');
 
-    Route::get('/pedidos', [PedidoController::class, 'verPedido'])->name('pedidos')->middleware('auth');
+    Route::get('/Pedidos.Administrativo/poll', [PedidosFeitosController::class, 'pollResumo'])
+        ->name('Pedidos.Poll');
+
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/pedidos', [PedidoController::class, 'verPedido'])->name('pedidos');
 });
 
 ///////////////////////////////////////////////////////
@@ -124,7 +130,7 @@ Route::get('/porcao', [PorcaoController::class, 'porcao'])->name('Porcao');
 /* GERENCIAMENTO DE CARRINHO */
 ///////////////////////////////////////////////////////
 
-Route::middleware(['auth', 'admin.access'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/carrinho', [CarrinhoController::class, 'verCarrinho'])->name('carrinho');
 
     Route::post('/carrinho/adicionar', [CarrinhoController::class, 'adicionarAoCarrinho'])->name('carrinho.adicionar');

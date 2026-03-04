@@ -77,7 +77,7 @@
                                  src="{{ isset($usuario['url_imagem_perfil']) && $usuario['url_imagem_perfil'] ? asset('img/perfil/' . $usuario['url_imagem_perfil']) : (isset($usuario->url_imagem_perfil) && $usuario->url_imagem_perfil ? asset('img/perfil/' . $usuario->url_imagem_perfil) : asset('img/person.png')) }}"
                                  alt="Foto do usuário">
                         </div>
-                        <span class="text text-truncate" style="max-width:120px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                        <span class="text text-truncate ff-sidebar__user-name">
                             {{ is_array($usuario) ? ($usuario['nome'] ?? '') : ($usuario->primeiro_nome ?? ($usuario->nome ?? '')) }}
                         </span>
                     </div>
@@ -96,43 +96,3 @@
 </nav>
 
 <button type="button" class="ff-sidebar-overlay" data-sidebar-toggle aria-label="Fechar menu" tabindex="-1"></button>
-
-<script>
-    (function () {
-        var collapsedClass = 'ff-sidebar-collapsed';
-        var mq = window.matchMedia('(max-width: 768px)');
-
-        function ensureMobileDefault() {
-            if (mq.matches && !document.body.classList.contains(collapsedClass)) {
-                document.body.classList.add(collapsedClass);
-            }
-        }
-
-        ensureMobileDefault();
-
-        document.addEventListener('click', function (event) {
-            var toggle = event.target.closest('[data-sidebar-toggle]');
-            if (toggle) {
-                document.body.classList.toggle(collapsedClass);
-                return;
-            }
-
-            var sidebarLink = event.target.closest('.ff-sidebar a.nav-link');
-            if (sidebarLink && mq.matches) {
-                document.body.classList.add(collapsedClass);
-            }
-        });
-
-        document.addEventListener('keydown', function (event) {
-            if (event.key !== 'Escape') return;
-            if (!mq.matches) return;
-            document.body.classList.add(collapsedClass);
-        });
-
-        if (mq.addEventListener) {
-            mq.addEventListener('change', ensureMobileDefault);
-        } else if (mq.addListener) {
-            mq.addListener(ensureMobileDefault);
-        }
-    })();
-</script>

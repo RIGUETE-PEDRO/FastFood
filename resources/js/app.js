@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './carrinho-modal';
 import './carrinho-quantidade';
+import './sidebar';
 
 // Deixar disponível globalmente para scripts que usam window.bootstrap
 window.bootstrap = bootstrap;
