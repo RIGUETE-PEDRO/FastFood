@@ -95,7 +95,7 @@
     </main>
         </div>
     </div>
-
+@include('components.flash-toast')
 </body>
 
 </html>

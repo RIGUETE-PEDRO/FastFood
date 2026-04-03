@@ -172,9 +172,9 @@
                             </div>
 
                             <div class="mesa-card__footer">
-                                <button type="button" class="mesa-btn">
-                                    Editar
-                                </button>
+                                <a href="{{ route('mesas.detalhes', $mesa->id) }}" class="mesa-btn">
+                                    Editar pedidos
+                                </a>
                                 <a href="{{ route('mesas.detalhes', $mesa->id) }}" class="mesa-btn mesa-btn--ghost">
                                     Dar baixa
                                 </a>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil</title>
+    @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Perfil.css') }}">
 </head>
 <body class="profile-page">
@@ -14,14 +15,6 @@
         <div class="profile-page__topbar">
             <a href="{{ $perfilReturnUrl ?? route('home') }}" class="profile-back-link">&larr; Voltar</a>
         </div>
-
-        @if(session('sucesso'))
-            <div class="alert alert-success">{{ session('sucesso') }}</div>
-        @endif
-
-        @if(session('erro'))
-            <div class="alert alert-danger">{{ session('erro') }}</div>
-        @endif
 
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -104,21 +97,6 @@
         </div>
     </div>
 
-    <script>
-        // Preview da imagem ao selecionar arquivo
-        document.getElementById('foto-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    document.getElementById('preview-image').src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-
-                // Auto-submit do formulário (opcional)
-                // document.querySelector('.profile-form').submit();
-            }
-        });
-    </script>
+    @include('components.flash-toast')
 </body>
 </html>

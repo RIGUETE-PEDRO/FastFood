@@ -27,7 +27,7 @@
                 <section class="dashboard-toolbar painel">
                     <form method="GET" action="{{ route('Administrativo') }}" class="dashboard-filtro-form">
                         <label for="periodo">Agrupar por</label>
-                        <select name="periodo" id="periodo" onchange="this.form.submit()">
+                        <select name="periodo" id="periodo" data-auto-submit-on-change>
                             <option value="dia" {{ ($periodoSelecionado ?? 'mes') === 'dia' ? 'selected' : '' }}>Dia</option>
                             <option value="mes" {{ ($periodoSelecionado ?? 'mes') === 'mes' ? 'selected' : '' }}>Mês</option>
                             <option value="ano" {{ ($periodoSelecionado ?? 'mes') === 'ano' ? 'selected' : '' }}>Ano</option>

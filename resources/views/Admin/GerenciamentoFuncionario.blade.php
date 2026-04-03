@@ -32,13 +32,7 @@
         </div>
 
 
-        @if(session('sucesso'))
-        <div class="alert alert-success">{{ session('sucesso') }}</div>
-        @endif
 
-        @if(session('erro'))
-        <div class="alert alert-danger">{{ session('erro') }}</div>
-        @endif
 
         <!-- Tabela de Funcionários -->
         <div class="table-card">
@@ -269,6 +263,7 @@
     <script src="{{ asset('js/gerenciamento-funcionario.js') }}"></script>
         </div>
     </div>
+    @include('components.flash-toast')
 </body>
 
 </html>

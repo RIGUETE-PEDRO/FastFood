@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enum\StatusPedidos as EnumStatusPedidos;
 use App\Models\PedidoModel;
+use App\Models\UsuarioModel;
 use App\Repositoryimpl\PedidoRepositoryimpl;
 
 class PedidoService
@@ -51,9 +52,13 @@ class PedidoService
         ];
     }
 
-    public function pegarPedidosDoUsuario($usuarioId)
+    public function pegarPedidosDoUsuario(UsuarioModel|int $usuario)
     {
-        $pedidos = $this->repository->pegarPedidosDoUsuario((int) $usuarioId);
+        $usuarioId = $usuario instanceof UsuarioModel
+            ? (int) $usuario->id
+            : (int) $usuario;
+
+        $pedidos = $this->repository->pegarPedidosDoUsuario($usuarioId);
 
         return $pedidos;
     }

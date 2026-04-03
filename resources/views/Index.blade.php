@@ -24,11 +24,7 @@
 
         <div>carrousel</div>
 
-        @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-        @endif
+
 
         <div class="container-produtos mt-4">
             @foreach ($produtos as $produto)
@@ -100,7 +96,7 @@
     </main>
         </div>
     </div>
-
+@include('components.flash-toast')
 </body>
 
 </html>

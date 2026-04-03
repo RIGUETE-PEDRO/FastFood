@@ -191,6 +191,66 @@ class MesasService extends GenericBase
         return ['status' => true, 'mensagem' => PassMensagens::PAGAMENTO_REALIZADO_SUCESSO];
     }
 
+    public function atualizarItemContaMesa($request, int $mesaId, int $itemId): array
+    {
+        $quantidade = (int) $request->input('quantidade');
+        if ($quantidade < 1) {
+            return ['status' => false, 'mensagem' => ErroMensagens::QUANTIDADE_MINIMA];
+        }
+
+        $item = $this->mesasRepository->pegarItemAbertoDaMesa($mesaId, $itemId);
+        if (!$item) {
+            return ['status' => false, 'mensagem' => 'Item não encontrado para esta mesa.'];
+        }
+
+        if ((float) ($item->valor_pago ?? 0) > 0) {
+            return ['status' => false, 'mensagem' => 'Não é possível editar quantidade de item com pagamento parcial.'];
+        }
+
+        $item->quantidade = $quantidade;
+        $this->mesasRepository->salvarItem($item);
+
+        $this->atualizarPrecoMesa($mesaId);
+
+        if (!empty($item->pedido_id)) {
+            $this->mesasRepository->atualizarTotaisPedido((int) $item->pedido_id);
+        }
+
+        return ['status' => true, 'mensagem' => 'Item da comanda atualizado com sucesso!'];
+    }
+
+    public function removerItemContaMesa(int $mesaId, int $itemId): array
+    {
+        $item = $this->mesasRepository->pegarItemAbertoDaMesa($mesaId, $itemId);
+        if (!$item) {
+            return ['status' => false, 'mensagem' => 'Item não encontrado para esta mesa.'];
+        }
+
+        if ((float) ($item->valor_pago ?? 0) > 0) {
+            return ['status' => false, 'mensagem' => 'Não é possível remover item com pagamento parcial.'];
+        }
+
+        $pedidoId = (int) ($item->pedido_id ?? 0);
+        $this->mesasRepository->removerItem($item);
+
+        $this->atualizarPrecoMesa($mesaId);
+
+        if ($pedidoId > 0) {
+            $this->mesasRepository->atualizarTotaisPedido($pedidoId);
+        }
+
+        if (!$this->mesasRepository->existemItensAbertosMesa($mesaId)) {
+            $mesa = $this->mesasRepository->pegarMesaPorId($mesaId);
+            if ($mesa) {
+                $mesa->preco = 0.00;
+                $mesa->status = 'Disponivel';
+                $mesa->save();
+            }
+        }
+
+        return ['status' => true, 'mensagem' => 'Item removido da comanda com sucesso!'];
+    }
+
     private function parseValor(string $raw): ?float
     {
         $raw = trim($raw);

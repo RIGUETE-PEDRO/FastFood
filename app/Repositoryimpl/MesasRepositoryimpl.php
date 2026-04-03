@@ -100,6 +100,49 @@ class MesasRepositoryimpl
             ->get();
     }
 
+    public function pegarItemAbertoDaMesa(int $mesaId, int $itemId): ?ItemPedidoModel
+    {
+        return ItemPedidoModel::query()
+            ->where('mesa_id', $mesaId)
+            ->where('status_da_comanda', 'em_aberto')
+            ->where('id', $itemId)
+            ->first();
+    }
+
+    public function salvarItem(ItemPedidoModel $item): void
+    {
+        $item->save();
+    }
+
+    public function removerItem(ItemPedidoModel $item): void
+    {
+        $item->delete();
+    }
+
+    public function atualizarTotaisPedido(int $pedidoId): void
+    {
+        $pedido = PedidoModel::find($pedidoId);
+        if (!$pedido) {
+            return;
+        }
+
+        $total = (float) ItemPedidoModel::query()
+            ->where('pedido_id', $pedidoId)
+            ->selectRaw('COALESCE(SUM(preco_unitario * quantidade), 0) as total')
+            ->value('total');
+
+        $qtdItens = (int) ItemPedidoModel::query()
+            ->where('pedido_id', $pedidoId)
+            ->count();
+
+        $pedido->valor_total = $total;
+        if ($qtdItens === 0) {
+            $pedido->status = StatusPedidos::CANCELADO->value;
+        }
+
+        $pedido->save();
+    }
+
     public function criarItemPedido(array $dados): ItemPedidoModel
     {
         return ItemPedidoModel::create($dados);

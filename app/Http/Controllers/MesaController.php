@@ -101,4 +101,30 @@ class MesaController extends Controller
 
         return redirect()->back()->with('success', $resultado['mensagem']);
     }
+
+    public function atualizarItemContaMesa(Request $request, int $id, int $itemId)
+    {
+        $this->genericBase->hasLogado();
+
+        $resultado = $this->mesasService->atualizarItemContaMesa($request, $id, $itemId);
+
+        if (!$resultado['status']) {
+            return redirect()->back()->with('error', $resultado['mensagem']);
+        }
+
+        return redirect()->back()->with('success', $resultado['mensagem']);
+    }
+
+    public function removerItemContaMesa(int $id, int $itemId)
+    {
+        $this->genericBase->hasLogado();
+
+        $resultado = $this->mesasService->removerItemContaMesa($id, $itemId);
+
+        if (!$resultado['status']) {
+            return redirect()->back()->with('error', $resultado['mensagem']);
+        }
+
+        return redirect()->back()->with('success', $resultado['mensagem']);
+    }
 }

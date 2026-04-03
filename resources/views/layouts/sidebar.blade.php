@@ -96,3 +96,5 @@
 </nav>
 
 <button type="button" class="ff-sidebar-overlay" data-sidebar-toggle aria-label="Fechar menu" tabindex="-1"></button>
+
+@include('components.flash-toast')

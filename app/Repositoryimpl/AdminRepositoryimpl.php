@@ -31,6 +31,7 @@ class AdminRepositoryimpl implements AdminRepository
         return (float) PedidoModel::query()
             ->whereBetween('created_at', [$inicioPeriodo, $fimPeriodo])
             ->where('status', '!=', StatusPedidos::PENDENTE->value)
+            ->where('status', '!=', StatusPedidos::CANCELADO->value)
             ->sum('valor_total');
     }
 

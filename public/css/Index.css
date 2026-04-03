@@ -11,6 +11,8 @@
     --ff-primary: #1d4ed8;
     --ff-primary-dark: #1e40af;
     --ff-danger: #cc0000;
+    --ff-card-shadow: 0 12px 28px rgba(15, 23, 42, 0.09);
+    --ff-card-shadow-hover: 0 18px 40px rgba(15, 23, 42, 0.15);
 }
 
 html,
@@ -31,9 +33,9 @@ body {
 /* produto agora tem tamanho consistente e cresce verticalmente igual aos irmãos */
 .produto {
     box-sizing: border-box;
-    background-color: var(--ff-surface);
-    border: 1px solid var(--ff-border);
-    border-radius: 8px;
+    background: linear-gradient(165deg, #ffffff 0%, #fffaf2 100%);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 14px;
     padding: 12px;
 
     /* layout interno em coluna; empurra botão sempre para o rodapé do card */
@@ -42,21 +44,22 @@ body {
     justify-content: flex-start;
 
     min-height: 420px;
+    box-shadow: var(--ff-card-shadow);
 }
 
 /* Card mais moderno e interativo */
 .produto--interactive{
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(0,0,0,0.06);
-    box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+    border: 1px solid rgba(251, 146, 60, 0.22);
+    box-shadow: var(--ff-card-shadow);
     transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
 
 .produto--interactive:hover{
     transform: translateY(-4px);
-    border-color: rgba(0,0,0,0.10);
-    box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+    border-color: rgba(249, 115, 22, 0.35);
+    box-shadow: var(--ff-card-shadow-hover);
 }
 
 .produto--interactive:focus-within{
@@ -69,10 +72,10 @@ body {
     height: 320px; /* caixa consistente para todas as imagens */
     width: 100%;
     overflow: hidden;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-bottom: 12px;
     display: block;
-    background: #f8f8f8;
+    background: linear-gradient(135deg, #fff7ed, #fef3c7);
 }
 .container-img {
     height: 320px; /* caixa consistente para todas as imagens */
@@ -115,14 +118,15 @@ body {
     position: absolute;
     left: 10px;
     bottom: 10px;
-    padding: 8px 10px;
+    padding: 8px 12px;
     border-radius: 999px;
-    background: rgba(0,0,0,0.62);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.74), rgba(51, 65, 85, 0.78));
     color: #fff;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 0.95rem;
-    letter-spacing: .2px;
+    letter-spacing: .3px;
     backdrop-filter: blur(6px);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.28);
 }
 
 /* opção para preservar imagem inteira sem corte (use class="no-crop" no <img>) */
@@ -158,13 +162,15 @@ body {
     font-weight: 900;
     text-transform: uppercase;
     font-size: 1.6em;
-    color: #000000;
+    color: #111827;
     display: block;
     text-align: center;
     width: 100%;
     margin: 0.25rem 0;
     white-space: normal;
     overflow-wrap: anywhere;
+    line-height: 1.05;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 /* ingredientes: hover reveal */
@@ -174,8 +180,14 @@ body {
 }
 .ingredientes{
     cursor: pointer;
-    color: #333;
+    color: #334155;
     font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.12);
 }
 
 /* setinha indicando expandir */
@@ -229,11 +241,11 @@ body {
 /* empurra o botão para o final do card, garantindo alinhamento entre cards */
 .button-adicionar {
     font-family: "Kaisei Opti", serif;
-    background: linear-gradient(135deg, var(--ff-primary), var(--ff-primary-dark));
+    background: linear-gradient(135deg, #ea580c, #c2410c);
     color: white;
     padding: 10px 15px;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
 
     /* garante que o botão fique sempre na mesma linha (base do card) */
@@ -247,7 +259,7 @@ body {
 
 /* hover do botão permanece */
 .button-adicionar:hover {
-    filter: brightness(1.02);
+    filter: brightness(1.04);
     box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
 }
 

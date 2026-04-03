@@ -36,20 +36,12 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
             </button>
 
             <main>
-                <div class="voltar-link">
-                    <a href="{{ route('index') }}">voltar</a>
-                </div>
+
 
                 <div class="table-corpo">
                     <h1>Carrinho</h1>
 
-                    @if (session('success'))
-                    <div class="carrinho-alert carrinho-alert--success">{{ session('success') }}</div>
-                    @endif
 
-                    @if (session('error'))
-                    <div class="carrinho-alert carrinho-alert--error">{{ session('error') }}</div>
-                    @endif
 
                     @if ($carrinho->isEmpty())
                     <div class="empty-state">
@@ -80,7 +72,7 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                                         @csrf
                                         @method('PUT')
                                         <label class="cbx-container">
-                                            <input type="checkbox" class="cbx" name="ativo" value="1" {{ $item->selecionado ? 'checked' : '' }} onchange="this.form.submit()">
+                                            <input type="checkbox" class="cbx" name="ativo" value="1" {{ $item->selecionado ? 'checked' : '' }} data-auto-submit-on-change>
                                             <span class="cbx-custom"></span>
                                         </label>
                                     </form>
@@ -390,6 +382,7 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
             @endforeach
         </div>
     </div>
+    @include('components.flash-toast')
 </body>
 
 </html>

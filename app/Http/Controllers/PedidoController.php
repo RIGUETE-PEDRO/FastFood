@@ -21,8 +21,7 @@ class PedidoController extends Controller
     {
         $usuarioLogado =  $this->genericBase->hasLogado();
 
-
-        $pedido = $this->PedidoService->pegarPedidosDoUsuario($usuarioLogado);
+        $pedido = $this->PedidoService->pegarPedidosDoUsuario((int) ($usuarioLogado?->id ?? 0));
 
         return view('Pedido', [
             'usuario' => $usuarioLogado,

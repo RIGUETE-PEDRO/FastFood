@@ -198,6 +198,8 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
 
     // Conta da mesa (comanda)
     Route::post('/mesas/{id}/conta/abater', [MesaController::class, 'abaterItensContaMesa'])->name('mesas.conta.abater');
+    Route::post('/mesas/{id}/conta/item/{itemId}/atualizar', [MesaController::class, 'atualizarItemContaMesa'])->name('mesas.conta.item.atualizar');
+    Route::post('/mesas/{id}/conta/item/{itemId}/remover', [MesaController::class, 'removerItemContaMesa'])->name('mesas.conta.item.remover');
 });
 
 ///////////////////////////////////////////////////////

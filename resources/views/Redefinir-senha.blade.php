@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redefinir Senha</title>
+    @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Login.css') }}">
 </head>
 <body>
@@ -43,10 +44,10 @@
 
         <form action="{{ route('senha.atualizar') }}" method="POST">
             @csrf
-            
+
             <input type="hidden" name="token" value="{{ request('token') }}">
             <input type="hidden" name="email" value="{{ request('email') }}">
-            
+
             <div class="input">
                 <label for="password" class="text">Nova Senha:</label>
                 <input type="password" id="password" name="password" required minlength="6">
@@ -58,12 +59,14 @@
             </div>
 
             <button type="submit">Redefinir Senha</button>
-            
+
             <a href="/login" class="register">Voltar para Login</a>
         </form>
     </div>
 
 </div>
+
+@include('components.flash-toast')
 
 </body>
 </html>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Cadastro</title>
+    @vite(['resources/js/app.js'])
      <link rel="stylesheet" href="{{ asset('css/Cadastro.css') }}">
 </head>
 <body>
@@ -71,6 +72,8 @@
     </div>
 
     </div>
+
+    @include('components.flash-toast')
 
 </body>
 </html>

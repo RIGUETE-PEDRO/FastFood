@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{{ asset('css/Pedido.css') }}">
 </head>
 
-<body>
+<body class="ff-pedidos-page">
 
     <div class="ff-shell">
         @include('layouts.sidebar')
@@ -63,7 +63,7 @@
                             </div>
                         </dl>
                     </section>
-                    @if (!$pedido->endereco->cidade->nome)
+                    @if (!optional(optional($pedido->endereco)->cidade)->nome)
                     <section class="pedido-card__secao">
                         <h3 class="pedido-card__secao-titulo">Endereço de entrega</h3>
                         <dl class="pedido-endereco">

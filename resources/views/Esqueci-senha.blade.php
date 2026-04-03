@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Esqueci minha Senha</title>
+    @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Login.css') }}">
 </head>
 <body>
@@ -18,18 +19,6 @@
         <p style="text-align: center; font-size: 14px; color: #666; margin-bottom: 20px;">
             Digite seu e-mail para receber as instruções de recuperação de senha.
         </p>
-
-        @if (session('sucesso'))
-            <div class="alert alert-success">
-                {{ session('sucesso') }}
-            </div>
-        @endif
-
-        @if (session('erro'))
-            <div class="alert alert-danger">
-                {{ session('erro') }}
-            </div>
-        @endif
 
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -56,6 +45,8 @@
     </div>
 
 </div>
+
+@include('components.flash-toast')
 
 </body>
 </html>

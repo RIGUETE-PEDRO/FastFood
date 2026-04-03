@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Login</title>
+    @vite(['resources/js/app.js'])
      <link rel="stylesheet" href="{{ asset('css/Login.css') }}">
 </head>
 <body>
@@ -33,22 +34,11 @@
             <a href="/registro" class="register">Cadastre-se</a>
             <a href="/esqueci-senha" class="esquecer-senha">Esqueci minha senha</a>
 
-
-            @if (session('sucesso'))
-                <label class="msg-sucesso">{{ session('sucesso') }}</label>
-            @endif
-
-
-            @if (session('erro'))
-                <div class="msg-erro">
-                    <img src="{{ asset('img/alert.png') }}" alt="Erro">
-                    <span>{{ session('erro') }}</span>
-                </div>
-            @endif
-
         </form>
     </div>
 </div>
+
+@include('components.flash-toast')
 
 </body>
 </html>

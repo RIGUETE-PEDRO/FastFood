@@ -167,12 +167,14 @@ body {
   cursor: pointer;
   background: #ff7b00;
   color: #fff;
+  text-decoration: none;
   transition: filter 0.15s ease, transform 0.15s ease;
 }
 
 .mesa-btn:hover {
   filter: brightness(0.95);
   transform: translateY(-1px);
+  text-decoration: none;
 }
 
 .mesa-btn:disabled {
