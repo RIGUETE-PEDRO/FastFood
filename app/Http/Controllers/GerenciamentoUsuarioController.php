@@ -29,11 +29,10 @@ class GerenciamentoUsuarioController extends Controller
     public function buscarFuncionarios(Request $request)
     {
         $searchTerm = $request->input('search');
-
+        
         $lista = $this->adminService->buscarFuncionarios($searchTerm);
-
         $usuarioLogado =  $this->genericBase->hasLogado();
-        $nomeUsuarioLogado = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
+        $nomeUsuarioLogado = $this->genericBase->formatName($usuarioLogado);
 
         return view('Admin.GerenciamentoFuncionario', [
             'lista' => $lista,
@@ -48,8 +47,7 @@ class GerenciamentoUsuarioController extends Controller
 
         $lista = $this->adminService->listarFuncionarios();
         $usuarioLogado =  $this->genericBase->hasLogado();
-
-        $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
+        $primeiroNome = $this->genericBase->formatName($usuarioLogado);
 
         return view('Admin.GerenciamentoFuncionario', [
             'lista' => $lista,

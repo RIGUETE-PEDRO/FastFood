@@ -12,6 +12,11 @@ use App\Models\Cidade;
 class GenericBase
 {
 
+    public function formatName($name)
+    {
+        return $name = $name?->nome ? explode(' ', trim($name->nome))[0] : 'Usuário';
+    }
+
     public function hasLogado()
     {
         $usuarioLogado = $this->pegarUsuarioLogado();

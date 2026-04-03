@@ -24,19 +24,15 @@ class GerenciamentoProdutoController extends Controller
         $this->gerenciaProdutosService = $gerenciaProdutosService;
     }
 
-    /*precisa ser revisto porque deve ser no service e nao no controller*/
     public function gerenciamentoProduto()
     {
-        $usuarioLogado =  $this->genericBase->hasLogado();
-        $nomeUsuario = $usuarioLogado ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
-        $produtos = Produto::with('categoria')->get();
-        $categorias = Categoria::all();
+        $dados = $this->gerenciaProdutosService->gerenciarProdutos();
 
         return view('Admin.GerenciamentoProduto', [
-            'produtos' => $produtos,
-            'categorias' => $categorias,
-            'usuario' => $usuarioLogado,
-            'nomeUsuario' => $nomeUsuario,
+            'produtos' => $dados['produtos'] ?? [],
+            'categorias' => $dados['categorias'] ?? [],
+            'usuario' => $dados['usuarioLogado'] ?? null,
+            'nomeUsuario' => $dados['nomeUsuario'] ?? 'Usuário',
         ]);
     }
 

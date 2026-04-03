@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Categoria;
 use App\Models\Produto;
 
 
@@ -12,6 +13,16 @@ class GerenciaProdutosService
     public function __construct(GenericBase $genericBase)
     {
         $this->genericBase = $genericBase;
+    }
+
+    public function gerenciarProdutos()
+    {
+        $usuarioLogado =  $this->genericBase->hasLogado();
+        $nomeUsuario = $usuarioLogado ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
+        $produtos = Produto::with('categoria')->get();
+        $categorias = Categoria::all();
+
+        return compact('usuarioLogado', 'nomeUsuario', 'produtos', 'categorias');
     }
 
     public function criarProduto($request)

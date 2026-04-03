@@ -105,9 +105,7 @@ class CarrinhoController extends Controller
 
     public function toggleSelecionar($id)
     {
-
         $this->genericBase->hasLogado();
-
         $this->carrinhoService->toggleSelecionarProdutoNoCarrinho($id);
 
         return redirect()->route('carrinho');
@@ -116,7 +114,6 @@ class CarrinhoController extends Controller
     public function pegarEndereco(Request $request)
     {
         $this->genericBase->hasLogado();
-
 
         $carrinhoService = $this->carrinhoService;
         $resultado = $carrinhoService->pegarEnderecoUsuario($request);
