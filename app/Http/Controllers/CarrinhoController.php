@@ -7,20 +7,17 @@ use App\Mensagens\PassMensagens;
 use Illuminate\Http\Request;
 use App\Services\CarrinhoService;
 use App\Services\GenericBase;
-use App\Repositoryimpl\CarrinhoRepositoryimpl;
 
 class CarrinhoController extends Controller
 {
     protected GenericBase $genericBase;
     protected CarrinhoService $carrinhoService;
-    protected CarrinhoRepositoryimpl $carrinhoRepository;
 
 
-    public function __construct(GenericBase $genericBase, CarrinhoService $carrinhoService, CarrinhoRepositoryimpl $CarrinhoRepositoryimpl)
+    public function __construct(GenericBase $genericBase, CarrinhoService $carrinhoService)
     {
         $this->genericBase = $genericBase;
         $this->carrinhoService = $carrinhoService;
-        $this->carrinhoRepository =  $CarrinhoRepositoryimpl;
     }
 
 

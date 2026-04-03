@@ -4,24 +4,24 @@ namespace App\Services;
 
 use App\Enum\StatusPedidos as EnumStatusPedidos;
 use App\Models\PedidoModel;
+use App\Repositoryimpl\PedidoRepositoryimpl;
 
 class PedidoService
 {
     protected GenericBase $genericBase;
     protected PedidosFeitosService $service;
+    protected PedidoRepositoryimpl $repository;
 
-    public function __construct(GenericBase $genericBase, PedidosFeitosService $service)
+    public function __construct(GenericBase $genericBase, PedidosFeitosService $service, PedidoRepositoryimpl $repository)
     {
         $this->genericBase = $genericBase;
         $this->service = $service;
+        $this->repository = $repository;
     }
 
     public function checksumBasico(): array
     {
-        $snapshot = PedidoModel::query()
-            ->select(['id', 'status', 'updated_at'])
-            ->orderByDesc('updated_at')
-            ->get()
+        $snapshot = $this->repository->listarParaChecksum()
             ->map(fn($pedido) => [
                 'id' => (int) $pedido->id,
                 'status' => (int) $pedido->status,
@@ -53,15 +53,7 @@ class PedidoService
 
     public function pegarPedidosDoUsuario($usuarioId)
     {
-        $pedidos = PedidoModel::with([
-            'statusRelacionamento',
-            'endereco.cidade',
-            'itens.produto',
-            'formaPagamento'
-        ])
-            ->where('usuario_id', $usuarioId)
-            ->orderByDesc('created_at')
-            ->get();
+        $pedidos = $this->repository->pegarPedidosDoUsuario((int) $usuarioId);
 
         return $pedidos;
     }

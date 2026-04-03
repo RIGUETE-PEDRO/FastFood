@@ -2,8 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\FuncionarioModel;
-use App\Models\UsuarioModel;
+use App\Repositoryimpl\AuthRepositoryimpl;
 use Illuminate\Support\Facades\Hash;
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
@@ -11,10 +10,12 @@ use App\Mensagens\PassMensagens;
 class AuthService
 {
     protected GenericBase $genericBase;
+    protected AuthRepositoryimpl $authRepository;
 
-    public function __construct(GenericBase $genericBase)
+    public function __construct(GenericBase $genericBase, AuthRepositoryimpl $authRepository)
     {
         $this->genericBase = $genericBase;
+        $this->authRepository = $authRepository;
     }
 
     //função de registro de usuário
@@ -36,7 +37,7 @@ class AuthService
         }
 
         // Cria o novo usuário no banco de dados
-        UsuarioModel::create([
+        $usuarioCriado = $this->authRepository->criarUsuario([
             'nome' => $data['nome'],
             'email' => $data['email'],
             'senha' => bcrypt($data['senha']),
@@ -48,8 +49,8 @@ class AuthService
         if ($data['tipo_usuario_id'] !== 1 && $data['tipo_usuario_id'] !== null) {
 
 
-            FuncionarioModel::create([
-                'usuario_id' => $this->genericBase->pegarUsuarioEmail($data)->id,
+            $this->authRepository->criarFuncionario([
+                'usuario_id' => $usuarioCriado->id,
                 'has_ativo' => $data['has_ativo'] ?? true,
                 'salario' => $data['salario'] ?? 0.00,
             ]);

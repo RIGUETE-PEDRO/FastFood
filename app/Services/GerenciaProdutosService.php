@@ -2,26 +2,26 @@
 
 namespace App\Services;
 
-use App\Models\CategoriaModel;
-use App\Models\CategoriaProdutoModel;
-use App\Models\ProdutoModel;
+use App\Repositoryimpl\GerenciaProdutosRepositoryimpl;
 
 
 class GerenciaProdutosService
 {
     protected GenericBase $genericBase;
+    protected GerenciaProdutosRepositoryimpl $repository;
 
-    public function __construct(GenericBase $genericBase)
+    public function __construct(GenericBase $genericBase, GerenciaProdutosRepositoryimpl $repository)
     {
         $this->genericBase = $genericBase;
+        $this->repository = $repository;
     }
 
     public function gerenciarProdutos()
     {
         $usuarioLogado =  $this->genericBase->hasLogado();
         $nomeUsuario = $usuarioLogado ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
-        $produtos = ProdutoModel::with('categoria')->get();
-        $categorias = CategoriaProdutoModel::all();
+        $produtos = $this->repository->listarProdutosComCategoria();
+        $categorias = $this->repository->listarCategorias();
 
         return compact('usuarioLogado', 'nomeUsuario', 'produtos', 'categorias');
     }
@@ -29,7 +29,7 @@ class GerenciaProdutosService
     public function criarProduto($request)
     {
         $preco = str_replace(',', '.', $request->preco);
-        $produto = ProdutoModel::create(
+        $produto = $this->repository->criarProduto(
             [
                 'nome' => $request->input('nome'),
                 'preco' => $preco,
@@ -59,7 +59,7 @@ class GerenciaProdutosService
 
         if (($usuarioLogado['tipo'] ?? null) === 'Administrador') {
 
-            $produto = ProdutoModel::find($id);
+            $produto = $this->repository->buscarProdutoPorId((int) $id);
 
             if ($produto) {
                 // Apagar imagem do produto
@@ -75,7 +75,7 @@ class GerenciaProdutosService
 
     public function atualizarProduto($id, $data)
     {
-        $produto = ProdutoModel::find($id);
+        $produto = $this->repository->buscarProdutoPorId((int) $id);
         if ($produto) {
             $produto->nome = $data['nome'];
             $produto->preco = str_replace(',', '.', $data['preco']);

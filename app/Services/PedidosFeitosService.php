@@ -3,25 +3,22 @@
 namespace App\Services;
 
 use App\Enum\StatusPedidos as EnumsStatusPedidos;
-use App\Models\Pedido;
 use App\Models\PedidoModel;
+use App\Repositoryimpl\PedidosFeitosRepositoryimpl;
 use Illuminate\Support\Collection;
-use Illuminate\Validation\Rules\Enum;
 
 class PedidosFeitosService
 {
+    public function __construct(private PedidosFeitosRepositoryimpl $repository)
+    {
+    }
+
     /**
      * Lista pedidos com todas as relações necessárias para o painel administrativo.
      */
     public function listarPedidos(): Collection
     {
-        return PedidoModel::with([
-            'statusRelacionamento',
-            'endereco.cidade',
-            'itens.produto',
-            'formaPagamento',
-            'usuario',
-        ])->orderByDesc('created_at')->get();
+        return $this->repository->listarPedidos();
     }
 
     /**
@@ -29,16 +26,7 @@ class PedidosFeitosService
      */
     public function atualizarStatus(PedidoModel $pedido, EnumsStatusPedidos $status): PedidoModel
     {
-        $pedido->status = $status->value;
-        $pedido->save();
-
-        return $pedido->fresh([
-            'statusRelacionamento',
-            'endereco.cidade',
-            'itens.produto',
-            'formaPagamento',
-            'usuario',
-        ]);
+        return $this->repository->salvarStatus($pedido, $status->value);
     }
 
     /**

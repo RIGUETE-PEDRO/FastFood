@@ -49,7 +49,7 @@
 
                 <section class="dashboard-kpis">
                     <article class="painel painel-kpi">
-                        <h2>Total de vendas (entregues)</h2>
+                        <h2>Total de vendas</h2>
                         <strong>R$ {{ number_format((float) ($totalVendas ?? 0), 2, ',', '.') }}</strong>
                     </article>
 

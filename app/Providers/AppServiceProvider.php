@@ -2,7 +2,13 @@
 
 namespace App\Providers;
 
-use App\Models\Usuario;
+use App\Repository\AdminRepository;
+use App\Repository\CarrinhoRepository;
+use App\Repository\KeyClockRepository;
+use App\Models\UsuarioModel;
+use App\Repositoryimpl\AdminRepositoryimpl;
+use App\Repositoryimpl\CarrinhoRepositoryimpl;
+use App\Repositoryimpl\KeyClockRepositoryimpl;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -14,7 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(AdminRepository::class, AdminRepositoryimpl::class);
+        $this->app->bind(CarrinhoRepository::class, CarrinhoRepositoryimpl::class);
+        $this->app->bind(KeyClockRepository::class, KeyClockRepositoryimpl::class);
     }
 
     /**
@@ -30,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
             }
 
             if (is_numeric($usuario)) {
-                $usuario = Usuario::find($usuario);
+                $usuario = UsuarioModel::find($usuario);
             }
 
             $view->with('usuario', $usuario);

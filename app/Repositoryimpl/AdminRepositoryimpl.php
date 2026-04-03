@@ -6,11 +6,12 @@ namespace App\Repositoryimpl;
 use App\Enum\StatusPedidos;
 use App\Models\PedidoModel;
 use App\Models\FuncionarioModel;
+use App\Repository\AdminRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-class AdminRepositoryimpl
+class AdminRepositoryimpl implements AdminRepository
 {
     public function buscarFuncionarios($searchTerm)
     {
@@ -29,7 +30,7 @@ class AdminRepositoryimpl
     {
         return (float) PedidoModel::query()
             ->whereBetween('created_at', [$inicioPeriodo, $fimPeriodo])
-            ->where('status', StatusPedidos::ENTREGUE->value)
+            ->where('status', '!=', StatusPedidos::PENDENTE->value)
             ->sum('valor_total');
     }
 
@@ -55,6 +56,7 @@ class AdminRepositoryimpl
             ->join('pedidos as p', 'p.id', '=', 'ip.pedido_id')
             ->leftJoin('produtos as pr', 'pr.id', '=', 'ip.produto_id')
             ->whereBetween('p.created_at', [$inicioPeriodo, $fimPeriodo])
+            ->where('p.status', '!=', StatusPedidos::PENDENTE->value)
             ->select('ip.produto_id', 'pr.nome as produto_nome', DB::raw('SUM(ip.quantidade) as total_qtd'))
             ->groupBy('ip.produto_id', 'pr.nome')
             ->orderByDesc('total_qtd')
@@ -67,6 +69,7 @@ class AdminRepositoryimpl
             ->join('pedidos as p', 'p.id', '=', 'ip.pedido_id')
             ->leftJoin('produtos as pr', 'pr.id', '=', 'ip.produto_id')
             ->whereBetween('p.created_at', [$inicioPeriodo, $fimPeriodo])
+            ->where('p.status', '!=', StatusPedidos::PENDENTE->value)
             ->select('ip.produto_id', 'pr.nome as produto_nome', DB::raw('SUM(ip.quantidade) as total_qtd'))
             ->groupBy('ip.produto_id', 'pr.nome')
             ->orderByDesc('total_qtd')

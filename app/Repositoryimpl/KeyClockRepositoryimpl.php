@@ -2,11 +2,11 @@
 
 namespace App\Repositoryimpl;
 
-use App\Models\Usuario;
 use App\Models\UsuarioModel;
+use App\Repository\KeyClockRepository;
 use Illuminate\Support\Facades\DB;
 
-class KeyClockRepositoryimpl
+class KeyClockRepositoryimpl implements KeyClockRepository
 {
     public function hasRole(UsuarioModel $usuario, string $roleName): bool
     {

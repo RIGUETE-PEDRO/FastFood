@@ -3,15 +3,13 @@
 namespace App\Services;
 
 use App\Mail\RecuperarSenhaMail;
-use App\Models\Usuario;
 use Illuminate\Support\Facades\Hash;
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
-use App\Models\UsuarioModel;
+use App\Repositoryimpl\LoginRepositoryimpl;
 use App\Roles\Role;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -19,17 +17,19 @@ class LoginService
 {
     protected GenericBase $genericBase;
     protected keyclockService $keyclockService;
-    public function __construct(GenericBase $genericBase, keyclockService $keyclockService)
+    protected LoginRepositoryimpl $loginRepository;
+    public function __construct(GenericBase $genericBase, keyclockService $keyclockService, LoginRepositoryimpl $loginRepository)
     {
         $this->genericBase = $genericBase;
         $this->keyclockService = $keyclockService;
+        $this->loginRepository = $loginRepository;
     }
     //função de autenticação de usuário
     public function autenticar($credenciais)
     {
         $autenticou = false;
         // Busca o usuário pelo email
-        $usuario = UsuarioModel::where('email', $credenciais['email'])->first();
+        $usuario = $this->loginRepository->buscarUsuarioPorEmail($credenciais['email']);
 
         if (!$usuario || !Hash::check($credenciais['senha'], $usuario->senha)) {
 
@@ -37,7 +37,7 @@ class LoginService
             return $autenticou = false;
         }
 
-        if (!UsuarioModel::where('email', $credenciais['email'])->exists()) {
+        if (!$this->loginRepository->existeUsuarioPorEmail($credenciais['email'])) {
             redirect()->back()->with('erro', ErroMensagens::EMAIL_NAO_CADASTRADO);
             return $autenticou = false;
         }
@@ -99,16 +99,10 @@ class LoginService
             $token = Str::random(60);
 
             // Deletar tokens antigos deste e-mail
-            DB::table('password_reset_tokens')
-                ->where('email', $request->email)
-                ->delete();
+            $this->loginRepository->deletarTokensRecuperacao($request->email);
 
             // Salvar novo token no banco
-            DB::table('password_reset_tokens')->insert([
-                'email' => $request->email,
-                'token' => $token,
-                'created_at' => Carbon::now(),
-            ]);
+            $this->loginRepository->inserirTokenRecuperacao($request->email, $token);
 
             // Enviar e-mail com o link
             Mail::to($request->email)->send(new RecuperarSenhaMail($token, $request->email));
@@ -139,10 +133,7 @@ class LoginService
 
         try {
             // Verificar se o token existe e é válido (menos de 60 minutos)
-            $resetRecord = DB::table('password_reset_tokens')
-                ->where('email', $request->email)
-                ->where('token', $request->token)
-                ->first();
+            $resetRecord = $this->loginRepository->buscarTokenRecuperacao($request->email, $request->token);
 
             if (!$resetRecord) {
                 return redirect()->back()
@@ -159,17 +150,13 @@ class LoginService
             }
 
             // Atualizar a senha do usuário
-            DB::table('usuarios')
-                ->where('email', $request->email)
-                ->update([
-                    'senha' => password_hash($request->password, PASSWORD_BCRYPT),
-                    'updated_at' => Carbon::now(),
-                ]);
+            $this->loginRepository->atualizarSenhaUsuario(
+                $request->email,
+                password_hash($request->password, PASSWORD_BCRYPT)
+            );
 
             // Deletar o token usado
-            DB::table('password_reset_tokens')
-                ->where('email', $request->email)
-                ->delete();
+            $this->loginRepository->deletarTokensRecuperacao($request->email);
 
             return redirect()->route('login.form')
                 ->with('sucesso', PassMensagens::SENHA_REDEFINIDA_SUCESSO);

@@ -4,16 +4,17 @@ namespace App\Services;
 
 use App\Mensagens\ErroMensagens;
 use App\Models\UsuarioModel;
-use App\Models\FuncionarioModel;
-use App\Models\ProdutoModel;
-use App\Models\CarrinhoModel;
-use App\Models\CidadeModel;
+use App\Repositoryimpl\GenericBaseRepositoryimpl;
 use Illuminate\Support\Facades\Auth;
 
 class GenericBase
 {
+    public function __construct(private GenericBaseRepositoryimpl $repository)
+    {
+    }
+
     public function pegarUsuarioEmail($data){
-        $usuario = UsuarioModel::where('email', $data['email'])->first();
+        $usuario = $this->repository->pegarUsuarioEmail($data);
         if (!$usuario) {
            $usuario = null;
         }
@@ -22,7 +23,7 @@ class GenericBase
 
     public function existeFuncionario($usuarioId)
     {
-        return FuncionarioModel::where('usuario_id', $usuarioId->id)->first();
+        return $this->repository->existeFuncionario($usuarioId);
     }
 
     public function formatName($name)
@@ -38,7 +39,7 @@ class GenericBase
     }
     public function findById(int $id)
     {
-        return UsuarioModel::find($id);
+        return $this->repository->findById($id);
     }
 
     public function findByProdutos($categoria)
@@ -52,33 +53,27 @@ class GenericBase
             $categorias[] = 'Porcoes';
         }
 
-        return ProdutoModel::query()
-            ->where('disponivel', true)
-            ->whereHas('categoria', function ($query) use ($categorias) {
-                $query->whereIn('nome', $categorias)
-                    ->where('deleted', false);
-            })
-            ->get();
+        return $this->repository->findByProdutos($categorias);
     }
 
     public function pegarProdutos()
     {
-        return ProdutoModel::where('disponivel', true)->get();
+        return $this->repository->pegarProdutos();
     }
 
     public function findAll()
     {
-        return UsuarioModel::all();
+        return $this->repository->findAll();
     }
 
     public function findByCidade()
     {
-        return CidadeModel::orderBy('nome')->get();
+        return $this->repository->findByCidade();
     }
 
     public function findFuncionarios()
     {
-        return FuncionarioModel::with('usuario')->get();
+        return $this->repository->findFuncionarios();
     }
 
     public function alterar(UsuarioModel $usuario, array $dados)
@@ -127,19 +122,7 @@ class GenericBase
 
     public function deleteFuncionarioEUsuario(int $usuarioId): bool
     {
-        $funcionario = FuncionarioModel::where('usuario_id', $usuarioId)->first();
-
-        // Exclui o funcionário primeiro para não violar FK
-        if ($funcionario) {
-            $funcionario->delete();
-        }
-
-        $usuario = $this->findById($usuarioId);
-        if ($usuario) {
-            return (bool) $usuario->delete();
-        }
-
-        return false;
+        return $this->repository->deleteFuncionarioEUsuario($usuarioId);
     }
 
 
@@ -191,15 +174,11 @@ class GenericBase
 
     public function pegarItensCarrinho($usuarioId)
     {
-        return CarrinhoModel::with('produto')
-            ->where('usuario_id', $usuarioId)
-            ->get();
+        return $this->repository->pegarItensCarrinho((int) $usuarioId);
     }
 
     public function findByProdutosIsUsuario($produtoId, $usuarioId)
     {
-        return CarrinhoModel::where('produto_id', $produtoId)
-            ->where('usuario_id', $usuarioId)
-            ->first();
+        return $this->repository->findByProdutosIsUsuario((int) $produtoId, (int) $usuarioId);
     }
 }

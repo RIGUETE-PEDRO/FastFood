@@ -3,16 +3,18 @@
 namespace App\Services;
 
 use App\Mensagens\ErroMensagens;
-use App\Models\FuncionarioModel;
+use App\Repositoryimpl\GerenciamentoFuncionarioRepositoryimpl;
 use Illuminate\Support\Facades\Hash;
 
 class GerenciamentoFuncionarioService{
 
         protected GenericBase $genericBase;
+        protected GerenciamentoFuncionarioRepositoryimpl $repository;
 
-        public function __construct(GenericBase $genericBase)
+        public function __construct(GenericBase $genericBase, GerenciamentoFuncionarioRepositoryimpl $repository)
         {
             $this->genericBase = $genericBase;
+            $this->repository = $repository;
         }
 
 
@@ -53,7 +55,7 @@ class GerenciamentoFuncionarioService{
         $usuario->save();
 
         // Atualiza dados do funcionário relacionado
-        $funcionario = FuncionarioModel::where('usuario_id', $usuario->id)->first();
+        $funcionario = $this->repository->buscarFuncionarioPorUsuarioId((int) $usuario->id);
 
         if ($funcionario) {
             $funcionario->has_ativo = $request->boolean('has_ativo', true);

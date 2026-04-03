@@ -2,19 +2,11 @@
 
 namespace App\Services;
 
-use App\Enum\StatusPedidos;
-use App\Models\Mesa;
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
-use App\Models\FormaPagamento;
-use App\Models\FormaPagamentoModel;
-use App\Models\ItemPedido;
-use App\Models\ItemPedidoModel;
 use App\Models\MesaModel;
-use App\Models\Pedido;
-use App\Models\PedidoModel;
-use App\Models\Produto;
-use App\Models\ProdutoModel;
+use App\Repositoryimpl\GenericBaseRepositoryimpl;
+use App\Repositoryimpl\MesasRepositoryimpl;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
@@ -23,6 +15,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 class MesasService extends GenericBase
 {
+    public function __construct(
+        GenericBaseRepositoryimpl $repository,
+        private MesasRepositoryimpl $mesasRepository
+    ) {
+        parent::__construct($repository);
+    }
+
     private function normalizarMetodoPagamento(?string $metodo): ?string
     {
         $metodo = trim((string) $metodo);
@@ -58,29 +57,18 @@ class MesasService extends GenericBase
 
     private function finalizarPedidosDaMesa(int $mesaId): void
     {
-        $pedidoIds = ItemPedidoModel::query()
-            ->where('mesa_id', $mesaId)
-            ->whereNotNull('pedido_id')
-            ->pluck('pedido_id')
-            ->unique()
-            ->values();
+        $pedidoIds = $this->mesasRepository->pegarPedidoIdsDaMesa($mesaId);
 
         if ($pedidoIds->isEmpty()) {
             return;
         }
 
-        PedidoModel::query()
-            ->whereIn('id', $pedidoIds)
-            ->whereNotIn('status', [
-                StatusPedidos::ENTREGUE->value,
-                StatusPedidos::CANCELADO->value,
-            ])
-            ->update(['status' => StatusPedidos::ENTREGUE->value]);
+        $this->mesasRepository->finalizarPedidosPorIds($pedidoIds);
     }
 
     public function pegarMesas()
     {
-        return MesaModel::all();
+        return $this->mesasRepository->listarMesas();
     }
 
     public function pegarDetalhesMesa($id)
@@ -94,7 +82,7 @@ class MesasService extends GenericBase
         $itensPagos = $this->pegarItensContaMesa($id, true);
         $totalAberto = $this->calcularTotalItens($itensAbertos);
 
-        $formasPagamento = FormaPagamentoModel::query()->orderBy('tipo_pagamento')->get();
+        $formasPagamento = $this->mesasRepository->listarFormasPagamento();
 
         return [
             'mesa' => $mesa,
@@ -107,32 +95,17 @@ class MesasService extends GenericBase
 
     public function pegarMesaPorId($id): ?MesaModel
     {
-        return MesaModel::find($id);
+        return $this->mesasRepository->pegarMesaPorId((int) $id);
     }
 
     public function pegarProdutosDisponiveis(array $excluirProdutoIds = []): Collection
     {
-        $query = ProdutoModel::query()
-            ->where('disponivel', true)
-            ->orderBy('nome');
-
-        if (!empty($excluirProdutoIds)) {
-            $query->whereNotIn('id', $excluirProdutoIds);
-        }
-
-        return $query->get();
+        return $this->mesasRepository->pegarProdutosDisponiveis($excluirProdutoIds);
     }
 
     public function pegarItensContaMesa($mesaId, bool $pago): Collection
     {
-        $status = $pago ? 'pago' : 'em_aberto';
-
-        return ItemPedidoModel::query()
-            ->where('mesa_id', $mesaId)
-            ->where('status_da_comanda', $status)
-            ->with('produto')
-            ->orderByDesc('updated_at')
-            ->get();
+        return $this->mesasRepository->pegarItensContaMesa((int) $mesaId, $pago);
     }
 
     public function calcularTotalItens(Collection $itens): float
@@ -147,15 +120,12 @@ class MesasService extends GenericBase
 
     public function atualizarPrecoMesa($mesaId): void
     {
-        $mesa = MesaModel::find($mesaId);
+        $mesa = $this->mesasRepository->pegarMesaPorId((int) $mesaId);
         if (!$mesa) {
             return;
         }
 
-        $itensAbertos = ItemPedidoModel::query()
-            ->where('mesa_id', $mesaId)
-            ->where('status_da_comanda', 'em_aberto')
-            ->get();
+        $itensAbertos = $this->mesasRepository->listarItensAbertosMesa((int) $mesaId);
 
         $mesa->preco = $this->calcularTotalItens($itensAbertos);
         $mesa->save();
@@ -179,11 +149,7 @@ class MesasService extends GenericBase
             return ['status' => false, 'mensagem' => ErroMensagens::DIGITE_VALOR_PAGAMENTO_TOTAL];
         }
 
-        $itens = ItemPedidoModel::query()
-            ->where('mesa_id', $id)
-            ->where('status_da_comanda', 'em_aberto')
-            ->whereIn('id', (array) $itemIds)
-            ->get(['id', 'preco_unitario', 'quantidade', 'valor_pago']);
+        $itens = $this->mesasRepository->pegarItensAbertosSelecionados((int) $id, (array) $itemIds);
 
         if ($itens->isEmpty()) {
             return ['status' => false, 'mensagem' => ErroMensagens::NENHUM_ITEM_SELECIONADO];
@@ -253,12 +219,7 @@ class MesasService extends GenericBase
         }
 
         return DB::transaction(function () use ($mesaId, $itemIds, $quantidadesPorItem, $valorCents, $pagamentoMetodo) {
-            $itens = ItemPedidoModel::query()
-                ->where('mesa_id', $mesaId)
-                ->where('status_da_comanda', 'em_aberto')
-                ->whereIn('id', $itemIds)
-                ->orderBy('id')
-                ->get();
+            $itens = $this->mesasRepository->pegarItensParaAbatimento((int) $mesaId, $itemIds);
 
             if ($itens->isEmpty()) {
                 return 'Nenhum item válido selecionado para abater.';
@@ -297,7 +258,7 @@ class MesasService extends GenericBase
                         $target->quantidade = (int) $target->quantidade - 1;
                         $target->save();
 
-                        $target = ItemPedidoModel::create([
+                        $target = $this->mesasRepository->criarItemPedido([
                             'preco_unitario' => (float) $item->preco_unitario,
                             'valor_pago' => 0.00,
                             'quantidade' => 1,
@@ -347,20 +308,14 @@ class MesasService extends GenericBase
 
             $this->atualizarPrecoMesa($mesaId);
 
-            $restamAbertos = ItemPedidoModel::query()
-                ->where('mesa_id', $mesaId)
-                ->where('status_da_comanda', 'em_aberto')
-                ->exists();
+            $restamAbertos = $this->mesasRepository->existemItensAbertosMesa((int) $mesaId);
 
             if (!$restamAbertos) {
                 $this->finalizarPedidosDaMesa((int) $mesaId);
 
-                ItemPedidoModel::query()
-                    ->where('mesa_id', $mesaId)
-                    ->where('status_da_comanda', 'pago')
-                    ->update(['mesa_id' => null]);
+                $this->mesasRepository->desvincularMesaItensPagos((int) $mesaId);
 
-                $mesa = MesaModel::find($mesaId);
+                $mesa = $this->mesasRepository->pegarMesaPorId((int) $mesaId);
                 if ($mesa) {
                     $mesa->preco = 0.00;
                     $mesa->status = 'Disponivel';
@@ -385,15 +340,15 @@ class MesasService extends GenericBase
             return redirect()->back()->with('error', ErroMensagens::NUMERO_MESA_INVALIDO);
         }
 
-        if (MesaModel::where('numero_da_mesa', $request->input('numero_da_mesa'))->exists()) {
+        if ($this->mesasRepository->existeNumeroMesa((int) $request->input('numero_da_mesa'))) {
             return redirect()->back()->with('error', ErroMensagens::NUMERO_JA_EXISTENTE);
         }
 
-        $mesa = new MesaModel();
-        $mesa->numero_da_mesa = $request->input('numero_da_mesa');
-        $mesa->status = $request->input('status') ?? 'disponivel';
-        $mesa->preco = 0.00;
-        $mesa->save();
+        $this->mesasRepository->criarMesa([
+            'numero_da_mesa' => $request->input('numero_da_mesa'),
+            'status' => $request->input('status') ?? 'disponivel',
+            'preco' => 0.00,
+        ]);
 
         return null;
     }
@@ -401,7 +356,7 @@ class MesasService extends GenericBase
     public function atualizarMesa($request): ?RedirectResponse
     {
         $id = $request->input('mesa_id');
-        $mesa = MesaModel::find($id);
+        $mesa = $this->mesasRepository->pegarMesaPorId((int) $id);
 
         if (!$mesa) {
             return redirect()->back()->with('error', ErroMensagens::SEM_ID_MESA);
@@ -415,9 +370,7 @@ class MesasService extends GenericBase
                 return redirect()->back()->with('error', ErroMensagens::NUMERO_MESA_INVALIDO);
             }
 
-            $numeroJaExiste = MesaModel::where('numero_da_mesa', $novoNumero)
-                ->where('id', '!=', $mesa->id)
-                ->exists();
+            $numeroJaExiste = $this->mesasRepository->existeNumeroMesa((int) $novoNumero, (int) $mesa->id);
             if ($numeroJaExiste) {
                 return redirect()->back()->with('error', ErroMensagens::NUMERO_JA_EXISTENTE);
             }
@@ -436,15 +389,12 @@ class MesasService extends GenericBase
 
     public function removerMesa($id)
     {
-        $mesa = MesaModel::find($id);
-        if ($mesa) {
-            $mesa->delete();
-        }
+        $this->mesasRepository->removerMesa((int) $id);
     }
 
 
     public function pegarProdutosMesa($id)
     {
-        return ProdutoModel::where('mesa_id', $id)->get();
+        return $this->mesasRepository->pegarProdutosMesa((int) $id);
     }
 }

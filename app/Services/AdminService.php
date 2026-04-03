@@ -6,7 +6,7 @@ use App\Mensagens\ErroMensagens;
 use Illuminate\Http\Request;
 use App\Mensagens\PassMensagens;
 use App\Enum\StatusPedidos;
-use App\Repositoryimpl\AdminRepositoryimpl;
+use App\Repository\AdminRepository;
 use App\Roles\Role;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\URL;
 class AdminService
 {
     protected GenericBase $genericBase;
-    protected AdminRepositoryimpl $adminRepositoryimpl;
+    protected AdminRepository $adminRepositoryimpl;
     protected KeyClockService $keyClockService;
 
-    public function __construct(GenericBase $genericBase, AdminRepositoryimpl $adminRepositoryimpl, KeyClockService $keyClockService)
+    public function __construct(GenericBase $genericBase, AdminRepository $adminRepositoryimpl, KeyClockService $keyClockService)
     {
         $this->genericBase = $genericBase;
         $this->adminRepositoryimpl = $adminRepositoryimpl;

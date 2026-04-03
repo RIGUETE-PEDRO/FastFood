@@ -4,28 +4,21 @@ namespace App\Services;
 
 use App\Enum\Pagamento;
 use App\Enum\StatusPedidos as EnumsStatusPedidos;
-use App\Models\CarrinhoModel;
-use App\Models\EnderecoModel;
-use App\Models\ProdutoModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use App\Models\PedidoModel;
-use App\Models\CidadeModel;
-use App\Models\ItemPedidoModel;
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
-use App\Models\MesaModel;
-use App\Repositoryimpl\CarrinhoRepositoryimpl;
+use App\Repository\CarrinhoRepository;
 use Illuminate\Support\Facades\Log;
 
 class CarrinhoService
 {
     protected GenericBase $genericBase;
-    protected CarrinhoRepositoryimpl $carrinhoRepository;
+    protected CarrinhoRepository $carrinhoRepository;
 
 
-    public function __construct(GenericBase $genericBase, CarrinhoRepositoryimpl $carrinhoRepository)
+    public function __construct(GenericBase $genericBase, CarrinhoRepository $carrinhoRepository)
     {
         $this->genericBase = $genericBase;
         $this->carrinhoRepository = $carrinhoRepository;
@@ -103,20 +96,21 @@ class CarrinhoService
             throw new \InvalidArgumentException("Usuário inválido" . ErroMensagens::PRECISA_ESTA_LOGADO);
         }
 
-        $produto = ProdutoModel::findOrFail($produtoId);
+        $produto = $this->carrinhoRepository->buscarProdutoPorId((int) $produtoId);
+        if (!$produto) {
+            throw new \InvalidArgumentException('Produto não encontrado.');
+        }
         $precoUnitario = (float) $produto->preco;
         $precoTotal = $quantidadeNormalizada * $precoUnitario;
 
-        $itemCarrinho = CarrinhoModel::where('usuario_id', $usuarioId)
-            ->where('produto_id', $produtoId)
-            ->first();
+        $itemCarrinho = $this->carrinhoRepository->buscarItemCarrinhoPorUsuarioEProduto((int) $usuarioId, (int) $produtoId);
 
         if ($itemCarrinho) {
             $itemCarrinho->quantidade += $quantidadeNormalizada;
             $itemCarrinho->preco_total += $precoTotal;
             $itemCarrinho->save();
         } else {
-            CarrinhoModel::create([
+            $this->carrinhoRepository->criarItemCarrinho([
                 'usuario_id' => $usuarioId,
                 'produto_id' => $produtoId,
                 'quantidade' => $quantidadeNormalizada,
@@ -132,9 +126,7 @@ class CarrinhoService
             return;
         }
 
-        $itemCarrinho = CarrinhoModel::where('id', $id)
-            ->where('usuario_id', Auth::id())
-            ->first();
+        $itemCarrinho = $this->carrinhoRepository->buscarItemCarrinho((int) $id, (int) Auth::id());
         if ($itemCarrinho) {
             $itemCarrinho->delete();
         }
@@ -146,10 +138,10 @@ class CarrinhoService
             abort(401);
         }
 
-        $itemCarrinho = CarrinhoModel::where('id', $id)
-            ->where('usuario_id', Auth::id())
-            ->with('produto')
-            ->firstOrFail();
+        $itemCarrinho = $this->carrinhoRepository->buscarItemCarrinhoComProduto((int) $id, (int) Auth::id());
+        if (!$itemCarrinho) {
+            abort(404);
+        }
 
         // Se clicou em + ou -
         if ($request->filled('acao')) {
@@ -183,7 +175,7 @@ class CarrinhoService
 
     public function selecionarCidade()
     {
-        $cidade = CidadeModel::all();
+        $cidade = $this->carrinhoRepository->listarCidades();
 
         return $cidade;
     }
@@ -194,9 +186,10 @@ class CarrinhoService
             abort(401);
         }
 
-        $itemCarrinho = CarrinhoModel::where('id', $id)
-            ->where('usuario_id', Auth::id())
-            ->firstOrFail();
+        $itemCarrinho = $this->carrinhoRepository->buscarItemCarrinho((int) $id, (int) Auth::id());
+        if (!$itemCarrinho) {
+            abort(404);
+        }
 
         $itemCarrinho->selecionado = !$itemCarrinho->selecionado;
         $itemCarrinho->save();
@@ -220,9 +213,7 @@ class CarrinhoService
         $opcaoEndereco = $request->input('endereco_opcao');
 
         if ($opcaoEndereco && $opcaoEndereco !== 'novo') {
-            $endereco = EnderecoModel::where('id', $opcaoEndereco)
-                ->where('usuario_id', $usuarioId)
-                ->first();
+            $endereco = $this->carrinhoRepository->buscarEnderecoPorIdEUsuario((int) $opcaoEndereco, (int) $usuarioId);
 
             if (!$endereco) {
                 Session::flash('checkout.modal', 'enderecoModal');
@@ -267,7 +258,7 @@ class CarrinhoService
             ];
         }
 
-        if (!$cidadeId || !CidadeModel::whereKey($cidadeId)->exists()) {
+        if (!$cidadeId || !$this->carrinhoRepository->cidadeExiste((int) $cidadeId)) {
             Session::flash('checkout.modal', 'enderecoNovoModal');
             return [
                 'status' => false,
@@ -276,7 +267,7 @@ class CarrinhoService
             ];
         }
 
-        $endereco = EnderecoModel::create([
+        $endereco = $this->carrinhoRepository->criarEndereco([
             'usuario_id'  => $usuarioId,
             'logradouro'  => $rua,
             'numero'      => $request->input('numero'),
@@ -319,7 +310,7 @@ class CarrinhoService
             ];
         }
 
-        $quantidadeEnderecos = EnderecoModel::where('usuario_id', $usuarioId)->count();
+        $quantidadeEnderecos = $this->carrinhoRepository->quantidadeEnderecosUsuario((int) $usuarioId);
         if ($quantidadeEnderecos <= 1) {
             Session::flash('checkout.modal', 'enderecoModal');
             return [
@@ -329,9 +320,7 @@ class CarrinhoService
             ];
         }
 
-        $endereco = EnderecoModel::where('id', $id)
-            ->where('usuario_id', $usuarioId)
-            ->first();
+        $endereco = $this->carrinhoRepository->buscarEnderecoPorIdEUsuario((int) $id, (int) $usuarioId);
 
         if (!$endereco) {
             Session::flash('checkout.modal', 'enderecoModal');
@@ -365,15 +354,13 @@ class CarrinhoService
 
         $mesaId = Session::get('checkout.mesa_id');
 
-        $carrinhoItems = CarrinhoModel::where('selecionado', true)
-            ->where('usuario_id', $usuarioId)
-            ->get();
+        $carrinhoItems = $this->carrinhoRepository->listarItensSelecionadosCarrinho((int) $usuarioId);
 
 
         foreach ($carrinhoItems as $item) {
             $precoUnitario = $item->preco_total / $item->quantidade;
 
-            ItemPedidoModel::create([
+            $this->carrinhoRepository->criarItemPedido([
                 'usuario_id' => $usuarioId,
                 'produto_id' => $item->produto_id,
                 'quantidade' => $item->quantidade,
@@ -386,15 +373,9 @@ class CarrinhoService
         }
 
         if ($mesaId) {
-            $mesa = MesaModel::find($mesaId);
+            $mesa = $this->carrinhoRepository->pegarMesaPorId((int) $mesaId);
             if ($mesa) {
-                $totalAberto = (float) ItemPedidoModel::query()
-                    ->where('mesa_id', $mesaId)
-                    ->where('status_da_comanda', 'em_aberto')
-                    ->get()
-                    ->sum(function ($item) {
-                        return ((float) $item->preco_unitario) * ((int) $item->quantidade);
-                    });
+                $totalAberto = $this->carrinhoRepository->calcularTotalAbertoMesa((int) $mesaId);
 
                 $mesa->preco = $totalAberto;
                 $mesa->status = 'Ocupada';
@@ -402,7 +383,7 @@ class CarrinhoService
             }
         }
 
-        CarrinhoModel::where('usuario_id', $usuarioId)->where('selecionado', true)->delete();
+        $this->carrinhoRepository->removerItensSelecionadosCarrinho((int) $usuarioId);
 
         Session::forget('checkout.mesa_id');
         Session::forget('checkout.endereco_id');
@@ -430,9 +411,7 @@ class CarrinhoService
 
         $usuarioId = Auth::id();
 
-        $valor_total = CarrinhoModel::where('usuario_id', $usuarioId)
-            ->where('selecionado', true)
-            ->sum('preco_total');
+        $valor_total = $this->carrinhoRepository->somarValorSelecionadoCarrinho((int) $usuarioId);
 
         if ($valor_total <= 0) {
             return [
@@ -477,7 +456,7 @@ class CarrinhoService
 
 
         try {
-            $pedido = PedidoModel::create([
+            $pedido = $this->carrinhoRepository->criarPedido([
                 'usuario_id' => $usuarioId,
                 'endereco_id' => $enderecoId,
                 'tipo_pagamento_id' => $pagamentoenum ? $pagamentoenum->value : null,
@@ -519,7 +498,7 @@ class CarrinhoService
             ];
         }
 
-        $mesa = MesaModel::find($id);
+        $mesa = $this->carrinhoRepository->pegarMesaPorId((int) $id);
         if (!$mesa) {
             return [
                 'status' => false,
