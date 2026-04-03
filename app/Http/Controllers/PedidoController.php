@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Usuario;
+
 use App\Services\GenericBase;
 use App\Services\PedidoService;
 

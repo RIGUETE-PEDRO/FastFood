@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Enum\StatusPedidos;
 use App\Models\Mesa;
 use App\Mensagens\ErroMensagens;
+use App\Mensagens\PassMensagens;
+use App\Models\FormaPagamento;
 use App\Models\ItemPedido;
 use App\Models\Pedido;
 use App\Models\Produto;
@@ -12,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Request;
 
 class MesasService extends GenericBase
 {
@@ -36,8 +39,8 @@ class MesasService extends GenericBase
         }
 
         $partes = collect(preg_split('/\s*\+\s*/', (string) $existente) ?: [])
-            ->map(fn ($m) => $this->normalizarMetodoPagamento($m))
-            ->filter(fn ($m) => !empty($m))
+            ->map(fn($m) => $this->normalizarMetodoPagamento($m))
+            ->filter(fn($m) => !empty($m))
             ->values()
             ->all();
 
@@ -73,6 +76,28 @@ class MesasService extends GenericBase
     public function pegarMesas()
     {
         return Mesa::all();
+    }
+
+    public function pegarDetalhesMesa($id)
+    {
+        $mesa = $this->pegarMesaPorId($id);
+        if (!$mesa) {
+            return redirect()->route('mesas.index')->with('error', ErroMensagens::SEM_ID_MESA);
+        }
+
+        $itensAbertos = $this->pegarItensContaMesa($id, false);
+        $itensPagos = $this->pegarItensContaMesa($id, true);
+        $totalAberto = $this->calcularTotalItens($itensAbertos);
+
+        $formasPagamento = FormaPagamento::query()->orderBy('tipo_pagamento')->get();
+
+        return [
+            'mesa' => $mesa,
+            'itensAbertos' => $itensAbertos,
+            'itensPagos' => $itensPagos,
+            'totalAberto' => $totalAberto,
+            'formasPagamento' => $formasPagamento,
+        ];
     }
 
     public function pegarMesaPorId($id): ?Mesa
@@ -131,84 +156,85 @@ class MesasService extends GenericBase
         $mesa->save();
     }
 
-    public function abaterItensContaMesa($mesaId, array $itemIds, array $quantidadesPorItem = [], ?string $pagamentoMetodo = null): ?string
+    public function abaterItensContaMesa($request, $id)
     {
-        if (empty($itemIds)) {
-            return 'Selecione pelo menos um item para abater.';
+        $itemIds = $request->input('item_ids', []);
+        $pagamentoMetodo = (string) $request->input('pagamento_metodo');
+        $valorPagamentoRaw = (string) $request->input('valor_pagamento_total');
+        $quantidades = (array) $request->input('quantidades', []);
+
+        $metodosPermitidos = ['cartao_credito', 'cartao_debito', 'pix', 'dinheiro'];
+
+        if ($pagamentoMetodo === '' || !in_array($pagamentoMetodo, $metodosPermitidos, true)) {
+            return ['status' => false, 'mensagem' => ErroMensagens::SELECIONE_FORMA_PAGAMENTO];
+        }
+
+        $valorPagamento = $this->parseValor($valorPagamentoRaw);
+        if ($valorPagamento === null) {
+            return ['status' => false, 'mensagem' => ErroMensagens::DIGITE_VALOR_PAGAMENTO_TOTAL];
         }
 
         $itens = ItemPedido::query()
-            ->where('mesa_id', $mesaId)
+            ->where('mesa_id', $id)
             ->where('status_da_comanda', 'em_aberto')
-            ->whereIn('id', $itemIds)
-            ->get();
+            ->whereIn('id', (array) $itemIds)
+            ->get(['id', 'preco_unitario', 'quantidade', 'valor_pago']);
 
         if ($itens->isEmpty()) {
-            return 'Nenhum item válido selecionado para abater.';
+            return ['status' => false, 'mensagem' => ErroMensagens::NENHUM_ITEM_SELECIONADO];
         }
 
-        $agora = Carbon::now();
+        $totalCalculado = 0.0;
+
         foreach ($itens as $item) {
-            $max = (int) $item->quantidade;
-            $qtd = (int) ($quantidadesPorItem[$item->id] ?? 0);
+            $qtdMax = (int) $item->quantidade;
+            $qtd = (int) ($quantidades[$item->id] ?? 0);
 
-            if ($qtd < 1) {
-                return 'Informe a quantidade a abater para os itens selecionados.';
-            }
-            if ($qtd > $max) {
-                return 'A quantidade a abater não pode ser maior que a quantidade em aberto.';
+            if ($qtd < 1 || $qtd > $qtdMax) {
+                return ['status' => false, 'mensagem' => ErroMensagens::QUANTIDADE_MINIMA];
             }
 
-            if ($qtd === $max) {
-                $item->status_da_comanda = 'pago';
-                $item->pago_em = $agora;
-                $item->pagamento_metodo = $this->combinarMetodosPagamento($item->pagamento_metodo, $pagamentoMetodo);
-                $item->save();
-                continue;
-            }
+            $unit = (float) $item->preco_unitario;
+            $valorPago = (float) ($item->valor_pago ?? 0);
 
-            // Abatimento parcial: cria um novo item pago e reduz o item em aberto.
-            ItemPedido::create([
-                'preco_unitario' => (float) $item->preco_unitario,
-                'quantidade' => $qtd,
-                'status_da_comanda' => 'pago',
-                'pago_em' => $agora,
-                'pagamento_metodo' => $this->combinarMetodosPagamento(null, $pagamentoMetodo),
-                'produto_id' => $item->produto_id,
-                'usuario_id' => $item->usuario_id,
-                'pedido_id' => $item->pedido_id,
-                'mesa_id' => $item->mesa_id,
-            ]);
-
-            $item->quantidade = $max - $qtd;
-            $item->save();
-        }
-
-        $this->atualizarPrecoMesa($mesaId);
-
-        $restamAbertos = ItemPedido::query()
-            ->where('mesa_id', $mesaId)
-            ->where('status_da_comanda', 'em_aberto')
-            ->exists();
-
-        if (!$restamAbertos) {
-            $this->finalizarPedidosDaMesa((int) $mesaId);
-
-            ItemPedido::query()
-                ->where('mesa_id', $mesaId)
-                ->where('status_da_comanda', 'pago')
-                ->update(['mesa_id' => null]);
-
-            $mesa = Mesa::find($mesaId);
-            if ($mesa) {
-                $mesa->preco = 0.00;
-                $mesa->status = 'Disponivel';
-                $mesa->save();
+            if ($valorPago > 0) {
+                $restante = $unit - $valorPago;
+                if ($restante > 0) {
+                    $totalCalculado += $restante;
+                }
+            } else {
+                $totalCalculado += $unit * $qtd;
             }
         }
 
-        return null;
+        if (round($valorPagamento, 2) > round($totalCalculado, 2)) {
+            return ['status' => false, 'mensagem' => ErroMensagens::VALOR_PAGAMENTO_EXCEDE_TOTAL];
+        }
+
+        $erro = $this->abaterPorValor($id, $itemIds, $quantidades, $valorPagamento, $pagamentoMetodo);
+
+        if ($erro) {
+            return ['status' => false, 'mensagem' => $erro];
+        }
+
+        return ['status' => true, 'mensagem' => PassMensagens::PAGAMENTO_REALIZADO_SUCESSO];
     }
+
+    private function parseValor(string $raw): ?float
+    {
+        $raw = trim($raw);
+        if ($raw === '') return null;
+
+        $raw = preg_replace('/[^0-9\.,]/', '', $raw);
+
+        if (str_contains($raw, ',')) {
+            $raw = str_replace('.', '', $raw);
+            $raw = str_replace(',', '.', $raw);
+        }
+
+        return is_numeric($raw) && (float)$raw > 0 ? (float)$raw : null;
+    }
+
 
     public function abaterPorValor($mesaId, array $itemIds, array $quantidadesPorItem, float $valorPagamento, ?string $pagamentoMetodo = null): ?string
     {
@@ -403,7 +429,8 @@ class MesasService extends GenericBase
     }
 
 
-    public function removerMesa($id){
+    public function removerMesa($id)
+    {
         $mesa = Mesa::find($id);
         if ($mesa) {
             $mesa->delete();
@@ -411,7 +438,8 @@ class MesasService extends GenericBase
     }
 
 
-    public function pegarProdutosMesa($id){
+    public function pegarProdutosMesa($id)
+    {
         return Produto::where('mesa_id', $id)->get();
     }
 }
