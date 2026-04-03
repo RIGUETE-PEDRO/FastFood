@@ -7,6 +7,7 @@ import './carrinho-modal';
 import './carrinho-quantidade';
 import './sidebar';
 import './admin-pedidos-realtime';
+import './admin-dashboard';
 
 // Deixar disponível globalmente para scripts que usam window.bootstrap
 window.bootstrap = bootstrap;

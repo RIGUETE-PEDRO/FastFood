@@ -36,15 +36,21 @@ class AdminController extends Controller
     }
 
     //pegar nome do usuario para mostrar no administrativo
-    public function nomeUsuario()
+    public function nomeUsuario(Request $request)
     {
         $usuarioLogado =  $this->genericBase->hasLogado();
         $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
+
+        $dashboard = $this->adminService->montarDashboardAdministrativo(
+            $request->query('periodo'),
+            $request->query('referencia')
+        );
 
         return view('Admin.Administrativo', [
             'usuario' => $usuarioLogado,
             'nomeUsuario' => $primeiroNome,
             'tipoUsuario' => $this->mapearTipoUsuario($usuarioLogado->tipo_usuario_id ?? null),
+            ...$dashboard,
         ]);
     }
 
