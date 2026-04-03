@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'auth' => Authenticate::class,
             'admin.access' => \App\Http\Middleware\VerificaPerfilAdmin::class,
+            'keyclock.role' => \App\Http\Middleware\Keyclock::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

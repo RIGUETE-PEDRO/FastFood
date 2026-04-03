@@ -32,6 +32,16 @@ class popula_banco extends Seeder
                 'updated_at' => now(),
 
             ],
+             [
+                'nome' => 'Keyclock',
+                'email' => 'keyclock@gmail.com',
+                'senha' => bcrypt('123456789'),
+                'telefone' => '1234567890',
+                'tipo_usuario_id' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+
+            ],
             [
                 'nome' => 'Cliente',
                 'email' => 'cliente@gmail.com',

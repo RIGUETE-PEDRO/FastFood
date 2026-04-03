@@ -67,6 +67,10 @@ class LoginController extends Controller
             return redirect()->route('login');
         }
 
+        if ($usuario->tipo_usuario_id === 5) {
+            return redirect()->route('keyclock.index');
+        }
+
         if ($usuario->tipo_usuario_id !== 1) {
             return redirect()->route('Administrativo');
         }

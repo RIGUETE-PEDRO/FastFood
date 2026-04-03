@@ -47,7 +47,6 @@ class GenericBase
 
     public function findFuncionarios()
     {
-        // Busca da tabela funcionario com o relacionamento usuario
         return Funcionario::with('usuario')->get();
     }
 

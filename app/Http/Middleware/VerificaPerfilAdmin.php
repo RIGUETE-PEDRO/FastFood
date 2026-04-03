@@ -23,7 +23,7 @@ class VerificaPerfilAdmin
 
         $tiposPermitidos = array_map('intval', $tiposPermitidos);
         if (empty($tiposPermitidos)) {
-            $tiposPermitidos = [2, 3];
+            $tiposPermitidos = [2, 3,4,5];
         }
 
         if (!in_array((int) $usuario->tipo_usuario_id, $tiposPermitidos, true)) {

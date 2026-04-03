@@ -10,18 +10,20 @@ use App\Services\GenericBase;
 use App\Models\Endereco;
 use App\Models\Cidade;
 use App\Models\Mesa;
-
+use App\Repositoryimpl\CarrinhoRepositoryimpl;
 
 class CarrinhoController extends Controller
 {
     protected GenericBase $genericBase;
     protected CarrinhoService $carrinhoService;
+    protected CarrinhoRepositoryimpl $carrinhoRepository;
 
 
-    public function __construct(GenericBase $genericBase, CarrinhoService $carrinhoService)
+    public function __construct(GenericBase $genericBase, CarrinhoService $carrinhoService, CarrinhoRepositoryimpl $CarrinhoRepositoryimpl)
     {
         $this->genericBase = $genericBase;
         $this->carrinhoService = $carrinhoService;
+        $this->carrinhoRepository =  $CarrinhoRepositoryimpl;
     }
 
 
@@ -56,10 +58,8 @@ class CarrinhoController extends Controller
             'Reservada',
         ];
 
-        $mesa = Mesa::query()
-            ->whereIn('status', $statusPermitidos)
-            ->orderBy('numero_da_mesa')
-            ->get();
+        $mesa = $this->carrinhoRepository->pegarMesaSelecionada($statusPermitidos);
+
 
         $usuarioLogado =    $this->genericBase->pegarUsuarioLogado();
         if (!$usuarioLogado) {
@@ -67,12 +67,7 @@ class CarrinhoController extends Controller
         }
 
         $carrinhoItems = $this->genericBase->pegarItensCarrinho($usuarioLogado->id);
-
-        $enderecos = Endereco::with('cidade')
-            ->where('usuario_id', $usuarioLogado->id)
-            ->orderByDesc('created_at')
-            ->get();
-
+        $enderecos = $this->carrinhoRepository->pegarEnderecosDoUsuario($usuarioLogado->id);
         $cidades = Cidade::orderBy('nome')->get();
 
         return view('Carrinho', [
@@ -103,6 +98,7 @@ class CarrinhoController extends Controller
     {
 
         $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        
         if (!$usuarioLogado) {
             return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
@@ -162,7 +158,7 @@ class CarrinhoController extends Controller
     }
 
 
-    public function toggleSelecionar(Request $request, $id)
+    public function toggleSelecionar( $id)
     {
 
         $usuarioLogado = $this->genericBase->pegarUsuarioLogado();

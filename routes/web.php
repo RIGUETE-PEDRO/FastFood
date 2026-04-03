@@ -15,6 +15,29 @@ use App\Http\Controllers\CarrinhoController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PedidosFeitosController;
 use App\Http\Controllers\MesaController;
+use App\Http\Controllers\KeyClockController;
+
+
+///////////////////////////////////////////////////////
+/* keyclock */
+///////////////////////////////////////////////////////
+Route::middleware(['auth', 'admin.access', 'keyclock.role'])->group(function () {
+    Route::prefix('keyclock')->group(function () {
+        Route::get('/', [KeyClockController::class, 'index'])->name('keyclock.index');
+        Route::get('/grupo', [KeyClockController::class, 'grupo'])->name('keyclock.grupo');
+        Route::get('/permissoes', [KeyClockController::class, 'permissoes'])->name('keyclock.permissoes');
+        Route::get('/auditoria', [KeyClockController::class, 'auditoria'])->name('keyclock.auditoria');
+    });
+});
+
+Route::middleware(['auth', 'admin.access', 'keyclock.role'])->group(function () {
+    Route::post('/permissoes', [KeyClockController::class, 'permissoes'])->name('keyclock.permissoes.store');
+    Route::post('/keyclock/grupo/{grupo}/roles', [KeyClockController::class, 'adicionarRoleGrupo'])
+        ->name('keyclock.grupo.roles.store');
+    Route::delete('/keyclock/grupo/{grupo}/roles/{role}', [KeyClockController::class, 'removerRoleGrupo'])
+        ->name('keyclock.grupo.roles.destroy');
+});
+
 
 
 ///////////////////////////////////////////////////////
@@ -85,7 +108,6 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
 
     Route::get('/Pedidos.Administrativo/poll', [PedidosFeitosController::class, 'pollResumo'])
         ->name('Pedidos.Poll');
-
 });
 
 Route::middleware(['auth'])->group(function () {

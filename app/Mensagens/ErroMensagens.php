@@ -11,7 +11,7 @@ class ErroMensagens{
     public const EMAIL_JA_CADASTRADO = 'Esse E-mail já encontra cadastrado.';
     public const SENHA_INVALIDA = 'Senha inválida.';
     public const USUARIO_NAO_ENCONTRADO = 'Usuário não encontrado.';
-
+    public const ACESSO_NEGADO = 'Acesso negado. Você não tem permissão para acessar esta página.';
     public const MIN_CARACTERES_SENHA = 'A senha deve ter pelo menos 6 caracteres.';
     public const FAZER_LOGIN_PARA_ACESSAR = 'Faça login para acessar essa funcionalidade.';
     public const SENHAS_NAO_COINCIDEM = 'As senhas não coincidem';

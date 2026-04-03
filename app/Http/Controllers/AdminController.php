@@ -23,44 +23,24 @@ class AdminController extends Controller
     }
 
     public function infoPerfil(Request $request)
-    {
+{
+    $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+    $this->adminService->verificarAcessoPerfil();
 
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+    $perfilReturnUrl = $this->adminService->resolverReturnUrl($request);
 
-        $previousUrl = URL::previous();
-        $currentUrl = $request->fullUrl();
+    return view('Perfil', [
+        'usuario' => $usuarioLogado,
+        'tipoUsuario' => $this->mapearTipoUsuario($usuarioLogado->tipo_usuario_id ?? null),
+        'perfilReturnUrl' => $perfilReturnUrl,
+    ]);
+}
 
-        $fallbackUrl = route('home');
-        $rotasBloqueadas = [
-            route('AcessoNegado'),
-            route('Alterar_Dados'),
-        ];
-
-        if (in_array($previousUrl, $rotasBloqueadas, true) || $previousUrl === $currentUrl) {
-            $previousUrl = session('perfil_return_url', $fallbackUrl);
-        }
-
-        if (!empty($previousUrl) && $previousUrl !== $currentUrl) {
-            session(['perfil_return_url' => $previousUrl]);
-        }
-
-        $perfilReturnUrl = session('perfil_return_url', $fallbackUrl);
-
-        return view('Perfil', [
-            'usuario' => $usuarioLogado,
-            'tipoUsuario' => $this->mapearTipoUsuario($usuarioLogado->tipo_usuario_id ?? null),
-            'perfilReturnUrl' => $perfilReturnUrl,
-        ]);
-    }
-
-
+    //pegar nome do usuario para mostrar no administrativo
     public function nomeUsuario()
     {
         $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
-    
-        // Pega somente o primeiro nome
         $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
-
 
         return view('Admin.Administrativo', [
             'usuario' => $usuarioLogado,
