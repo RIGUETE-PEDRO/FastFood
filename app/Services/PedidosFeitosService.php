@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enum\StatusPedidos as EnumsStatusPedidos;
 use App\Models\Pedido;
+use App\Models\PedidoModel;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rules\Enum;
 
@@ -14,7 +15,7 @@ class PedidosFeitosService
      */
     public function listarPedidos(): Collection
     {
-        return Pedido::with([
+        return PedidoModel::with([
             'statusRelacionamento',
             'endereco.cidade',
             'itens.produto',
@@ -26,7 +27,7 @@ class PedidosFeitosService
     /**
      * Atualiza o status do pedido.
      */
-    public function atualizarStatus(Pedido $pedido, EnumsStatusPedidos $status): Pedido
+    public function atualizarStatus(PedidoModel $pedido, EnumsStatusPedidos $status): PedidoModel
     {
         $pedido->status = $status->value;
         $pedido->save();

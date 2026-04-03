@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Mensagens\ErroMensagens;
-use App\Models\Funcionario;
+use App\Models\FuncionarioModel;
 use Illuminate\Support\Facades\Hash;
 
 class GerenciamentoFuncionarioService{
@@ -53,7 +53,7 @@ class GerenciamentoFuncionarioService{
         $usuario->save();
 
         // Atualiza dados do funcionário relacionado
-        $funcionario = Funcionario::where('usuario_id', $usuario->id)->first();
+        $funcionario = FuncionarioModel::where('usuario_id', $usuario->id)->first();
 
         if ($funcionario) {
             $funcionario->has_ativo = $request->boolean('has_ativo', true);

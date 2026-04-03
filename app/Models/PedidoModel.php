@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 
-class Pedido extends Model
+class PedidoModel extends Model
 {
     protected $table = 'pedidos';
     protected $fillable = [
@@ -25,31 +25,31 @@ class Pedido extends Model
 
     public function itens()
     {
-        return $this->hasMany(ItemPedido::class, 'pedido_id');
+        return $this->hasMany(ItemPedidoModel::class, 'pedido_id');
     }
 
     public function statusRelacionamento()
     {
-        return $this->belongsTo(Status::class, 'status');
+        return $this->belongsTo(StatusModel::class, 'status');
     }
 
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'usuario_id');
+        return $this->belongsTo(UsuarioModel::class, 'usuario_id');
     }
 
     public function endereco()
     {
-        return $this->belongsTo(Endereco::class, 'endereco_id');
+        return $this->belongsTo(EnderecoModel::class, 'endereco_id');
     }
 
     public function mesa()
     {
-        return $this->belongsTo(Mesa::class, 'mesa_id');
+        return $this->belongsTo(MesaModel::class, 'mesa_id');
     }
 
     public function formaPagamento()
     {
-        return $this->belongsTo(FormaPagamento::class, 'tipo_pagamento_id');
+        return $this->belongsTo(FormaPagamentoModel::class, 'tipo_pagamento_id');
     }
 }

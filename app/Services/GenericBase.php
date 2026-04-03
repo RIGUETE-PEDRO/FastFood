@@ -3,15 +3,27 @@
 namespace App\Services;
 
 use App\Mensagens\ErroMensagens;
-use App\Models\Usuario;
-use App\Models\Funcionario;
-use App\Models\Produto;
-use App\Models\Carrinho;
-use App\Models\Cidade;
+use App\Models\UsuarioModel;
+use App\Models\FuncionarioModel;
+use App\Models\ProdutoModel;
+use App\Models\CarrinhoModel;
+use App\Models\CidadeModel;
 use Illuminate\Support\Facades\Auth;
 
 class GenericBase
 {
+    public function pegarUsuarioEmail($data){
+        $usuario = UsuarioModel::where('email', $data['email'])->first();
+        if (!$usuario) {
+           $usuario = null;
+        }
+        return $usuario;
+    }
+
+    public function existeFuncionario($usuarioId)
+    {
+        return FuncionarioModel::where('usuario_id', $usuarioId->id)->first();
+    }
 
     public function formatName($name)
     {
@@ -26,7 +38,7 @@ class GenericBase
     }
     public function findById(int $id)
     {
-        return Usuario::find($id);
+        return UsuarioModel::find($id);
     }
 
     public function findByProdutos($categoria)
@@ -40,7 +52,7 @@ class GenericBase
             $categorias[] = 'Porcoes';
         }
 
-        return Produto::query()
+        return ProdutoModel::query()
             ->where('disponivel', true)
             ->whereHas('categoria', function ($query) use ($categorias) {
                 $query->whereIn('nome', $categorias)
@@ -51,25 +63,25 @@ class GenericBase
 
     public function pegarProdutos()
     {
-        return Produto::where('disponivel', true)->get();
+        return ProdutoModel::where('disponivel', true)->get();
     }
 
     public function findAll()
     {
-        return Usuario::all();
+        return UsuarioModel::all();
     }
 
     public function findByCidade()
     {
-        return Cidade::orderBy('nome')->get();
+        return CidadeModel::orderBy('nome')->get();
     }
 
     public function findFuncionarios()
     {
-        return Funcionario::with('usuario')->get();
+        return FuncionarioModel::with('usuario')->get();
     }
 
-    public function alterar(Usuario $usuario, array $dados)
+    public function alterar(UsuarioModel $usuario, array $dados)
     {
         $usuario->update($dados);
         return $usuario;
@@ -80,7 +92,7 @@ class GenericBase
         return random_int(1, 1000);
     }
 
-    public function deletar(Usuario $usuario)
+    public function deletar(UsuarioModel $usuario)
     {
         return $usuario->delete();
     }
@@ -115,7 +127,7 @@ class GenericBase
 
     public function deleteFuncionarioEUsuario(int $usuarioId): bool
     {
-        $funcionario = Funcionario::where('usuario_id', $usuarioId)->first();
+        $funcionario = FuncionarioModel::where('usuario_id', $usuarioId)->first();
 
         // Exclui o funcionário primeiro para não violar FK
         if ($funcionario) {
@@ -141,7 +153,7 @@ class GenericBase
 
         // Normaliza para manter compatibilidade: alguns pontos do projeto
         // acessam como objeto ($usuario->nome) e outros como array ($usuario['tipo']).
-        if ($usuario instanceof Usuario) {
+        if ($usuario instanceof UsuarioModel) {
             $primeiroNome = '';
             if (!empty($usuario->nome)) {
                 $primeiroNome = explode(' ', trim((string) $usuario->nome))[0] ?? '';
@@ -179,14 +191,14 @@ class GenericBase
 
     public function pegarItensCarrinho($usuarioId)
     {
-        return Carrinho::with('produto')
+        return CarrinhoModel::with('produto')
             ->where('usuario_id', $usuarioId)
             ->get();
     }
 
     public function findByProdutosIsUsuario($produtoId, $usuarioId)
     {
-        return Carrinho::where('produto_id', $produtoId)
+        return CarrinhoModel::where('produto_id', $produtoId)
             ->where('usuario_id', $usuarioId)
             ->first();
     }

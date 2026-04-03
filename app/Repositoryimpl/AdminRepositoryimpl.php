@@ -2,13 +2,14 @@
 
 namespace App\Repositoryimpl;
 
-use App\Models\Funcionario;
+
+use App\Models\FuncionarioModel;
 
 class AdminRepositoryimpl
 {
     public function buscarFuncionarios($searchTerm)
     {
-        $query = Funcionario::with('usuario');
+        $query = FuncionarioModel::with('usuario');
 
         if (!empty($searchTerm)) {
             $query->whereHas('usuario', function ($q) use ($searchTerm) {

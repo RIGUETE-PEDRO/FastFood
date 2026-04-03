@@ -3,7 +3,7 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
-class Status extends Model
+class StatusModel extends Model
 {
     protected $table = 'status';
     protected $fillable = [
@@ -13,6 +13,6 @@ class Status extends Model
 
      public function pedidos()
     {
-        return $this->hasMany(Pedido::class, 'status');
+        return $this->hasMany(PedidoModel::class, 'status');
     }
 }

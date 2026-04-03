@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Cidade extends Model
+class CidadeModel extends Model
 {
     protected $table = 'cidade';
 
@@ -16,7 +16,7 @@ class Cidade extends Model
 // Relação com endereços
     public function enderecos()
     {
-        return $this->hasMany(Endereco::class, 'cidade_id');
+        return $this->hasMany(EnderecoModel::class, 'cidade_id');
     }
-    
+
 }

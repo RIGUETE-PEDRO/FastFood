@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enum\TipoUsuario;
+use App\Models\FuncionarioModel;
+use App\Models\PedidoModel;
 
-class Usuario extends Authenticatable
+class UsuarioModel extends Authenticatable
 {
     protected $table = 'usuarios';
 
@@ -38,7 +39,7 @@ class Usuario extends Authenticatable
      */
     public function funcionario(): HasOne
     {
-        return $this->hasOne(Funcionario::class, 'usuario_id');
+        return $this->hasOne(FuncionarioModel::class, 'usuario_id');
     }
 
     /**
@@ -82,6 +83,6 @@ class Usuario extends Authenticatable
 
     public function pedidos()
     {
-        return $this->hasMany(Pedido::class, 'usuario_id');
+        return $this->hasMany(PedidoModel::class, 'usuario_id');
     }
 }

@@ -7,9 +7,14 @@ use App\Models\Mesa;
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
 use App\Models\FormaPagamento;
+use App\Models\FormaPagamentoModel;
 use App\Models\ItemPedido;
+use App\Models\ItemPedidoModel;
+use App\Models\MesaModel;
 use App\Models\Pedido;
+use App\Models\PedidoModel;
 use App\Models\Produto;
+use App\Models\ProdutoModel;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
@@ -53,7 +58,7 @@ class MesasService extends GenericBase
 
     private function finalizarPedidosDaMesa(int $mesaId): void
     {
-        $pedidoIds = ItemPedido::query()
+        $pedidoIds = ItemPedidoModel::query()
             ->where('mesa_id', $mesaId)
             ->whereNotNull('pedido_id')
             ->pluck('pedido_id')
@@ -64,7 +69,7 @@ class MesasService extends GenericBase
             return;
         }
 
-        Pedido::query()
+        PedidoModel::query()
             ->whereIn('id', $pedidoIds)
             ->whereNotIn('status', [
                 StatusPedidos::ENTREGUE->value,
@@ -75,7 +80,7 @@ class MesasService extends GenericBase
 
     public function pegarMesas()
     {
-        return Mesa::all();
+        return MesaModel::all();
     }
 
     public function pegarDetalhesMesa($id)
@@ -89,7 +94,7 @@ class MesasService extends GenericBase
         $itensPagos = $this->pegarItensContaMesa($id, true);
         $totalAberto = $this->calcularTotalItens($itensAbertos);
 
-        $formasPagamento = FormaPagamento::query()->orderBy('tipo_pagamento')->get();
+        $formasPagamento = FormaPagamentoModel::query()->orderBy('tipo_pagamento')->get();
 
         return [
             'mesa' => $mesa,
@@ -100,14 +105,14 @@ class MesasService extends GenericBase
         ];
     }
 
-    public function pegarMesaPorId($id): ?Mesa
+    public function pegarMesaPorId($id): ?MesaModel
     {
-        return Mesa::find($id);
+        return MesaModel::find($id);
     }
 
     public function pegarProdutosDisponiveis(array $excluirProdutoIds = []): Collection
     {
-        $query = Produto::query()
+        $query = ProdutoModel::query()
             ->where('disponivel', true)
             ->orderBy('nome');
 
@@ -122,7 +127,7 @@ class MesasService extends GenericBase
     {
         $status = $pago ? 'pago' : 'em_aberto';
 
-        return ItemPedido::query()
+        return ItemPedidoModel::query()
             ->where('mesa_id', $mesaId)
             ->where('status_da_comanda', $status)
             ->with('produto')
@@ -142,12 +147,12 @@ class MesasService extends GenericBase
 
     public function atualizarPrecoMesa($mesaId): void
     {
-        $mesa = Mesa::find($mesaId);
+        $mesa = MesaModel::find($mesaId);
         if (!$mesa) {
             return;
         }
 
-        $itensAbertos = ItemPedido::query()
+        $itensAbertos = ItemPedidoModel::query()
             ->where('mesa_id', $mesaId)
             ->where('status_da_comanda', 'em_aberto')
             ->get();
@@ -174,7 +179,7 @@ class MesasService extends GenericBase
             return ['status' => false, 'mensagem' => ErroMensagens::DIGITE_VALOR_PAGAMENTO_TOTAL];
         }
 
-        $itens = ItemPedido::query()
+        $itens = ItemPedidoModel::query()
             ->where('mesa_id', $id)
             ->where('status_da_comanda', 'em_aberto')
             ->whereIn('id', (array) $itemIds)
@@ -248,7 +253,7 @@ class MesasService extends GenericBase
         }
 
         return DB::transaction(function () use ($mesaId, $itemIds, $quantidadesPorItem, $valorCents, $pagamentoMetodo) {
-            $itens = ItemPedido::query()
+            $itens = ItemPedidoModel::query()
                 ->where('mesa_id', $mesaId)
                 ->where('status_da_comanda', 'em_aberto')
                 ->whereIn('id', $itemIds)
@@ -292,7 +297,7 @@ class MesasService extends GenericBase
                         $target->quantidade = (int) $target->quantidade - 1;
                         $target->save();
 
-                        $target = ItemPedido::create([
+                        $target = ItemPedidoModel::create([
                             'preco_unitario' => (float) $item->preco_unitario,
                             'valor_pago' => 0.00,
                             'quantidade' => 1,
@@ -342,7 +347,7 @@ class MesasService extends GenericBase
 
             $this->atualizarPrecoMesa($mesaId);
 
-            $restamAbertos = ItemPedido::query()
+            $restamAbertos = ItemPedidoModel::query()
                 ->where('mesa_id', $mesaId)
                 ->where('status_da_comanda', 'em_aberto')
                 ->exists();
@@ -350,12 +355,12 @@ class MesasService extends GenericBase
             if (!$restamAbertos) {
                 $this->finalizarPedidosDaMesa((int) $mesaId);
 
-                ItemPedido::query()
+                ItemPedidoModel::query()
                     ->where('mesa_id', $mesaId)
                     ->where('status_da_comanda', 'pago')
                     ->update(['mesa_id' => null]);
 
-                $mesa = Mesa::find($mesaId);
+                $mesa = MesaModel::find($mesaId);
                 if ($mesa) {
                     $mesa->preco = 0.00;
                     $mesa->status = 'Disponivel';
@@ -380,11 +385,11 @@ class MesasService extends GenericBase
             return redirect()->back()->with('error', ErroMensagens::NUMERO_MESA_INVALIDO);
         }
 
-        if (Mesa::where('numero_da_mesa', $request->input('numero_da_mesa'))->exists()) {
+        if (MesaModel::where('numero_da_mesa', $request->input('numero_da_mesa'))->exists()) {
             return redirect()->back()->with('error', ErroMensagens::NUMERO_JA_EXISTENTE);
         }
 
-        $mesa = new Mesa();
+        $mesa = new MesaModel();
         $mesa->numero_da_mesa = $request->input('numero_da_mesa');
         $mesa->status = $request->input('status') ?? 'disponivel';
         $mesa->preco = 0.00;
@@ -396,7 +401,7 @@ class MesasService extends GenericBase
     public function atualizarMesa($request): ?RedirectResponse
     {
         $id = $request->input('mesa_id');
-        $mesa = Mesa::find($id);
+        $mesa = MesaModel::find($id);
 
         if (!$mesa) {
             return redirect()->back()->with('error', ErroMensagens::SEM_ID_MESA);
@@ -410,7 +415,7 @@ class MesasService extends GenericBase
                 return redirect()->back()->with('error', ErroMensagens::NUMERO_MESA_INVALIDO);
             }
 
-            $numeroJaExiste = Mesa::where('numero_da_mesa', $novoNumero)
+            $numeroJaExiste = MesaModel::where('numero_da_mesa', $novoNumero)
                 ->where('id', '!=', $mesa->id)
                 ->exists();
             if ($numeroJaExiste) {
@@ -431,7 +436,7 @@ class MesasService extends GenericBase
 
     public function removerMesa($id)
     {
-        $mesa = Mesa::find($id);
+        $mesa = MesaModel::find($id);
         if ($mesa) {
             $mesa->delete();
         }
@@ -440,6 +445,6 @@ class MesasService extends GenericBase
 
     public function pegarProdutosMesa($id)
     {
-        return Produto::where('mesa_id', $id)->get();
+        return ProdutoModel::where('mesa_id', $id)->get();
     }
 }

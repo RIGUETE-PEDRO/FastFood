@@ -3,7 +3,7 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
-class ItemPedido extends Model
+class ItemPedidoModel extends Model
 {
     protected $table = 'item_pedido';
     protected $fillable = [
@@ -29,21 +29,21 @@ class ItemPedido extends Model
 
     public function produto()
     {
-        return $this->belongsTo(Produto::class, 'produto_id');
+        return $this->belongsTo(ProdutoModel::class, 'produto_id');
     }
 
     public function pedido()
     {
-        return $this->belongsTo(Pedido::class, 'pedido_id');
+        return $this->belongsTo(PedidoModel::class, 'pedido_id');
     }
 
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'usuario_id');
+        return $this->belongsTo(UsuarioModel::class, 'usuario_id');
     }
 
     public function mesa()
     {
-        return $this->belongsTo(Mesa::class, 'mesa_id');
+        return $this->belongsTo(MesaModel::class, 'mesa_id');
     }
 }

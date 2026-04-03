@@ -3,11 +3,12 @@
 namespace App\Repositoryimpl;
 
 use App\Models\Usuario;
+use App\Models\UsuarioModel;
 use Illuminate\Support\Facades\DB;
 
 class KeyClockRepositoryimpl
 {
-    public function hasRole(Usuario $usuario, string $roleName): bool
+    public function hasRole(UsuarioModel $usuario, string $roleName): bool
     {
         $role = DB::table('roles')->where('nome', $roleName)->first();
 

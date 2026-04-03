@@ -48,15 +48,34 @@ class AdminController extends Controller
         ]);
     }
 
-    public function AlterarDados()
+    public function alterarDados(Request $request)
     {
-        return $this->adminService->InserirImagemPerfil();
+        $user = session('usuario_logado');
+
+        $request->validate([
+            'url_imagem_perfil' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        $dados = $request->only('nome', 'email', 'telefone');
+        $dados['id'] = $user->id;
+
+        $resultado = $this->adminService->inserirImagemPerfil(
+            $dados,
+            $request->file('url_imagem_perfil')
+        );
+
+        if (!$resultado['status']) {
+            return redirect()->route('perfil')->with('erro', $resultado['mensagem']);
+        }
+
+        session(['usuario_logado' => $resultado['usuario']]);
+
+        return redirect()->route('perfil')->with('sucesso', $resultado['mensagem']);
     }
 
 
     private function mapearTipoUsuario(?int $tipoId): string
     {
-
         return EnumsTipoUsuario::tryFrom($tipoId)?->label() ?? 'Usuário';
     }
 }

@@ -6,7 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 
-class Carrinho extends Model
+class CarrinhoModel extends Model
 {
     protected $table = 'carrinho';
 
@@ -26,11 +26,11 @@ class Carrinho extends Model
 
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'usuario_id');
+        return $this->belongsTo(UsuarioModel::class, 'usuario_id');
     }
 
     public function produto()
     {
-        return $this->belongsTo(Produto::class, 'produto_id');
+        return $this->belongsTo(ProdutoModel::class, 'produto_id');
     }
 }

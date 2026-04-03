@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Mesa extends Model
+class MesaModel extends Model
 {
     protected $table = 'mesas';
 
@@ -20,6 +20,6 @@ class Mesa extends Model
 
     public function pedidos()
     {
-        return $this->hasMany(Pedido::class, 'mesa_id');
+        return $this->hasMany(PedidoModel::class, 'mesa_id');
     }
 }

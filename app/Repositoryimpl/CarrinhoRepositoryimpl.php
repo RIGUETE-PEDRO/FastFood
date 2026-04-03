@@ -2,14 +2,15 @@
 
 namespace App\Repositoryimpl;
 
-use App\Models\Endereco;
-use App\Models\Mesa;
+
+use App\Models\EnderecoModel;
+use App\Models\MesaModel;
 
 class CarrinhoRepositoryimpl
 {
     public  function pegarMesaSelecionada($statusPermitidos)
     {
-        return Mesa::query()
+        return MesaModel::query()
             ->whereIn('status', $statusPermitidos)
             ->orderBy('numero_da_mesa')
             ->get();
@@ -17,7 +18,7 @@ class CarrinhoRepositoryimpl
 
     public function pegarEnderecosDoUsuario($usuarioId)
     {
-        return Endereco::with('cidade')
+        return EnderecoModel::with('cidade')
             ->where('usuario_id', $usuarioId)
             ->orderByDesc('created_at')
             ->get();

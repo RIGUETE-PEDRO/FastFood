@@ -2,17 +2,17 @@
 
 namespace App\Services;
 
-use App\Models\Usuario;
+use App\Models\UsuarioModel;
 use App\Repositoryimpl\KeyClockRepositoryimpl;
 
 class KeyClockService
 {
     public function __construct(private KeyClockRepositoryimpl $repository)
     {
-        
+
     }
 
-    public function hasRole(Usuario $usuario, string $roleName): bool
+    public function hasRole(UsuarioModel $usuario, string $roleName): bool
     {
         return $this->repository->hasRole($usuario, $roleName);
     }

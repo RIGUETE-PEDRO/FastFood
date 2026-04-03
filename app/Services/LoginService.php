@@ -7,6 +7,7 @@ use App\Models\Usuario;
 use Illuminate\Support\Facades\Hash;
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
+use App\Models\UsuarioModel;
 use App\Roles\Role;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +29,7 @@ class LoginService
     {
         $autenticou = false;
         // Busca o usuário pelo email
-        $usuario = Usuario::where('email', $credenciais['email'])->first();
+        $usuario = UsuarioModel::where('email', $credenciais['email'])->first();
 
         if (!$usuario || !Hash::check($credenciais['senha'], $usuario->senha)) {
 
@@ -36,7 +37,7 @@ class LoginService
             return $autenticou = false;
         }
 
-        if (!Usuario::where('email', $credenciais['email'])->exists()) {
+        if (!UsuarioModel::where('email', $credenciais['email'])->exists()) {
             redirect()->back()->with('erro', ErroMensagens::EMAIL_NAO_CADASTRADO);
             return $autenticou = false;
         }

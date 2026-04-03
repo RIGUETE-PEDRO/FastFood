@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Produto extends Model
+class ProdutoModel extends Model
 {
     protected $table = 'produtos';
     protected $fillable = [
@@ -22,6 +22,6 @@ class Produto extends Model
 
     public function categoria()
     {
-        return $this->belongsTo(Categoria::class, 'categoria_id');
+        return $this->belongsTo(CategoriaProdutoModel::class, 'categoria_id');
     }
 }

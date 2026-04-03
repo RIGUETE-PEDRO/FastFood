@@ -3,7 +3,7 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
-class FormaPagamento extends Model
+class FormaPagamentoModel extends Model
 {
     protected $table = 'tipo_pagamento';
     protected $fillable = [
@@ -12,6 +12,6 @@ class FormaPagamento extends Model
 
     public function pedidos()
     {
-        return $this->hasMany(Pedido::class, 'tipo_pagamento_id');
+        return $this->hasMany(PedidoModel::class, 'tipo_pagamento_id');
     }
 }

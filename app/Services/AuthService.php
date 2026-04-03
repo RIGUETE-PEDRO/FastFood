@@ -2,19 +2,26 @@
 
 namespace App\Services;
 
-use App\Models\Funcionario;
-use App\Models\Usuario;
+use App\Models\FuncionarioModel;
+use App\Models\UsuarioModel;
 use Illuminate\Support\Facades\Hash;
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
 
 class AuthService
 {
+    protected GenericBase $genericBase;
+
+    public function __construct(GenericBase $genericBase)
+    {
+        $this->genericBase = $genericBase;
+    }
+
     //função de registro de usuário
     public function register(array $data)
     {
         // Verifica se o email já está cadastrado
-        if (Usuario::where('email', $data['email'])->exists()) {
+        if ($this->genericBase->pegarUsuarioEmail($data) !== null) {
             return redirect()->back()->with('erro', ErroMensagens::EMAIL_JA_CADASTRADO);
         }
 
@@ -29,7 +36,7 @@ class AuthService
         }
 
         // Cria o novo usuário no banco de dados
-        Usuario::create([
+        UsuarioModel::create([
             'nome' => $data['nome'],
             'email' => $data['email'],
             'senha' => bcrypt($data['senha']),
@@ -40,8 +47,9 @@ class AuthService
 
         if ($data['tipo_usuario_id'] !== 1 && $data['tipo_usuario_id'] !== null) {
 
-            Funcionario::create([
-                'usuario_id' => Usuario::where('email', $data['email'])->first()->id,
+
+            FuncionarioModel::create([
+                'usuario_id' => $this->genericBase->pegarUsuarioEmail($data)->id,
                 'has_ativo' => $data['has_ativo'] ?? true,
                 'salario' => $data['salario'] ?? 0.00,
             ]);
@@ -55,11 +63,11 @@ class AuthService
 
     public function autenticarAdm($usuario)
     {
-        $usuarioExistente = Usuario::where('email', $usuario['email'])->first();
+        $usuarioExistente = $this->genericBase->pegarUsuarioEmail($usuario);
 
         if ($usuarioExistente && Hash::check($usuario['senha'], $usuarioExistente->senha)) {
             // Verifica se o usuário é um funcionário
-            $funcionario = Funcionario::where('usuario_id', $usuarioExistente->id)->first();
+            $funcionario = $this->genericBase->existeFuncionario($usuarioExistente);
             if ($funcionario) {
                 // Verifica se o funcionário está ativo
                 if ($funcionario->has_ativo) {

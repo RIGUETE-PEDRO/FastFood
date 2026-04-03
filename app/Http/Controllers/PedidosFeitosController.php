@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enum\StatusPedidos as EnumsStatusPedidos;
 use App\Mensagens\PassMensagens;
 use App\Models\Pedido;
+use App\Models\PedidoModel;
 use App\Services\GenericBase;
 use App\Services\PedidoService;
 use App\Services\PedidosFeitosService;
@@ -32,7 +33,7 @@ class PedidosFeitosController extends Controller
         return view('Admin.Pedidos', $this->pedidosService->montarDadosPainel());
     }
 
-    public function atualizarStatus(Request $request, Pedido $pedido): JsonResponse|RedirectResponse
+    public function atualizarStatus(Request $request, PedidoModel $pedido): JsonResponse|RedirectResponse
     {
         $dados = $request->validate([
             'status' => ['required', Rule::in(array_column($this->pedidosFeitosService->opcoesStatus(), 'value'))],
@@ -52,7 +53,7 @@ class PedidosFeitosController extends Controller
         return redirect()->back()->with('sucesso', PassMensagens::ATUALIZADO_STATUS . ' ' . $this->pedidosFeitosService->rotulo($novoStatus) . '.');
     }
 
-    public function avancarStatus(Pedido $pedido): RedirectResponse
+    public function avancarStatus(PedidoModel $pedido): RedirectResponse
     {
 
         $statusAtual = EnumsStatusPedidos::tryFrom((int) $pedido->status) ?? EnumsStatusPedidos::PENDENTE;

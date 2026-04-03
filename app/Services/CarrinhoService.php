@@ -4,19 +4,18 @@ namespace App\Services;
 
 use App\Enum\Pagamento;
 use App\Enum\StatusPedidos as EnumsStatusPedidos;
-use App\Models\Carrinho;
-use App\Models\Endereco;
-use App\Models\Produto;
+use App\Models\CarrinhoModel;
+use App\Models\EnderecoModel;
+use App\Models\ProdutoModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use App\Models\Pedido;
-use App\Models\Cidade;
-use App\Models\FormaPagamento;
-use App\Models\ItemPedido;
+use App\Models\PedidoModel;
+use App\Models\CidadeModel;
+use App\Models\ItemPedidoModel;
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
-use App\Models\Mesa;
+use App\Models\MesaModel;
 use App\Repositoryimpl\CarrinhoRepositoryimpl;
 use Illuminate\Support\Facades\Log;
 
@@ -38,9 +37,6 @@ class CarrinhoService
             ?? session('checkout.endereco_id')
             ?? $request->endereco_opcao;
 
-
-
-
         $resultado = $this->registraPedido($request, $enderecoId);
 
         if (!($resultado['status'] ?? false)) {
@@ -51,7 +47,6 @@ class CarrinhoService
         if ($pedidoId) {
             $this->limparCarrinhoAposPedido($request, $pedidoId);
         }
-        
     }
 
     public function escolherMesa(Request $request)
@@ -60,7 +55,6 @@ class CarrinhoService
         if (!$mesaId) {
             return redirect()->route('carrinho')->with('error', ErroMensagens::SEM_ID_MESA);
         }
-
 
         $resultado = $this->selecionarMesaNoCarrinho($mesaId);
 
@@ -79,22 +73,13 @@ class CarrinhoService
         }
     }
 
-    public function PegardadosPedido()
+    public function pegarDadosPedido()
     {
-        $statusPermitidos = [
-            'disponivel',
-            'Disponivel',
-            'Disponível',
-            'reservada',
-            'Reservada',
-        ];
-
+        $statusPermitidos = ['disponivel', 'reservada'];
 
         $mesa = $this->carrinhoRepository->pegarMesaSelecionada($statusPermitidos);
 
-
-        $usuarioLogado =    $this->genericBase->pegarUsuarioLogado();
-
+        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
 
         $carrinhoItems = $this->genericBase->pegarItensCarrinho($usuarioLogado->id);
         $enderecos = $this->carrinhoRepository->pegarEnderecosDoUsuario($usuarioLogado->id);
@@ -109,32 +94,29 @@ class CarrinhoService
         ];
     }
 
-    public function adicionarProdutoAoCarrinho($usuario, $produtoId, $quantidade, $observacao, $preco)
+    public function adicionarProdutoAoCarrinho($usuario, $produtoId, $quantidade, $observacao)
     {
         $quantidadeNormalizada = $quantidade;
-
 
         $usuarioId = is_array($usuario) ? ($usuario['id'] ?? null) : ($usuario->id ?? null);
         if (!$usuarioId) {
             throw new \InvalidArgumentException("Usuário inválido" . ErroMensagens::PRECISA_ESTA_LOGADO);
         }
 
-        $produto = Produto::findOrFail($produtoId);
+        $produto = ProdutoModel::findOrFail($produtoId);
         $precoUnitario = (float) $produto->preco;
         $precoTotal = $quantidadeNormalizada * $precoUnitario;
 
-        if ($this->genericBase->findByProdutosIsUsuario($produtoId, $usuarioId)) {
-            $itemCarrinho = Carrinho::where('usuario_id', $usuarioId)
-                ->where('produto_id', $produtoId)
-                ->first();
+        $itemCarrinho = CarrinhoModel::where('usuario_id', $usuarioId)
+            ->where('produto_id', $produtoId)
+            ->first();
 
-            if ($itemCarrinho) {
-                $itemCarrinho->quantidade += $quantidadeNormalizada;
-                $itemCarrinho->preco_total += $precoTotal;
-                $itemCarrinho->save();
-            }
+        if ($itemCarrinho) {
+            $itemCarrinho->quantidade += $quantidadeNormalizada;
+            $itemCarrinho->preco_total += $precoTotal;
+            $itemCarrinho->save();
         } else {
-            Carrinho::create([
+            CarrinhoModel::create([
                 'usuario_id' => $usuarioId,
                 'produto_id' => $produtoId,
                 'quantidade' => $quantidadeNormalizada,
@@ -150,7 +132,7 @@ class CarrinhoService
             return;
         }
 
-        $itemCarrinho = Carrinho::where('id', $id)
+        $itemCarrinho = CarrinhoModel::where('id', $id)
             ->where('usuario_id', Auth::id())
             ->first();
         if ($itemCarrinho) {
@@ -164,7 +146,7 @@ class CarrinhoService
             abort(401);
         }
 
-        $itemCarrinho = Carrinho::where('id', $id)
+        $itemCarrinho = CarrinhoModel::where('id', $id)
             ->where('usuario_id', Auth::id())
             ->with('produto')
             ->firstOrFail();
@@ -201,7 +183,7 @@ class CarrinhoService
 
     public function selecionarCidade()
     {
-        $cidade = Cidade::all();
+        $cidade = CidadeModel::all();
 
         return $cidade;
     }
@@ -212,7 +194,7 @@ class CarrinhoService
             abort(401);
         }
 
-        $itemCarrinho = Carrinho::where('id', $id)
+        $itemCarrinho = CarrinhoModel::where('id', $id)
             ->where('usuario_id', Auth::id())
             ->firstOrFail();
 
@@ -238,7 +220,7 @@ class CarrinhoService
         $opcaoEndereco = $request->input('endereco_opcao');
 
         if ($opcaoEndereco && $opcaoEndereco !== 'novo') {
-            $endereco = Endereco::where('id', $opcaoEndereco)
+            $endereco = EnderecoModel::where('id', $opcaoEndereco)
                 ->where('usuario_id', $usuarioId)
                 ->first();
 
@@ -285,7 +267,7 @@ class CarrinhoService
             ];
         }
 
-        if (!$cidadeId || !Cidade::whereKey($cidadeId)->exists()) {
+        if (!$cidadeId || !CidadeModel::whereKey($cidadeId)->exists()) {
             Session::flash('checkout.modal', 'enderecoNovoModal');
             return [
                 'status' => false,
@@ -294,7 +276,7 @@ class CarrinhoService
             ];
         }
 
-        $endereco = Endereco::create([
+        $endereco = EnderecoModel::create([
             'usuario_id'  => $usuarioId,
             'logradouro'  => $rua,
             'numero'      => $request->input('numero'),
@@ -337,7 +319,7 @@ class CarrinhoService
             ];
         }
 
-        $quantidadeEnderecos = Endereco::where('usuario_id', $usuarioId)->count();
+        $quantidadeEnderecos = EnderecoModel::where('usuario_id', $usuarioId)->count();
         if ($quantidadeEnderecos <= 1) {
             Session::flash('checkout.modal', 'enderecoModal');
             return [
@@ -347,7 +329,7 @@ class CarrinhoService
             ];
         }
 
-        $endereco = Endereco::where('id', $id)
+        $endereco = EnderecoModel::where('id', $id)
             ->where('usuario_id', $usuarioId)
             ->first();
 
@@ -383,7 +365,7 @@ class CarrinhoService
 
         $mesaId = Session::get('checkout.mesa_id');
 
-        $carrinhoItems = Carrinho::where('selecionado', true)
+        $carrinhoItems = CarrinhoModel::where('selecionado', true)
             ->where('usuario_id', $usuarioId)
             ->get();
 
@@ -391,7 +373,7 @@ class CarrinhoService
         foreach ($carrinhoItems as $item) {
             $precoUnitario = $item->preco_total / $item->quantidade;
 
-            ItemPedido::create([
+            ItemPedidoModel::create([
                 'usuario_id' => $usuarioId,
                 'produto_id' => $item->produto_id,
                 'quantidade' => $item->quantidade,
@@ -404,9 +386,9 @@ class CarrinhoService
         }
 
         if ($mesaId) {
-            $mesa = Mesa::find($mesaId);
+            $mesa = MesaModel::find($mesaId);
             if ($mesa) {
-                $totalAberto = (float) ItemPedido::query()
+                $totalAberto = (float) ItemPedidoModel::query()
                     ->where('mesa_id', $mesaId)
                     ->where('status_da_comanda', 'em_aberto')
                     ->get()
@@ -420,7 +402,7 @@ class CarrinhoService
             }
         }
 
-        Carrinho::where('usuario_id', $usuarioId)->where('selecionado', true)->delete();
+        CarrinhoModel::where('usuario_id', $usuarioId)->where('selecionado', true)->delete();
 
         Session::forget('checkout.mesa_id');
         Session::forget('checkout.endereco_id');
@@ -448,7 +430,7 @@ class CarrinhoService
 
         $usuarioId = Auth::id();
 
-        $valor_total = Carrinho::where('usuario_id', $usuarioId)
+        $valor_total = CarrinhoModel::where('usuario_id', $usuarioId)
             ->where('selecionado', true)
             ->sum('preco_total');
 
@@ -495,7 +477,7 @@ class CarrinhoService
 
 
         try {
-            $pedido = Pedido::create([
+            $pedido = PedidoModel::create([
                 'usuario_id' => $usuarioId,
                 'endereco_id' => $enderecoId,
                 'tipo_pagamento_id' => $pagamentoenum ? $pagamentoenum->value : null,
@@ -537,7 +519,7 @@ class CarrinhoService
             ];
         }
 
-        $mesa = Mesa::find($id);
+        $mesa = MesaModel::find($id);
         if (!$mesa) {
             return [
                 'status' => false,
@@ -577,3 +559,4 @@ class CarrinhoService
         ];
     }
 }
+//576 linhas

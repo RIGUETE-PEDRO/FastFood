@@ -2,28 +2,23 @@
 
 namespace App\Services;
 
-use App\Models\Pedido;
-use App\Enums\EnumsStatusPedidos;
-use App\App\Enum\StatusPedidos;
 use App\Enum\StatusPedidos as EnumStatusPedidos;
-use Illuminate\Validation\Rules\Enum;
+use App\Models\PedidoModel;
 
 class PedidoService
 {
-    protected EnumStatusPedidos $enumsStatusPedidos;
     protected GenericBase $genericBase;
     protected PedidosFeitosService $service;
 
-    public function __construct(GenericBase $genericBase, PedidosFeitosService $service, EnumStatusPedidos $enumsStatusPedidos)
+    public function __construct(GenericBase $genericBase, PedidosFeitosService $service)
     {
         $this->genericBase = $genericBase;
         $this->service = $service;
-        $this->enumsStatusPedidos = $enumsStatusPedidos;
     }
 
     public function checksumBasico(): array
     {
-        $snapshot = Pedido::query()
+        $snapshot = PedidoModel::query()
             ->select(['id', 'status', 'updated_at'])
             ->orderByDesc('updated_at')
             ->get()
@@ -58,7 +53,7 @@ class PedidoService
 
     public function pegarPedidosDoUsuario($usuarioId)
     {
-        $pedidos = Pedido::with([
+        $pedidos = PedidoModel::with([
             'statusRelacionamento',
             'endereco.cidade',
             'itens.produto',
@@ -78,8 +73,8 @@ class PedidoService
 
         $pedidosCollection = $this->service->listarPedidos();
 
-        $pedidos = $pedidosCollection->map(function (Pedido $pedido) {
-            $statusEnum = $this->enumsStatusPedidos::tryFrom((int) $pedido->status) ?? $this->enumsStatusPedidos::PENDENTE;
+        $pedidos = $pedidosCollection->map(function (PedidoModel $pedido) {
+            $statusEnum = EnumStatusPedidos::tryFrom((int) $pedido->status) ?? EnumStatusPedidos::PENDENTE;
 
             $pedido->status_enum = $statusEnum;
             $pedido->status_label = $this->service->rotulo($statusEnum);
@@ -92,22 +87,22 @@ class PedidoService
         $dashboardCards = [
             [
                 'label' => 'Pedidos pendentes',
-                'valor' => $contagens->get($this->enumsStatusPedidos::PENDENTE->value, 0),
+                'valor' => $contagens->get(EnumStatusPedidos::PENDENTE->value, 0),
                 'accent' => 'card-resumo--pendente',
             ],
             [
                 'label' => 'Em preparo',
-                'valor' => $contagens->get($this->enumsStatusPedidos::EM_PREPARO->value, 0),
+                'valor' => $contagens->get(EnumStatusPedidos::EM_PREPARO->value, 0),
                 'accent' => 'card-resumo--preparo',
             ],
             [
                 'label' => 'A caminho',
-                'valor' => $contagens->get($this->enumsStatusPedidos::A_CAMINHO->value, 0),
+                'valor' => $contagens->get(EnumStatusPedidos::A_CAMINHO->value, 0),
                 'accent' => 'card-resumo--expedicao',
             ],
             [
                 'label' => 'Entregues',
-                'valor' => $contagens->get($this->enumsStatusPedidos::ENTREGUE->value, 0),
+                'valor' => $contagens->get(EnumStatusPedidos::ENTREGUE->value, 0),
                 'accent' => 'card-resumo--entregue',
             ],
         ];
@@ -120,15 +115,15 @@ class PedidoService
                 'value' => $status->value,
                 'label' => $this->service->rotulo($status),
             ];
-        }, array_values(array_filter($this->enumsStatusPedidos::cases(), fn($status) => $status !== $this->enumsStatusPedidos::CANCELADO)));
+        }, array_values(array_filter(EnumStatusPedidos::cases(), fn($status) => $status !== EnumStatusPedidos::CANCELADO)));
 
         $pedidosPorStatus = [
-            'abertos' => $pedidos->filter(fn(Pedido $pedido) => in_array($pedido->status_enum, [$this->enumsStatusPedidos::PENDENTE, $this->enumsStatusPedidos::EM_PREPARO, $this->enumsStatusPedidos::A_CAMINHO], true))->values(),
-            'finalizados' => $pedidos->filter(fn(Pedido $pedido) => in_array($pedido->status_enum, [$this->enumsStatusPedidos::ENTREGUE, $this->enumsStatusPedidos::CANCELADO], true))->values(),
+            'abertos' => $pedidos->filter(fn(PedidoModel $pedido) => in_array($pedido->status_enum, [EnumStatusPedidos::PENDENTE, EnumStatusPedidos::EM_PREPARO, EnumStatusPedidos::A_CAMINHO], true))->values(),
+            'finalizados' => $pedidos->filter(fn(PedidoModel $pedido) => in_array($pedido->status_enum, [EnumStatusPedidos::ENTREGUE, EnumStatusPedidos::CANCELADO], true))->values(),
         ];
 
         $realtimeChecksum = md5($pedidosCollection
-            ->map(fn(Pedido $pedido) => [
+            ->map(fn(PedidoModel $pedido) => [
                 'id' => (int) $pedido->id,
                 'status' => (int) $pedido->status,
                 'updated_at' => optional($pedido->updated_at)?->toIso8601String(),

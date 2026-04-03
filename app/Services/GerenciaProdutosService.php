@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Categoria;
-use App\Models\Produto;
+use App\Models\CategoriaModel;
+use App\Models\CategoriaProdutoModel;
+use App\Models\ProdutoModel;
 
 
 class GerenciaProdutosService
@@ -19,8 +20,8 @@ class GerenciaProdutosService
     {
         $usuarioLogado =  $this->genericBase->hasLogado();
         $nomeUsuario = $usuarioLogado ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
-        $produtos = Produto::with('categoria')->get();
-        $categorias = Categoria::all();
+        $produtos = ProdutoModel::with('categoria')->get();
+        $categorias = CategoriaProdutoModel::all();
 
         return compact('usuarioLogado', 'nomeUsuario', 'produtos', 'categorias');
     }
@@ -28,7 +29,7 @@ class GerenciaProdutosService
     public function criarProduto($request)
     {
         $preco = str_replace(',', '.', $request->preco);
-        $produto = Produto::create(
+        $produto = ProdutoModel::create(
             [
                 'nome' => $request->input('nome'),
                 'preco' => $preco,
@@ -58,7 +59,7 @@ class GerenciaProdutosService
 
         if (($usuarioLogado['tipo'] ?? null) === 'Administrador') {
 
-            $produto = Produto::find($id);
+            $produto = ProdutoModel::find($id);
 
             if ($produto) {
                 // Apagar imagem do produto
@@ -74,7 +75,7 @@ class GerenciaProdutosService
 
     public function atualizarProduto($id, $data)
     {
-        $produto = Produto::find($id);
+        $produto = ProdutoModel::find($id);
         if ($produto) {
             $produto->nome = $data['nome'];
             $produto->preco = str_replace(',', '.', $data['preco']);

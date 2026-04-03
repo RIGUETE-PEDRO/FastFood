@@ -22,30 +22,19 @@ class AdminService
         $this->keyClockService = $keyClockService;
     }
 
-    public function InserirImagemPerfil()
+    public function inserirImagemPerfil(array $data, $file = null): array
     {
-        $user = session('usuario_logado');
-        $data = request()->only('nome', 'email', 'telefone');
-        $usuario = $this->genericBase->findById($user->id);
+        $usuario = $this->genericBase->findById($data['id']);
 
         if (!$usuario) {
-            return redirect()->route('perfil')->with('erro', 'Usuário não encontrado.');
+            return ['status' => false, 'mensagem' => 'Usuário não encontrado.'];
         }
 
         $usuario->nome = $data['nome'];
         $usuario->email = $data['email'];
         $usuario->telefone = $data['telefone'];
 
-        // Upload da imagem
-        if (request()->hasFile('url_imagem_perfil')) {
-
-            request()->validate([
-                'url_imagem_perfil' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            ]);
-
-            $file = request()->file('url_imagem_perfil');
-
-            // Apagar imagem antiga
+        if ($file) {
             if (
                 $usuario->url_imagem_perfil &&
                 file_exists(public_path('img/perfil/' . $usuario->url_imagem_perfil))
@@ -57,15 +46,16 @@ class AdminService
 
             $file->move(public_path('img/perfil'), $fileName);
 
-            // SALVA NA COLUNA CORRETA
             $usuario->url_imagem_perfil = $fileName;
         }
 
         $usuario->save();
 
-        session(['usuario_logado' => $usuario]);
-
-        return redirect()->route('perfil')->with('sucesso', "Dados " . PassMensagens::ATUALIZADO_SUCESSO);
+        return [
+            'status' => true,
+            'mensagem' => "Dados " . PassMensagens::ATUALIZADO_SUCESSO,
+            'usuario' => $usuario
+        ];
     }
 
     public function resolverReturnUrl(Request $request)
