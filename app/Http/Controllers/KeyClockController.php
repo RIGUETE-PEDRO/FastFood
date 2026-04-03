@@ -11,7 +11,7 @@ class KeyClockController
     protected GenericBase $genericBase;
     protected KeyClockService $keyClockService;
 
-     public function __construct(GenericBase $genericBase, KeyClockService $keyClockService)
+    public function __construct(GenericBase $genericBase, KeyClockService $keyClockService)
     {
         $this->genericBase = $genericBase;
         $this->keyClockService = $keyClockService;

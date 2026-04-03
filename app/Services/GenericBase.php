@@ -8,6 +8,7 @@ use App\Models\Funcionario;
 use App\Models\Produto;
 use App\Models\Carrinho;
 use App\Models\Cidade;
+use Illuminate\Support\Facades\Auth;
 
 class GenericBase
 {
@@ -102,6 +103,14 @@ class GenericBase
         return $usuario ? $usuario->delete() : false;
     }
 
+     public function logout()
+    {
+        Auth::logout();
+        session()->forget('usuario_logado');
+        session()->invalidate();
+        session()->regenerateToken();
+        return redirect()->route('home');
+    }
 
 
     public function deleteFuncionarioEUsuario(int $usuarioId): bool

@@ -3,9 +3,7 @@
 namespace App\Services;
 
 use App\Mensagens\ErroMensagens;
-use App\Models\Funcionario;
 use Illuminate\Http\Request;
-use App\Mensagens\ErroMessages;
 use App\Mensagens\PassMensagens;
 use App\Repositoryimpl\AdminRepositoryimpl;
 use App\Roles\Role;

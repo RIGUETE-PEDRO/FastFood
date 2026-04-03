@@ -35,150 +35,26 @@ class LoginController extends Controller
 
     public function logout()
     {
-        Auth::logout();
-        session()->forget('usuario_logado');
-        return redirect()->route('home');
+        return $this->genericBase->logout();
     }
 
-    //função de login de usuário
+
     public function login(Request $request)
     {
+        return $this->loginService->validarLogin($request);
 
-
-        $credenciais = $request->only('email', 'senha');
-
-        $usuario = $this->genericBase->findAll()->where('email', $credenciais['email'])->first();
-
-        $autenticador = $this->loginService->autenticar($credenciais);
-
-        if ($autenticador === false) {
-            return redirect()->back()->withErrors(['login' => ErroMensagens::CREDENCIAIS_INVALIDAS])->withInput();
-        }
-
-        // Salvar usuário na sessão
-        session(['usuario_logado' => $usuario]);
-
-        // Também autentica via Auth do Laravel (habilita auth()->id() globalmente)
-        Auth::login($usuario);
-
-        // Autenticação bem-sucedida, redirecionar para a página desejada
-
-        if (!$autenticador) {
-            return redirect()->route('login');
-        }
-
-        if ($usuario->tipo_usuario_id === 5) {
-            return redirect()->route('keyclock.index');
-        }
-
-        if ($usuario->tipo_usuario_id !== 1) {
-            return redirect()->route('Administrativo');
-        }
-
-
-
-
-        if ($autenticador == true) {
-            return redirect()->route('home');
-        }
     }
 
-    //função de recuperar senha de usuário
     public function recuperarSenha(Request $request)
     {
-        // Validação do email
-        $request->validate([
-            'email' => 'required|email|exists:usuarios,email',
-        ], [
-            'email.required' => ErroMensagens::EMAIL_OBRIGATORIO,
-            'email.email' => ErroMensagens::EMAIL_NAO_VALIDO,
-            'email.exists' => ErroMensagens::EMAIL_NAO_CADASTRADDO,
-        ]);
+        return $this->loginService->recuperarSenha($request);
 
-        try {
-            // Gerar token único
-            $token = Str::random(60);
-
-            // Deletar tokens antigos deste e-mail
-            DB::table('password_reset_tokens')
-                ->where('email', $request->email)
-                ->delete();
-
-            // Salvar novo token no banco
-            DB::table('password_reset_tokens')->insert([
-                'email' => $request->email,
-                'token' => $token,
-                'created_at' => Carbon::now(),
-            ]);
-
-            // Enviar e-mail com o link
-            Mail::to($request->email)->send(new RecuperarSenhaMail($token, $request->email));
-
-            return redirect()->back()
-                ->with('sucesso', PassMensagens::ENVIAR_LINK_RECUPERACAO);
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('erro', ErroMensagens::ERRO_PROCESSAR . $e->getMessage())
-                ->withInput();
-        }
     }
 
     public function atualizarSenha(Request $request)
     {
-        // Validação
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email|exists:usuarios,email',
-            'password' => 'required|string|min:6|confirmed',
-        ], [
-            'email.required' => ErroMensagens::EMAIL_OBRIGATORIO,
-            'email.email' => ErroMensagens::EMAIL_NAO_VALIDO,
-            'email.exists' => ErroMensagens::EMAIL_NAO_CADASTRADDO,
-            'password.required' => ErroMensagens::SENHA_OBRIGATORIA,
-            'password.min' => ErroMensagens::MIN_CARACTERES_SENHA,
-            'password.confirmed' => ErroMensagens::SENHAS_NAO_COINCIDEM,
-        ]);
 
-        try {
-            // Verificar se o token existe e é válido (menos de 60 minutos)
-            $resetRecord = DB::table('password_reset_tokens')
-                ->where('email', $request->email)
-                ->where('token', $request->token)
-                ->first();
+        return $this->loginService->atualizarSenha($request);
 
-            if (!$resetRecord) {
-                return redirect()->back()
-                    ->with('erro', ErroMensagens::TOKEN_EXPIRADO)
-                    ->withInput();
-            }
-
-            // Verificar se o token não está expirado (60 minutos)
-            $createdAt = Carbon::parse($resetRecord->created_at);
-            if ($createdAt->addMinutes(60)->isPast()) {
-                return redirect()->back()
-                    ->with('erro', ErroMensagens::LINK_EXPIRADO)
-                    ->withInput();
-            }
-
-            // Atualizar a senha do usuário
-            DB::table('usuarios')
-                ->where('email', $request->email)
-                ->update([
-                    'senha' => password_hash($request->password, PASSWORD_BCRYPT),
-                    'updated_at' => Carbon::now(),
-                ]);
-
-            // Deletar o token usado
-            DB::table('password_reset_tokens')
-                ->where('email', $request->email)
-                ->delete();
-
-            return redirect()->route('login.form')
-                ->with('sucesso', PassMensagens::SENHA_REDEFINIDA_SUCESSO);
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('erro', ErroMensagens::ERRO_REDEFINIR_SENHA . $e->getMessage())
-                ->withInput();
-        }
     }
 }
