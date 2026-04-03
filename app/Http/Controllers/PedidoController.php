@@ -19,7 +19,7 @@ class PedidoController extends Controller
 
     public function verpedido()
     {
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
 
 
         $pedido = $this->PedidoService->pegarPedidosDoUsuario($usuarioLogado);

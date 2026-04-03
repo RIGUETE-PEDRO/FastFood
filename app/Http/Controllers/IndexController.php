@@ -15,7 +15,7 @@ class IndexController extends Controller
 
     public function index()
     {
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
         $produtos = $this->genericBase->pegarProdutos();
 
         return view('Index', ['usuario' => $usuarioLogado, 'produtos' => $produtos]);

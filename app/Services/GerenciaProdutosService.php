@@ -43,7 +43,7 @@ class GerenciaProdutosService
 
     public function removerProduto($id)
     {
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
 
         if (($usuarioLogado['tipo'] ?? null) === 'Administrador') {
 

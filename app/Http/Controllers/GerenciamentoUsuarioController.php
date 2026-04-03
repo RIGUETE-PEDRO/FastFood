@@ -32,7 +32,7 @@ class GerenciamentoUsuarioController extends Controller
 
         $lista = $this->adminService->buscarFuncionarios($searchTerm);
 
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
         $nomeUsuarioLogado = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
 
         return view('Admin.GerenciamentoFuncionario', [
@@ -47,7 +47,7 @@ class GerenciamentoUsuarioController extends Controller
     {
 
         $lista = $this->adminService->listarFuncionarios();
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
 
         $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
 
@@ -103,7 +103,7 @@ class GerenciamentoUsuarioController extends Controller
 
         $salarioBruto = $request->input('salario');
         $salarioNormalizado = $this->genericBase->normalizarMoeda($salarioBruto);
-        
+
         if ($salarioBruto !== null) {
             $request->merge(['salario' => $salarioNormalizado]);
         }

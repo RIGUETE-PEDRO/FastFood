@@ -7,9 +7,6 @@ use App\Mensagens\PassMensagens;
 use Illuminate\Http\Request;
 use App\Services\CarrinhoService;
 use App\Services\GenericBase;
-use App\Models\Endereco;
-use App\Models\Cidade;
-use App\Models\Mesa;
 use App\Repositoryimpl\CarrinhoRepositoryimpl;
 
 class CarrinhoController extends Controller
@@ -35,12 +32,7 @@ class CarrinhoController extends Controller
         $observacao = $request->input('observacao');
         $preco = $request->input('preco');
 
-
-        $usuarioLogado =  $this->genericBase->pegarUsuarioLogado();
-        if (!$usuarioLogado) {
-            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
-        }
-
+        $usuarioLogado =  $this->genericBase->hasLogado();
 
         $this->carrinhoService->adicionarProdutoAoCarrinho($usuarioLogado, $produtoId, $quantidade, $observacao, $preco);
 
@@ -48,44 +40,25 @@ class CarrinhoController extends Controller
             ->with('success', PassMensagens::PRODUTO_ADICIONADO_SUCESSO);
     }
 
+
     public function verCarrinho()
     {
-        $statusPermitidos = [
-            'disponivel',
-            'Disponivel',
-            'Disponível',
-            'reservada',
-            'Reservada',
-        ];
-
-        $mesa = $this->carrinhoRepository->pegarMesaSelecionada($statusPermitidos);
-
-
-        $usuarioLogado =    $this->genericBase->pegarUsuarioLogado();
-        if (!$usuarioLogado) {
-            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
-        }
-
-        $carrinhoItems = $this->genericBase->pegarItensCarrinho($usuarioLogado->id);
-        $enderecos = $this->carrinhoRepository->pegarEnderecosDoUsuario($usuarioLogado->id);
-        $cidades = Cidade::orderBy('nome')->get();
+        $DadosPedido = $this->carrinhoService->PegardadosPedido();
 
         return view('Carrinho', [
-            'usuario' => $usuarioLogado,
-            'carrinho' => $carrinhoItems,
-            'enderecos' => $enderecos,
+            'usuario' => $DadosPedido['usuario'],
+            'carrinho' => $DadosPedido['carrinho'],
+            'enderecos' => $DadosPedido['enderecos'],
             'enderecoSelecionadoId' => session('checkout.endereco_id'),
-            'cidades' => $cidades,
-            'mesas' => $mesa
+            'cidades' => $DadosPedido['cidades'],
+            'mesas' => $DadosPedido['mesa']
         ]);
     }
 
     public function removerDoCarrinho($id)
     {
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
-        if (!$usuarioLogado) {
-            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
-        }
+        $this->genericBase->hasLogado();
+
 
         $this->carrinhoService->removerProdutoDoCarrinho($id);
 
@@ -97,33 +70,9 @@ class CarrinhoController extends Controller
     public function selecionarMesa(Request $request)
     {
 
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
-        
-        if (!$usuarioLogado) {
-            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
-        }
+        $this->genericBase->hasLogado();
 
-        $mesaId = $request->input('mesa_id');
-        if (!$mesaId) {
-            return redirect()->route('carrinho')->with('error', ErroMensagens::SEM_ID_MESA);
-        }
-
-        $carrinhoService = $this->carrinhoService;
-        $resultado = $carrinhoService->selecionarMesaNoCarrinho($mesaId);
-
-        if (!($resultado['status'] ?? false)) {
-            return redirect()->route('carrinho')->with('error', $resultado['mensagem'] ?? 'Mesa inválida.');
-        }
-
-        $pedidoResultado = $carrinhoService->registraPedido($request, null);
-        if (!($pedidoResultado['status'] ?? false)) {
-            return redirect()->route('carrinho')->with($pedidoResultado['tipo'] ?? 'error', $pedidoResultado['mensagem'] ?? ErroMensagens::ERRO_PROCESSAR);
-        }
-
-        $pedidoId = $pedidoResultado['pedido_id'] ?? null;
-        if ($pedidoId) {
-            $carrinhoService->limparCarrinhoAposPedido($request, $pedidoId);
-        }
+        $this->carrinhoService->escolherMesa($request);
 
         return redirect()->route('pedidos')->with($pedidoResultado['tipo'] ?? 'success', $pedidoResultado['mensagem'] ?? PassMensagens::PEDIDO_REALIZADO_SUCESSO);
     }
@@ -133,23 +82,19 @@ class CarrinhoController extends Controller
         $carrinhoService = $this->carrinhoService;
         $atualizou = $carrinhoService->atualizarQuantidadeProdutoNoCarrinho($request, $id);
 
-            if (!$atualizou) {
-                return redirect()->route('carrinho')
-                    ->with('error', ErroMensagens::QUANTIDADE_MINIMA);
-            }else{
-                return redirect()->route('carrinho')
-                    ->with('success', PassMensagens::QUANTIDADE_ATUALIZADA_SUCESSO);
-            }
+        if (!$atualizou) {
+            return redirect()->route('carrinho')
+                ->with('error', ErroMensagens::QUANTIDADE_MINIMA);
+        } else {
+            return redirect()->route('carrinho')
+                ->with('success', PassMensagens::QUANTIDADE_ATUALIZADA_SUCESSO);
+        }
     }
-
-
 
     public function deletarEndereco($id)
     {
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
-        if (!$usuarioLogado) {
-            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
-        }
+        $this->genericBase->hasLogado();
+
 
         $carrinhoService = $this->carrinhoService;
         $resultado = $carrinhoService->deletarEnderecoUsuario($id);
@@ -158,14 +103,10 @@ class CarrinhoController extends Controller
     }
 
 
-    public function toggleSelecionar( $id)
+    public function toggleSelecionar($id)
     {
 
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
-        if (!$usuarioLogado) {
-            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
-        }
-
+        $this->genericBase->hasLogado();
 
         $this->carrinhoService->toggleSelecionarProdutoNoCarrinho($id);
 
@@ -174,11 +115,8 @@ class CarrinhoController extends Controller
 
     public function pegarEndereco(Request $request)
     {
+        $this->genericBase->hasLogado();
 
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
-        if (!$usuarioLogado) {
-            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
-        }
 
         $carrinhoService = $this->carrinhoService;
         $resultado = $carrinhoService->pegarEnderecoUsuario($request);
@@ -200,41 +138,15 @@ class CarrinhoController extends Controller
     public function registrarPedido(Request $request)
     {
 
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
-        if (!$usuarioLogado) {
-            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
-        }
-
-        $enderecoId = $request->endereco_id
-            ?? session('checkout.endereco_id')
-            ?? $request->endereco_opcao;
-
-
-
-        $carrinhoService = $this->carrinhoService;
-        $resultado = $carrinhoService->registraPedido($request , $enderecoId);
-
-        if (!($resultado['status'] ?? false)) {
-            return redirect()->route('carrinho')->with($resultado['tipo'] ?? 'error', $resultado['mensagem'] ?? ErroMensagens::ERRO_PROCESSAR);
-        }
-
-        $pedidoId = $resultado['pedido_id'] ?? null;
-        if ($pedidoId) {
-            $carrinhoService->limparCarrinhoAposPedido($request, $pedidoId);
-        }
+        $this->genericBase->hasLogado();
+        $this->carrinhoService->validarCarrinhoAntesRegistrarPedido($request);
 
         return redirect()->route('pedidos')->with($resultado['tipo'] ?? 'success', $resultado['mensagem'] ?? PassMensagens::PEDIDO_REALIZADO_SUCESSO);
     }
 
     public function selecionarCidade(Request $request)
     {
-
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
-        if (!$usuarioLogado) {
-            return redirect()->route('login.form')->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
-        }
-
-
+        $this->genericBase->hasLogado();
         $cidades = $this->carrinhoService->selecionarCidade($request);
 
         return redirect()->back()->with('cidades', $cidades);

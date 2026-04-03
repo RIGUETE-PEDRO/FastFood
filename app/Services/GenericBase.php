@@ -2,14 +2,22 @@
 
 namespace App\Services;
 
+use App\Mensagens\ErroMensagens;
 use App\Models\Usuario;
 use App\Models\Funcionario;
 use App\Models\Produto;
 use App\Models\Carrinho;
+use App\Models\Cidade;
 
 class GenericBase
 {
 
+    public function hasLogado()
+    {
+        $usuarioLogado = $this->pegarUsuarioLogado();
+
+        return $usuarioLogado;
+    }
     public function findById(int $id)
     {
         return Usuario::find($id);
@@ -43,6 +51,11 @@ class GenericBase
     public function findAll()
     {
         return Usuario::all();
+    }
+
+    public function findByCidade()
+    {
+        return Cidade::orderBy('nome')->get();
     }
 
     public function findFuncionarios()
@@ -163,5 +176,4 @@ class GenericBase
             ->where('usuario_id', $usuarioId)
             ->first();
     }
-
 }

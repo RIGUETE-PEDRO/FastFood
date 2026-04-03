@@ -17,7 +17,7 @@ class PizzaController extends Controller
     public function Pizza()
     {
 
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
         $Pizzas = $this->genericBase->findByProdutos('Pizzas');
 
         return view('Pizza', [

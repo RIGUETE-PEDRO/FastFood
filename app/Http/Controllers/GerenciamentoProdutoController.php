@@ -27,7 +27,7 @@ class GerenciamentoProdutoController extends Controller
     /*precisa ser revisto porque deve ser no service e nao no controller*/
     public function gerenciamentoProduto()
     {
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
         $nomeUsuario = $usuarioLogado ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
         $produtos = Produto::with('categoria')->get();
         $categorias = Categoria::all();

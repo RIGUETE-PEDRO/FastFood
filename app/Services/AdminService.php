@@ -27,9 +27,7 @@ class AdminService
     public function InserirImagemPerfil()
     {
         $user = session('usuario_logado');
-
         $data = request()->only('nome', 'email', 'telefone');
-
         $usuario = $this->genericBase->findById($user->id);
 
         if (!$usuario) {
@@ -104,7 +102,7 @@ class AdminService
 
     public function verificarAcessoPerfil()
     {
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
         $hasRole = $this->keyClockService->hasRole($usuarioLogado, Role::ADMIN);
         if (!$hasRole) {
             abort(403, ErroMensagens::ACESSO_NEGADO);
@@ -113,7 +111,6 @@ class AdminService
 
     public function listarFuncionarios()
     {
-
         return $this->genericBase->findFuncionarios();
     }
 }

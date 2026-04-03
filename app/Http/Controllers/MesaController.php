@@ -27,7 +27,7 @@ class MesaController extends Controller
     public function Mesa()
     {
 
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
         $mesas = $this->mesasService->pegarMesas();
 
         return view('Admin.Mesa', ['usuario' => $usuarioLogado, 'mesas' => $mesas]);
@@ -79,7 +79,7 @@ class MesaController extends Controller
 
     public function detalhesMesa($id)
     {
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
 
         $mesasService = $this->mesasService;
         $mesa = $mesasService->pegarMesaPorId($id);

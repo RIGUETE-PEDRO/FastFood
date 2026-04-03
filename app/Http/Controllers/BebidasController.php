@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\GenericBase;
 
 class BebidasController extends Controller
@@ -16,7 +15,7 @@ class BebidasController extends Controller
 
     public function Bebidas()
     {
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
         $bebidas = $this->genericBase->findByProdutos('Bebidas');
 
         return view('Bebida', [

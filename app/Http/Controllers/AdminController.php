@@ -6,7 +6,6 @@ use App\Services\GenericBase;
 use App\Services\AdminService;
 use App\Http\Middleware\UsuarioAutenticado;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
 use App\Enum\TipoUsuario as EnumsTipoUsuario;
 
 class AdminController extends Controller
@@ -23,23 +22,23 @@ class AdminController extends Controller
     }
 
     public function infoPerfil(Request $request)
-{
-    $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
-    $this->adminService->verificarAcessoPerfil();
+    {
+        $usuarioLogado =  $this->genericBase->hasLogado();
+        $this->adminService->verificarAcessoPerfil();
 
-    $perfilReturnUrl = $this->adminService->resolverReturnUrl($request);
+        $perfilReturnUrl = $this->adminService->resolverReturnUrl($request);
 
-    return view('Perfil', [
-        'usuario' => $usuarioLogado,
-        'tipoUsuario' => $this->mapearTipoUsuario($usuarioLogado->tipo_usuario_id ?? null),
-        'perfilReturnUrl' => $perfilReturnUrl,
-    ]);
-}
+        return view('Perfil', [
+            'usuario' => $usuarioLogado,
+            'tipoUsuario' => $this->mapearTipoUsuario($usuarioLogado->tipo_usuario_id ?? null),
+            'perfilReturnUrl' => $perfilReturnUrl,
+        ]);
+    }
 
     //pegar nome do usuario para mostrar no administrativo
     public function nomeUsuario()
     {
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
         $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
 
         return view('Admin.Administrativo', [

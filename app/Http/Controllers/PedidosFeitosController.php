@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Enum;
+
 
 class PedidosFeitosController extends Controller
 {
@@ -108,7 +108,7 @@ class PedidosFeitosController extends Controller
 
     private function montarDadosPainel(): array
     {
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
         $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : null;
 
         $pedidosCollection = $this->service->listarPedidos();

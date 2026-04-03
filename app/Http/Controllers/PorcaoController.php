@@ -16,7 +16,7 @@ class PorcaoController extends Controller
     public function porcao()
     {
 
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
         $porcao = $this->genericBase->findByProdutos('Porções');
 
         return view('Porcao', [

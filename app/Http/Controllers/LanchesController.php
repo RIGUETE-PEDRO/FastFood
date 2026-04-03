@@ -16,7 +16,7 @@ class LanchesController extends Controller
     public function Lanches()
     {
 
-        $usuarioLogado = $this->genericBase->pegarUsuarioLogado();
+        $usuarioLogado =  $this->genericBase->hasLogado();
         $lanches = $this->genericBase->findByProdutos('Lanches');
 
         return view('Lanches', [

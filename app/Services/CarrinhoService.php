@@ -17,18 +17,97 @@ use App\Models\ItemPedido;
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
 use App\Models\Mesa;
+use App\Repositoryimpl\CarrinhoRepositoryimpl;
 use Illuminate\Support\Facades\Log;
 
 class CarrinhoService
 {
     protected GenericBase $genericBase;
+    protected CarrinhoRepositoryimpl $carrinhoRepository;
 
-    public function __construct(GenericBase $genericBase)
+
+    public function __construct(GenericBase $genericBase, CarrinhoRepositoryimpl $carrinhoRepository)
     {
         $this->genericBase = $genericBase;
+        $this->carrinhoRepository = $carrinhoRepository;
     }
 
+    public function validarCarrinhoAntesRegistrarPedido(Request $request)
+    {
+        $enderecoId = $request->endereco_id
+            ?? session('checkout.endereco_id')
+            ?? $request->endereco_opcao;
 
+
+
+
+        $resultado = $this->registraPedido($request, $enderecoId);
+
+        if (!($resultado['status'] ?? false)) {
+            return redirect()->route('carrinho')->with($resultado['tipo'] ?? 'error', $resultado['mensagem'] ?? ErroMensagens::ERRO_PROCESSAR);
+        }
+
+        $pedidoId = $resultado['pedido_id'] ?? null;
+        if ($pedidoId) {
+            $this->limparCarrinhoAposPedido($request, $pedidoId);
+        }
+        
+    }
+
+    public function escolherMesa(Request $request)
+    {
+        $mesaId = $request->input('mesa_id');
+        if (!$mesaId) {
+            return redirect()->route('carrinho')->with('error', ErroMensagens::SEM_ID_MESA);
+        }
+
+
+        $resultado = $this->selecionarMesaNoCarrinho($mesaId);
+
+        if (!($resultado['status'] ?? false)) {
+            return redirect()->route('carrinho')->with('error', $resultado['mensagem'] ?? 'Mesa inválida.');
+        }
+
+        $pedidoResultado = $this->registraPedido($request, null);
+        if (!($pedidoResultado['status'] ?? false)) {
+            return redirect()->route('carrinho')->with($pedidoResultado['tipo'] ?? 'error', $pedidoResultado['mensagem'] ?? ErroMensagens::ERRO_PROCESSAR);
+        }
+
+        $pedidoId = $pedidoResultado['pedido_id'] ?? null;
+        if ($pedidoId) {
+            $this->limparCarrinhoAposPedido($request, $pedidoId);
+        }
+    }
+
+    public function PegardadosPedido()
+    {
+        $statusPermitidos = [
+            'disponivel',
+            'Disponivel',
+            'Disponível',
+            'reservada',
+            'Reservada',
+        ];
+
+
+        $mesa = $this->carrinhoRepository->pegarMesaSelecionada($statusPermitidos);
+
+
+        $usuarioLogado =    $this->genericBase->pegarUsuarioLogado();
+
+
+        $carrinhoItems = $this->genericBase->pegarItensCarrinho($usuarioLogado->id);
+        $enderecos = $this->carrinhoRepository->pegarEnderecosDoUsuario($usuarioLogado->id);
+        $cidades = $this->genericBase->findByCidade();
+
+        return [
+            'usuario' => $usuarioLogado,
+            'carrinho' => $carrinhoItems,
+            'enderecos' => $enderecos,
+            'cidades' => $cidades,
+            'mesa' => $mesa,
+        ];
+    }
 
     public function adicionarProdutoAoCarrinho($usuario, $produtoId, $quantidade, $observacao, $preco)
     {
@@ -448,7 +527,8 @@ class CarrinhoService
         }
     }
 
-    public function selecionarMesaNoCarrinho($id){
+    public function selecionarMesaNoCarrinho($id)
+    {
         if (!Auth::check()) {
             return [
                 'status' => false,
@@ -495,7 +575,5 @@ class CarrinhoService
             'tipo' => 'success',
             'mensagem' => PassMensagens::MESA_SELECIONADA_SUCESSO,
         ];
-
-
     }
 }
