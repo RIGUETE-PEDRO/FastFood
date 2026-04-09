@@ -54,7 +54,7 @@
                     </article>
 
                     <article class="painel painel-kpi">
-                        <h2>Quantidade de pedidos</h2>
+                        <h2>Unidades vendidas</h2>
                         <strong>{{ (int) ($totalPedidos ?? 0) }}</strong>
                     </article>
 

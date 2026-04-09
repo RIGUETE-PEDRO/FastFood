@@ -50,7 +50,6 @@ class popula_banco extends Seeder
                 'tipo_usuario_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
-
             ]
         ]);
 

@@ -28,13 +28,13 @@
                             <p class="mesas-subtitle">Visualização em planta para acompanhar ocupação.</p>
                         </div>
                         <div class="header-actions">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarMesa">
+                            <button type="button" class="btn topo btn-Adicionar" data-bs-toggle="modal" data-bs-target="#modalAdicionarMesa">
                                 Adicionar Mesa
                             </button>
-                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalRemoverMesa">
+                            <button type="button" class="btn topo btn-Remover" data-bs-toggle="modal" data-bs-target="#modalRemoverMesa">
                                 Remover Mesa
                             </button>
-                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarMesa">
+                            <button type="button" class="btn topo btn-Editar" data-bs-toggle="modal" data-bs-target="#modalEditarMesa">
                                 Editar Mesa
                             </button>
                         </div>
@@ -43,7 +43,7 @@
                     <div class="modal fade" id="modalAdicionarMesa" tabindex="-1" aria-labelledby="modalAdicionarMesaLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
-                                <div class="modal-header">
+                                <div class="modal-header adicionar-mesa-modal">
                                     <h5 class="modal-title" id="modalAdicionarMesaLabel">Cadastrar Nova Mesa</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
@@ -80,7 +80,7 @@
                     <div class="modal fade" id="modalEditarMesa" tabindex="-1" aria-labelledby="modalEditarMesaLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
-                                <div class="modal-header">
+                                <div class="modal-header editar-mesa-modal">
                                     <h5 class="modal-title" id="modalEditarMesaLabel">Editar Mesa</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
@@ -124,7 +124,7 @@
                     <div class="modal fade" id="modalRemoverMesa" tabindex="-1" aria-labelledby="modalRemoverMesaLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
-                                <div class="modal-header">
+                                <div class="modal-header remover-mesa-modal">
                                     <h5 class="modal-title" id="modalRemoverMesaLabel">Remover Mesa</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>

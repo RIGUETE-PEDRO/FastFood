@@ -37,9 +37,14 @@ class AdminRepositoryimpl implements AdminRepository
 
     public function totalPedidosNoPeriodo(Carbon $inicioPeriodo, Carbon $fimPeriodo): int
     {
-        return (int) PedidoModel::query()
-            ->whereBetween('created_at', [$inicioPeriodo, $fimPeriodo])
-            ->count();
+        return (int) DB::table('item_pedido as ip')
+            ->join('pedidos as p', 'p.id', '=', 'ip.pedido_id')
+            ->whereBetween('p.created_at', [$inicioPeriodo, $fimPeriodo])
+            ->whereNotIn('p.status', [
+                StatusPedidos::PENDENTE->value,
+                StatusPedidos::CANCELADO->value,
+            ])
+            ->sum('ip.quantidade');
     }
 
     public function contagemStatusNoPeriodo(Carbon $inicioPeriodo, Carbon $fimPeriodo): Collection

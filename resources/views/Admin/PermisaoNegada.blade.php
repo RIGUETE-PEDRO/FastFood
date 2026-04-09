@@ -34,7 +34,7 @@
                 <span class="light blue"></span>
                 <span class="light red"></span>
             </div>
-            <img src="{{ asset('img/policial.svg') }}" alt="Ilustração de um policial" class="police-figure">
+            <img src="{{ asset('img/policial.png') }}" alt="Ilustração de um policial" class="police-figure">
         </aside>
     </main>
 </body>
