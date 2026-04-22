@@ -125,7 +125,7 @@
                                                                 name="quantidade"
                                                                 class="form-control form-control-sm"
                                                                 min="1"
-                                                                max="99"
+                                                                max="1000"
                                                                 value="{{ (int) $item->quantidade }}"
                                                                 style="width: 88px;"
                                                             >

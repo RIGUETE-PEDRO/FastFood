@@ -85,4 +85,9 @@ class UsuarioModel extends Authenticatable
     {
         return $this->hasMany(PedidoModel::class, 'usuario_id');
     }
+
+    public function entregasAtribuidas()
+    {
+        return $this->hasMany(PedidoModel::class, 'motoboy_id');
+    }
 }

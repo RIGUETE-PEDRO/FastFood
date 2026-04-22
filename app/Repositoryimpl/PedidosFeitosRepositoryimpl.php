@@ -15,6 +15,7 @@ class PedidosFeitosRepositoryimpl
             'itens.produto',
             'formaPagamento',
             'usuario',
+            'motoboy',
         ])->orderByDesc('created_at')->get();
     }
 
@@ -29,6 +30,7 @@ class PedidosFeitosRepositoryimpl
             'itens.produto',
             'formaPagamento',
             'usuario',
+            'motoboy',
         ]);
     }
 }

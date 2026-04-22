@@ -6,7 +6,8 @@ $isAdmin = request()->routeIs('Administrativo')
 || request()->routeIs('Cadastrar_Produto')
 || request()->routeIs('deletar_produto')
 || request()->routeIs('mesas.*')
-|| request()->routeIs('garcom');
+|| request()->routeIs('garcom')
+|| request()->routeIs('entregas');
 @endphp
 
 <nav class="ff-sidebar d-flex flex-column">
@@ -47,7 +48,7 @@ $isAdmin = request()->routeIs('Administrativo')
         @endrole
         @role('ENTREGAS')
         <li class="nav-item">
-            <span class="nav-link disabled">Entregas</span>
+            <a href="{{ route('entregas') }}" class="nav-link {{ request()->routeIs('entregas') ? 'active' : '' }}">Entregas</a>
         </li>
         @endrole
         @role('MESAS')

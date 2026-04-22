@@ -10,6 +10,8 @@ class PedidoModel extends Model
     protected $table = 'pedidos';
     protected $fillable = [
         'usuario_id',
+        'motoboy_id',
+        'motoboy_vinculado_em',
         'mesa_id',
         'status',
         'tipo_pagamento_id',
@@ -36,6 +38,11 @@ class PedidoModel extends Model
     public function usuario()
     {
         return $this->belongsTo(UsuarioModel::class, 'usuario_id');
+    }
+
+    public function motoboy()
+    {
+        return $this->belongsTo(UsuarioModel::class, 'motoboy_id');
     }
 
     public function endereco()

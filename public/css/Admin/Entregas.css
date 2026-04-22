@@ -1,0 +1,59 @@
+.pedidos-admin {
+    max-width: 1180px;
+}
+
+.entregas-card {
+    border-radius: 16px;
+    border: 1px solid rgba(255, 145, 0, 0.18);
+    box-shadow: 0 14px 28px -24px rgba(194, 65, 12, 0.55);
+}
+
+.entregas-card .pedido-card__secao {
+    background: linear-gradient(180deg, rgba(255, 248, 237, 0.7), rgba(255, 255, 255, 0.9));
+    border: 1px solid rgba(255, 145, 0, 0.12);
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+
+.entregas-card .pedido-card__secao + .pedido-card__secao {
+    margin-top: 10px;
+}
+
+.entregas-card .pedido-card__secao p {
+    margin-bottom: 6px;
+}
+
+.entregas-card .pedido-card__secao p:last-child {
+    margin-bottom: 0;
+}
+
+.entregas-card .btn-add {
+    border: none;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    background: linear-gradient(135deg, #d62828 0%, #ff7b00 100%);
+    color: #fff;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.entregas-card .btn-add:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 18px -12px rgba(214, 40, 40, 0.75);
+}
+
+.secao-titulo--disponiveis {
+    color: #b45309;
+}
+
+.secao-titulo--aceitos {
+    color: #c2410c;
+}
+
+@media (max-width: 768px) {
+    .entregas-card .pedido-card__secao {
+        padding: 10px 11px;
+    }
+}

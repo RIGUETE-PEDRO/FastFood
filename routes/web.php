@@ -17,6 +17,7 @@ use App\Http\Controllers\PedidosFeitosController;
 use App\Http\Controllers\MesaController;
 use App\Http\Controllers\KeyClockController;
 use App\Http\Controllers\GarcomController;
+use App\Http\Controllers\EntregasController;
 use App\Roles\Role;
 
 
@@ -105,6 +106,18 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
     Route::get('/Pedidos.Administrativo', [PedidosFeitosController::class, 'verPedidosAdmin'])
         ->middleware('keyclock.role:' . Role::PEDIDOS)
         ->name('Pedidos.Administrativo');
+
+    Route::get('/entregas', [EntregasController::class, 'index'])
+        ->middleware('keyclock.role:' . Role::ENTREGAS)
+        ->name('entregas');
+
+    Route::post('/entregas/{pedido}/aceitar', [EntregasController::class, 'aceitar'])
+        ->middleware('keyclock.role:' . Role::ENTREGAS)
+        ->name('entregas.aceitar');
+
+    Route::post('/entregas/{pedido}/finalizar', [EntregasController::class, 'finalizar'])
+        ->middleware('keyclock.role:' . Role::ENTREGAS)
+        ->name('entregas.finalizar');
 
     Route::patch('/Pedidos.Administrativo/{pedido}/status', [PedidosFeitosController::class, 'atualizarStatus'])
         ->middleware('keyclock.role:' . Role::PEDIDOS)
@@ -218,6 +231,10 @@ Route::middleware(['auth', 'admin.access', 'keyclock.role:' . Role::MESAS])->gro
     Route::post('/mesas/{id}/conta/item/{itemId}/atualizar', [MesaController::class, 'atualizarItemContaMesa'])->name('mesas.conta.item.atualizar');
     Route::post('/mesas/{id}/conta/item/{itemId}/remover', [MesaController::class, 'removerItemContaMesa'])->name('mesas.conta.item.remover');
 });
+
+
+Route::post('/garcom/adicionar-produto', [GarcomController::class, 'adicionarProduto'])
+    ->name('garcom.adicionar-produto');
 
 ///////////////////////////////////////////////////////
 /* ACESSO NEGADO */
