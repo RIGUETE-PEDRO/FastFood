@@ -1,80 +1,156 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar Senha</title>
+    <title>Recuperar Senha - FlashFood</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
+
+        .wrapper {
+            width: 100%;
+            /* Gradiente inspirado no fundo da sua imagem */
+            background: linear-gradient(135deg, #f27022 0%, #ed1c24 100%);
+            padding: 40px 0;
+        }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
             background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
+
+        /* Header com a cor Bege/Creme da imagem */
+        .header {
+            background-color: #bca998;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 4px solid #f27022;
+        }
+
+        .header h2 {
+            margin: 0;
+            color: #F6D036;
+            text-shadow:
+                -2px -2px 0 black,
+                2px -2px 0 black,
+                -2px 2px 0 black,
+                2px 2px 0 black,
+                -3px 0px 0 black,
+                3px 0px 0 black,
+                0px -3px 0 black,
+                0px 3px 0 black;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+
+        .header h2 span {
+            color: #B52A2B;
+            text-shadow:
+                -2px -2px 0 black,
+                2px -2px 0 black,
+                -2px 2px 0 black,
+                2px 2px 0 black,
+                -3px 0px 0 black,
+                3px 0px 0 black,
+                0px -3px 0 black,
+                0px 3px 0 black;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .content {
+            padding: 40px 30px;
+            color: #4b5563;
+        }
+
         h1 {
-            color: #333;
+            color: #1f2937;
+            font-size: 24px;
+            margin-bottom: 20px;
             text-align: center;
         }
+
         p {
-            color: #666;
             line-height: 1.6;
             font-size: 16px;
         }
-        .button {
+
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        /* Verde idêntico ao botão da imagem */
+        .button-green {
             display: inline-block;
-            padding: 12px 30px;
-            background-color: #39c259;
-            color: white;
+            padding: 15px 40px;
+            background-color: #3ecf5e;
+            color: #ffffff !important;
             text-decoration: none;
-            border-radius: 5px;
-            margin: 20px 0;
-            text-align: center;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 4px 0 #2ca347;
         }
-        .button:hover {
-            background-color: #18a737;
-            color: white;
-        }
+
         .footer {
-            margin-top: 30px;
-            font-size: 12px;
-            color: #999;
+            background-color: #f9fafb;
+            padding: 25px;
             text-align: center;
+            font-size: 13px;
+            color: #9ca3af;
+            border-top: 1px solid #e5e7eb;
         }
-        .center {
-            text-align: center;
+
+        .url-box {
+            background-color: #ffffff;
+            border: 1px dashed #d1d5db;
+            padding: 10px;
+            margin-top: 10px;
+            word-break: break-all;
+            color: #f27022;
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Recuperação de Senha</h1>
+    <div class="wrapper">
+        <div class="container">
+            <div class="header">
+                <h2>FLASH<span>FOOD</span></h2>
+            </div>
 
-        <p>Olá!</p>
+            <div class="content">
+                <h1>Recuperar Senha</h1>
+                <p>Olá!</p>
+                <p>Recebemos uma solicitação para redefinir a senha da sua conta no sistema <strong>FlashFood - Lanchonete Expresso</strong>.</p>
 
-        <p>Você está recebendo este e-mail porque recebemos uma solicitação de recuperação de senha para sua conta.</p>
+                <div class="button-container">
+                    <a href="{{ $url }}" class="button-green">Redefinir Senha</a>
+                </div>
 
-        <div class="center">
-            <a href="{{ $url }}" class="button">Redefinir Senha</a>
-        </div>
+                <p>Se você não solicitou esta alteração, ignore este e-mail. Este link é válido por 60 minutos.</p>
 
-        <p>Este link de recuperação expirará em 60 minutos.</p>
+                <p><strong>Rapidez no Sabor!</strong><br>Equipe FlashFood</p>
+            </div>
 
-        <p>Se você não solicitou a recuperação de senha, nenhuma ação adicional é necessária.</p>
-
-        <p>Atenciosamente,<br>Equipe FlashFood</p>
-
-        <div class="footer">
-            <p>Se você está tendo problemas para clicar no botão "Redefinir Senha", copie e cole a URL abaixo em seu navegador:</p>
-            <p>{{ $url }}</p>
+            <div class="footer">
+                <p>Se estiver com problemas no botão, copie o link abaixo:</p>
+                <div class="url-box">{{ $url }}</div>
+            </div>
         </div>
     </div>
 </body>
+
 </html>
