@@ -24,3 +24,5 @@ Homestead.yaml
 Thumbs.db
 package-lock.json
 .env.example
+plantuml.jar
+diagrama_classes.puml

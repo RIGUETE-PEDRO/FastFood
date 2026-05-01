@@ -110,7 +110,9 @@ class CarrinhoRepositoryimpl implements CarrinhoRepository
     public function calcularTotalAbertoMesa(int $mesaId): float
     {
         return (float) ItemPedidoModel::query()
-            ->where('mesa_id', $mesaId)
+            ->whereHas('pedido', function ($q) use ($mesaId) {
+                $q->where('mesa_id', $mesaId);
+            })
             ->where('status_da_comanda', 'em_aberto')
             ->get()
             ->sum(function ($item) {

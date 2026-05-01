@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Repository\AdminRepository;
+use App\Repository\AuditoriaRepository;
 use App\Repository\CarrinhoRepository;
 use App\Repository\GarcomRepository;
 use App\Repository\KeyClockRepository;
@@ -10,6 +11,7 @@ use App\Roles\Role;
 use App\Services\KeyClockService;
 use App\Models\UsuarioModel;
 use App\Repositoryimpl\AdminRepositoryimpl;
+use App\Repositoryimpl\AuditoriaRepositoryimpl;
 use App\Repositoryimpl\CarrinhoRepositoryimpl;
 use App\Repositoryimpl\GarcomRepositoryimpl;
 use App\Repositoryimpl\KeyClockRepositoryimpl;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(AdminRepository::class, AdminRepositoryimpl::class);
+        $this->app->bind(AuditoriaRepository::class, AuditoriaRepositoryimpl::class);
         $this->app->bind(CarrinhoRepository::class, CarrinhoRepositoryimpl::class);
         $this->app->bind(GarcomRepository::class, GarcomRepositoryimpl::class);
         $this->app->bind(KeyClockRepository::class, KeyClockRepositoryimpl::class);

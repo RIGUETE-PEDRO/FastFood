@@ -1,0 +1,150 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class UsuarioModel {
+  +int id
+  +string nome
+  +string email
+  +string senha
+  +string telefone
+  +int tipo_usuario_id
+  +string url_imagem_perfil
+}
+
+class FuncionarioModel {
+  +int id
+  +int usuario_id
+  +int tipo_usuarios_id
+  +bool has_ativo
+  +decimal salario
+}
+
+class PedidoModel {
+  +int id
+  +int usuario_id
+  +int motoboy_id
+  +datetime motoboy_vinculado_em
+  +int mesa_id
+  +int status_id
+  +int tipo_pagamento_id
+  +decimal valor_total
+  +string observacoes_pagamento
+  +int endereco_id
+}
+
+class ItemPedidoModel {
+  +int id
+  +decimal preco_unitario
+  +decimal valor_pago
+  +int quantidade
+  +string status_da_comanda
+  +datetime pago_em
+  +string pagamento_metodo
+  +int produto_id
+  +int pedido_id
+}
+
+class ProdutoModel {
+  +int id
+  +string nome
+  +decimal preco
+  +string descricao
+  +string imagem_url
+  +bool disponivel
+  +int categoria_id
+}
+
+class CategoriaProdutoModel {
+  +int id
+  +string nome
+}
+
+class CarrinhoModel {
+  +int id
+  +int usuario_id
+  +int produto_id
+  +int quantidade
+  +string observacao
+  +decimal preco_total
+}
+
+class MesaModel {
+  +int id
+  +int numero_da_mesa
+  +string status
+  +decimal preco
+}
+
+class EnderecoModel {
+  +int id
+  +string logradouro
+  +string numero
+  +string complemento
+  +string bairro
+  +int cidade_id
+  +int usuario_id
+}
+
+class CidadeModel {
+  +int id
+  +string nome
+}
+
+class FormaPagamentoModel {
+  +int id
+  +string tipo_pagamento
+}
+
+class StatusModel {
+  +int id
+  +string status
+}
+
+class RolesModel {
+  +int id
+  +string nome
+}
+
+class KeyClockTipoUsuarioModel {
+  +int id
+  +int tipo_usuario_id
+  +int role_id
+}
+
+' + "' Associações / multiplicidades" + '
+UsuarioModel "1" -- "0..1" FuncionarioModel : funcionario
+UsuarioModel "1" -- "0..*" PedidoModel : pedidos
+UsuarioModel "1" -- "0..*" PedidoModel : entregasAtribuidas
+UsuarioModel "1" -- "0..*" ItemPedidoModel : usuario_itens (via Pedido)
+UsuarioModel "1" -- "0..*" CarrinhoModel : carrinho
+
+FuncionarioModel "0..1" -- "1" UsuarioModel : usuario
+
+PedidoModel "1" -- "0..*" ItemPedidoModel : itens
+PedidoModel "0..1" -- "1" StatusModel : statusRelacionamento
+PedidoModel "0..1" -- "1" UsuarioModel : usuario
+PedidoModel "0..1" -- "1" UsuarioModel : motoboy
+PedidoModel "0..1" -- "1" EnderecoModel : endereco
+PedidoModel "0..1" -- "1" MesaModel : mesa
+PedidoModel "0..1" -- "1" FormaPagamentoModel : formaPagamento
+
+ItemPedidoModel "0..1" -- "1" ProdutoModel : produto
+ItemPedidoModel "0..1" -- "1" PedidoModel : pedido
+
+ProdutoModel "0..*" -- "1" CategoriaProdutoModel : categoria
+CarrinhoModel "0..*" -- "1" UsuarioModel : usuario
+CarrinhoModel "0..*" -- "1" ProdutoModel : produto
+
+EnderecoModel "0..*" -- "1" CidadeModel : cidade
+EnderecoModel "0..*" -- "1" UsuarioModel : usuario
+EnderecoModel "1" -- "0..*" PedidoModel : pedidos
+
+RolesModel "1" -- "0..*" KeyClockTipoUsuarioModel : keyclockTipoUsuarios
+KeyClockTipoUsuarioModel "0..1" -- "1" RolesModel : roles
+KeyClockTipoUsuarioModel "0..1" -- "1" TipoUsuario : tipoUsuario
+
+note right of CarrinhoModel
+  Carrinho é tratado como Pré-pedido (pré-reserva).\nQuando o usuário finalizar, itens do carrinho são convertidos em `Pedido`.
+end note
+
+@enduml

@@ -14,9 +14,7 @@ class ItemPedidoModel extends Model
         'pago_em',
         'pagamento_metodo',
         'produto_id',
-        'usuario_id',
         'pedido_id',
-        'mesa_id',
     ];
 
     protected $guarded = [
@@ -35,15 +33,5 @@ class ItemPedidoModel extends Model
     public function pedido()
     {
         return $this->belongsTo(PedidoModel::class, 'pedido_id');
-    }
-
-    public function usuario()
-    {
-        return $this->belongsTo(UsuarioModel::class, 'usuario_id');
-    }
-
-    public function mesa()
-    {
-        return $this->belongsTo(MesaModel::class, 'mesa_id');
     }
 }

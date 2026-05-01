@@ -361,14 +361,12 @@ class CarrinhoService
             $precoUnitario = $item->preco_total / $item->quantidade;
 
             $this->carrinhoRepository->criarItemPedido([
-                'usuario_id' => $usuarioId,
                 'produto_id' => $item->produto_id,
                 'quantidade' => $item->quantidade,
                 'preco_unitario' => $precoUnitario,
                 'status_da_comanda' => 'em_aberto',
                 'pago_em' => null,
                 'pedido_id' => $resultado,
-                'mesa_id' => $mesaId,
             ]);
         }
 

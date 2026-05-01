@@ -326,9 +326,7 @@ class MesasService extends GenericBase
                             'pago_em' => null,
                             'pagamento_metodo' => null,
                             'produto_id' => $item->produto_id,
-                            'usuario_id' => $item->usuario_id,
                             'pedido_id' => $item->pedido_id,
-                            'mesa_id' => $item->mesa_id,
                         ]);
                     }
 

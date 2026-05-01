@@ -18,7 +18,9 @@ class GarcomRepositoryimpl implements GarcomRepository
         $usuarioId = $usuarioLogado->usuario_id ?? $usuarioLogado->id ?? null;
 
         $pedidoIdAberto = ItemPedidoModel::query()
-            ->where('mesa_id', $mesaId)
+            ->whereHas('pedido', function ($q) use ($mesaId) {
+                $q->where('mesa_id', $mesaId);
+            })
             ->where('status_da_comanda', 'em_aberto')
             ->whereNotNull('pedido_id')
             ->latest('id')
@@ -38,6 +40,7 @@ class GarcomRepositoryimpl implements GarcomRepository
         if (!$pedido) {
             $pedido = PedidoModel::create([
                 'usuario_id' => $usuarioId,
+                'mesa_id' => $mesaId,
                 'status' => StatusPedidos::PENDENTE->value,
                 'valor_total' => 0,
             ]);
@@ -59,9 +62,8 @@ class GarcomRepositoryimpl implements GarcomRepository
                 'pedido_id' => $pedido->id,
                 'produto_id' => $produtoId,
                 'quantidade' => $quantidade,
-                'usuario_id' => $usuarioId,
-                'mesa_id' => $mesaId,
                 'preco_unitario' => $precoUnitario,
+                'status_da_comanda' => 'em_aberto',
             ]);
         }
 
@@ -71,7 +73,9 @@ class GarcomRepositoryimpl implements GarcomRepository
         $mesa = MesaModel::find($mesaId);
         if ($mesa) {
             $totalMesa = (float) ItemPedidoModel::query()
-                ->where('mesa_id', $mesaId)
+                ->whereHas('pedido', function ($q) use ($mesaId) {
+                    $q->where('mesa_id', $mesaId);
+                })
                 ->where('status_da_comanda', 'em_aberto')
                 ->get()
                 ->sum(function ($item) {

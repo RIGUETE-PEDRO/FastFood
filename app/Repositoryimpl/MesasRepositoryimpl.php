@@ -12,10 +12,16 @@ use Illuminate\Support\Collection;
 
 class MesasRepositoryimpl
 {
+    private function queryItensDaMesa(int $mesaId)
+    {
+        return ItemPedidoModel::query()->whereHas('pedido', function ($query) use ($mesaId) {
+            $query->where('mesa_id', $mesaId);
+        });
+    }
+
     public function pegarPedidoIdsDaMesa(int $mesaId): Collection
     {
-        return ItemPedidoModel::query()
-            ->where('mesa_id', $mesaId)
+        return $this->queryItensDaMesa($mesaId)
             ->whereNotNull('pedido_id')
             ->pluck('pedido_id')
             ->unique()
@@ -65,8 +71,7 @@ class MesasRepositoryimpl
     {
         $status = $pago ? 'pago' : 'em_aberto';
 
-        return ItemPedidoModel::query()
-            ->where('mesa_id', $mesaId)
+        return $this->queryItensDaMesa($mesaId)
             ->where('status_da_comanda', $status)
             ->with('produto')
             ->orderByDesc('updated_at')
@@ -75,16 +80,14 @@ class MesasRepositoryimpl
 
     public function listarItensAbertosMesa(int $mesaId): Collection
     {
-        return ItemPedidoModel::query()
-            ->where('mesa_id', $mesaId)
+        return $this->queryItensDaMesa($mesaId)
             ->where('status_da_comanda', 'em_aberto')
             ->get();
     }
 
     public function pegarItensAbertosSelecionados(int $mesaId, array $itemIds): Collection
     {
-        return ItemPedidoModel::query()
-            ->where('mesa_id', $mesaId)
+        return $this->queryItensDaMesa($mesaId)
             ->where('status_da_comanda', 'em_aberto')
             ->whereIn('id', $itemIds)
             ->get(['id', 'preco_unitario', 'quantidade', 'valor_pago']);
@@ -92,8 +95,7 @@ class MesasRepositoryimpl
 
     public function pegarItensParaAbatimento(int $mesaId, array $itemIds): Collection
     {
-        return ItemPedidoModel::query()
-            ->where('mesa_id', $mesaId)
+        return $this->queryItensDaMesa($mesaId)
             ->where('status_da_comanda', 'em_aberto')
             ->whereIn('id', $itemIds)
             ->orderBy('id')
@@ -102,8 +104,7 @@ class MesasRepositoryimpl
 
     public function pegarItemAbertoDaMesa(int $mesaId, int $itemId): ?ItemPedidoModel
     {
-        return ItemPedidoModel::query()
-            ->where('mesa_id', $mesaId)
+        return $this->queryItensDaMesa($mesaId)
             ->where('status_da_comanda', 'em_aberto')
             ->where('id', $itemId)
             ->first();
@@ -150,18 +151,25 @@ class MesasRepositoryimpl
 
     public function existemItensAbertosMesa(int $mesaId): bool
     {
-        return ItemPedidoModel::query()
-            ->where('mesa_id', $mesaId)
+        return $this->queryItensDaMesa($mesaId)
             ->where('status_da_comanda', 'em_aberto')
             ->exists();
     }
 
     public function desvincularMesaItensPagos(int $mesaId): void
     {
-        ItemPedidoModel::query()
-            ->where('mesa_id', $mesaId)
+        $pedidoIds = $this->queryItensDaMesa($mesaId)
             ->where('status_da_comanda', 'pago')
-            ->update(['mesa_id' => null]);
+            ->pluck('pedido_id')
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($pedidoIds->isNotEmpty()) {
+            PedidoModel::query()
+                ->whereIn('id', $pedidoIds)
+                ->update(['mesa_id' => null]);
+        }
     }
 
     public function existeNumeroMesa(int $numeroMesa, ?int $ignorarId = null): bool
