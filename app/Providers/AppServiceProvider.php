@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Carbon\Carbon;
 use App\Repository\AdminRepository;
 use App\Repository\AuditoriaRepository;
 use App\Repository\CarrinhoRepository;
@@ -34,11 +35,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(KeyClockRepository::class, KeyClockRepositoryimpl::class);
     }
 
+
     /**
      * Bootstrap any application services.
      */
     public function boot(): void
     {
+        Carbon::setLocale('pt_BR');
+
         $resolverRole = function (string $roleName): string {
             $roleName = trim($roleName);
             $roleConst = strtoupper($roleName);
@@ -71,8 +75,8 @@ class AppServiceProvider extends ServiceProvider
 
             $roles = collect($roleNames)
                 ->flatten()
-                ->filter(fn ($r) => is_string($r) && trim($r) !== '')
-                ->map(fn ($r) => $resolverRole($r));
+                ->filter(fn($r) => is_string($r) && trim($r) !== '')
+                ->map(fn($r) => $resolverRole($r));
 
             foreach ($roles as $roleName) {
                 if (app(KeyClockService::class)->hasRole($usuario, $roleName)) {

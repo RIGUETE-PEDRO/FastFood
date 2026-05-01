@@ -38,7 +38,7 @@
                         @elseif (($periodoSelecionado ?? 'mes') === 'ano')
                             <input type="number" min="2000" max="2100" step="1" name="referencia" value="{{ $referenciaSelecionada ?? now()->format('Y') }}">
                         @else
-                            <input type="month" name="referencia" value="{{ $referenciaSelecionada ?? now()->format('Y-m') }}">
+                            <input type="month" name="referencia" value="{{ $referenciaSelecionada ?? now()->translatedFormat('F') }}">
                         @endif
 
                         <button type="submit">Aplicar</button>
