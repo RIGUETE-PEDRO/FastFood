@@ -21,11 +21,12 @@ class DatabaseSeeder extends Seeder
                 ['created_at' => now(), 'updated_at' => now()]
             );
         }
-
+        $this->call(Create_roles::class);
         $this->call(populando_categoria::class);
 
         $this->call(popular_municipios::class);
         $this->call(popula_banco::class);
+        $this->call(Relating_roles_to_user::class);
     }
 }
 

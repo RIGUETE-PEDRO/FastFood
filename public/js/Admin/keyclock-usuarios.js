@@ -162,7 +162,7 @@
 
             const role = getCanonicalRole(valorDigitado);
             if (!role) {
-                alert('Role inválida. Selecione uma role sugerida.');
+                alert('Roles inválida. Selecione uma role sugerida.');
                 return;
             }
 

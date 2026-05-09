@@ -1,7 +1,7 @@
 <?php
 namespace App\Roles;
 
-class Role
+class Roles
 {
     const ADMIN = 'admin';
     const USER = 'user';

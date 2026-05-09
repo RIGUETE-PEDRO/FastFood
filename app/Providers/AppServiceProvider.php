@@ -8,7 +8,7 @@ use App\Repository\AuditoriaRepository;
 use App\Repository\CarrinhoRepository;
 use App\Repository\GarcomRepository;
 use App\Repository\KeyClockRepository;
-use App\Roles\Role;
+use App\Roles\Roles;
 use App\Services\KeyClockService;
 use App\Models\UsuarioModel;
 use App\Repositoryimpl\AdminRepositoryimpl;
@@ -47,8 +47,8 @@ class AppServiceProvider extends ServiceProvider
             $roleName = trim($roleName);
             $roleConst = strtoupper($roleName);
 
-            if (defined(Role::class . '::' . $roleConst)) {
-                return (string) constant(Role::class . '::' . $roleConst);
+            if (defined(Roles::class . '::' . $roleConst)) {
+                return (string) constant(Roles::class . '::' . $roleConst);
             }
 
             return strtolower($roleName);

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
 use App\Repositoryimpl\LoginRepositoryimpl;
-use App\Roles\Role;
+use App\Roles\Roles;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -71,11 +71,11 @@ class LoginService
             return redirect()->route('login');
         }
         //altenticação de usuário e redirecionamento para a página correta com base no tipo de usuário do keyclock
-        if ($this->keyclockService->hasRole($usuario, Role::KEYCLOCK)) {
+        if ($this->keyclockService->hasRole($usuario, Roles::KEYCLOCK)) {
             return redirect()->route('keyclock.index');
         }
 
-        if ($this->keyclockService->hasRole($usuario, Role::ADMIN)) {
+        if ($this->keyclockService->hasRole($usuario, Roles::ADMIN)) {
             return redirect()->route('Administrativo');
         }
 

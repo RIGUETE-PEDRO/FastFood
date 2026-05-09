@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enum\TipoUsuario;
-use App\Roles\Role;
+use App\Roles\Roles;
 use Illuminate\Database\Eloquent\Model;
 
 class KeyClockTipoUsuarioModel extends Model
@@ -21,7 +21,7 @@ class KeyClockTipoUsuarioModel extends Model
 
     public function roles()
     {
-        return $this->belongsTo(Role::class, 'role_id');
+        return $this->belongsTo(Roles::class, 'role_id');
     }
 
     public function tipoUsuario()

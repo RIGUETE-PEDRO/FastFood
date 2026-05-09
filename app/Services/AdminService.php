@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Mensagens\PassMensagens;
 use App\Enum\StatusPedidos;
 use App\Repository\AdminRepository;
-use App\Roles\Role;
+use App\Roles\Roles;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 
@@ -93,7 +93,7 @@ class AdminService
     public function verificarAcessoPerfil()
     {
         $usuarioLogado =  $this->genericBase->hasLogado();
-        $hasRole = $this->keyClockService->hasRole($usuarioLogado, Role::ADMIN);
+        $hasRole = $this->keyClockService->hasRole($usuarioLogado, Roles::ADMIN);
         if (!$hasRole) {
             abort(403, ErroMensagens::ACESSO_NEGADO);
         }

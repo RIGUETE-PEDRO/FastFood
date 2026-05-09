@@ -127,7 +127,7 @@
 
             const role = getCanonicalRole(input.value.trim());
             if (!role) {
-                alert('Role inválida. Selecione uma role da lista.');
+                alert('Roles inválida. Selecione uma role da lista.');
                 return;
             }
 
