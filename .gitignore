@@ -26,4 +26,4 @@ package-lock.json
 .env.example
 plantuml.jar
 diagrama_classes.puml
-
+/docker-compose.yml
