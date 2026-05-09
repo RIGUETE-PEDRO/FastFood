@@ -30,9 +30,9 @@
                 <label for="senha" class="text">Senha:</label>
                 <input type="password" id="senha" name="senha" required>
             </div>
-            <button type="submit">Entrar</button>
-            <a href="/registro" class="register">Cadastre-se</a>
-            <a href="/esqueci-senha" class="esquecer-senha">Esqueci minha senha</a>
+            <button type="submit" id="entrar">Entrar</button>
+            <a href="/registro" id="cadastrar" class="register">Cadastre-se</a>
+            <a href="/esqueci-senha" id="esqueci" class="esquecer-senha">Esqueci minha senha</a>
 
         </form>
     </div>
