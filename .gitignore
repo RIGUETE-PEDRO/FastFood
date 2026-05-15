@@ -27,3 +27,7 @@ package-lock.json
 plantuml.jar
 diagrama_classes.puml
 /docker-compose.yml
+
+cypress.env.json
+docker-compose.yml
+docker-compose.yml
