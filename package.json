@@ -17,6 +17,8 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
-        "bootstrap": "^5.3.8"
+        "bootstrap": "^5.3.8",
+        "dotenv": "^17.4.2",
+        "mysql2": "^3.22.3"
     }
 }

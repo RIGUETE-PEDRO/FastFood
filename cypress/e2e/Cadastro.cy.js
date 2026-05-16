@@ -1,4 +1,8 @@
 describe('template spec', () => {
+ before(() => {
+    cy.task('deleteUser', 'teste@gmail.com')
+  })
+
   it('passes', () => {
       cy.visit('http://localhost:8000/registro')
       cy.get('#name')
@@ -26,5 +30,9 @@ describe('template spec', () => {
             .type('123456789')
 
           cy.get('#entrar').click()
+  })
+
+     after(() => {
+    cy.task('deleteUser', 'teste@gmail.com')
   })
 })

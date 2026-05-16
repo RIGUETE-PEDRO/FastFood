@@ -7,8 +7,8 @@ services:
     restart: always
 
     environment:
-      MYSQL_ROOT_PASSWORD: senhaBanco
-      MYSQL_DATABASE: dataBase
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: FlashFood
 
     ports:
       - "3307:3306"

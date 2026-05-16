@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminController;
@@ -288,3 +289,16 @@ Route::post('/Alterar_Dados', [AdminController::class, 'AlterarDados'])->name('A
 
 
 Route::post('/', [IndexController::class, 'index'])->name('index');
+
+
+
+
+///////////////////////////////////////////////////////
+/* GERENCIAMENTO DE AUTENTICAÇÃO cypress*/
+///////////////////////////////////////////////////////
+
+
+Route::post('/cypress-login-admin', function () {
+    Auth::loginUsingId(1); // ID do admin no banco
+    return response()->json(['ok' => true]);
+});
