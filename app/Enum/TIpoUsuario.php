@@ -3,18 +3,22 @@ namespace App\Enum;
 
 enum TipoUsuario: int
 {
-    case ADMINISTRADOR = 1;
-    case FUNCIONARIO = 2;
-    case CLIENTE = 3;
+    case CLIENTE = 1;
+    case ESTABELECIMENTO = 2;
+    case ADMINISTRADOR = 3;
     case ENTREGADOR = 4;
+    case KEYCLOCK = 5;
+    case GARCOM = 6;
 
     public function label(): string
     {
         return match($this) {
-            self::ADMINISTRADOR => 'Administrador',
-            self::FUNCIONARIO   => 'Funcionário',
-            self::CLIENTE       => 'Cliente',
-            self::ENTREGADOR    => 'Entregador',
+            self::CLIENTE         => 'Cliente',
+            self::ESTABELECIMENTO => 'Estabelecimento',
+            self::ADMINISTRADOR   => 'Administrador',
+            self::ENTREGADOR      => 'Entregador',
+            self::KEYCLOCK        => 'keyclock',
+            self::GARCOM          => 'garçom',
         };
     }
 }

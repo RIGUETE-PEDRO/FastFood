@@ -1,7 +1,7 @@
 @php
 $isAdmin = request()->routeIs('Administrativo')
 || request()->routeIs('gerenciamento_*')
-|| request()->routeIs('Pedidos.Administrativo')
+|| request()->routeIs('Pedidos_Administrativo')
 || request()->routeIs('gerenciamento_Produtos')
 || request()->routeIs('Cadastrar_Produto')
 || request()->routeIs('deletar_produto')
@@ -32,7 +32,7 @@ $isAdmin = request()->routeIs('Administrativo')
         @endrole
         @role('PEDIDOS')
         <li class="nav-item">
-            <a href="{{ route('Pedidos.Administrativo') }}" class="nav-link {{ request()->routeIs('Pedidos.Administrativo') ? 'active' : '' }}">Pedidos</a>
+            <a href="{{ route('Pedidos_Administrativo') }}" class="nav-link {{ request()->routeIs('Pedidos_Administrativo') ? 'active' : '' }}">Pedidos</a>
         </li>
         @endrole
         @role('GERENCIAMENTO_PRODUTOS')

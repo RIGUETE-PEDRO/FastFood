@@ -104,9 +104,9 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
         ->middleware('keyclock.role:' . Roles::DASHBORD)
         ->name('Administrativo');
 
-    Route::get('/Pedidos.Administrativo', [PedidosFeitosController::class, 'verPedidosAdmin'])
+    Route::get('/Pedidos_Administrativo', [PedidosFeitosController::class, 'verPedidosAdmin'])
         ->middleware('keyclock.role:' . Roles::PEDIDOS)
-        ->name('Pedidos.Administrativo');
+        ->name('Pedidos_Administrativo');
 
     Route::get('/entregas', [EntregasController::class, 'index'])
         ->middleware('keyclock.role:' . Roles::ENTREGAS)
@@ -120,11 +120,11 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
         ->middleware('keyclock.role:' . Roles::ENTREGAS)
         ->name('entregas.finalizar');
 
-    Route::patch('/Pedidos.Administrativo/{pedido}/status', [PedidosFeitosController::class, 'atualizarStatus'])
+    Route::patch('/Pedidos/Administrativo/{pedido}/status', [PedidosFeitosController::class, 'atualizarStatus'])
         ->middleware('keyclock.role:' . Roles::PEDIDOS)
         ->name('Pedidos.StatusAtualizar');
 
-    Route::post('/Pedidos.Administrativo/{pedido}/avancar', [PedidosFeitosController::class, 'avancarStatus'])
+    Route::post('/Pedidos/Administrativo/{pedido}/avancar', [PedidosFeitosController::class, 'avancarStatus'])
         ->middleware('keyclock.role:' . Roles::PEDIDOS)
         ->name('Pedidos.StatusAvancar');
 

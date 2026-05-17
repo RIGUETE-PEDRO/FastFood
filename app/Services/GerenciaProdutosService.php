@@ -56,18 +56,19 @@ class GerenciaProdutosService
     public function removerProduto($id)
     {
         $usuarioLogado =  $this->genericBase->hasLogado();
-
-        if (($usuarioLogado['tipo'] ?? null) === 'Administrador') {
+      
+        if (($usuarioLogado->tipo ?? null) === 'Administrador') {
 
             $produto = $this->repository->buscarProdutoPorId((int) $id);
 
             if ($produto) {
-                // Apagar imagem do produto
-                if($produto->imagem_url && $produto->imagem_url !== 'sem_imagem.jpg'){
-                    if ($produto->imagem_url && file_exists(public_path('img/produtos/' . $produto->imagem_url))) {
+
+                if($produto->imagem_url && $produto->imagem_url !== 'sem_imagem.jpg' && file_exists(public_path('img/produtos/' . $produto->imagem_url))){
+
                         unlink(public_path('img/produtos/' . $produto->imagem_url));
-                    }
+
                 }
+
                 $produto->delete();
             }
         }
