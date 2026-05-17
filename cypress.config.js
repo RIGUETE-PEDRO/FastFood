@@ -20,35 +20,57 @@ export default defineConfig({
 
     setupNodeEvents(on, config) {
 
-      on('task', {
+        on('task', {
 
-        async deleteUser(email) {
-          const conn = await getConnection()
+            async deleteUser(email) {
+                const conn = await getConnection()
 
-          await conn.execute(
-            `DELETE FROM ${process.env.DB_TABLE_USUARIO} WHERE email = ?`,
-            [email]
-          )
+                await conn.execute(
+                    `DELETE FROM ${process.env.DB_TABLE_USUARIO} WHERE email = ?`,
+                    [email]
+                )
 
-          await conn.end()
+                await conn.end()
 
-          return null
-        },
+                return null
+            },
 
-        async deleteProduct(nome) {
-          const conn = await getConnection()
+            async deleteProduct(nome) {
+                const conn = await getConnection()
 
-          await conn.execute(
-            `DELETE FROM produtos WHERE nome = ?`,
-            [nome]
-          )
+                await conn.execute(
+                    `DELETE FROM produtos WHERE nome = ?`,
+                    [nome]
+                )
 
-          await conn.end()
+                await conn.end()
 
-          return null
-        }
+                return null
+            },
 
-      })
+            async deleteUserFuncionario(email) {
+
+                const conn = await getConnection()
+
+                await conn.execute(
+                    `
+                    DELETE f FROM funcionario f
+                    INNER JOIN usuarios u ON u.id = f.usuario_id
+                    WHERE u.email = ?
+                    `,
+                    [email]
+                )
+
+                await conn.execute(
+                    `DELETE FROM ${process.env.DB_TABLE_USUARIO} WHERE email = ?`,
+                    [email]
+                )
+
+                await conn.end()
+
+                return null
+            },
+         })
 
       return config
     },

@@ -1,5 +1,6 @@
 @php
 $isAdmin = request()->routeIs('Administrativo')
+|| request()->routeIs('admin.bemvindo')
 || request()->routeIs('gerenciamento_*')
 || request()->routeIs('Pedidos_Administrativo')
 || request()->routeIs('gerenciamento_Produtos')

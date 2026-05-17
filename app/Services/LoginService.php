@@ -8,6 +8,7 @@ use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
 use App\Repositoryimpl\LoginRepositoryimpl;
 use App\Roles\Roles;
+use App\Enum\TipoUsuario;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -75,8 +76,8 @@ class LoginService
             return redirect()->route('keyclock.index');
         }
 
-        if ($this->keyclockService->hasRole($usuario, Roles::ADMIN)) {
-            return redirect()->route('Administrativo');
+        if ($usuario->tipo_usuario_id !== TipoUsuario::CLIENTE->value) {
+            return redirect()->route('admin.bemvindo');
         }
 
         if ($autenticador == true) {

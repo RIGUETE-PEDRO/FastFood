@@ -100,6 +100,9 @@ Route::get('/funcionarios/buscar', [GerenciamentoUsuarioController::class, 'busc
 ///////////////////////////////////////////////////////
 //administrativo
 Route::middleware(['auth', 'admin.access'])->group(function () {
+    Route::get('/admin/bem-vindo', [AdminController::class, 'bemVindo'])
+        ->name('admin.bemvindo');
+
     Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])
         ->middleware('keyclock.role:' . Roles::DASHBORD)
         ->name('Administrativo');

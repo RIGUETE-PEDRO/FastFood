@@ -10,6 +10,8 @@ use App\Enum\TipoUsuario as EnumsTipoUsuario;
 
 class AdminController extends Controller
 {
+    private const DEFAULT_USER_NAME = 'Usuário';
+
     protected GenericBase $genericBase;
     protected AdminService $adminService;
     protected UsuarioAutenticado $authMiddleware;
@@ -39,7 +41,7 @@ class AdminController extends Controller
     public function nomeUsuario(Request $request)
     {
         $usuarioLogado =  $this->genericBase->hasLogado();
-        $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
+        $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : self::DEFAULT_USER_NAME;
 
         $dashboard = $this->adminService->montarDashboardAdministrativo(
             $request->query('periodo'),
@@ -51,6 +53,18 @@ class AdminController extends Controller
             'nomeUsuario' => $primeiroNome,
             'tipoUsuario' => $this->mapearTipoUsuario($usuarioLogado->tipo_usuario_id ?? null),
             ...$dashboard,
+        ]);
+    }
+
+    public function bemVindo(Request $request)
+    {
+        $usuarioLogado =  $this->genericBase->hasLogado();
+        $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : self::DEFAULT_USER_NAME;
+
+        return view('Admin.BemVindo', [
+            'usuario' => $usuarioLogado,
+            'nomeUsuario' => $primeiroNome,
+            'tipoUsuario' => $this->mapearTipoUsuario($usuarioLogado->tipo_usuario_id ?? null),
         ]);
     }
 
