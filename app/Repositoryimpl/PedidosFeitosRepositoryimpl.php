@@ -2,6 +2,7 @@
 
 namespace App\Repositoryimpl;
 
+use App\Models\Dados_empresa;
 use App\Models\PedidoModel;
 use App\Repository\PedidosFeitosRepository;
 use Illuminate\Support\Collection;
@@ -45,5 +46,11 @@ class PedidosFeitosRepositoryimpl implements PedidosFeitosRepository
             'usuario',
             'motoboy',
         ])->find($pedidoId);
+    }
+
+    public function buscarDadosEmpresa(): Collection
+    {
+        return Dados_empresa::all()
+            ->pluck('Valor', 'Informacao');
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Repositoryimpl;
 
+use App\Models\Dados_empresa;
 use App\Models\PedidoModel;
+use Illuminate\Support\Collection;
 
 class PedidoRepositoryimpl
 {
@@ -26,4 +28,11 @@ class PedidoRepositoryimpl
             ->orderByDesc('created_at')
             ->get();
     }
+    
+    public function buscarDadosEmpresa(): Collection
+    {
+        return Dados_empresa::all()
+            ->pluck('Valor', 'Informacao');
+    }
+
 }

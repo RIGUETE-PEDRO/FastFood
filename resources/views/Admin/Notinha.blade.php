@@ -16,17 +16,17 @@
         <!-- Cabeçalho com Logo -->
         <div class="header">
             <div class="logo"></div>
-            <div class="nome-lanchonete">Burger Point</div>
-            <div class="slogan">Os melhores lanches da cidade!</div>
+            <div class="nome-lanchonete">{{$dadosEmpresa['Nome da Empresa']}}</div>
+            <div class="slogan">{{$dadosEmpresa['Msg_comanda']}}</div>
         </div>
 
         <!-- Endereço da Lanchonete -->
         <div class="endereco-box">
             <div class="endereco-titulo">📍 Nosso Endereço</div>
-            <div class="endereco-texto">Avenida Principal, nº 456</div>
-            <div class="endereco-texto">Centro - Jerônimo Monteiro/ES</div>
-            <div class="endereco-texto">CEP: 29550-000</div>
-            <div class="telefone">☎ (28) 3555-9876</div>
+            <div class="endereco-texto">{{$dadosEmpresa['Rua']}}, nº {{$dadosEmpresa['Numero']}}</div>
+            <div class="endereco-texto">{{$dadosEmpresa['Bairro']}} - {{$dadosEmpresa['Cidade']}}\{{$dadosEmpresa['Estado']}}</div>
+            <div class="endereco-texto">CEP: {{$dadosEmpresa['CEP']}}</div>
+            <div class="telefone">☎ {{$dadosEmpresa['Telefone']}}</div>
         </div>
 
         <!-- Data e Hora -->
@@ -105,8 +105,7 @@
         <!-- Informação Adicional -->
         <div class="info-adicional">
             <strong>ℹ️ Informações Importantes</strong>
-            CNPJ: 12.345.678/0001-90<br>
-            Inscrição Estadual: 123.456.789<br>
+            {{ $dadosEmpresa['CNPJ'] ?? 'CNPJ não informado' }}<br>
             Cupom Nº: {{ str_pad($pedido->id, 6, '0', STR_PAD_LEFT) }} | PDV: Caixa 01<br>
             Cliente: {{ optional($pedido->usuario)->nome ?? 'Desconhecido' }}
         </div>
@@ -134,14 +133,13 @@
 
             <div class="info-adicional" style="margin-top: 15px;">
                 <strong>🕐 Horário de Funcionamento</strong>
-                Segunda a Sábado: 11h às 23h<br>
-                Domingo: 11h às 22h
+                {{$dadosEmpresa['Horário de Funcionamento'] ?? 'Não informado'}}
             </div>
 
             <div class="observacao-final">
                 Este cupom não tem validade fiscal.<br>
                 Guarde para eventuais reclamações ou trocas.<br>
-                Delivery disponível! Peça pelo WhatsApp: (28) 99999-9876
+                Delivery disponível! Peça pelo WhatsApp: {{$dadosEmpresa['Telefone']}}
             </div>
 
         </div>

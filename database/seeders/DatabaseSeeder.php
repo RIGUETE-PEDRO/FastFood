@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
         $this->call(popular_municipios::class);
         $this->call(popula_banco::class);
         $this->call(Relating_roles_to_user::class);
+        $this->call(Criando_dados_empresa::class);
     }
 }
 

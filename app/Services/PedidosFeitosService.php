@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Enum\StatusPedidos as EnumsStatusPedidos;
 use App\Models\PedidoModel;
-use App\Repository\CarrinhoRepository;
 use App\Repository\PedidosFeitosRepository;
 use Illuminate\Support\Collection;
 
@@ -74,5 +73,10 @@ class PedidosFeitosService
     public function gerarCumpom(mixed $pedido_id): ?PedidoModel
     {
         return $this->repository->buscarPedidoPorId($pedido_id);
+    }
+
+    public function PegarDadosEmpresa():Collection
+    {
+        return $this->repository->buscarDadosEmpresa();
     }
 }

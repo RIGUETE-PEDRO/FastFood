@@ -71,9 +71,10 @@ class PedidosFeitosController extends Controller
     public function gerarCumpom(PedidoModel $pedido)
     {
         $cupom = $this->pedidosFeitosService->gerarCumpom($pedido->id);
-
+        $dadosEmpresa = $this->pedidosFeitosService->PegarDadosEmpresa();
         return view('Admin.Notinha', [
             'cupom' => $cupom,
+            'dadosEmpresa' => $dadosEmpresa,
             'pedido' => $pedido
         ]);
     }
