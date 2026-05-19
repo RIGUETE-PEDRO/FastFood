@@ -134,6 +134,12 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
     Route::get('/Pedidos.Administrativo/poll', [PedidosFeitosController::class, 'pollResumo'])
         ->middleware('keyclock.role:' . Roles::PEDIDOS)
         ->name('Pedidos.Poll');
+
+    Route::get('GerarCupom/{pedido}', [PedidosFeitosController::class,'gerarCumpom' ])
+        ->middleware('keyclock.role:' . Roles::PEDIDOS)
+        ->name('Pedidos.GerarCupom');
+
+
 });
 
 Route::middleware(['auth'])->group(function () {

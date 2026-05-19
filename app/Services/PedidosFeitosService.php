@@ -4,13 +4,15 @@ namespace App\Services;
 
 use App\Enum\StatusPedidos as EnumsStatusPedidos;
 use App\Models\PedidoModel;
-use App\Repositoryimpl\PedidosFeitosRepositoryimpl;
+use App\Repository\CarrinhoRepository;
+use App\Repository\PedidosFeitosRepository;
 use Illuminate\Support\Collection;
 
 class PedidosFeitosService
 {
-    public function __construct(private PedidosFeitosRepositoryimpl $repository)
+    public function __construct(private PedidosFeitosRepository $repository)
     {
+        $this->repository = $repository;
     }
 
     /**
@@ -67,5 +69,10 @@ class PedidosFeitosService
                 'label' => $this->rotulo($status),
             ];
         }, EnumsStatusPedidos::cases());
+    }
+
+    public function gerarCumpom(mixed $pedido_id): ?PedidoModel
+    {
+        return $this->repository->buscarPedidoPorId($pedido_id);
     }
 }

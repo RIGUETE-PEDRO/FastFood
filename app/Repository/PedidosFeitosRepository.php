@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Repository;
 
-class PedidosFeitosRepository
+interface PedidosFeitosRepository
 {
-
+  public function buscarPedidoPorId($pedidoId);
 }

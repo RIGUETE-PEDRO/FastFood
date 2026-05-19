@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repository\PedidosFeitosRepository;
+use App\Repositoryimpl\PedidosFeitosRepositoryimpl;
 use Carbon\Carbon;
 use App\Repository\AdminRepository;
 use App\Repository\AuditoriaRepository;
@@ -33,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CarrinhoRepository::class, CarrinhoRepositoryimpl::class);
         $this->app->bind(GarcomRepository::class, GarcomRepositoryimpl::class);
         $this->app->bind(KeyClockRepository::class, KeyClockRepositoryimpl::class);
+        $this->app->bind(PedidosFeitosRepository::class,PedidosFeitosRepositoryimpl::class);
     }
 
 

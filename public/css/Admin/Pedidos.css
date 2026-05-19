@@ -1,12 +1,21 @@
+/* ========================================
+   ESTILOS GERAIS
+   ======================================== */
 body {
     font-family: 'Poppins', sans-serif;
     min-height: 100vh;
 }
 
+/* ========================================
+   LAYOUT PRINCIPAL
+   ======================================== */
 .pedidos-admin {
     max-width: 1040px;
 }
 
+/* ========================================
+   CABEÇALHO
+   ======================================== */
 .cabecalho-pedidos {
     display: flex;
     flex-direction: column;
@@ -40,6 +49,9 @@ body {
     flex-wrap: wrap;
 }
 
+/* ========================================
+   BADGES
+   ======================================== */
 .badge-total {
     background: rgba(245, 127, 23, 0.18);
     color: #c2410c;
@@ -59,6 +71,55 @@ body {
     letter-spacing: 0.05em;
 }
 
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.45rem 1.15rem;
+    min-height: 2.25rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    box-shadow: 0 12px 22px -16px rgba(220, 53, 69, 0.45);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.badge-status--pendente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.badge-status--preparo {
+    background: rgba(255, 154, 60, 0.22);
+    color: #d9480f;
+}
+
+.badge-status--expedicao {
+    background: rgba(255, 214, 102, 0.24);
+    color: #b45309;
+}
+
+.badge-status--entregue {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.badge-status--cancelado {
+    background: #f8d7da;
+    color: #842029;
+}
+
+.badge-status--padrao {
+    background: #e2e3e5;
+    color: #41464b;
+}
+
+/* ========================================
+   RESUMO DOS PEDIDOS
+   ======================================== */
 .resumo-pedidos {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -118,6 +179,9 @@ body {
     background: linear-gradient(135deg, rgba(25, 135, 84, 0.45), rgba(131, 247, 181, 0.12));
 }
 
+/* ========================================
+   TIPOGRAFIA
+   ======================================== */
 .titulo-pagina {
     font-size: 2rem;
     font-weight: 700;
@@ -128,12 +192,6 @@ body {
     color: #7a5a21;
 }
 
-.lista-pedidos-admin {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
 .secao-titulo {
     font-size: 1.5rem;
     font-weight: 700;
@@ -141,6 +199,18 @@ body {
     margin-bottom: 0.5rem;
 }
 
+/* ========================================
+   LISTA DE PEDIDOS
+   ======================================== */
+.lista-pedidos-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ========================================
+   ACORDEÃO
+   ======================================== */
 .acordeao-pedidos {
     margin-top: 2rem;
     border: 1px solid rgba(255, 145, 0, 0.25);
@@ -223,6 +293,10 @@ body {
     display: none;
 }
 
+
+/* ========================================
+   CARTÃO DO PEDIDO
+   ======================================== */
 .pedido-card {
     background: #ffffff;
     border-radius: 18px;
@@ -284,47 +358,6 @@ body {
     flex-wrap: wrap;
 }
 
-.pedido-collapse {
-    border: none;
-}
-
-.pedido-collapse__summary {
-    list-style: none;
-    cursor: pointer;
-}
-
-.pedido-collapse__summary::-webkit-details-marker {
-    display: none;
-}
-
-.pedido-collapse__summary:focus-visible {
-    outline: 3px solid rgba(255, 122, 26, 0.35);
-    outline-offset: 4px;
-    border-radius: 14px;
-}
-
-.pedido-collapse__chevron {
-    display: inline-flex;
-    width: 28px;
-    height: 28px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    border: 1px solid rgba(15, 23, 42, 0.12);
-    background: rgba(255, 255, 255, 0.7);
-    color: #7a5a21;
-    transition: transform 0.18s ease, background 0.18s ease;
-}
-
-.pedido-collapse[open] .pedido-collapse__chevron {
-    transform: rotate(180deg);
-    background: rgba(255, 237, 213, 0.9);
-}
-
-.pedido-collapse__content {
-    padding-top: 0.5rem;
-}
-
 .pedido-card__titulo {
     font-size: 1.35rem;
     font-weight: 600;
@@ -360,6 +393,15 @@ body {
     padding: 0.75rem 1rem;
 }
 
+.pedido-card__secao--acoes form select,
+.pedido-card__secao--acoes form button {
+    position: relative;
+    z-index: 1;
+}
+
+/* ========================================
+   DADOS E ITENS DO PEDIDO
+   ======================================== */
 .pedido-dados {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -408,52 +450,53 @@ body {
     color: #6c757d;
 }
 
-.badge-status {
+/* ========================================
+   COLLAPSE (DETALHES DO PEDIDO)
+   ======================================== */
+.pedido-collapse {
+    border: none;
+}
+
+.pedido-collapse__summary {
+    list-style: none;
+    cursor: pointer;
+}
+
+.pedido-collapse__summary::-webkit-details-marker {
+    display: none;
+}
+
+.pedido-collapse__summary:focus-visible {
+    outline: 3px solid rgba(255, 122, 26, 0.35);
+    outline-offset: 4px;
+    border-radius: 14px;
+}
+
+.pedido-collapse__chevron {
     display: inline-flex;
+    width: 28px;
+    height: 28px;
     align-items: center;
     justify-content: center;
-    gap: 0.35rem;
-    padding: 0.45rem 1.15rem;
-    min-height: 2.25rem;
     border-radius: 999px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    box-shadow: 0 12px 22px -16px rgba(220, 53, 69, 0.45);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    background: rgba(255, 255, 255, 0.7);
+    color: #7a5a21;
+    transition: transform 0.18s ease, background 0.18s ease;
 }
 
-.badge-status--pendente {
-    background: #fff3cd;
-    color: #856404;
+.pedido-collapse[open] .pedido-collapse__chevron {
+    transform: rotate(180deg);
+    background: rgba(255, 237, 213, 0.9);
 }
 
-.badge-status--preparo {
-    background: rgba(255, 154, 60, 0.22);
-    color: #d9480f;
+.pedido-collapse__content {
+    padding-top: 0.5rem;
 }
 
-.badge-status--expedicao {
-    background: rgba(255, 214, 102, 0.24);
-    color: #b45309;
-}
-
-.badge-status--entregue {
-    background: #d1e7dd;
-    color: #0f5132;
-}
-
-.badge-status--cancelado {
-    background: #f8d7da;
-    color: #842029;
-}
-
-.badge-status--padrao {
-    background: #e2e3e5;
-    color: #41464b;
-}
-
+/* ========================================
+   TIMELINE DO STATUS
+   ======================================== */
 .timeline-status {
     position: relative;
     list-style: none;
@@ -556,12 +599,9 @@ body {
     background: linear-gradient(90deg, rgba(255, 140, 66, 0.65), rgba(255, 202, 120, 0.4));
 }
 
-.pedido-card__secao--acoes form select,
-.pedido-card__secao--acoes form button {
-    position: relative;
-    z-index: 1;
-}
-
+/* ========================================
+   BOTÕES
+   ======================================== */
 .pedido-card__secao--acoes form button.btn-outline-success {
     border-width: 2px;
     border-color: rgba(34, 197, 94, 0.55);
@@ -638,6 +678,53 @@ body {
     box-shadow: 0 16px 28px -16px rgba(255, 94, 0, 0.75);
 }
 
+/* Botão Gerar Cupom */
+a:has(.btn-geraCupom) {
+    display: flex;
+    margin-left: auto;
+    align-items: center;
+    text-decoration: none;
+}
+
+.btn-geraCupom {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.2rem;
+    background: linear-gradient(135deg, #d00c12, #f88a8a);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    box-shadow: 0 10px 20px -12px rgba(255, 94, 0, 0.5);
+    text-decoration: none;
+}
+
+.btn-geraCupom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px -10px rgba(255, 94, 0, 0.65);
+}
+
+.btn-geraCupom:active {
+    transform: translateY(0px);
+}
+
+.btn-geraCupom:disabled,
+.btn-geraCupom[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+
+/* ========================================
+   RESPONSIVO
+   ======================================== */
 @media (max-width: 768px) {
     .pedidos-admin {
         padding-inline: 0.5rem;
@@ -720,6 +807,16 @@ body {
     .pedido-card__secao--acoes form button {
         width: 100%;
     }
+
+    .btn-geraCupom {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    a:has(.btn-geraCupom) {
+        margin-left: 0;
+        width: 100%;
+    }
 }
 
 @media (max-width: 480px) {
@@ -736,3 +833,7 @@ body {
         align-items: flex-start;
     }
 }
+
+
+
+

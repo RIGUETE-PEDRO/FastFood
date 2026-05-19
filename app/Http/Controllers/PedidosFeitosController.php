@@ -68,6 +68,18 @@ class PedidosFeitosController extends Controller
         return redirect()->back()->with('sucesso', PassMensagens::STATUS_AVANCADO . ' ' . $this->pedidosFeitosService->rotulo($proximo) . '.');
     }
 
+    public function gerarCumpom(PedidoModel $pedido)
+    {
+        $cupom = $this->pedidosFeitosService->gerarCumpom($pedido->id);
+
+        return view('Admin.Notinha', [
+            'cupom' => $cupom,
+            'pedido' => $pedido
+        ]);
+    }
+
+
+
     public function pollResumo(Request $request): JsonResponse
     {
         if (!$request->boolean('full')) {

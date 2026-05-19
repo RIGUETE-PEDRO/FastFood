@@ -1,6 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-br">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notinha</title>
+    <link rel="stylesheet" href="{{ asset('css/Admin/Keyclock.css') }}">
+</head>
 <link rel="stylesheet" href="{{ asset('../css/Admin/Notinha.css') }}">
 <body>
+
 <div class="cupom-container">
     <div class="cupom">
 
@@ -24,11 +33,11 @@
         <div class="data-hora-box">
             <div class="data-hora-item">
                 <div class="data-hora-label">📅 Data</div>
-                <div class="data-hora-valor">16/05/2026</div>
+                <div class="data-hora-valor">{{ $pedido->created_at->format('d/m/Y') }}</div>
             </div>
             <div class="data-hora-item">
                 <div class="data-hora-label">🕐 Horário</div>
-                <div class="data-hora-valor">19:45:30</div>
+                <div class="data-hora-valor">{{ $pedido->created_at->format('H:i:s') }}</div>
             </div>
         </div>
 
@@ -37,101 +46,40 @@
 
         <!-- Lista de Itens -->
         <div class="itens-lista">
-
-            <div class="item">
-                <div class="item-header">
-                    <div class="item-numero">01</div>
-                    <div class="item-nome">X-Burger Bacon Especial</div>
-                    <div class="item-preco">R$ 28,90</div>
-                </div>
-                <div class="item-detalhes">
-                    <div class="item-qtd-unit">
-                        <span>Quantidade: 1 un</span>
-                        <span>Unitário: R$ 28,90</span>
+            @forelse($pedido->itens as $index => $item)
+                <div class="item">
+                    <div class="item-header">
+                        <div class="item-numero">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</div>
+                        <div class="item-nome">{{ optional($item->produto)->nome ?? 'Produto removido' }}</div>
+                        <div class="item-preco">R$ {{ number_format((float) $item->quantidade * (float) $item->preco_unitario, 2, ',', '.') }}</div>
                     </div>
-                    <div class="observacao-item">
-                        🍔 Obs: Sem cebola, com queijo extra
+                    <div class="item-detalhes">
+                        <div class="item-qtd-unit">
+                            <span>Quantidade: {{ $item->quantidade }} un</span>
+                            <span>Unitário: R$ {{ number_format((float) $item->preco_unitario, 2, ',', '.') }}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="item">
-                <div class="item-header">
-                    <div class="item-numero">02</div>
-                    <div class="item-nome">Batata Frita Grande</div>
-                    <div class="item-preco">R$ 15,00</div>
+            @empty
+                <div class="item">
+                    <p style="text-align: center; color: #999;">Nenhum item neste pedido</p>
                 </div>
-                <div class="item-detalhes">
-                    <div class="item-qtd-unit">
-                        <span>Quantidade: 1 un</span>
-                        <span>Unitário: R$ 15,00</span>
-                    </div>
-                    <div class="observacao-item">
-                        🍟 Obs: Com cheddar e bacon
-                    </div>
-                </div>
-            </div>
-
-            <div class="item">
-                <div class="item-header">
-                    <div class="item-numero">03</div>
-                    <div class="item-nome">Refrigerante Coca-Cola 350ml</div>
-                    <div class="item-preco">R$ 10,00</div>
-                </div>
-                <div class="item-detalhes">
-                    <div class="item-qtd-unit">
-                        <span>Quantidade: 2 un</span>
-                        <span>Unitário: R$ 5,00</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="item">
-                <div class="item-header">
-                    <div class="item-numero">04</div>
-                    <div class="item-nome">Milk Shake de Chocolate</div>
-                    <div class="item-preco">R$ 12,00</div>
-                </div>
-                <div class="item-detalhes">
-                    <div class="item-qtd-unit">
-                        <span>Quantidade: 1 un</span>
-                        <span>Unitário: R$ 12,00</span>
-                    </div>
-                    <div class="observacao-item">
-                        🥤 Obs: Com chantilly
-                    </div>
-                </div>
-            </div>
-
-            <div class="item">
-                <div class="item-header">
-                    <div class="item-numero">05</div>
-                    <div class="item-nome">Onion Rings (Porção)</div>
-                    <div class="item-preco">R$ 14,50</div>
-                </div>
-                <div class="item-detalhes">
-                    <div class="item-qtd-unit">
-                        <span>Quantidade: 1 un</span>
-                        <span>Unitário: R$ 14,50</span>
-                    </div>
-                </div>
-            </div>
-
+            @endforelse
         </div>
 
         <!-- Totais -->
         <div class="totais-container">
             <div class="total-linha">
                 <span>Quantidade de Itens:</span>
-                <span><strong>5</strong></span>
+                <span><strong>{{ $pedido->itens->sum('quantidade') }}</strong></span>
             </div>
             <div class="total-linha subtotal">
                 <span>Subtotal:</span>
-                <span>R$ 80,40</span>
+                <span>R$ {{ number_format((float) $pedido->itens->sum(function($item) { return $item->quantidade * $item->preco_unitario; }), 2, ',', '.') }}</span>
             </div>
             <div class="total-linha">
-                <span>Taxa de Serviço (10%):</span>
-                <span>R$ 8,04</span>
+                <span>Forma de Pagamento:</span>
+                <span>{{ optional($pedido->formaPagamento)->tipo_pagamento ?? 'N/A' }}</span>
             </div>
             <div class="total-linha">
                 <span>Desconto:</span>
@@ -140,7 +88,7 @@
 
             <div class="total-final">
                 <span>VALOR TOTAL</span>
-                <span>R$ 88,44</span>
+                <span>R$ {{ number_format((float) $pedido->valor_total, 2, ',', '.') }}</span>
             </div>
         </div>
 
@@ -149,15 +97,8 @@
             <div class="pagamento-titulo">💳 Forma de Pagamento</div>
 
             <div class="pagamento-item">
-                <span>💵 Dinheiro</span>
-                <span>R$ 100,00</span>
-            </div>
-
-            <div class="troco-box">
-                <div class="troco-item">
-                    <span>💰 Troco</span>
-                    <span>R$ 11,56</span>
-                </div>
+                <span>{{ optional($pedido->formaPagamento)->tipo_pagamento ?? 'Dinheiro' }}</span>
+                <span>R$ {{ number_format((float) $pedido->valor_total, 2, ',', '.') }}</span>
             </div>
         </div>
 
@@ -166,8 +107,8 @@
             <strong>ℹ️ Informações Importantes</strong>
             CNPJ: 12.345.678/0001-90<br>
             Inscrição Estadual: 123.456.789<br>
-            Cupom Nº: 001234 | PDV: Caixa 01<br>
-            Atendente: Maria Santos
+            Cupom Nº: {{ str_pad($pedido->id, 6, '0', STR_PAD_LEFT) }} | PDV: Caixa 01<br>
+            Cliente: {{ optional($pedido->usuario)->nome ?? 'Desconhecido' }}
         </div>
 
         <!-- Rodapé -->

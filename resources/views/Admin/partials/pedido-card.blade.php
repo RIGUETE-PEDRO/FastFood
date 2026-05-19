@@ -133,6 +133,10 @@
                             </button>
                         </form>
                     @endif
+
+                    <a href="{{ route('Pedidos.GerarCupom',$pedido) }}">
+                        <button class="btn-geraCupom ">Gerar cupom</button>
+                    </a>
                 </div>
             </section>
         @endunless
