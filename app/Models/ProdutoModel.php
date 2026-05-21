@@ -14,6 +14,7 @@ class ProdutoModel extends Model
         'imagem_url',
         'disponivel',
         'categoria_id',
+        'no_carrousel',
     ];
 
     protected $guarded = [
