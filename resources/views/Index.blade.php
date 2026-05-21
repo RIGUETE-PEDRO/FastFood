@@ -8,6 +8,7 @@
     <title>Home</title>
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
+
     <link rel="stylesheet" href="{{ asset('css/Index.css') }}">
 </head>
 
@@ -22,7 +23,44 @@
             </button>
     <main>
 
-        <div>carrousel</div>
+        <!-- CARROSSEL -->
+        <div class="carousel-produtos">
+            <div class="carousel-track">
+
+                @foreach ($produtos as $produto)
+                <div class="produto-card-mini">
+                    <div class="mini-img">
+                        <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}">
+                    </div>
+
+                    <div class="mini-info">
+                        <span class="mini-titulo">{{ $produto->nome }}</span>
+                        <span class="mini-preco">
+                    R$ {{ number_format((float) $produto->preco, 2, ',', '.') }}
+                </span>
+                    </div>
+                </div>
+                @endforeach
+
+                <!-- DUPLICA PARA LOOP INFINITO -->
+                @foreach ($produtos as $produto)
+                <div class="produto-card-mini">
+                    <div class="mini-img">
+                        <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}">
+                    </div>
+
+                    <div class="mini-info">
+                        <span class="mini-titulo">{{ $produto->nome }}</span>
+                        <span class="mini-preco">
+                    R$ {{ number_format((float) $produto->preco, 2, ',', '.') }}
+                </span>
+                    </div>
+                </div>
+                @endforeach
+
+            </div>
+        </div>
+
 
 
 

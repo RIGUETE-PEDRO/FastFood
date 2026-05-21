@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Gerenciamento de Produtos</title>
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
@@ -42,6 +43,7 @@
                                 <th>Preço</th>
                                 <th>Status</th>
                                 <th>Categoria</th>
+                                <th>Carrousel</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -64,6 +66,14 @@
                                 </td>
 
                                 <td>{{ $produto->categoria->nome ?? '-' }}</td>
+                                <td>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="toggle-carrousel"
+                                               data-produto-id="{{ $produto->id }}"
+                                               {{ isset($produto->no_carrousel) && $produto->no_carrousel ? 'checked' : '' }}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </td>
                                 <td>
                                     <div class="action-buttons">
                                         <!-- Ações na tabela: -->

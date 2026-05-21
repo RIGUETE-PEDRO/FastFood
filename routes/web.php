@@ -165,8 +165,10 @@ Route::post('/gerenciamento_Produtos/{id}/deletar', [GerenciamentoProdutoControl
     ->name('deletar_produto')
     ->middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
 
-
-
+/* API - Carrousel Toggle */
+Route::post('/api/produtos/{id}/carrousel', [GerenciamentoProdutoController::class, 'toggleCarrousel'])
+    ->middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::GERENCIAMENTO_PRODUTOS])
+    ->name('produtos.carrousel.toggle');
 
 ///////////////////////////////////////////////////////
 /* GERENCIAMENTO DO USUARIO */
@@ -275,9 +277,9 @@ Route::middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::GERENCIAMEN
         ->name('funcionarios.deletar');
 
 
-    Route::post('/atualizar_produto/{id}/atualizar', [GerenciamentoProdutoController::class, 'atualizarProduto'])
-        ->middleware('keyclock.role:' . Roles::GERENCIAMENTO_PRODUTOS)
-        ->name('produtos.atualizar');
+Route::post('/atualizar_produto/{id}/atualizar', [GerenciamentoProdutoController::class, 'atualizarProduto'])
+    ->middleware('keyclock.role:' . Roles::GERENCIAMENTO_PRODUTOS)
+    ->name('produtos.atualizar');
 });
 //pegar dados do usuário logado
 

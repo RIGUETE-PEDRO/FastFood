@@ -313,6 +313,56 @@
     box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
 }
 
+
+/* ==================== Toggle Switch Carrousel ==================== */
+.toggle-switch {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle-carrousel {
+    display: none;
+}
+
+.toggle-slider {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    background-color: #ccc;
+    border-radius: 14px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-slider::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-carrousel:checked + .toggle-slider {
+    background-color: #ea580c;
+}
+
+.toggle-carrousel:checked + .toggle-slider::after {
+    transform: translateX(22px);
+}
+
+.toggle-carrousel:disabled + .toggle-slider {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
     .gerenciamento-container {
         padding: 24px 14px;
@@ -371,7 +421,8 @@
     .produtos-table td:nth-child(3)::before { content: 'Preço'; }
     .produtos-table td:nth-child(4)::before { content: 'Status'; }
     .produtos-table td:nth-child(5)::before { content: 'Categoria'; }
-    .produtos-table td:nth-child(6)::before { content: 'Ações'; }
+    .produtos-table td:nth-child(6)::before { content: 'Carrousel'; }
+    .produtos-table td:nth-child(7)::before { content: 'Ações'; }
 
     .produtos-table td:nth-child(1) img {
         width: 56px !important;
@@ -398,3 +449,4 @@
         margin-right: 0;
     }
 }
+

@@ -88,4 +88,63 @@ document.addEventListener('DOMContentLoaded', () => {
             row.style.display = nome.includes(searchValue) ? '' : 'none';
         });
     });
+
+    // ==================== Toggle Carrousel ====================
+    const toggles = document.querySelectorAll('.toggle-carrousel');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    toggles.forEach(toggle => {
+        toggle.addEventListener('change', async function() {
+            const produtoId = this.getAttribute('data-produto-id');
+            const isChecked = this.checked;
+
+            // Desabilitar o toggle durante o processamento
+            this.disabled = true;
+
+            try {
+                console.log('🔄 Enviando requisição para:', `/api/produtos/${produtoId}/carrousel`);
+                console.log('📤 Valor:', isChecked);
+
+                const response = await fetch(`/api/produtos/${produtoId}/carrousel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        no_carrousel: isChecked ? 1 : 0
+                    })
+                });
+
+                console.log('📡 Status da resposta:', response.status);
+                const data = await response.json();
+                console.log('✅ Resposta:', data);
+
+                if (response.ok && data.success) {
+                    console.log('✨ Sucesso! Produto', data.data.nome, 'foi', isChecked ? 'adicionado ao' : 'removido do', 'carrousel');
+                    // Mostrar notificação (se tiver toast)
+                    if (window.showToast) {
+                        window.showToast(data.message, 'success');
+                    }
+                } else {
+                    console.error('❌ Erro:', data.message);
+                    this.checked = !isChecked; // Reverter
+                    if (window.showToast) {
+                        window.showToast('Erro ao atualizar carrousel: ' + (data.message || 'Erro desconhecido'), 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Erro na requisição:', error);
+                this.checked = !isChecked; // Reverter
+                if (window.showToast) {
+                    window.showToast('Erro ao atualizar carrousel', 'error');
+                }
+            } finally {
+                // Reabilitar o toggle
+                this.disabled = false;
+            }
+        });
+    });
+
+    console.log('✅ Toggle Carrousel inicializado para', toggles.length, 'produtos');
 });
