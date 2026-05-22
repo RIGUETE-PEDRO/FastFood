@@ -7,6 +7,7 @@
     padding: 18px 22px;
     margin: 8px auto 12px;
     max-width: 1200px;
+    width: 100%;
     box-shadow: 0 10px 24px rgba(152, 27, 30, 0.12);
 }
 
@@ -58,6 +59,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
 }
 
 .qtd-wrapper {
@@ -154,5 +156,29 @@
 
     .garcom-filter-field {
         min-width: 100%;
+    }
+
+    .add-produto-form,
+    .qtd-wrapper,
+    .garcom-filter-actions {
+        width: 100%;
+    }
+
+    .add-produto-form {
+        flex-wrap: wrap;
+    }
+
+    .add-produto-form .btn,
+    .garcom-filter-btn,
+    .garcom-filter-clear {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .qtd-input {
+        flex: 1;
+        min-width: 96px;
+        min-height: 44px;
+        font-size: 16px;
     }
 }

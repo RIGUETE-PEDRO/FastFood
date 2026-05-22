@@ -16,7 +16,8 @@
 .gerenciamento-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 40px 24px;
+    padding: clamp(20px, 4vw, 40px) clamp(12px, 3vw, 24px);
+    min-width: 0;
 }
 .header-section {
     display: flex;
@@ -43,6 +44,8 @@
     border-radius: 999px;
     font-weight: 600;
     cursor: pointer;
+    min-height: 44px;
+    touch-action: manipulation;
     box-shadow: 0 8px 20px rgba(152, 27, 30, 0.3);
     transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -52,9 +55,10 @@
 }
 .table-card {
     background: white;
-    border-radius: 24px;
+    border-radius: 18px;
     box-shadow: 0 12px 32px rgba(152, 27, 30, 0.18);
     overflow: hidden;
+    max-width: 100%;
 }
 .table-header {
     display: flex;
@@ -75,13 +79,15 @@
     position: relative;
     display: flex;
     align-items: center;
+    width: min(100%, 280px);
 }
 .search-input {
     padding: 10px 40px 10px 16px;
     border: 2px solid rgba(152, 27, 30, 0.2);
     border-radius: 999px;
     font-size: 0.95rem;
-    width: 280px;
+    width: 100%;
+    min-height: 44px;
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 .search-input:focus {
@@ -91,9 +97,12 @@
 }
 .table-responsive {
     overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
 }
 .produtos-table {
     width: 100%;
+    min-width: 760px;
     border-collapse: collapse;
 }
 .produtos-table th, .produtos-table td {
@@ -138,7 +147,10 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s;
-    z-index: 1050;
+    z-index: 2100;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: none;
 }
 .overlay-backdrop.is-open {
     opacity: 1;
@@ -154,6 +166,8 @@
     transition: transform 0.25s;
     max-height: calc(100dvh - 32px);
     overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
 }
 
 @supports not (height: 100dvh) {
@@ -212,7 +226,7 @@
 }
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
     gap: 16px;
 }
 .form-group label {
@@ -229,6 +243,8 @@
     border-radius: 12px;
     border: 2px solid rgba(152, 27, 30, 0.15);
     transition: border-color 0.2s, box-shadow 0.2s;
+    min-height: 44px;
+    font-size: 16px;
 }
 .form-group input:focus,
 .form-group select:focus,
@@ -281,8 +297,9 @@
     justify-content: center;
 }
 .btn-action {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
     border-radius: 8px;
     border: none;
     cursor: pointer;
@@ -374,10 +391,17 @@
 
     .table-header {
         padding: 18px 14px;
+        align-items: stretch;
     }
 
     .table-responsive {
         overflow: visible;
+    }
+
+    .search-box,
+    .search-input,
+    .btn-add {
+        width: 100%;
     }
 
     .produtos-table thead {
@@ -404,6 +428,7 @@
         padding: 8px 0;
         text-align: left !important;
         border: 0;
+        min-width: 0;
     }
 
     .produtos-table td::before {
@@ -431,11 +456,27 @@
 
     .action-buttons {
         justify-content: flex-start;
+        gap: 12px;
     }
 
     .overlay-panel {
-        padding: 20px;
+        width: min(100%, calc(100vw - 20px));
+        padding: 18px;
         max-height: calc(100dvh - 20px);
+        border-radius: 16px;
+    }
+
+    .overlay-header {
+        gap: 10px;
+    }
+
+    .overlay-header h3 {
+        font-size: 1.2rem;
+    }
+
+    .btn-status {
+        min-height: 44px;
+        margin-bottom: 8px;
     }
 
     .overlay-actions {
@@ -447,6 +488,21 @@
     .btn-secondary {
         width: 100%;
         margin-right: 0;
+        min-height: 48px;
     }
 }
 
+@media (max-width: 375px) {
+    .gerenciamento-container {
+        padding-inline: 8px;
+    }
+
+    .table-header h2,
+    .page-title {
+        font-size: 1.2rem;
+    }
+
+    .overlay-panel {
+        padding: 14px;
+    }
+}

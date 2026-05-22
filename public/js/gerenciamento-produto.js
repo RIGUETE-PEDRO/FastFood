@@ -31,8 +31,21 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('produto_id').value = '';
     };
 
-    const openOverlay = () => overlay?.classList.add('is-open');
-    const closeOverlay = () => overlay?.classList.remove('is-open');
+    const setOverlayBodyState = () => {
+        const isOpen = Boolean(document.querySelector('.overlay-backdrop.is-open'));
+        document.body.classList.toggle('ff-modal-open', isOpen);
+        if (window.ff?.syncSidebarLock) window.ff.syncSidebarLock();
+    };
+
+    const openOverlay = () => {
+        if (window.ff?.closeSidebar) window.ff.closeSidebar();
+        overlay?.classList.add('is-open');
+        setOverlayBodyState();
+    };
+    const closeOverlay = () => {
+        overlay?.classList.remove('is-open');
+        setOverlayBodyState();
+    };
 
     openBtn?.addEventListener('click', () => {
     clearForm();

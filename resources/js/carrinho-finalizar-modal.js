@@ -21,7 +21,7 @@
     const tipoErro = document.getElementById('tipoEntregaErro');
 
     const mesaForm = document.getElementById('mesaForm');
-    const mesaInput = document.getElementById('mesa');
+    const mesaInput = document.getElementById('mesa_id');
     const mesaErro = document.getElementById('mesaErro');
 
     const enderecoForm = document.getElementById('enderecoForm');
@@ -61,13 +61,22 @@
     }
 
     function openModal(el) {
+        if (window.ff?.closeSidebar) window.ff.closeSidebar();
         el.classList.add('is-open');
         el.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('ff-modal-open');
+        document.body.style.overflow = 'hidden';
+        if (window.ff?.syncSidebarLock) window.ff.syncSidebarLock();
     }
 
     function closeModal(el) {
         el.classList.remove('is-open');
         el.setAttribute('aria-hidden', 'true');
+        if (!modals.some((m) => m !== el && m.classList.contains('is-open'))) {
+            document.body.classList.remove('ff-modal-open');
+            document.body.style.removeProperty('overflow');
+            if (window.ff?.syncSidebarLock) window.ff.syncSidebarLock();
+        }
     }
 
     function algumModalAberto() {

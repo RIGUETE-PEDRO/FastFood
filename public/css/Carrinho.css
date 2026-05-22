@@ -31,6 +31,8 @@ main {
     max-width: 1100px;
     margin: 28px auto;
     padding: 0 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    width: 100%;
+    min-width: 0;
 }
 
 @media (max-width: 768px) {
@@ -73,6 +75,7 @@ main {
     border-radius: 14px;
     box-shadow: var(--ml-shadow);
     overflow: hidden;
+    max-width: 100%;
 }
 
 .carrinho-alert {
@@ -555,6 +558,8 @@ button.btn.btn-danger:active {
     overflow: hidden;
     max-height: calc(100dvh - 32px);
     overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 @supports not (height: 100dvh) {
@@ -660,16 +665,28 @@ button.btn.btn-danger:active {
     font-size: 0.92rem;
 }
 
-.ff-field input {
+.ff-field input,
+.ff-field textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     height: 40px;
     border-radius: 10px;
     border: 1px solid var(--ml-border);
     padding: 0 12px;
     outline: none;
-    font-size: 0.98rem;
+    font-size: 16px;
 }
 
-.ff-field input:focus {
+.ff-field textarea {
+    min-height: 96px;
+    height: auto;
+    padding: 10px 12px;
+    resize: vertical;
+}
+
+.ff-field input:focus,
+.ff-field textarea:focus {
     border-color: rgba(52, 131, 250, 0.65);
     box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.15);
 }
@@ -680,7 +697,7 @@ button.btn.btn-danger:active {
     border: 1px solid var(--ml-border);
     padding: 0 42px 0 12px;
     outline: none;
-    font-size: 0.98rem;
+    font-size: 16px;
     color: var(--ml-text);
     background-color: #fff;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%233483fa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
@@ -902,6 +919,15 @@ button.btn.btn-danger:active {
 }
 
 @media (max-width: 480px) {
+    main {
+        margin-top: 12px;
+        padding-inline: 8px;
+    }
+
+    .table-corpo h1 {
+        font-size: 1.25rem;
+    }
+
     .ff-modal__card {
         width: calc(100vw - 20px);
         max-height: calc(100dvh - 20px);
@@ -913,5 +939,10 @@ button.btn.btn-danger:active {
 
     .ff-btn {
         width: 100%;
+        min-height: 48px;
+    }
+
+    .ff-choice__item {
+        padding: 12px 10px;
     }
 }

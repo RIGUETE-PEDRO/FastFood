@@ -27,7 +27,8 @@ body {
 .gerenciamento-container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 40px 24px;
+    padding: clamp(20px, 4vw, 40px) clamp(12px, 3vw, 24px);
+    min-width: 0;
 }
 
 .header-section {
@@ -57,6 +58,8 @@ body {
     border-radius: 999px;
     font-weight: 600;
     cursor: pointer;
+    min-height: 44px;
+    touch-action: manipulation;
     box-shadow: 0 8px 20px rgba(152, 27, 30, 0.3);
     transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -87,9 +90,10 @@ body {
 
 .table-card {
     background: white;
-    border-radius: var(--radius-lg);
+    border-radius: 18px;
     box-shadow: var(--shadow-card);
     overflow: hidden;
+    max-width: 100%;
 }
 
 .table-header {
@@ -113,6 +117,12 @@ body {
     position: relative;
     display: flex;
     align-items: center;
+    width: min(100%, 280px);
+}
+
+.search-form {
+    width: min(100%, 280px);
+    margin: 0;
 }
 
 .search-input {
@@ -120,7 +130,8 @@ body {
     border: 2px solid rgba(152, 27, 30, 0.2);
     border-radius: 999px;
     font-size: 0.95rem;
-    width: 280px;
+    width: 100%;
+    min-height: 44px;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -141,10 +152,12 @@ body {
     overflow-x: auto;
     width: 100%;
     border-collapse: collapse;
+    -webkit-overflow-scrolling: touch;
 }
 
 .funcionarios-table {
     width: 100%;
+    min-width: 860px;
     border-collapse: collapse;
 }
 
@@ -244,8 +257,9 @@ body {
 }
 
 .btn-action {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
     border-radius: 8px;
     border: none;
     cursor: pointer;
@@ -292,7 +306,10 @@ body {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;
-    z-index: 1050;
+    z-index: 2100;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: none;
 }
 
 .overlay-backdrop.is-open {
@@ -310,6 +327,8 @@ body {
     transition: transform 0.25s ease;
     max-height: calc(100dvh - 32px);
     overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
 }
 
 @supports not (height: 100dvh) {
@@ -377,7 +396,7 @@ body {
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
     gap: 16px;
 }
 
@@ -395,6 +414,8 @@ body {
     border-radius: 12px;
     border: 2px solid rgba(152, 27, 30, 0.15);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    min-height: 44px;
+    font-size: 16px;
 }
 
 .form-group input:focus,
@@ -609,13 +630,91 @@ input[type="checkbox"]#has_ativo_switch:not(:checked) + .switch-label .switch-te
         font-size: 1.4rem;
     }
 
-    /* Esconder colunas menos importantes em mobile */
-    .funcionarios-table th:nth-child(4),
-    .funcionarios-table td:nth-child(4),
-    .funcionarios-table th:nth-child(5),
-    .funcionarios-table td:nth-child(5) {
+    .table-header {
+        align-items: stretch;
+    }
+
+    .search-box,
+    .search-form,
+    .search-input {
+        width: 100%;
+    }
+
+    .table-responsive {
+        overflow: visible;
+    }
+
+    .funcionarios-table thead {
         display: none;
     }
+
+    .funcionarios-table,
+    .funcionarios-table tbody,
+    .funcionarios-table tr,
+    .funcionarios-table td {
+        display: block;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .funcionarios-table tbody tr {
+        margin: 0 0 12px;
+        padding: 12px;
+        border: 1px solid rgba(152, 27, 30, 0.12);
+        border-radius: 14px;
+        background: #fff;
+    }
+
+    .funcionarios-table td {
+        padding: 8px 0;
+        text-align: left;
+        border: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .funcionarios-table td::before {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--color-muted);
+        font-weight: 700;
+    }
+
+    .funcionarios-table td:nth-child(1)::before { content: 'Foto'; }
+    .funcionarios-table td:nth-child(2)::before { content: 'Nome'; }
+    .funcionarios-table td:nth-child(3)::before { content: 'Email'; }
+    .funcionarios-table td:nth-child(4)::before { content: 'Telefone'; }
+    .funcionarios-table td:nth-child(5)::before { content: 'Tipo'; }
+    .funcionarios-table td:nth-child(6)::before { content: 'Status'; }
+    .funcionarios-table td:nth-child(7)::before { content: 'Ações'; }
+
+    .action-buttons {
+        justify-content: flex-start;
+        gap: 12px;
+    }
+
+    .overlay-panel {
+        width: min(100%, calc(100vw - 20px));
+        padding: 18px;
+        max-height: calc(100dvh - 20px);
+        border-radius: 16px;
+    }
+
+    .overlay-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-secondary,
+    .btn-primary {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .btn-status {
+        min-height: 44px;
+        margin-bottom: 8px;
+    }
 }
-
-

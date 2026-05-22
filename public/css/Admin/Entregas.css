@@ -1,5 +1,6 @@
 .pedidos-admin {
     max-width: 1180px;
+    width: 100%;
 }
 
 .entregas-card {
@@ -36,6 +37,8 @@
     cursor: pointer;
     background: linear-gradient(135deg, #d62828 0%, #ff7b00 100%);
     color: #fff;
+    min-height: 44px;
+    touch-action: manipulation;
     transition: transform .15s ease, box-shadow .15s ease;
 }
 
@@ -55,5 +58,10 @@
 @media (max-width: 768px) {
     .entregas-card .pedido-card__secao {
         padding: 10px 11px;
+    }
+
+    .entregas-card .btn-add {
+        width: 100%;
+        min-height: 48px;
     }
 }

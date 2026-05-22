@@ -40,11 +40,17 @@
                         </div>
                     </header>
 
-                    <div class="modal fade" id="modalAdicionarMesa" tabindex="-1" aria-labelledby="modalAdicionarMesaLabel" aria-hidden="true">
+                    <div class="modal fade mesa-action-modal" id="modalAdicionarMesa" tabindex="-1" aria-labelledby="modalAdicionarMesaLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header adicionar-mesa-modal">
-                                    <h5 class="modal-title" id="modalAdicionarMesaLabel">Cadastrar Nova Mesa</h5>
+                                    <div class="mesa-modal-heading">
+                                        <span class="mesa-modal-icon">+</span>
+                                        <div>
+                                            <h5 class="modal-title" id="modalAdicionarMesaLabel">Cadastrar nova mesa</h5>
+                                            <p>Inclua uma nova praça no salão da lanchonete.</p>
+                                        </div>
+                                    </div>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
 
@@ -77,11 +83,17 @@
                         </div>
                     </div>
 
-                    <div class="modal fade" id="modalEditarMesa" tabindex="-1" aria-labelledby="modalEditarMesaLabel" aria-hidden="true">
+                    <div class="modal fade mesa-action-modal" id="modalEditarMesa" tabindex="-1" aria-labelledby="modalEditarMesaLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header editar-mesa-modal">
-                                    <h5 class="modal-title" id="modalEditarMesaLabel">Editar Mesa</h5>
+                                    <div class="mesa-modal-heading">
+                                        <span class="mesa-modal-icon">↻</span>
+                                        <div>
+                                            <h5 class="modal-title" id="modalEditarMesaLabel">Editar mesa</h5>
+                                            <p>Ajuste número e disponibilidade de uma mesa cadastrada.</p>
+                                        </div>
+                                    </div>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
 
@@ -121,11 +133,17 @@
                         </div>
                     </div>
 
-                    <div class="modal fade" id="modalRemoverMesa" tabindex="-1" aria-labelledby="modalRemoverMesaLabel" aria-hidden="true">
+                    <div class="modal fade mesa-action-modal" id="modalRemoverMesa" tabindex="-1" aria-labelledby="modalRemoverMesaLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header remover-mesa-modal">
-                                    <h5 class="modal-title" id="modalRemoverMesaLabel">Remover Mesa</h5>
+                                    <div class="mesa-modal-heading">
+                                        <span class="mesa-modal-icon">!</span>
+                                        <div>
+                                            <h5 class="modal-title" id="modalRemoverMesaLabel">Remover mesa</h5>
+                                            <p>Retire uma mesa que não deve mais aparecer na operação.</p>
+                                        </div>
+                                    </div>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
 

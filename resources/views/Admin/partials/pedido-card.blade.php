@@ -134,9 +134,9 @@
                         </form>
                     @endif
 
-                    <a href="{{ route('Pedidos.GerarCupom',$pedido) }}">
-                        <button class="btn-geraCupom ">Gerar cupom</button>
-                    </a>
+                    <form method="GET" action="{{ route('Pedidos.GerarCupom',$pedido) }}" class="m-0">
+                        <button type="submit" class="btn btn-outline-secondary btn-geraCupom" aria-label="Gerar cupom do pedido #{{ $pedido->id }}">Gerar cupom</button>
+                    </form>
                 </div>
             </section>
         @endunless

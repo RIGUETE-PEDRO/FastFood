@@ -17,24 +17,55 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!modalEl) return;
 
   let manualBackdrop = null;
+  let lastOpenAt = 0;
 
-  function openModal() {
-    if (manualBackdrop) return;
+   function openModal() {
+     if (manualBackdrop && !manualBackdrop.isConnected) {
+       manualBackdrop = null;
+     }
 
-    modalEl.classList.add('show');
-    modalEl.style.display = 'block';
-    modalEl.setAttribute('aria-hidden', 'false');
-    modalEl.setAttribute('aria-modal', 'true');
-    document.body.classList.add('modal-open');
-    document.body.style.overflow = 'hidden';
+     if (manualBackdrop) return;
 
-    manualBackdrop = document.createElement('div');
-    manualBackdrop.className = 'modal-backdrop fade show';
-    manualBackdrop.addEventListener('click', () => closeModal());
-    document.body.appendChild(manualBackdrop);
+     // Fecha sidebar em mobile se estiver aberta
+     if (window.ff && window.ff.closeSidebar) {
+       window.ff.closeSidebar();
+     }
 
-    const focusEl = modalEl.querySelector('#cart_quantidade') || modalEl.querySelector('button, input, textarea');
-    if (focusEl) focusEl.focus();
+     modalEl.classList.add('show');
+     modalEl.style.display = 'block';
+     modalEl.setAttribute('aria-hidden', 'false');
+     modalEl.setAttribute('aria-modal', 'true');
+     document.body.classList.add('modal-open');
+     document.body.classList.add('ff-modal-open');
+     document.body.style.overflow = 'hidden';
+     if (window.ff?.syncSidebarLock) window.ff.syncSidebarLock();
+
+     manualBackdrop = document.createElement('div');
+     manualBackdrop.className = 'modal-backdrop fade show';
+     manualBackdrop.style.zIndex = '1999';
+     manualBackdrop.addEventListener('click', () => closeModal());
+     document.body.appendChild(manualBackdrop);
+
+     const focusEl = modalEl.querySelector('#cart_quantidade') || modalEl.querySelector('button, input, textarea');
+     if (focusEl) focusEl.focus();
+
+     // Scroll to top em mobile
+     setTimeout(() => {
+       window.scrollTo(0, 0);
+     }, 100);
+   }
+
+  function cleanupModalState() {
+    document.querySelectorAll('.modal-backdrop').forEach((el) => el.remove());
+    document.body.classList.remove('modal-open');
+    document.body.classList.remove('ff-modal-open');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('padding-right');
+
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      document.body.classList.remove('ff-sidebar-open');
+      document.body.classList.add('ff-sidebar-collapsed');
+    }
   }
 
   function closeModal() {
@@ -42,12 +73,14 @@ document.addEventListener('DOMContentLoaded', () => {
     modalEl.style.display = 'none';
     modalEl.setAttribute('aria-hidden', 'true');
     modalEl.removeAttribute('aria-modal');
-    document.body.classList.remove('modal-open');
-    document.body.style.removeProperty('overflow');
+    if (window.ff?.syncSidebarLock) window.ff.syncSidebarLock();
     if (manualBackdrop) {
       manualBackdrop.remove();
       manualBackdrop = null;
     }
+    cleanupModalState();
+    window.setTimeout(cleanupModalState, 80);
+    window.dispatchEvent(new CustomEvent('ff:cart-modal-closed'));
   }
 
   // Segurança: garante que o modal sempre inicia fechado
@@ -55,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Limpa resíduos de um estado aberto anterior (comum após navegação/cache no mobile)
   document.body.classList.remove('modal-open');
+  document.body.classList.remove('ff-modal-open');
   document.body.style.removeProperty('overflow');
   document.body.style.removeProperty('padding-right');
   document.querySelectorAll('.modal-backdrop').forEach((el) => el.remove());
@@ -75,11 +109,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const eventTarget = getEventElementTarget(e);
     if (!eventTarget) return;
 
+    // Primeiro tenta abrir quando o elemento clicado (ou seu pai) é o botão "Adicionar ao carrinho"
     const trigger = eventTarget.closest('.button-adicionar');
-    if (!trigger) return;
-
-    const card = findProdutoCard(trigger);
+    // Se não for o botão, também aceitamos clique direto no cartão do produto (ex: carrossel)
+    const card = trigger ? findProdutoCard(trigger) : findProdutoCard(eventTarget);
     if (!card) return;
+
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) e.stopPropagation();
+
+    const now = Date.now();
+    if (now - lastOpenAt < 500) return;
+    lastOpenAt = now;
 
     const produtoId = card.getAttribute('data-produto-id');
     const produtoNome = card.getAttribute('data-produto-nome') || '';
@@ -100,10 +141,58 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', handleOpenByTrigger);
   });
 
+  // Delegated handler: abrir modal ao clicar no cartão do produto (ex: carrossel)
+  // Isso permite clicar em .produto-card-mini ou .produto--interactive para abrir
+  document.addEventListener('click', (e) => {
+    const evTarget = getEventElementTarget(e);
+    if (!evTarget) return;
+
+    // não abrir se o clique for dentro do próprio modal
+    if (evTarget.closest('#addToCartModal')) return;
+
+    // se o clique já foi em um botão que já tem handler, ignora (evita duplo)
+    if (evTarget.closest('.button-adicionar')) return;
+
+    // Apenas abrir o modal quando o clique for em um card do carrossel
+    // (classe .produto-card-mini). Para a lista abaixo (.produto--interactive)
+    // apenas o botão .button-adicionar deve abrir o modal — esse binding
+    // já existe acima.
+    const card = evTarget.closest('.produto-card-mini');
+    if (!card) return;
+
+    // Construí um objeto mínimo compatível com handleOpenByTrigger
+    try {
+      handleOpenByTrigger({ target: card });
+    } catch (err) {
+      // degrade silencioso
+      console.error('Erro ao abrir modal por clique no cartão:', err);
+    }
+  });
+
+  document.addEventListener('touchend', (e) => {
+    const evTarget = getEventElementTarget(e);
+    if (!evTarget) return;
+
+    if (evTarget.closest('#addToCartModal')) return;
+    if (evTarget.closest('.button-adicionar')) return;
+
+    const card = evTarget.closest('.produto-card-mini');
+    if (!card) return;
+
+    handleOpenByTrigger(e);
+  }, { passive: false });
+
+  window.addEventListener('ff:cart-modal-force-cleanup', () => {
+    manualBackdrop = null;
+    cleanupModalState();
+  });
+
   // Fallback para fechar no modo manual
   modalEl.querySelectorAll('[data-bs-dismiss="modal"]').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (event) => {
       if (!modalEl.classList.contains('show')) return;
+      event.preventDefault();
+      event.stopPropagation();
       closeModal();
     });
   });

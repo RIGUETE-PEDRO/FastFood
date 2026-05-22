@@ -32,6 +32,7 @@ body.profile-page {
 
 .profile-page__wrapper {
     width: min(1120px, 100%);
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -97,6 +98,7 @@ body.profile-page {
     box-shadow: var(--shadow-primary);
     overflow: hidden;
     backdrop-filter: blur(12px);
+    min-width: 0;
 }
 
 .profile-card__summary {
@@ -237,6 +239,7 @@ body.profile-page {
     display: flex;
     flex-direction: column;
     gap: 28px;
+    min-width: 0;
 }
 
 .profile-form-header h2 {
@@ -362,6 +365,7 @@ body.profile-page {
 
     .btn {
         width: 100%;
+        min-height: 48px;
     }
 }
 

@@ -21,6 +21,9 @@
     border-radius: 18px;
     box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
     border: 1px solid rgba(15, 23, 42, 0.08);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .conteinner-pedidos h1 {
@@ -40,6 +43,7 @@
     box-shadow: 0 18px 35px rgba(15, 23, 42, 0.12);
     border: 1px solid rgba(15, 23, 42, 0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-width: 0;
 }
 
 .pedido-card:hover {
@@ -181,6 +185,7 @@
     border-radius: 12px;
     border: 1px solid rgba(148, 163, 184, 0.18);
     background: rgba(255, 255, 255, 0.75);
+    min-width: 0;
 }
 
 .pedido-itens__titulo {
@@ -204,6 +209,10 @@
         padding: 20px;
     }
 
+    .pedido-card:hover {
+        transform: none;
+    }
+
     .pedido-card__header {
         flex-direction: column;
         align-items: flex-start;
@@ -212,6 +221,7 @@
     .pedido-itens__linha {
         flex-direction: column;
         align-items: flex-start;
+        overflow-wrap: anywhere;
     }
 
     .pedido-itens__linha strong {

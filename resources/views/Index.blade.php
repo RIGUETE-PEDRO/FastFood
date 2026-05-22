@@ -7,9 +7,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Home</title>
     @vite(['resources/js/app.js'])
-    <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}?v={{ filemtime(public_path('css/Admin/Principal.css')) }}">
 
-    <link rel="stylesheet" href="{{ asset('css/Index.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Index.css') }}?v={{ filemtime(public_path('css/Index.css')) }}">
 </head>
 
 <body>
@@ -26,9 +26,8 @@
         <!-- CARROSSEL -->
         <div class="carousel-produtos">
             <div class="carousel-track">
-
                 @foreach ($produtos as $produto)
-                <div class="produto-card-mini">
+                <div class="produto-card-mini" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
                     <div class="mini-img">
                         <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}">
                     </div>
@@ -42,9 +41,9 @@
                 </div>
                 @endforeach
 
-                <!-- DUPLICA PARA LOOP INFINITO -->
+
                 @foreach ($produtos as $produto)
-                <div class="produto-card-mini">
+                <div class="produto-card-mini" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
                     <div class="mini-img">
                         <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}">
                     </div>
@@ -135,6 +134,7 @@
         </div>
     </div>
 @include('components.flash-toast')
+<script src="{{ asset('js/carousel.js') }}"></script>
 </body>
 
 </html>

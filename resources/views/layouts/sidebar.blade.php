@@ -14,6 +14,7 @@ $isAdmin = request()->routeIs('Administrativo')
 <nav class="ff-sidebar d-flex flex-column">
     <div class="ff-sidebar__brand d-flex align-items-center justify-content-between">
         <span class="ff-sidebar__logo">FlashFood</span>
+        <span class="ff-sidebar__Versao">V 1.0</span>
         <button type="button" class="ff-sidebar__close" data-sidebar-toggle aria-label="Fechar menu">
             ✕
         </button>
@@ -23,22 +24,22 @@ $isAdmin = request()->routeIs('Administrativo')
     <ul class="nav nav-pills flex-column mb-auto ff-sidebar__nav">
         @role('DASHBORD')
         <li class="nav-item">
-            <a href="{{ route('Administrativo') }}" class="nav-link {{ request()->routeIs('Administrativo') ? 'active' : '' }}">DashBoard</a>
+            <a href="{{ route('Administrativo', [], false) }}" class="nav-link {{ request()->routeIs('Administrativo') ? 'active' : '' }}">DashBoard</a>
         </li>
         @endrole
         @role('GERENCIAMENTO_FUNCIONARIOS')
         <li class="nav-item">
-            <a href="{{ route('gerenciamento_funcionarios') }}" class="nav-link {{ request()->routeIs('gerenciamento_funcionarios') ? 'active' : '' }}">Gerenciamento de Funcionários</a>
+            <a href="{{ route('gerenciamento_funcionarios', [], false) }}" class="nav-link {{ request()->routeIs('gerenciamento_funcionarios') ? 'active' : '' }}">Gerenciamento de Funcionários</a>
         </li>
         @endrole
         @role('PEDIDOS')
         <li class="nav-item">
-            <a href="{{ route('Pedidos_Administrativo') }}" class="nav-link {{ request()->routeIs('Pedidos_Administrativo') ? 'active' : '' }}">Pedidos</a>
+            <a href="{{ route('Pedidos_Administrativo', [], false) }}" class="nav-link {{ request()->routeIs('Pedidos_Administrativo') ? 'active' : '' }}">Pedidos</a>
         </li>
         @endrole
         @role('GERENCIAMENTO_PRODUTOS')
         <li class="nav-item">
-            <a href="{{ route('gerenciamento_produtos') }}" class="nav-link {{ request()->routeIs('gerenciamento_produtos') || request()->routeIs('gerenciamento_Produtos') ? 'active' : '' }}">Gerenciamento de produtos</a>
+            <a href="{{ route('gerenciamento_produtos', [], false) }}" class="nav-link {{ request()->routeIs('gerenciamento_produtos') || request()->routeIs('gerenciamento_Produtos') ? 'active' : '' }}">Gerenciamento de produtos</a>
         </li>
         @endrole
 
@@ -49,17 +50,17 @@ $isAdmin = request()->routeIs('Administrativo')
         @endrole
         @role('ENTREGAS')
         <li class="nav-item">
-            <a href="{{ route('entregas') }}" class="nav-link {{ request()->routeIs('entregas') ? 'active' : '' }}">Entregas</a>
+            <a href="{{ route('entregas', [], false) }}" class="nav-link {{ request()->routeIs('entregas') ? 'active' : '' }}">Entregas</a>
         </li>
         @endrole
         @role('MESAS')
         <li>
-            <a href="{{ route('mesas.index')}}" class="nav-link {{ request()->routeIs('mesas.*') ? 'active' : ''}}">Mesas</a>
+            <a href="{{ route('mesas.index', [], false)}}" class="nav-link {{ request()->routeIs('mesas.*') ? 'active' : ''}}">Mesas</a>
         </li>
         @endrole
         @role('GARCOM')
         <li class="nav-item">
-            <a href="{{ route('garcom') }}" class="nav-link {{ request()->routeIs('garcom') ? 'active' : '' }}">Garçom</a>
+            <a href="{{ route('garcom', [], false) }}" class="nav-link {{ request()->routeIs('garcom') ? 'active' : '' }}">Garçom</a>
         </li>
         @endrole
     </ul>
@@ -67,25 +68,25 @@ $isAdmin = request()->routeIs('Administrativo')
     @else
     <ul class="nav nav-pills flex-column mb-auto ff-sidebar__nav">
         <li class="nav-item">
-            <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Principal</a>
+            <a href="{{ route('home', [], false) }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Principal</a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('Lanches') }}" class="nav-link {{ request()->routeIs('Lanches') ? 'active' : '' }}">Lanches</a>
+            <a href="{{ route('Lanches', [], false) }}" class="nav-link {{ request()->routeIs('Lanches') ? 'active' : '' }}">Lanches</a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('Pizza') }}" class="nav-link {{ request()->routeIs('Pizza') ? 'active' : '' }}">Pizzas</a>
+            <a href="{{ route('Pizza', [], false) }}" class="nav-link {{ request()->routeIs('Pizza') ? 'active' : '' }}">Pizzas</a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('Porcao') }}" class="nav-link {{ request()->routeIs('Porcao') ? 'active' : '' }}">Porção</a>
+            <a href="{{ route('Porcao', [], false) }}" class="nav-link {{ request()->routeIs('Porcao') ? 'active' : '' }}">Porção</a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('Bebidas') }}" class="nav-link {{ request()->routeIs('Bebidas') ? 'active' : '' }}">Bebidas</a>
+            <a href="{{ route('Bebidas', [], false) }}" class="nav-link {{ request()->routeIs('Bebidas') ? 'active' : '' }}">Bebidas</a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('pedidos') }}" class="nav-link {{ request()->routeIs('pedidos') ? 'active' : '' }}">Pedidos</a>
+            <a href="{{ route('pedidos', [], false) }}" class="nav-link {{ request()->routeIs('pedidos') ? 'active' : '' }}">Pedidos</a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('carrinho') }}" class="nav-link {{ request()->routeIs('carrinho') ? 'active' : '' }}">Carrinho</a>
+            <a href="{{ route('carrinho', [], false) }}" class="nav-link {{ request()->routeIs('carrinho') ? 'active' : '' }}">Carrinho</a>
         </li>
     </ul>
     @endif
@@ -106,16 +107,16 @@ $isAdmin = request()->routeIs('Administrativo')
                 </div>
             </button>
             <ul class="dropdown-menu dropdown-menu-end list w-100">
-                <li><a class="dropdown-item text" href="{{ route('perfil') }}">Perfil</a></li>
+                <li><a class="dropdown-item text" href="{{ route('perfil', [], false) }}">Perfil</a></li>
                 <li><a class="dropdown-item text" href="#">Configurações</a></li>
                 <li>
                     <hr class="dropdown-divider">
                 </li>
-                <li><a class="dropdown-item text" href="{{ route('logout') }}">Sair</a></li>
+                <li><a class="dropdown-item text" href="{{ route('logout', [], false) }}">Sair</a></li>
             </ul>
         </div>
         @else
-        <a class="btn btn-light w-100" href="{{ route('login.form') }}">Entrar</a>
+        <a class="btn btn-light w-100" href="{{ route('login.form', [], false) }}">Entrar</a>
         @endif
     </div>
 </nav>
@@ -123,3 +124,4 @@ $isAdmin = request()->routeIs('Administrativo')
 <button type="button" class="ff-sidebar-overlay" data-sidebar-toggle aria-label="Fechar menu" tabindex="-1"></button>
 
 @include('components.flash-toast')
+<script defer src="/js/mobile-interactions-fallback.js?v={{ filemtime(public_path('js/mobile-interactions-fallback.js')) }}"></script>

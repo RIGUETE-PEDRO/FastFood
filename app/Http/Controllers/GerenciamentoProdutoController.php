@@ -2,11 +2,11 @@
 namespace App\Http\Controllers;
 
 use App\Mensagens\PassMensagens;
-use App\Models\ProdutoModel as Produto;
+use App\Models\Produto;
+use App\Models\Categoria;
 use App\Services\GerenciaProdutosService;
 use App\Services\GenericBase;
 use App\Services\AuthService;
-use Illuminate\Support\Facades\Log;
 
 use Illuminate\Http\Request;
 
@@ -61,34 +61,20 @@ class GerenciamentoProdutoController extends Controller
      */
     public function toggleCarrousel(Request $request, $id)
     {
-        Log::info('Carrousel Toggle Iniciado', [
-            'produto_id' => $id,
-            'request_data' => $request->all()
-        ]);
-
         try {
             $produto = Produto::findOrFail($id);
 
-            // Validar o request - aceitar boolean ou integer (0/1)
+            // Validar o request
             $validated = $request->validate([
-                'no_carrousel' => 'required|in:0,1,true,false'
+                'no_carrousel' => 'required|boolean'
             ]);
-
-            // Converter para booleano se for string
-            $noCarrousel = filter_var($validated['no_carrousel'], FILTER_VALIDATE_BOOLEAN);
-
-            Log::info('Validação OK', ['valor' => $noCarrousel]);
 
             // Atualizar o campo no_carrousel
-            $produto->no_carrousel = $noCarrousel;
-            $produto->save();
-
-            Log::info('Produto Atualizado', [
-                'id' => $produto->id,
-                'no_carrousel' => $produto->no_carrousel
+            $produto->update([
+                'no_carrousel' => $validated['no_carrousel']
             ]);
 
-            $status = $noCarrousel ? 'adicionado ao' : 'removido do';
+            $status = $validated['no_carrousel'] ? 'adicionado ao' : 'removido do';
 
             return response()->json([
                 'success' => true,
@@ -96,28 +82,16 @@ class GerenciamentoProdutoController extends Controller
                 'data' => [
                     'id' => $produto->id,
                     'nome' => $produto->nome,
-                    'no_carrousel' => (bool)$produto->no_carrousel
+                    'no_carrousel' => $produto->no_carrousel
                 ]
             ], 200);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            Log::error('Produto não encontrado', ['id' => $id]);
             return response()->json([
                 'success' => false,
                 'message' => 'Produto não encontrado'
             ], 404);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Erro de validação', ['errors' => $e->errors()]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro de validação',
-                'errors' => $e->errors()
-            ], 422);
         } catch (\Exception $e) {
-            Log::error('Erro ao atualizar carrousel', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Erro ao atualizar carrousel: ' . $e->getMessage()

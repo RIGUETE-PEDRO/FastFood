@@ -10,7 +10,10 @@ class IndexProdutoRepositoryimpl implements IndexProdutoRepository
 {
     public function pegarProdutosIndex()
     {
+        Log::info('IndexProdutoRepositoryimpl: carregando produtos para a home');
+
         return ProdutoModel::where('disponivel', true)
+            ->where('no_carrousel', true)
             ->get();
     }
 }

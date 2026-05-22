@@ -34,11 +34,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const defaultAction = form?.dataset?.defaultAction || '';
 
-    const openOverlay = () => overlay?.classList.add('is-open');
-    const closeOverlay = () => overlay?.classList.remove('is-open');
+    const setOverlayBodyState = () => {
+        const isOpen = Boolean(document.querySelector('.overlay-backdrop.is-open'));
+        document.body.classList.toggle('ff-modal-open', isOpen);
+        if (window.ff?.syncSidebarLock) window.ff.syncSidebarLock();
+    };
 
-    const openDeleteOverlay = () => deleteOverlay?.classList.add('is-open');
-    const closeDeleteOverlay = () => deleteOverlay?.classList.remove('is-open');
+    const openOverlay = () => {
+        if (window.ff?.closeSidebar) window.ff.closeSidebar();
+        overlay?.classList.add('is-open');
+        setOverlayBodyState();
+    };
+    const closeOverlay = () => {
+        overlay?.classList.remove('is-open');
+        setOverlayBodyState();
+    };
+
+    const openDeleteOverlay = () => {
+        if (window.ff?.closeSidebar) window.ff.closeSidebar();
+        deleteOverlay?.classList.add('is-open');
+        setOverlayBodyState();
+    };
+    const closeDeleteOverlay = () => {
+        deleteOverlay?.classList.remove('is-open');
+        setOverlayBodyState();
+    };
 
     const clearForm = () => {
         if (!form) return;

@@ -50,6 +50,18 @@ Route::middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::KEYCLOCK])-
 
 Route::get('/', [IndexController::class, 'index'])->name('home');
 
+// Teste Carrossel Simplificado
+Route::get('/test-carousel-simple', function () {
+    $produtos = \App\Models\ProdutoModel::where('disponivel', true)->get();
+    return view('IndexSimplificado', ['produtos' => $produtos]);
+})->name('test.carousel.simple');
+
+// Teste Carrossel
+Route::get('/test-carousel', function () {
+    $produtos = \App\Models\ProdutoModel::where('disponivel', true)->get();
+    return view('TestCarousel', ['produtos' => $produtos]);
+})->name('test.carousel');
+
 //perfil
 Route::post('/perfil', [AdminController::class, 'InfoPerfil'])->name('usuario')->middleware('auth');
 

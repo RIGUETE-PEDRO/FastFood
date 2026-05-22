@@ -11,6 +11,8 @@ body {
    ======================================== */
 .pedidos-admin {
     max-width: 1040px;
+    width: 100%;
+    min-width: 0;
 }
 
 /* ========================================
@@ -306,6 +308,7 @@ body {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     position: relative;
     overflow: hidden;
+    min-width: 0;
 }
 
 .pedido-card:hover {
@@ -433,6 +436,7 @@ body {
     gap: 1rem;
     padding: 0.75rem 0;
     border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+    min-width: 0;
 }
 
 .pedido-itens__linha:last-child {
@@ -742,6 +746,10 @@ a:has(.btn-geraCupom) {
         padding: 20px 18px;
     }
 
+    .pedido-card:hover {
+        transform: none;
+    }
+
     .pedido-dados {
         grid-template-columns: 1fr;
     }
@@ -806,6 +814,7 @@ a:has(.btn-geraCupom) {
     .pedido-card__secao--acoes form select,
     .pedido-card__secao--acoes form button {
         width: 100%;
+        min-height: 48px;
     }
 
     .btn-geraCupom {
@@ -833,7 +842,6 @@ a:has(.btn-geraCupom) {
         align-items: flex-start;
     }
 }
-
 
 
 

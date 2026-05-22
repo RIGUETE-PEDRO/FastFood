@@ -45,6 +45,8 @@ body {
 .mesas-page {
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
+    min-width: 0;
 }
 
 .mesas-header {
@@ -172,6 +174,7 @@ body {
 .mesa-card__footer {
     display: flex;
     gap: 10px;
+    min-width: 0;
 }
 
 .mesa-btn {
@@ -417,13 +420,21 @@ body {
     position: relative;
     width: 100%;
     max-width: 560px;
-    max-height: calc(100vh - 32px);
+    max-height: calc(100dvh - 32px);
     margin: 0;
     background: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.12);
     border-radius: 14px;
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+@supports not (height: 100dvh) {
+    .ff-modal__card {
+        max-height: calc(100vh - 32px);
+    }
 }
 
 .ff-modal__header {
@@ -578,6 +589,34 @@ body {
     .header-actions .btn.topo {
         width: 100%;
     }
+
+    .mesa-card__footer {
+        flex-direction: column;
+    }
+
+    .mesa-btn {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .ff-modal {
+        padding: 10px;
+    }
+
+    .ff-modal__card {
+        max-height: calc(100dvh - 20px);
+    }
+
+    .ff-modal__footer {
+        flex-direction: column;
+    }
+
+    .ff-modal__footer .btn,
+    .modal-footer .btn {
+        width: 100%;
+        min-height: 48px;
+        margin-right: 0 !important;
+    }
 }
 
 .adicionar-mesa-modal {
@@ -683,4 +722,194 @@ body {
 
 .modal-body input[name="numero_da_mesa"] {
     border: 2px solid black;
+}
+
+/* ===== Personalizacao dos modais de gerenciamento de mesas ===== */
+.mesa-action-modal .modal-content {
+    border: 1px solid rgba(47, 38, 34, 0.14);
+    border-radius: 18px;
+    overflow: hidden;
+    background: #ffffff !important;
+    box-shadow: 0 24px 70px rgba(31, 26, 23, 0.28);
+}
+
+.mesa-action-modal .modal-header {
+    min-height: 96px;
+    align-items: flex-start;
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16) !important;
+}
+
+.adicionar-mesa-modal,
+.editar-mesa-modal,
+.remover-mesa-modal {
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 42%),
+        linear-gradient(135deg, #3b2f2a 0%, #2f2622 52%, #1f1a17 100%) !important;
+    color: #f8f5ef;
+}
+
+.adicionar-mesa-modal {
+    box-shadow: inset 5px 0 0 #2f9e44;
+}
+
+.editar-mesa-modal {
+    box-shadow: inset 5px 0 0 #c9872f;
+}
+
+.remover-mesa-modal {
+    box-shadow: inset 5px 0 0 #b91c1c;
+}
+
+.mesa-modal-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+}
+
+.mesa-modal-icon {
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(248, 245, 239, 0.14);
+    border: 1px solid rgba(248, 245, 239, 0.2);
+    color: #f8f5ef;
+    font-size: 1.15rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.mesa-modal-heading .modal-title {
+    margin: 0;
+    color: #f8f5ef !important;
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 0;
+}
+
+.mesa-modal-heading p {
+    margin: 4px 0 0;
+    color: rgba(248, 245, 239, 0.78);
+    font-size: 0.92rem;
+    line-height: 1.35;
+}
+
+.mesa-action-modal .btn-close {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background-color: rgba(248, 245, 239, 0.16);
+    opacity: 1;
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.mesa-action-modal .modal-body {
+    padding: 20px;
+    background:
+        linear-gradient(180deg, #ffffff 0%, #f8f5ef 100%) !important;
+}
+
+.mesa-action-modal .modal-body::before {
+    content: "Operacao de salao";
+    display: inline-flex;
+    margin-bottom: 14px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(201, 135, 47, 0.12);
+    color: #8b5a1f;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.remover-mesa-modal + form .modal-body::before {
+    content: "Acao sensivel";
+    background: rgba(185, 28, 28, 0.1);
+    color: #991b1b;
+}
+
+.mesa-action-modal .form-label {
+    color: #2f2622;
+    font-weight: 800;
+    font-size: 0.94rem;
+    margin-bottom: 7px;
+}
+
+.mesa-action-modal .form-control,
+.mesa-action-modal .form-select,
+.mesa-action-modal .modal-body select.form-select,
+.mesa-action-modal .modal-body select[name="status"],
+.mesa-action-modal .modal-body select[name="mesa_id"],
+.mesa-action-modal .modal-body input[name="numero_da_mesa"] {
+    min-height: 46px;
+    border: 1px solid rgba(47, 38, 34, 0.18) !important;
+    border-radius: 12px !important;
+    background-color: #ffffff;
+    color: #1f2937;
+    font-weight: 600;
+    box-shadow: none;
+}
+
+.mesa-action-modal .form-control:focus,
+.mesa-action-modal .form-select:focus {
+    border-color: rgba(180, 83, 9, 0.55) !important;
+    box-shadow: 0 0 0 3px rgba(201, 135, 47, 0.16);
+}
+
+.mesa-action-modal .modal-footer {
+    padding: 16px 20px 20px;
+    border-top: 1px solid rgba(47, 38, 34, 0.08);
+    background: #f8f5ef !important;
+}
+
+.mesa-action-modal .modal-footer .btn {
+    min-height: 44px;
+    border-radius: 999px !important;
+    padding: 10px 18px;
+    font-weight: 800;
+}
+
+.mesa-action-modal .modal-footer .btn.btn-primary {
+    background: linear-gradient(135deg, #b45309, #92400e) !important;
+    box-shadow: 0 10px 24px rgba(146, 64, 14, 0.24);
+}
+
+.mesa-action-modal .modal-footer .btn.btn-secondary {
+    background: #ffffff !important;
+    color: #3b2f2a !important;
+    border: 1px solid rgba(47, 38, 34, 0.16) !important;
+}
+
+.mesa-action-modal .modal-footer .btn.btn-secondary:hover {
+    background: #f3eadb !important;
+    color: #2f2622 !important;
+}
+
+.mesa-action-modal .modal-footer .btn.btn-danger {
+    background: linear-gradient(135deg, #b91c1c, #7f1d1d) !important;
+    box-shadow: 0 10px 24px rgba(127, 29, 29, 0.22);
+}
+
+@media (max-width: 520px) {
+    .mesa-action-modal .modal-header {
+        padding: 16px;
+    }
+
+    .mesa-modal-heading {
+        gap: 10px;
+    }
+
+    .mesa-modal-heading .modal-title {
+        font-size: 1.05rem;
+    }
+
+    .mesa-modal-heading p {
+        font-size: 0.86rem;
+    }
 }

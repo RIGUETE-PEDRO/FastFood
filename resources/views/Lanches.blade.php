@@ -7,8 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Lanches</title>
     @vite(['resources/js/app.js'])
-    <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/Index.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}?v={{ filemtime(public_path('css/Admin/Principal.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/Index.css') }}?v={{ filemtime(public_path('css/Index.css')) }}">
 </head>
 
 <body>
