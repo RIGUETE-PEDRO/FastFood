@@ -16,8 +16,8 @@ class RolesModel extends Model
         'deleted'
     ];
 
-    public function keyclockTipoUsuarios()
+    public function SecureKeyTipoUsuarios()
     {
-        return $this->hasMany(KeyClockTipoUsuarioModel::class, 'role_id');
+        return $this->hasMany(SecureKeyTipoUsuarioModel::class, 'role_id');
     }
 }

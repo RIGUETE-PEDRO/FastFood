@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         // Verifica se a tabela já existe
-        if (!Schema::hasTable('key_clock_auditoria')) {
-            Schema::create('key_clock_auditoria', function (Blueprint $table) {
+        if (!Schema::hasTable('SecureKey_auditoria')) {
+            Schema::create('SecureKey_auditoria', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('usuario_id')->nullable();
                 $table->string('acao', 50)->index(); // criar, atualizar, excluir, login, logout, etc
@@ -36,16 +36,16 @@ return new class extends Migration
             });
         } else {
             // Se a tabela já existe, adiciona colunas que possam estar faltando
-            Schema::table('key_clock_auditoria', function (Blueprint $table) {
-                if (!Schema::hasColumn('key_clock_auditoria', 'ip')) {
+            Schema::table('SecureKey_auditoria', function (Blueprint $table) {
+                if (!Schema::hasColumn('SecureKey_auditoria', 'ip')) {
                     $table->ipAddress('ip')->nullable()->after('user_agent');
                 }
 
-                if (!Schema::hasColumn('key_clock_auditoria', 'user_agent')) {
+                if (!Schema::hasColumn('SecureKey_auditoria', 'user_agent')) {
                     $table->text('user_agent')->nullable()->after('recurso');
                 }
 
-                if (!Schema::hasColumn('key_clock_auditoria', 'detalhes')) {
+                if (!Schema::hasColumn('SecureKey_auditoria', 'detalhes')) {
                     $table->json('detalhes')->nullable()->after('user_agent');
                 }
             });
@@ -57,6 +57,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('key_clock_auditoria');
+        Schema::dropIfExists('SecureKey_auditoria');
     }
 };

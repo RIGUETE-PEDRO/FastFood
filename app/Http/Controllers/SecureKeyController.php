@@ -4,47 +4,47 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\GenericBase;
-use App\Services\KeyClockService;
+use App\Services\SecureKeyService;
 use App\Services\AuditoriaConsultaService;
 
-class KeyClockController
+class SecureKeyController
 {
     protected GenericBase $genericBase;
-    protected KeyClockService $keyClockService;
+    protected SecureKeyService $SecureKeyService;
     protected AuditoriaConsultaService $auditoriaConsultaService;
 
     public function __construct(
-        GenericBase $genericBase,
-        KeyClockService $keyClockService,
+        GenericBase              $genericBase,
+        SecureKeyService         $SecureKeyService,
         AuditoriaConsultaService $auditoriaConsultaService
     )
     {
         $this->genericBase = $genericBase;
-        $this->keyClockService = $keyClockService;
+        $this->SecureKeyService = $SecureKeyService;
         $this->auditoriaConsultaService = $auditoriaConsultaService;
     }
 
     public function index()
     {
-        return view('Admin.keyclock');
+        return view('Admin.SecureKey');
     }
 
     public function grupo()
     {
-        $grupos = $this->keyClockService->getAllGrupos();
-        $roles = $this->keyClockService->getAllRoles();
-        $rolesPorGrupo = $this->keyClockService->getRolesPorGrupos($grupos->pluck('id')->all());
+        $grupos = $this->SecureKeyService->getAllGrupos();
+        $roles = $this->SecureKeyService->getAllRoles();
+        $rolesPorGrupo = $this->SecureKeyService->getRolesPorGrupos($grupos->pluck('id')->all());
 
-        return view('Admin.keyclock_grupo', compact('grupos', 'roles', 'rolesPorGrupo'));
+        return view('Admin.SecureKey_grupo', compact('grupos', 'roles', 'rolesPorGrupo'));
     }
 
     public function permissoes()
     {
         $roleName = request()->input('role_name');
         if ($roleName) {
-            $this->keyClockService->createRole($roleName);
+            $this->SecureKeyService->createRole($roleName);
         }
-        return view('Admin.keyclock_permissoes');
+        return view('Admin.SecureKey_permissoes');
     }
 
     public function auditoria(Request $request)
@@ -55,16 +55,16 @@ class KeyClockController
         if ($request->ajax()) {
             return response()->json([
                 'total' => $auditorias->total(),
-                'rowsHtml' => view('Admin.partials.keyclock_auditoria_rows', [
+                'rowsHtml' => view('Admin.partials.SecureKey_auditoria_rows', [
                     'auditorias' => $auditorias,
                 ])->render(),
-                'statsHtml' => view('Admin.partials.keyclock_auditoria_stats', [
+                'statsHtml' => view('Admin.partials.SecureKey_auditoria_stats', [
                     'auditorias' => $auditorias,
                 ])->render(),
             ]);
         }
 
-        return view('Admin.keyclock_auditoria', [
+        return view('Admin.SecureKey_auditoria', [
             'auditorias' => $auditorias,
             'filtro' => $filtros['filtro'] ?? null,
             'valor' => $filtros['valor'] ?? null,
@@ -80,14 +80,14 @@ class KeyClockController
             'role_id' => 'required|integer|exists:roles,id',
         ]);
 
-        $this->keyClockService->adicionarRoleAoGrupo($grupo, (int) $dados['role_id']);
+        $this->SecureKeyService->adicionarRoleAoGrupo($grupo, (int) $dados['role_id']);
 
         return response()->json(['ok' => true]);
     }
 
     public function removerRoleGrupo(int $grupo, int $role)
     {
-        $this->keyClockService->removerRoleDoGrupo($grupo, $role);
+        $this->SecureKeyService->removerRoleDoGrupo($grupo, $role);
 
         return response()->json(['ok' => true]);
     }

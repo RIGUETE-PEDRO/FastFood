@@ -11,7 +11,7 @@ class Relating_roles_to_user extends Seeder
 
     public function run(): void
     {
-        DB::table('keyclock_tipo_usuario')->insert([
+        DB::table('SecureKey_tipo_usuario')->insert([
             [
                 'created_at' => now(),
                 'tipo_usuario_id' => 5,

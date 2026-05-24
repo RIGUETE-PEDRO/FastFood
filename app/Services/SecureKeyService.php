@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\UsuarioModel;
 use App\Repository\SecureKeyRepository;
 
-class KeyClockService
+class SecureKeyService
 {
     public function __construct(private SecureKeyRepository $repository)
     {

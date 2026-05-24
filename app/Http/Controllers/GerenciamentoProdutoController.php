@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Mensagens\PassMensagens;
-use App\Models\Produto;
+use App\Models\ProdutoModel;
 use App\Models\Categoria;
 use App\Services\GerenciaProdutosService;
 use App\Services\GenericBase;
@@ -62,7 +62,7 @@ class GerenciamentoProdutoController extends Controller
     public function toggleCarrousel(Request $request, $id)
     {
         try {
-            $produto = Produto::findOrFail($id);
+            $produto = ProdutoModel::findOrFail($id);
 
             // Validar o request
             $validated = $request->validate([

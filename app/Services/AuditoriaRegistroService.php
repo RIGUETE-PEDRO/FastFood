@@ -2,16 +2,16 @@
 
 namespace App\Services;
 
-use App\Models\KeyClockAuditoriaModel;
+use App\Models\SecureKeyAuditoriaModel;
 use Illuminate\Support\Facades\Auth;
 
 class AuditoriaRegistroService
 {
-    public function registrar(string $acao, string $recurso, array $detalhes = [], ?int $usuarioId = null): KeyClockAuditoriaModel
+    public function registrar(string $acao, string $recurso, array $detalhes = [], ?int $usuarioId = null): SecureKeyAuditoriaModel
     {
         $usuarioId = $usuarioId ?? Auth::id();
 
-        return KeyClockAuditoriaModel::create([
+        return SecureKeyAuditoriaModel::create([
             'usuario_id' => $usuarioId,
             'acao' => $acao,
             'recurso' => $recurso,

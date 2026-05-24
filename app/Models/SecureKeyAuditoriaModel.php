@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class KeyClockAuditoriaModel extends Model
+class SecureKeyAuditoriaModel extends Model
 {
-    protected $table = 'key_clock_auditoria';
+    protected $table = 'SecureKey_auditoria';
 
     protected $fillable = [
         'usuario_id',

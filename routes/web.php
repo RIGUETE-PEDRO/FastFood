@@ -16,30 +16,30 @@ use App\Http\Controllers\CarrinhoController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PedidosFeitosController;
 use App\Http\Controllers\MesaController;
-use App\Http\Controllers\KeyClockController;
+use App\Http\Controllers\SecureKeyController;
 use App\Http\Controllers\GarcomController;
 use App\Http\Controllers\EntregasController;
 use App\Roles\Roles;
 
 
 ///////////////////////////////////////////////////////
-/* keyclock */
+/* SecureKey */
 ///////////////////////////////////////////////////////
-Route::middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::KEYCLOCK])->group(function () {
-    Route::prefix('keyclock')->group(function () {
-        Route::get('/', [KeyClockController::class, 'index'])->name('keyclock.index');
-        Route::get('/grupo', [KeyClockController::class, 'grupo'])->name('keyclock.grupo');
-        Route::get('/permissoes', [KeyClockController::class, 'permissoes'])->name('keyclock.permissoes');
-        Route::get('/auditoria', [KeyClockController::class, 'auditoria'])->name('keyclock.auditoria');
+Route::middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::SecureKey])->group(function () {
+    Route::prefix('SecureKey')->group(function () {
+        Route::get('/', [SecureKeyController::class, 'index'])->name('SecureKey.index');
+        Route::get('/grupo', [SecureKeyController::class, 'grupo'])->name('SecureKey.grupo');
+        Route::get('/permissoes', [SecureKeyController::class, 'permissoes'])->name('SecureKey.permissoes');
+        Route::get('/auditoria', [SecureKeyController::class, 'auditoria'])->name('SecureKey.auditoria');
     });
 });
 
-Route::middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::KEYCLOCK])->group(function () {
-    Route::post('/permissoes', [KeyClockController::class, 'permissoes'])->name('keyclock.permissoes.store');
-    Route::post('/keyclock/grupo/{grupo}/roles', [KeyClockController::class, 'adicionarRoleGrupo'])
-        ->name('keyclock.grupo.roles.store');
-    Route::delete('/keyclock/grupo/{grupo}/roles/{role}', [KeyClockController::class, 'removerRoleGrupo'])
-        ->name('keyclock.grupo.roles.destroy');
+Route::middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::SecureKey])->group(function () {
+    Route::post('/permissoes', [SecureKeyController::class, 'permissoes'])->name('SecureKey.permissoes.store');
+    Route::post('/SecureKey/grupo/{grupo}/roles', [SecureKeyController::class, 'adicionarRoleGrupo'])
+        ->name('SecureKey.grupo.roles.store');
+    Route::delete('/SecureKey/grupo/{grupo}/roles/{role}', [SecureKeyController::class, 'removerRoleGrupo'])
+        ->name('SecureKey.grupo.roles.destroy');
 });
 
 
@@ -81,7 +81,7 @@ Route::get('/Lista_Produtos', [GerenciamentoProdutoController::class, 'gerenciam
 //cadastro de funcionário
 Route::post('/CadastrarFuncionario', [RegisterController::class, 'registerFuncionario'])
     ->name('CadastrarFuncionario')
-    ->middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::GERENCIAMENTO_FUNCIONARIOS]);
+    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_FUNCIONARIOS]);
 
 //esqueci minha senha
 Route::get('/esqueci-senha', function () {
@@ -103,7 +103,7 @@ Route::get('/perfil', [AdminController::class, 'InfoPerfil'])->name('perfil')->m
 //buscar funcionários
 Route::get('/funcionarios/buscar', [GerenciamentoUsuarioController::class, 'buscarFuncionarios'])
     ->name('funcionarios.buscar')
-    ->middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::GERENCIAMENTO_FUNCIONARIOS]);
+    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_FUNCIONARIOS]);
 /////////////////////////////////////////////////////////
 
 
@@ -116,39 +116,39 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
         ->name('admin.bemvindo');
 
     Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])
-        ->middleware('keyclock.role:' . Roles::DASHBORD)
+        ->middleware('SecureKey.role:' . Roles::DASHBORD)
         ->name('Administrativo');
 
     Route::get('/Pedidos_Administrativo', [PedidosFeitosController::class, 'verPedidosAdmin'])
-        ->middleware('keyclock.role:' . Roles::PEDIDOS)
+        ->middleware('SecureKey.role:' . Roles::PEDIDOS)
         ->name('Pedidos_Administrativo');
 
     Route::get('/entregas', [EntregasController::class, 'index'])
-        ->middleware('keyclock.role:' . Roles::ENTREGAS)
+        ->middleware('SecureKey.role:' . Roles::ENTREGAS)
         ->name('entregas');
 
     Route::post('/entregas/{pedido}/aceitar', [EntregasController::class, 'aceitar'])
-        ->middleware('keyclock.role:' . Roles::ENTREGAS)
+        ->middleware('SecureKey.role:' . Roles::ENTREGAS)
         ->name('entregas.aceitar');
 
     Route::post('/entregas/{pedido}/finalizar', [EntregasController::class, 'finalizar'])
-        ->middleware('keyclock.role:' . Roles::ENTREGAS)
+        ->middleware('SecureKey.role:' . Roles::ENTREGAS)
         ->name('entregas.finalizar');
 
     Route::patch('/Pedidos/Administrativo/{pedido}/status', [PedidosFeitosController::class, 'atualizarStatus'])
-        ->middleware('keyclock.role:' . Roles::PEDIDOS)
+        ->middleware('SecureKey.role:' . Roles::PEDIDOS)
         ->name('Pedidos.StatusAtualizar');
 
     Route::post('/Pedidos/Administrativo/{pedido}/avancar', [PedidosFeitosController::class, 'avancarStatus'])
-        ->middleware('keyclock.role:' . Roles::PEDIDOS)
+        ->middleware('SecureKey.role:' . Roles::PEDIDOS)
         ->name('Pedidos.StatusAvancar');
 
     Route::get('/Pedidos.Administrativo/poll', [PedidosFeitosController::class, 'pollResumo'])
-        ->middleware('keyclock.role:' . Roles::PEDIDOS)
+        ->middleware('SecureKey.role:' . Roles::PEDIDOS)
         ->name('Pedidos.Poll');
 
     Route::get('GerarCupom/{pedido}', [PedidosFeitosController::class,'gerarCumpom' ])
-        ->middleware('keyclock.role:' . Roles::PEDIDOS)
+        ->middleware('SecureKey.role:' . Roles::PEDIDOS)
         ->name('Pedidos.GerarCupom');
 
 
@@ -163,23 +163,23 @@ Route::middleware(['auth'])->group(function () {
 ///////////////////////////////////////////////////////
 Route::post('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])
     ->name('gerenciamento_produtos')
-    ->middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
+    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
 
 Route::post('/Cadastrar_Produto', [GerenciamentoProdutoController::class, 'cadastrarProduto'])
     ->name('Cadastrar_Produto')
-    ->middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
+    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
 
 Route::get('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])
     ->name('gerenciamento_Produtos')
-    ->middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
+    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
 
 Route::post('/gerenciamento_Produtos/{id}/deletar', [GerenciamentoProdutoController::class, 'deletarProduto'])
     ->name('deletar_produto')
-    ->middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
+    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
 
 /* API - Carrousel Toggle */
 Route::post('/api/produtos/{id}/carrousel', [GerenciamentoProdutoController::class, 'toggleCarrousel'])
-    ->middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::GERENCIAMENTO_PRODUTOS])
+    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_PRODUTOS])
     ->name('produtos.carrousel.toggle');
 
 ///////////////////////////////////////////////////////
@@ -198,7 +198,7 @@ Route::get('/porcao', [PorcaoController::class, 'porcao'])->name('Porcao');
 /* GERENCIAMENTO DE GARCOM */
 ///////////////////////////////////////////////////////
 
-Route::middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::GARCOM])->group(function () {
+Route::middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GARCOM])->group(function () {
     Route::get('/garcom', [GarcomController::class, 'index'])->name('garcom');
 
 });
@@ -234,7 +234,7 @@ Route::middleware(['auth'])->group(function () {
 ///////////////////////////////////////////////////////
 /* GERENCIAMENTO DE MESAS */
 ///////////////////////////////////////////////////////
-Route::middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::MESAS])->group(function () {
+Route::middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::MESAS])->group(function () {
     // Listagem das mesas (Página Principal)
     Route::get('/mesas', [MesaController::class, 'Mesa'])->name('mesas.index');
 
@@ -277,7 +277,7 @@ Route::get('/AcessoNegado', function () {
 /* GERENCIAMENTO DE FUNCIONARIO */
 ///////////////////////////////////////////////////////
 
-Route::middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::GERENCIAMENTO_FUNCIONARIOS])->group(function () {
+Route::middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_FUNCIONARIOS])->group(function () {
     Route::get('/gerenciamento_Funcionario', [GerenciamentoUsuarioController::class, 'gerenciamentoFuncionario'])
         ->name('gerenciamento_funcionarios');
 
@@ -290,7 +290,7 @@ Route::middleware(['auth', 'admin.access', 'keyclock.role:' . Roles::GERENCIAMEN
 
 
 Route::post('/atualizar_produto/{id}/atualizar', [GerenciamentoProdutoController::class, 'atualizarProduto'])
-    ->middleware('keyclock.role:' . Roles::GERENCIAMENTO_PRODUTOS)
+    ->middleware('SecureKey.role:' . Roles::GERENCIAMENTO_PRODUTOS)
     ->name('produtos.atualizar');
 });
 //pegar dados do usuário logado

@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
     {
 
         // Tipos de usuário (idempotente: não duplica por causa do UNIQUE)
-        $tipos = ['Cliente', 'Estabelecimento', 'Administrador', 'Entregador','keyclock','garçom'];
+        $tipos = ['Cliente', 'Estabelecimento', 'Administrador', 'Entregador','SecureKey','garçom'];
         foreach ($tipos as $descricao) {
             DB::table('tipo_usuarios')->updateOrInsert(
                 ['descricao' => $descricao],

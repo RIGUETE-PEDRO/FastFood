@@ -5,7 +5,7 @@ class Roles
 {
     const ADMIN = 'admin';
     const USER = 'user';
-    const KEYCLOCK = 'keyclock';
+    const SecureKey = 'SecureKey';
     const DASHBORD = 'dashbord';
     const PEDIDOS = 'pedidos';
     const GERENCIAMENTO_FUNCIONARIOS = 'gerenciamento_funcionarios';

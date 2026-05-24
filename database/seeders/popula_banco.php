@@ -33,8 +33,8 @@ class popula_banco extends Seeder
 
             ],
              [
-                'nome' => 'Keyclock',
-                'email' => 'keyclock@gmail.com',
+                'nome' => 'SecureKey',
+                'email' => 'SecureKey@gmail.com',
                 'senha' => bcrypt('123456789'),
                 'telefone' => '1234567890',
                 'tipo_usuario_id' => 5,

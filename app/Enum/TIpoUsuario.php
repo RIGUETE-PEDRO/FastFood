@@ -7,7 +7,7 @@ enum TipoUsuario: int
     case ESTABELECIMENTO = 2;
     case ADMINISTRADOR = 3;
     case ENTREGADOR = 4;
-    case KEYCLOCK = 5;
+    case SecureKey = 5;
     case GARCOM = 6;
 
     public function label(): string
@@ -17,7 +17,7 @@ enum TipoUsuario: int
             self::ESTABELECIMENTO => 'Estabelecimento',
             self::ADMINISTRADOR   => 'Administrador',
             self::ENTREGADOR      => 'Entregador',
-            self::KEYCLOCK        => 'keyclock',
+            self::SecureKey        => 'SecureKey',
             self::GARCOM          => 'garçom',
         };
     }

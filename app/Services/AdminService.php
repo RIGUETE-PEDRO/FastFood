@@ -15,13 +15,13 @@ class AdminService
 {
     protected GenericBase $genericBase;
     protected AdminRepository $adminRepositoryimpl;
-    protected KeyClockService $keyClockService;
+    protected SecureKeyService $SecureKeyService;
 
-    public function __construct(GenericBase $genericBase, AdminRepository $adminRepositoryimpl, KeyClockService $keyClockService)
+    public function __construct(GenericBase $genericBase, AdminRepository $adminRepositoryimpl, SecureKeyService $SecureKeyService)
     {
         $this->genericBase = $genericBase;
         $this->adminRepositoryimpl = $adminRepositoryimpl;
-        $this->keyClockService = $keyClockService;
+        $this->SecureKeyService = $SecureKeyService;
     }
 
     public function inserirImagemPerfil(array $data, $file = null): array
@@ -93,7 +93,7 @@ class AdminService
     public function verificarAcessoPerfil()
     {
         $usuarioLogado =  $this->genericBase->hasLogado();
-        $hasRole = $this->keyClockService->hasRole($usuarioLogado, Roles::ADMIN);
+        $hasRole = $this->SecureKeyService->hasRole($usuarioLogado, Roles::ADMIN);
         if (!$hasRole) {
             abort(403, ErroMensagens::ACESSO_NEGADO);
         }

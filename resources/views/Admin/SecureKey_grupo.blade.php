@@ -5,22 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>KeyClock - Grupos</title>
-    <link rel="stylesheet" href="{{ asset('css/Admin/Keyclock.css') }}">
-    <script src="{{ asset('js/Admin/keyclock-grupo.js') }}" defer></script>
+    <title>SecureKey - Grupos</title>
+    <link rel="stylesheet" href="{{ asset('css/Admin/SecureKey.css') }}">
+    <script src="{{ asset('js/Admin/SecureKey-grupo.js') }}" defer></script>
 </head>
 
 <body>
     <div class="kc-layout">
         <aside class="kc-sidebar">
-            <div class="kc-brand">KeyClock</div>
+            <div class="kc-brand">SecureKey</div>
 
             <nav class="kc-nav">
-                <a href="{{ route('keyclock.index') }}" class="kc-link">Visão geral</a>
+                <a href="{{ route('SecureKey.index') }}" class="kc-link">Visão geral</a>
 
-                <a href="{{ route('keyclock.grupo') }}" class="kc-link active">Grupos</a>
-                <a href="{{ route('keyclock.permissoes') }}" class="kc-link">Criar roles</a>
-                <a href="{{ route('keyclock.auditoria') }}" class="kc-link">Auditoria</a>
+                <a href="{{ route('SecureKey.grupo') }}" class="kc-link active">Grupos</a>
+                <a href="{{ route('SecureKey.permissoes') }}" class="kc-link">Criar roles</a>
+                <a href="{{ route('SecureKey.auditoria') }}" class="kc-link">Auditoria</a>
                 <a href="{{ route('login.form') }}" class="kc-link kc-link-login">Voltar para login</a>
             </nav>
         </aside>
@@ -40,8 +40,8 @@
                 <div
                     id="kc-grupo-role-source"
                     data-roles='@json($roles->map(fn($role) => ["id" => $role->id, "nome" => $role->nome])->values())'
-                    data-add-url-template="{{ route('keyclock.grupo.roles.store', ['grupo' => '__GRUPO__']) }}"
-                    data-remove-url-template="{{ route('keyclock.grupo.roles.destroy', ['grupo' => '__GRUPO__', 'role' => '__ROLE__']) }}"
+                    data-add-url-template="{{ route('SecureKey.grupo.roles.store', ['grupo' => '__GRUPO__']) }}"
+                    data-remove-url-template="{{ route('SecureKey.grupo.roles.destroy', ['grupo' => '__GRUPO__', 'role' => '__ROLE__']) }}"
                     hidden
                 ></div>
 

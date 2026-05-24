@@ -17,12 +17,12 @@ use Illuminate\Support\Str;
 class LoginService
 {
     protected GenericBase $genericBase;
-    protected keyclockService $keyclockService;
+    protected SecureKeyService $SecureKeyService;
     protected LoginRepositoryimpl $loginRepository;
-    public function __construct(GenericBase $genericBase, keyclockService $keyclockService, LoginRepositoryimpl $loginRepository)
+    public function __construct(GenericBase $genericBase, SecureKeyService $SecureKeyService, LoginRepositoryimpl $loginRepository)
     {
         $this->genericBase = $genericBase;
-        $this->keyclockService = $keyclockService;
+        $this->SecureKeyService = $SecureKeyService;
         $this->loginRepository = $loginRepository;
     }
     //função de autenticação de usuário
@@ -71,9 +71,9 @@ class LoginService
         if (!$autenticador) {
             return redirect()->route('login');
         }
-        //altenticação de usuário e redirecionamento para a página correta com base no tipo de usuário do keyclock
-        if ($this->keyclockService->hasRole($usuario, Roles::KEYCLOCK)) {
-            return redirect()->route('keyclock.index');
+        //altenticação de usuário e redirecionamento para a página correta com base no tipo de usuário do SecureKey
+        if ($this->SecureKeyService->hasRole($usuario, Roles::SecureKey)) {
+            return redirect()->route('SecureKey.index');
         }
 
         if ($usuario->tipo_usuario_id !== TipoUsuario::CLIENTE->value) {

@@ -1,7 +1,7 @@
 /* Body e fonte */
 body {
-    background: #F1C763;
-background: radial-gradient(circle,rgba(241, 199, 99, 1) 1%, rgba(255, 123, 0, 1) 46%, rgba(176, 76, 68, 1) 90%);
+    background: #F8DFC5;
+    background: radial-gradient(circle,rgba(248, 223, 197, 1) 27%, rgba(57, 46, 41, 1) 100%);
     font-family: Arial, sans-serif;
     margin: 0;
     min-height: 100vh;

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\KeyClockAuditoriaModel;
+use App\Models\SecureKeyAuditoriaModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Request as RequestFacade;
@@ -16,17 +16,17 @@ class AuditoriaService
      * @param string $recurso
      * @param array $detalhes
      * @param int|null $usuarioId
-     * @return KeyClockAuditoriaModel
+     * @return SecureKeyAuditoriaModel
      */
     public static function registrar(
         string $acao,
         string $recurso,
         array $detalhes = [],
         ?int $usuarioId = null
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         $usuarioId = $usuarioId ?? Auth::id();
 
-        return KeyClockAuditoriaModel::create([
+        return SecureKeyAuditoriaModel::create([
             'usuario_id' => $usuarioId,
             'acao' => $acao,
             'recurso' => $recurso,
@@ -43,7 +43,7 @@ class AuditoriaService
         string $recurso,
         array $dados,
         ?int $usuarioId = null
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             'criar',
             $recurso,
@@ -60,7 +60,7 @@ class AuditoriaService
         array $dadosAntigos,
         array $dadosNovos,
         ?int $usuarioId = null
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             'atualizar',
             $recurso,
@@ -82,7 +82,7 @@ class AuditoriaService
         string $recurso,
         array $dados,
         ?int $usuarioId = null
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             'excluir',
             $recurso,
@@ -98,7 +98,7 @@ class AuditoriaService
         string $recurso,
         int $resourceId,
         ?int $usuarioId = null
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             'visualizar',
             "{$recurso}:{$resourceId}",
@@ -113,7 +113,7 @@ class AuditoriaService
     public static function registrarLogin(
         int $usuarioId,
         string $metodo = 'email'
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             'login',
             'autenticacao',
@@ -130,7 +130,7 @@ class AuditoriaService
      */
     public static function registrarLogout(
         int $usuarioId
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             'logout',
             'autenticacao',
@@ -147,7 +147,7 @@ class AuditoriaService
         array $rolesAntigos,
         array $rolesNovos,
         ?int $usuarioIdAdmin = null
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             'alterar_permissoes',
             "usuario:{$usuarioIdAlvo}",
@@ -168,7 +168,7 @@ class AuditoriaService
         string $descricao,
         array $contexto = [],
         ?int $usuarioId = null
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             $acao,
             $recurso,
@@ -189,7 +189,7 @@ class AuditoriaService
         string $status,
         array $dadosPagamento,
         ?int $usuarioId = null
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             'processar_pagamento',
             "pedido:{$pedidoId}",
@@ -211,7 +211,7 @@ class AuditoriaService
         string $statusNovo,
         string $motivo = '',
         ?int $usuarioId = null
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             'mudanca_status_pedido',
             "pedido:{$pedidoId}",
@@ -234,7 +234,7 @@ class AuditoriaService
         int $quantidade,
         float $preco,
         ?int $usuarioId = null
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             'adicionar_carrinho',
             "carrinho:{$carrinhoId}",
@@ -256,7 +256,7 @@ class AuditoriaService
         int $produtoId,
         int $quantidade,
         ?int $usuarioId = null
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             'remover_carrinho',
             "carrinho:{$carrinhoId}",
@@ -276,7 +276,7 @@ class AuditoriaService
         string $recurso,
         string $motivo = '',
         ?int $usuarioId = null
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             'acesso_negado',
             $recurso,
@@ -296,7 +296,7 @@ class AuditoriaService
         string $tipoRelatorio,
         array $filtros = [],
         ?int $usuarioId = null
-    ): KeyClockAuditoriaModel {
+    ): SecureKeyAuditoriaModel {
         return self::registrar(
             'gerar_relatorio',
             $tipoRelatorio,

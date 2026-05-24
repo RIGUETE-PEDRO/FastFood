@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auditoria Keycloak</title>
+    <title>Auditoria SecureKey</title>
     @vite(['resources/js/app.js'])
-    <link rel="stylesheet" href="{{ asset('css/Admin/Keyclock.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/SecureKey.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Admin/Auditoria.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -14,20 +14,20 @@
 <body>
     <div class="kc-layout">
         <aside class="kc-sidebar">
-            <div class="kc-brand">KeyClock</div>
+            <div class="kc-brand">SecureKey</div>
 
             <nav class="kc-nav">
-                <a href="{{ route('keyclock.index') }}" class="kc-link">Visão geral</a>
-                <a href="{{ route('keyclock.grupo') }}" class="kc-link">Grupos</a>
-                <a href="{{ route('keyclock.permissoes') }}" class="kc-link">Criar roles</a>
-                <a href="{{ route('keyclock.auditoria') }}" class="kc-link active">Auditoria</a>
+                <a href="{{ route('SecureKey.index') }}" class="kc-link">Visão geral</a>
+                <a href="{{ route('SecureKey.grupo') }}" class="kc-link">Grupos</a>
+                <a href="{{ route('SecureKey.permissoes') }}" class="kc-link">Criar roles</a>
+                <a href="{{ route('SecureKey.auditoria') }}" class="kc-link active">Auditoria</a>
                 <a href="{{ route('login.form') }}" class="kc-link kc-link-login">Voltar para login</a>
             </nav>
         </aside>
 
         <main class="kc-content auditoria-container">
                 <section class="auditoria-header">
-                    <h1>📋 Auditoria Keycloak</h1>
+                    <h1>📋 Auditoria SecureKey</h1>
                     <p>Histórico de ações, eventos de autenticação e segurança do sistema.</p>
                 </section>
 
@@ -37,7 +37,7 @@
                         <h5>🔍 Filtros</h5>
                     </div>
                     <div class="card-body">
-                        <form method="GET" action="{{ route('keyclock.auditoria') }}" class="row g-3">
+                        <form method="GET" action="{{ route('SecureKey.auditoria') }}" class="row g-3">
                             <div class="col-md-3">
                                 <label for="filtro" class="form-label">Tipo de Filtro</label>
                                 <select name="filtro" id="filtro" class="form-select">
@@ -78,7 +78,7 @@
                             </div>
 
                             <div class="col-md-2 d-flex align-items-end">
-                                <a href="{{ route('keyclock.auditoria') }}" class="btn btn-secondary w-100">
+                                <a href="{{ route('SecureKey.auditoria') }}" class="btn btn-secondary w-100">
                                     <i class="fas fa-redo"></i> Limpar
                                 </a>
                             </div>
@@ -88,7 +88,7 @@
 
                 <!-- Tabela de Auditoria -->
                 <section class="card auditoria-table">
-                    <div id="auditoria-config" data-url="{{ route('keyclock.auditoria') }}" hidden></div>
+                    <div id="auditoria-config" data-url="{{ route('SecureKey.auditoria') }}" hidden></div>
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5>📊 Registros de Auditoria</h5>
                         <span class="badge bg-light text-dark" id="auditoria-total-badge">{{ $auditorias->total() }} registros</span>
@@ -109,7 +109,7 @@
                                 </tr>
                             </thead>
                             <tbody id="auditoria-table-body">
-                                @include('Admin.partials.keyclock_auditoria_rows', ['auditorias' => $auditorias])
+                                @include('Admin.partials.SecureKey_auditoria_rows', ['auditorias' => $auditorias])
                             </tbody>
                         </table>
                     </div>
@@ -124,7 +124,7 @@
 
                 <!-- Estatísticas Rápidas -->
                 <div class="row auditoria-stats mt-4" id="auditoria-stats-container">
-                    @include('Admin.partials.keyclock_auditoria_stats', ['auditorias' => $auditorias])
+                    @include('Admin.partials.SecureKey_auditoria_stats', ['auditorias' => $auditorias])
                 </div>
         </main>
     </div>
@@ -195,4 +195,3 @@
 </body>
 
 </html>
-

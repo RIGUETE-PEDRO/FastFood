@@ -70,6 +70,7 @@
                                     <label class="toggle-switch">
                                         <input type="checkbox" class="toggle-carrousel"
                                                data-produto-id="{{ $produto->id }}"
+                                               data-url="{{ route('produtos.carrousel.toggle', $produto->id) }}"
                                                {{ isset($produto->no_carrousel) && $produto->no_carrousel ? 'checked' : '' }}>
                                         <span class="toggle-slider"></span>
                                     </label>

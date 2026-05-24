@@ -3,10 +3,10 @@
 namespace App\Repositoryimpl;
 
 use App\Models\UsuarioModel;
-use App\Repository\KeyClockRepository;
+use App\Repository\SecureKeyRepository;
 use Illuminate\Support\Facades\DB;
 
-class KeyClockRepositoryimpl implements KeyClockRepository
+class SecureKeyRepositoryimpl implements SecureKeyRepository
 {
     public function hasRole(UsuarioModel $usuario, string $roleName): bool
     {
@@ -15,7 +15,7 @@ class KeyClockRepositoryimpl implements KeyClockRepository
         if (!$role) {
             return false;
         }
-        return DB::table('keyclock_tipo_usuario as ktu')
+        return DB::table('SecureKey_tipo_usuario as ktu')
             ->join('roles as r', 'r.id', '=', 'ktu.role_id')
             ->where('ktu.tipo_usuario_id', $usuario->tipo_usuario_id)
             ->where('r.nome', $roleName)
@@ -57,7 +57,7 @@ class KeyClockRepositoryimpl implements KeyClockRepository
 			return [];
 		}
 
-		return DB::table('keyclock_tipo_usuario as ktu')
+		return DB::table('SecureKey_tipo_usuario as ktu')
 			->join('roles as r', 'r.id', '=', 'ktu.role_id')
 			->whereIn('ktu.tipo_usuario_id', $grupoIds)
 			->select('ktu.tipo_usuario_id as grupo_id', 'r.id as role_id', 'r.nome')
@@ -76,7 +76,7 @@ class KeyClockRepositoryimpl implements KeyClockRepository
 
 	public function adicionarRoleAoGrupo(int $tipoUsuarioId, int $roleId): void
 	{
-		DB::table('keyclock_tipo_usuario')->updateOrInsert(
+		DB::table('SecureKey_tipo_usuario')->updateOrInsert(
 			[
 				'tipo_usuario_id' => $tipoUsuarioId,
 				'role_id' => $roleId,
@@ -90,7 +90,7 @@ class KeyClockRepositoryimpl implements KeyClockRepository
 
 	public function removerRoleDoGrupo(int $tipoUsuarioId, int $roleId): void
 	{
-		DB::table('keyclock_tipo_usuario')
+		DB::table('SecureKey_tipo_usuario')
 			->where('tipo_usuario_id', $tipoUsuarioId)
 			->where('role_id', $roleId)
 			->delete();

@@ -2,7 +2,7 @@
 
 namespace App\Repositoryimpl;
 
-use App\Models\KeyClockAuditoriaModel;
+use App\Models\SecureKeyAuditoriaModel;
 use App\Repository\AuditoriaRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -10,7 +10,7 @@ class AuditoriaRepositoryimpl implements AuditoriaRepository
 {
     public function buscar(array $filtros = [], int $porPagina = 20): LengthAwarePaginator
     {
-        $query = KeyClockAuditoriaModel::with('usuario');
+        $query = SecureKeyAuditoriaModel::with('usuario');
 
         $filtro = $filtros['filtro'] ?? null;
         $valor = trim((string) ($filtros['valor'] ?? ''));

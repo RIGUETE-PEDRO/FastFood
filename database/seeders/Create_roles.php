@@ -19,7 +19,7 @@ class Create_roles extends Seeder
                     'created_at' => now()
                 ],
                 [
-                    'nome' => 'keyclock',
+                    'nome' => 'SecureKey',
                     'created_at' => now()
                 ],
                 [

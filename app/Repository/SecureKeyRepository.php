@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Models\UsuarioModel;
 
-interface KeyClockRepository
+interface SecureKeyRepository
 {
     public function hasRole(UsuarioModel $usuario, string $roleName): bool;
 

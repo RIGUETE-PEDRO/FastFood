@@ -11,15 +11,15 @@ use App\Repository\AdminRepository;
 use App\Repository\AuditoriaRepository;
 use App\Repository\CarrinhoRepository;
 use App\Repository\GarcomRepository;
-use App\Repository\KeyClockRepository;
+use App\Repository\SecureKeyRepository;
 use App\Roles\Roles;
-use App\Services\KeyClockService;
+use App\Services\SecureKeyService;
 use App\Models\UsuarioModel;
 use App\Repositoryimpl\AdminRepositoryimpl;
 use App\Repositoryimpl\AuditoriaRepositoryimpl;
 use App\Repositoryimpl\CarrinhoRepositoryimpl;
 use App\Repositoryimpl\GarcomRepositoryimpl;
-use App\Repositoryimpl\KeyClockRepositoryimpl;
+use App\Repositoryimpl\SecureKeyRepositoryimpl;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AuditoriaRepository::class, AuditoriaRepositoryimpl::class);
         $this->app->bind(CarrinhoRepository::class, CarrinhoRepositoryimpl::class);
         $this->app->bind(GarcomRepository::class, GarcomRepositoryimpl::class);
-        $this->app->bind(KeyClockRepository::class, KeyClockRepositoryimpl::class);
+        $this->app->bind(SecureKeyRepository::class, SecureKeyRepositoryimpl::class);
         $this->app->bind(PedidosFeitosRepository::class,PedidosFeitosRepositoryimpl::class);
         $this->app->bind(IndexProdutoRepository::class, IndexProdutoRepositoryimpl::class);
     }
@@ -69,7 +69,7 @@ class AppServiceProvider extends ServiceProvider
 
             $roleName = $resolverRole($roleName);
 
-            return app(KeyClockService::class)->hasRole($usuario, $roleName);
+            return app(SecureKeyService::class)->hasRole($usuario, $roleName);
         });
 
         Blade::if('anyrole', function (...$roleNames) use ($resolverRole) {
@@ -85,7 +85,7 @@ class AppServiceProvider extends ServiceProvider
                 ->map(fn($r) => $resolverRole($r));
 
             foreach ($roles as $roleName) {
-                if (app(KeyClockService::class)->hasRole($usuario, $roleName)) {
+                if (app(SecureKeyService::class)->hasRole($usuario, $roleName)) {
                     return true;
                 }
             }

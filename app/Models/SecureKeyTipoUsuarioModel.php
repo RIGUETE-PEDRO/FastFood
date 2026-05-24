@@ -6,10 +6,10 @@ use App\Enum\TipoUsuario;
 use App\Roles\Roles;
 use Illuminate\Database\Eloquent\Model;
 
-class KeyClockTipoUsuarioModel extends Model
+class SecureKeyTipoUsuarioModel extends Model
 {
     // Corrige para o nome real da tabela
-    protected $table = 'keyclock_tipo_usuario';
+    protected $table = 'SecureKey_tipo_usuario';
     protected $fillable = [
         'tipo_usuario_id',
         'role_id',

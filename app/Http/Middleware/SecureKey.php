@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class Keyclock
+class SecureKey
 {
     public function handle(Request $request, Closure $next, ...$rolesPermitidas)
     {
@@ -19,7 +19,7 @@ class Keyclock
                 ->with('erro', ErroMensagens::FAZER_LOGIN_PARA_ACESSAR);
         }
 
-        $query = DB::table('keyclock_tipo_usuario as ktu')
+        $query = DB::table('SecureKey_tipo_usuario as ktu')
             ->join('roles as r', 'r.id', '=', 'ktu.role_id')
             ->where('ktu.tipo_usuario_id', (int) $usuario->tipo_usuario_id);
 
