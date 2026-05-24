@@ -4,15 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title>Carrinho</title>
-    @vite(['resources/js/app.js'])
-    <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/Index.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/Carrinho.css') }}">
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/js/app.js']); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('css/Admin/Principal.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('css/Index.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('css/Carrinho.css')); ?>">
 </head>
 
-@php
+<?php
 $enderecos = collect($enderecos ?? []);
 $cidadesLista = collect($cidades ?? []);
 $cidadeSelecionada = old('cidade_id', session('checkout.cidade_id'));
@@ -24,12 +24,12 @@ $podeRemoverEndereco = $totalEnderecos > 1;
 $pagamentoSalvo = session('checkout.pagamento', []);
 $pagamentoMetodoSelecionado = old('pagamento_metodo', $pagamentoSalvo['metodo'] ?? 'cartao_credito');
 $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoes'] ?? '');
-@endphp
+?>
 
-<body @if ($modalReabrir) data-open-modal="{{ $modalReabrir }}" @endif>
+<body <?php if($modalReabrir): ?> data-open-modal="<?php echo e($modalReabrir); ?>" <?php endif; ?>>
 
     <div class="ff-shell">
-        @include('layouts.sidebar')
+        <?php echo $__env->make('layouts.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
         <div class="ff-main">
             <button type="button" class="ff-sidebar-toggle" data-sidebar-toggle aria-label="Abrir menu">
                 <span class="ff-sidebar-toggle__icon">&#9776;</span> Menu
@@ -44,12 +44,12 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                             <p class="cart-page-header__eyebrow">Seu pedido</p>
                             <h1>Carrinho</h1>
                         </div>
-                        <span class="cart-page-header__count">{{ $carrinho->count() }} {{ $carrinho->count() === 1 ? 'item' : 'itens' }}</span>
+                        <span class="cart-page-header__count"><?php echo e($carrinho->count()); ?> <?php echo e($carrinho->count() === 1 ? 'item' : 'itens'); ?></span>
                     </div>
 
 
 
-                    @if ($carrinho->isEmpty())
+                    <?php if($carrinho->isEmpty()): ?>
                     <div class="empty-state">
                         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M8 1a2.5 2.5 0 0 0-2.5 2.5V4H3a1 1 0 0 0-1 1v8.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V5a1 1 0 0 0-1-1h-2.5v-.5A2.5 2.5 0 0 0 8 1zm-1.5 3v-.5a1.5 1.5 0 0 1 3 0V4h-3z" />
@@ -57,7 +57,7 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                         <h3>Nenhum produto encontrado</h3>
                         <p>Adicione produtos para começar a gerenciar seu carrinho.</p>
                     </div>
-                    @else
+                    <?php else: ?>
                     <table class="table">
                         <thead>
                             <tr class="title-table">
@@ -71,58 +71,60 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($carrinho as $item)
+                            <?php $__currentLoopData = $carrinho; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <tr>
                                 <td data-label="Selecionar">
-                                    <form action="{{ route('carrinho.toggle', $item->id) }}" method="POST">
-                                        @csrf
-                                        @method('PUT')
+                                    <form action="<?php echo e(route('carrinho.toggle', $item->id)); ?>" method="POST">
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('PUT'); ?>
                                         <label class="cbx-container">
-                                            <input type="checkbox" class="cbx" name="ativo" value="1" {{ $item->selecionado ? 'checked' : '' }} data-auto-submit-on-change>
+                                            <input type="checkbox" class="cbx" name="ativo" value="1" <?php echo e($item->selecionado ? 'checked' : ''); ?> data-auto-submit-on-change>
                                             <span class="cbx-custom"></span>
                                         </label>
                                     </form>
                                 </td>
                                 <td data-label="Imagem">
-                                    <img src="{{ asset('img/produtos/' . $item->produto->imagem_url) }}" style="width:48px; height:48px; object-fit:cover; border-radius:8px;" alt="{{ $item->produto->nome }}">
+                                    <img src="<?php echo e(asset('img/produtos/' . $item->produto->imagem_url)); ?>" style="width:48px; height:48px; object-fit:cover; border-radius:8px;" alt="<?php echo e($item->produto->nome); ?>">
                                 </td>
-                                <td data-label="Produto" class="cart-product-name">{{ $item->produto->nome }}</td>
-                                <td data-label="Preço unitário">R$ {{ number_format((float) $item->produto->preco, 2, ',', '.') }}</td>
-                                <td data-label="Preço total" class="cart-line-total">R$ {{ number_format((float) $item->preco_total, 2, ',', '.') }}</td>
+                                <td data-label="Produto" class="cart-product-name"><?php echo e($item->produto->nome); ?></td>
+                                <td data-label="Preço unitário">R$ <?php echo e(number_format((float) $item->produto->preco, 2, ',', '.')); ?></td>
+                                <td data-label="Preço total" class="cart-line-total">R$ <?php echo e(number_format((float) $item->preco_total, 2, ',', '.')); ?></td>
                                 <td data-label="Quantidade">
-                                    <form data-qty-form action="{{ route('carrinho.atualizarQuantidade', $item->id) }}" method="POST">
-                                        @csrf
-                                        @method('PUT')
+                                    <form data-qty-form action="<?php echo e(route('carrinho.atualizarQuantidade', $item->id)); ?>" method="POST">
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('PUT'); ?>
                                         <button type="submit" name="acao" value="menos" class="button negativo">-</button>
-                                        <input class="input-quantidade" type="number" name="quantidade" min="1" value="{{ $item->quantidade }}" />
+                                        <input class="input-quantidade" type="number" name="quantidade" min="1" value="<?php echo e($item->quantidade); ?>" />
                                         <button type="submit" name="acao" value="mais" class="button positivo">+</button>
                                     </form>
                                 </td>
                                 <td data-label="Ação">
-                                    <form method="POST" action="{{ route('carrinho.remover', $item->id) }}">
-                                        @csrf
+                                    <form method="POST" action="<?php echo e(route('carrinho.remover', $item->id)); ?>">
+                                        <?php echo csrf_field(); ?>
                                         <button type="submit" class="btn btn-danger">Remover</button>
                                     </form>
                                 </td>
                             </tr>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
                     </table>
-                    @endif
+                    <?php endif; ?>
 
                     <div class="finalizar-compra">
-                        @if ($carrinho->where('selecionado', true)->count() > 0)
+                        <?php if($carrinho->where('selecionado', true)->count() > 0): ?>
                         <button id="btnFinalizarCompra" type="button" class="btn btn-primary">Finalizar pedido</button>
                         <span class="total-compra">
-                            Total: R$ {{ number_format((float) $carrinho->where('selecionado', true)->sum('preco_total'), 2, ',', '.') }}
+                            Total: R$ <?php echo e(number_format((float) $carrinho->where('selecionado', true)->sum('preco_total'), 2, ',', '.')); ?>
+
                         </span>
-                        @else
+                        <?php else: ?>
                         <button id="btnFinalizarCompra" type="button" class="btn btn-primary" disabled>Finalizar pedido</button>
                         <span class="total-compra">
-                            Total: R$ {{ number_format((float) $carrinho->where('selecionado', true)->sum('preco_total'), 2, ',', '.') }}
+                            Total: R$ <?php echo e(number_format((float) $carrinho->where('selecionado', true)->sum('preco_total'), 2, ',', '.')); ?>
+
                             <span class="aviso">selecione um produto</span>
                         </span>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
             </main>
@@ -140,7 +142,7 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                     </div>
 
                     <form id="tipoEntregaForm" method="POST" action="#">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <p class="ff-modal__hint">Escolha uma opção para continuar.</p>
 
                         <div class="ff-choice">
@@ -183,19 +185,19 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                         <button type="button" class="ff-modal__close" data-modal-close aria-label="Fechar">×</button>
                     </div>
 
-                    <form id="mesaForm" method="POST" action="{{ route('carrinho.mesa') }}">
-                        @csrf
+                    <form id="mesaForm" method="POST" action="<?php echo e(route('carrinho.mesa')); ?>">
+                        <?php echo csrf_field(); ?>
                         <input type="hidden" name="tipo_entrega" value="retirar">
 
                         <div class="ff-field">
                             <label for="mesa_id">Número da mesa</label>
                             <select id="mesa_id" name="mesa_id" class="ff-select" required>
                                 <option value="">Selecione a mesa</option>
-                                @forelse ($mesas as $mesa)
-                                <option value="{{ $mesa->id }}">Mesa {{ $mesa->numero_da_mesa }}</option>
-                                @empty
+                                <?php $__empty_1 = true; $__currentLoopData = $mesas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $mesa): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                <option value="<?php echo e($mesa->id); ?>">Mesa <?php echo e($mesa->numero_da_mesa); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 <option value="" disabled>Nenhuma mesa disponível</option>
-                                @endforelse
+                                <?php endif; ?>
                             </select>
                         </div>
 
@@ -221,47 +223,47 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                         <button type="button" class="ff-modal__close" data-modal-close aria-label="Fechar">×</button>
                     </div>
 
-                    <form id="enderecoForm" method="POST" action="{{ route('carrinho.endereco') }}">
-                        @csrf
+                    <form id="enderecoForm" method="POST" action="<?php echo e(route('carrinho.endereco')); ?>">
+                        <?php echo csrf_field(); ?>
                         <input type="hidden" name="tipo_entrega" value="entrega">
 
                         <div class="ff-address-options">
-                            @if ($enderecos->isNotEmpty())
+                            <?php if($enderecos->isNotEmpty()): ?>
                             <p class="ff-address-options__title">Selecione um endereço salvo</p>
                             <div class="ff-address-list" data-endereco-lista>
-                                @foreach ($enderecos as $endereco)
-                                <div class="ff-address-list__item {{ $podeRemoverEndereco ? '' : 'ff-address-list__item--locked' }}">
+                                <?php $__currentLoopData = $enderecos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $endereco): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <div class="ff-address-list__item <?php echo e($podeRemoverEndereco ? '' : 'ff-address-list__item--locked'); ?>">
                                     <label class="ff-choice__item">
-                                        <input type="radio" name="endereco_opcao" value="{{ $endereco->id }}" {{ (string) $enderecoSelecionado === (string) $endereco->id ? 'checked' : '' }}>
+                                        <input type="radio" name="endereco_opcao" value="<?php echo e($endereco->id); ?>" <?php echo e((string) $enderecoSelecionado === (string) $endereco->id ? 'checked' : ''); ?>>
                                         <span>
-                                            <strong>{{ $endereco->logradouro }}{{ $endereco->numero ? ', ' . $endereco->numero : '' }}</strong>
-                                            <small>{{ $endereco->bairro }}</small>
-                                            @if ($endereco->complemento)
-                                            <small>{{ $endereco->complemento }}</small>
-                                            @endif
-                                            @if ($endereco->cidade)
-                                            <small>{{ $endereco->cidade->nome }}</small>
-                                            @endif
+                                            <strong><?php echo e($endereco->logradouro); ?><?php echo e($endereco->numero ? ', ' . $endereco->numero : ''); ?></strong>
+                                            <small><?php echo e($endereco->bairro); ?></small>
+                                            <?php if($endereco->complemento): ?>
+                                            <small><?php echo e($endereco->complemento); ?></small>
+                                            <?php endif; ?>
+                                            <?php if($endereco->cidade): ?>
+                                            <small><?php echo e($endereco->cidade->nome); ?></small>
+                                            <?php endif; ?>
                                         </span>
                                     </label>
 
                                     <div class="ff-address-delete">
                                         <button type="submit"
                                             class="ff-btn ff-btn--danger"
-                                            form="form-delete-endereco-{{ $endereco->id }}"
-                                            @if (!$podeRemoverEndereco) disabled aria-disabled="true" @endif>
+                                            form="form-delete-endereco-<?php echo e($endereco->id); ?>"
+                                            <?php if(!$podeRemoverEndereco): ?> disabled aria-disabled="true" <?php endif; ?>>
                                             Excluir
                                         </button>
                                     </div>
                                 </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
-                            @if (!$podeRemoverEndereco)
+                            <?php if(!$podeRemoverEndereco): ?>
                             <p class="ff-address-hint" role="note">Mantenha pelo menos um endereço cadastrado para continuar usando o delivery.</p>
-                            @endif
-                            @else
+                            <?php endif; ?>
+                            <?php else: ?>
                             <p class="ff-modal__hint">Você ainda não cadastrou nenhum endereço.</p>
-                            @endif
+                            <?php endif; ?>
                         </div>
 
                         <div id="enderecoSelecionadoErro" class="ff-modal__error" aria-live="polite"></div>
@@ -287,37 +289,38 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                         <button type="button" class="ff-modal__close" data-modal-close aria-label="Fechar">×</button>
                     </div>
 
-                    <form id="enderecoNovoForm" method="POST" action="{{ route('carrinho.endereco') }}">
-                        @csrf
+                    <form id="enderecoNovoForm" method="POST" action="<?php echo e(route('carrinho.endereco')); ?>">
+                        <?php echo csrf_field(); ?>
                         <input type="hidden" name="tipo_entrega" value="entrega">
                         <input type="hidden" name="endereco_opcao" value="novo">
 
                         <div class="ff-field">
                             <label for="novo_bairro">Bairro</label>
-                            <input id="novo_bairro" name="bairro" type="text" placeholder="Ex: Centro" value="{{ old('bairro') }}">
+                            <input id="novo_bairro" name="bairro" type="text" placeholder="Ex: Centro" value="<?php echo e(old('bairro')); ?>">
                         </div>
                         <div class="ff-field">
                             <label for="novo_rua">Rua</label>
-                            <input id="novo_rua" name="rua" type="text" placeholder="Ex: Rua das Flores" value="{{ old('rua') }}">
+                            <input id="novo_rua" name="rua" type="text" placeholder="Ex: Rua das Flores" value="<?php echo e(old('rua')); ?>">
                         </div>
                         <div class="ff-field">
                             <label for="novo_numero">Número</label>
-                            <input id="novo_numero" name="numero" type="text" placeholder="Ex: 123" value="{{ old('numero') }}">
+                            <input id="novo_numero" name="numero" type="text" placeholder="Ex: 123" value="<?php echo e(old('numero')); ?>">
                         </div>
                         <div class="ff-field">
                             <label for="novo_complemento">Complemento</label>
-                            <input id="novo_complemento" name="complemento" type="text" placeholder="Ex: Apt 45, Casa..." value="{{ old('complemento') }}">
+                            <input id="novo_complemento" name="complemento" type="text" placeholder="Ex: Apt 45, Casa..." value="<?php echo e(old('complemento')); ?>">
                         </div>
 
                         <div class="ff-field">
                             <label for="novo_cidade">Cidade</label>
                             <select id="novo_cidade" name="cidade_id" class="ff-select">
                                 <option value="">Selecione a cidade</option>
-                                @foreach ($cidadesLista as $cidade)
-                                <option value="{{ $cidade->id }}" {{ (string) $cidadeSelecionada === (string) $cidade->id ? 'selected' : '' }}>
-                                    {{ $cidade->nome }}
+                                <?php $__currentLoopData = $cidadesLista; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cidade): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($cidade->id); ?>" <?php echo e((string) $cidadeSelecionada === (string) $cidade->id ? 'selected' : ''); ?>>
+                                    <?php echo e($cidade->nome); ?>
+
                                 </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
 
@@ -344,14 +347,14 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                         <button type="button" class="ff-modal__close" data-modal-close aria-label="Fechar">×</button>
                     </div>
 
-                    <form id="pagamentoForm" method="POST" action="{{ route('carrinho.Pedido') }}">
-                        @csrf
+                    <form id="pagamentoForm" method="POST" action="<?php echo e(route('carrinho.Pedido')); ?>">
+                        <?php echo csrf_field(); ?>
 
                         <p class="ff-modal__hint">Selecione a forma de pagamento para seguir com o pedido.</p>
 
                         <div class="ff-choice" style="margin-bottom: 12px;">
                             <label class="ff-choice__item">
-                                <input type="radio" name="pagamento_metodo" value="cartao_credito" {{ $pagamentoMetodoSelecionado === 'cartao_credito' ? 'checked' : '' }}>
+                                <input type="radio" name="pagamento_metodo" value="cartao_credito" <?php echo e($pagamentoMetodoSelecionado === 'cartao_credito' ? 'checked' : ''); ?>>
                                 <span>
                                     <strong>Cartão de crédito</strong>
                                     <small>Levar máquina até você.</small>
@@ -359,7 +362,7 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                             </label>
 
                             <label class="ff-choice__item">
-                                <input type="radio" name="pagamento_metodo" value="cartao_debito" {{ $pagamentoMetodoSelecionado === 'cartao_debito' ? 'checked' : '' }}>
+                                <input type="radio" name="pagamento_metodo" value="cartao_debito" <?php echo e($pagamentoMetodoSelecionado === 'cartao_debito' ? 'checked' : ''); ?>>
                                 <span>
                                     <strong>Cartão de débito</strong>
                                     <small>Pagamento no momento da entrega.</small>
@@ -367,7 +370,7 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                             </label>
 
                             <label class="ff-choice__item">
-                                <input type="radio" name="pagamento_metodo" value="pix" {{ $pagamentoMetodoSelecionado === 'pix' ? 'checked' : '' }}>
+                                <input type="radio" name="pagamento_metodo" value="pix" <?php echo e($pagamentoMetodoSelecionado === 'pix' ? 'checked' : ''); ?>>
                                 <span>
                                     <strong>Pix</strong>
                                     <small>Enviamos a chave finalizando o pedido.</small>
@@ -375,7 +378,7 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                             </label>
 
                             <label class="ff-choice__item">
-                                <input type="radio" name="pagamento_metodo" value="dinheiro" {{ $pagamentoMetodoSelecionado === 'dinheiro' ? 'checked' : '' }}>
+                                <input type="radio" name="pagamento_metodo" value="dinheiro" <?php echo e($pagamentoMetodoSelecionado === 'dinheiro' ? 'checked' : ''); ?>>
                                 <span>
                                     <strong>Dinheiro</strong>
                                     <small>Informe se precisa de troco.</small>
@@ -385,7 +388,7 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
 
                         <div class="ff-field">
                             <label for="pagamento_observacoes">Observações (opcional)</label>
-                            <textarea id="pagamento_observacoes" name="observacoes_pagamento" rows="3" placeholder="Ex: levar troco para R$ 50">{{ $pagamentoObservacoes }}</textarea>
+                            <textarea id="pagamento_observacoes" name="observacoes_pagamento" rows="3" placeholder="Ex: levar troco para R$ 50"><?php echo e($pagamentoObservacoes); ?></textarea>
                         </div>
 
                         <div class="ff-modal__footer ff-modal__footer--stack">
@@ -395,15 +398,16 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                     </form>
                 </div>
             </div>
-            @foreach ($enderecos as $endereco)
-            <form id="form-delete-endereco-{{ $endereco->id }}" class="ff-address-delete__form" action="{{ route('endereco.excluir', $endereco->id) }}" method="POST">
-                @csrf
-                @method('DELETE')
+            <?php $__currentLoopData = $enderecos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $endereco): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <form id="form-delete-endereco-<?php echo e($endereco->id); ?>" class="ff-address-delete__form" action="<?php echo e(route('endereco.excluir', $endereco->id)); ?>" method="POST">
+                <?php echo csrf_field(); ?>
+                <?php echo method_field('DELETE'); ?>
             </form>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
-    @include('components.flash-toast')
+    <?php echo $__env->make('components.flash-toast', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 </body>
 
 </html>
+<?php /**PATH C:\Users\omega\Downloads\TCC\FlashFood\resources\views/Carrinho.blade.php ENDPATH**/ ?>

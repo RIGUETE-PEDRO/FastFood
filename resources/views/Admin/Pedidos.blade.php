@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @include('partials.favicon')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Painel de Pedidos</title>
     @vite(['resources/js/app.js'])
@@ -25,6 +26,8 @@
         id="pedidos-admin-root"
         data-polling-url="{{ route('Pedidos.Poll') }}"
         data-checksum="{{ $realtimeChecksum ?? '' }}"
+        data-pending-count="{{ $pedidosPendentes ?? 0 }}"
+        data-last-pending-id="{{ $ultimoPedidoPendenteId ?? '' }}"
     >
         <header class="cabecalho-pedidos mb-4">
             <div class="cabecalho-pedidos__titulo">
@@ -37,6 +40,14 @@
                 <span class="badge-perfil">{{ $tipoUsuario ?? 'Equipe' }}</span>
             </div>
         </header>
+
+        <div class="pedido-alerta" id="pedido-alerta-novo" role="status" aria-live="polite" hidden>
+            <div>
+                <strong>Novo pedido para aceitar</strong>
+                <span>Confira a lista de pedidos pendentes.</span>
+            </div>
+            <button type="button" class="pedido-alerta__fechar" data-close-order-alert aria-label="Fechar aviso">×</button>
+        </div>
 
         <div id="pedidos-resumo-wrapper">
             @include('Admin.partials.pedidos-resumo-cards', ['dashboardCards' => $dashboardCards])

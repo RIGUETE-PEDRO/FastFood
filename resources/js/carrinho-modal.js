@@ -1,253 +1,275 @@
-// Modal de "Adicionar ao carrinho"
-// - Abre ao clicar em .button-adicionar
-// - Preenche dados do produto
-// - Funciona no mobile mesmo sem dependência do Bootstrap JS
-
-function findProdutoCard(el) {
-  return el.closest('[data-produto-id]');
-}
+const ADD_TO_CART_MODAL_ID = 'addToCartModal';
+const PRODUCT_CARD_SELECTOR = '[data-produto-id]';
+const ADD_BUTTON_SELECTOR = '.button-adicionar';
+const CAROUSEL_CARD_SELECTOR = '.produto-card-mini';
+const INGREDIENTS_SELECTOR = '.ingredientes';
+const INGREDIENTS_WRAP_SELECTOR = '.ingredientes-wrap';
+const OPEN_THROTTLE_MS = 500;
 
 function getCsrfToken() {
-  const meta = document.querySelector('meta[name="csrf-token"]');
-  return meta?.getAttribute('content') || '';
+  return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const modalEl = document.getElementById('addToCartModal');
-  if (!modalEl) return;
+function getEventTarget(event) {
+  if (event.target instanceof Element) return event.target;
+  if (event.target?.parentElement instanceof Element) return event.target.parentElement;
+  return null;
+}
 
-  let manualBackdrop = null;
-  let lastOpenAt = 0;
+function findProductCard(element) {
+  return element?.closest(PRODUCT_CARD_SELECTOR) || null;
+}
 
-   function openModal() {
-     if (manualBackdrop && !manualBackdrop.isConnected) {
-       manualBackdrop = null;
-     }
+function syncBodyModalState(isOpen) {
+  document.body.classList.toggle('modal-open', isOpen);
+  document.body.classList.toggle('ff-modal-open', isOpen);
 
-     if (manualBackdrop) return;
-
-     // Fecha sidebar em mobile se estiver aberta
-     if (window.ff && window.ff.closeSidebar) {
-       window.ff.closeSidebar();
-     }
-
-     modalEl.classList.add('show');
-     modalEl.style.display = 'block';
-     modalEl.setAttribute('aria-hidden', 'false');
-     modalEl.setAttribute('aria-modal', 'true');
-     document.body.classList.add('modal-open');
-     document.body.classList.add('ff-modal-open');
-     document.body.style.overflow = 'hidden';
-     if (window.ff?.syncSidebarLock) window.ff.syncSidebarLock();
-
-     manualBackdrop = document.createElement('div');
-     manualBackdrop.className = 'modal-backdrop fade show';
-     manualBackdrop.style.zIndex = '1999';
-     manualBackdrop.addEventListener('click', () => closeModal());
-     document.body.appendChild(manualBackdrop);
-
-     const focusEl = modalEl.querySelector('#cart_quantidade') || modalEl.querySelector('button, input, textarea');
-     if (focusEl) focusEl.focus();
-
-     // Scroll to top em mobile
-     setTimeout(() => {
-       window.scrollTo(0, 0);
-     }, 100);
-   }
-
-  function cleanupModalState() {
-    document.querySelectorAll('.modal-backdrop').forEach((el) => el.remove());
-    document.body.classList.remove('modal-open');
-    document.body.classList.remove('ff-modal-open');
+  if (isOpen) {
+    document.body.style.overflow = 'hidden';
+  } else {
     document.body.style.removeProperty('overflow');
     document.body.style.removeProperty('padding-right');
-
-    if (window.matchMedia('(max-width: 768px)').matches) {
-      document.body.classList.remove('ff-sidebar-open');
-      document.body.classList.add('ff-sidebar-collapsed');
-    }
   }
 
-  function closeModal() {
-    modalEl.classList.remove('show');
-    modalEl.style.display = 'none';
-    modalEl.setAttribute('aria-hidden', 'true');
-    modalEl.removeAttribute('aria-modal');
-    if (window.ff?.syncSidebarLock) window.ff.syncSidebarLock();
-    if (manualBackdrop) {
-      manualBackdrop.remove();
-      manualBackdrop = null;
-    }
+  if (window.ff?.syncSidebarLock) {
+    window.ff.syncSidebarLock();
+  }
+}
+
+function cleanupBackdrops() {
+  document.querySelectorAll('.modal-backdrop').forEach((backdrop) => backdrop.remove());
+}
+
+function cleanupModalState() {
+  cleanupBackdrops();
+  syncBodyModalState(false);
+
+  if (window.matchMedia('(max-width: 768px)').matches) {
+    document.body.classList.remove('ff-sidebar-open');
+    document.body.classList.add('ff-sidebar-collapsed');
+  }
+}
+
+function createBackdrop(onClose) {
+  const backdrop = document.createElement('div');
+  backdrop.className = 'modal-backdrop fade show';
+  backdrop.style.zIndex = '1999';
+  backdrop.addEventListener('click', onClose);
+  document.body.appendChild(backdrop);
+
+  return backdrop;
+}
+
+function ensureCsrfField(form) {
+  const csrf = getCsrfToken();
+  if (!form || !csrf) return;
+
+  let field = form.querySelector('input[name="_token"]');
+
+  if (!field) {
+    field = document.createElement('input');
+    field.type = 'hidden';
+    field.name = '_token';
+    form.appendChild(field);
+  }
+
+  field.value = csrf;
+}
+
+function readProductData(card) {
+  return {
+    id: card.getAttribute('data-produto-id') || '',
+    nome: card.getAttribute('data-produto-nome') || '',
+    preco: card.getAttribute('data-produto-preco') || '',
+  };
+}
+
+function fillCartForm(fields, product) {
+  if (fields.produtoId) fields.produtoId.value = product.id;
+  if (fields.produtoNome) fields.produtoNome.value = product.nome;
+  if (fields.preco) fields.preco.value = product.preco;
+  if (fields.quantidade) fields.quantidade.value = '1';
+  if (fields.observacao) fields.observacao.value = '';
+}
+
+function createAddToCartController(modal) {
+  const fields = {
+    produtoId: modal.querySelector('#cart_produto_id'),
+    produtoNome: modal.querySelector('#cart_produto_nome'),
+    preco: modal.querySelector('#cart_preco'),
+    quantidade: modal.querySelector('#cart_quantidade'),
+    observacao: modal.querySelector('#cart_observacao'),
+  };
+
+  const state = {
+    backdrop: null,
+    lastOpenAt: 0,
+  };
+
+  function close() {
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    modal.removeAttribute('aria-modal');
+
+    state.backdrop?.remove();
+    state.backdrop = null;
+
     cleanupModalState();
     window.setTimeout(cleanupModalState, 80);
     window.dispatchEvent(new CustomEvent('ff:cart-modal-closed'));
   }
 
-  // Segurança: garante que o modal sempre inicia fechado
-  closeModal();
-
-  // Limpa resíduos de um estado aberto anterior (comum após navegação/cache no mobile)
-  document.body.classList.remove('modal-open');
-  document.body.classList.remove('ff-modal-open');
-  document.body.style.removeProperty('overflow');
-  document.body.style.removeProperty('padding-right');
-  document.querySelectorAll('.modal-backdrop').forEach((el) => el.remove());
-
-  const inputProdutoId = modalEl.querySelector('#cart_produto_id');
-  const inputProdutoNome = modalEl.querySelector('#cart_produto_nome');
-  const inputPreco = modalEl.querySelector('#cart_preco');
-  const inputQtd = modalEl.querySelector('#cart_quantidade');
-  const inputObs = modalEl.querySelector('#cart_observacao');
-
-  function getEventElementTarget(e) {
-    if (e.target instanceof Element) return e.target;
-    if (e.target && e.target.parentElement instanceof Element) return e.target.parentElement;
-    return null;
-  }
-
-  function handleOpenByTrigger(e) {
-    const eventTarget = getEventElementTarget(e);
-    if (!eventTarget) return;
-
-    // Primeiro tenta abrir quando o elemento clicado (ou seu pai) é o botão "Adicionar ao carrinho"
-    const trigger = eventTarget.closest('.button-adicionar');
-    // Se não for o botão, também aceitamos clique direto no cartão do produto (ex: carrossel)
-    const card = trigger ? findProdutoCard(trigger) : findProdutoCard(eventTarget);
-    if (!card) return;
-
-    if (e.preventDefault) e.preventDefault();
-    if (e.stopPropagation) e.stopPropagation();
-
-    const now = Date.now();
-    if (now - lastOpenAt < 500) return;
-    lastOpenAt = now;
-
-    const produtoId = card.getAttribute('data-produto-id');
-    const produtoNome = card.getAttribute('data-produto-nome') || '';
-  const produtoPreco = card.getAttribute('data-produto-preco') || '';
-
-    if (inputProdutoId) inputProdutoId.value = produtoId || '';
-    if (inputProdutoNome) inputProdutoNome.value = produtoNome;
-  if (inputPreco) inputPreco.value = produtoPreco;
-
-    if (inputQtd) inputQtd.value = '1';
-    if (inputObs) inputObs.value = '';
-
-    openModal();
-  }
-
-  // Bind direto no botão para evitar abertura acidental em outros elementos
-  document.querySelectorAll('.button-adicionar').forEach((btn) => {
-    btn.addEventListener('click', handleOpenByTrigger);
-  });
-
-  // Delegated handler: abrir modal ao clicar no cartão do produto (ex: carrossel)
-  // Isso permite clicar em .produto-card-mini ou .produto--interactive para abrir
-  document.addEventListener('click', (e) => {
-    const evTarget = getEventElementTarget(e);
-    if (!evTarget) return;
-
-    // não abrir se o clique for dentro do próprio modal
-    if (evTarget.closest('#addToCartModal')) return;
-
-    // se o clique já foi em um botão que já tem handler, ignora (evita duplo)
-    if (evTarget.closest('.button-adicionar')) return;
-
-    // Apenas abrir o modal quando o clique for em um card do carrossel
-    // (classe .produto-card-mini). Para a lista abaixo (.produto--interactive)
-    // apenas o botão .button-adicionar deve abrir o modal — esse binding
-    // já existe acima.
-    const card = evTarget.closest('.produto-card-mini');
-    if (!card) return;
-
-    // Construí um objeto mínimo compatível com handleOpenByTrigger
-    try {
-      handleOpenByTrigger({ target: card });
-    } catch (err) {
-      // degrade silencioso
-      console.error('Erro ao abrir modal por clique no cartão:', err);
+  function open() {
+    if (state.backdrop && !state.backdrop.isConnected) {
+      state.backdrop = null;
     }
+
+    if (state.backdrop) return;
+
+    if (window.ff?.closeSidebar) {
+      window.ff.closeSidebar();
+    }
+
+    modal.classList.add('show');
+    modal.style.display = 'block';
+    modal.setAttribute('aria-hidden', 'false');
+    modal.setAttribute('aria-modal', 'true');
+    syncBodyModalState(true);
+
+    state.backdrop = createBackdrop(close);
+
+    const focusTarget = fields.quantidade || modal.querySelector('button, input, textarea');
+    focusTarget?.focus();
+
+    window.setTimeout(() => window.scrollTo(0, 0), 100);
+  }
+
+  function openForProduct(card) {
+    const now = Date.now();
+    if (now - state.lastOpenAt < OPEN_THROTTLE_MS) return;
+
+    state.lastOpenAt = now;
+    fillCartForm(fields, readProductData(card));
+    open();
+  }
+
+  function reset() {
+    close();
+    document.body.classList.remove('modal-open', 'ff-modal-open');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('padding-right');
+    cleanupBackdrops();
+  }
+
+  return { close, openForProduct, reset };
+}
+
+function handleProductTrigger(event, controller) {
+  const target = getEventTarget(event);
+  if (!target) return;
+
+  const trigger = target.closest(ADD_BUTTON_SELECTOR);
+  const card = trigger ? findProductCard(trigger) : findProductCard(target);
+  if (!card) return;
+
+  event.preventDefault?.();
+  event.stopPropagation?.();
+
+  controller.openForProduct(card);
+}
+
+function bindDirectAddButtons(controller) {
+  document.querySelectorAll(ADD_BUTTON_SELECTOR).forEach((button) => {
+    button.addEventListener('click', (event) => handleProductTrigger(event, controller));
   });
+}
 
-  document.addEventListener('touchend', (e) => {
-    const evTarget = getEventElementTarget(e);
-    if (!evTarget) return;
+function bindCarouselCards(controller) {
+  const openFromCarousel = (event) => {
+    const target = getEventTarget(event);
+    if (!target) return;
+    if (target.closest(`#${ADD_TO_CART_MODAL_ID}`)) return;
+    if (target.closest(ADD_BUTTON_SELECTOR)) return;
 
-    if (evTarget.closest('#addToCartModal')) return;
-    if (evTarget.closest('.button-adicionar')) return;
-
-    const card = evTarget.closest('.produto-card-mini');
+    const card = target.closest(CAROUSEL_CARD_SELECTOR);
     if (!card) return;
 
-    handleOpenByTrigger(e);
-  }, { passive: false });
+    handleProductTrigger(event, controller);
+  };
 
+  document.addEventListener('click', openFromCarousel);
+  document.addEventListener('touchend', openFromCarousel, { passive: false });
+}
+
+function bindModalCloseEvents(modal, controller) {
   window.addEventListener('ff:cart-modal-force-cleanup', () => {
-    manualBackdrop = null;
     cleanupModalState();
   });
 
-  // Fallback para fechar no modo manual
-  modalEl.querySelectorAll('[data-bs-dismiss="modal"]').forEach((btn) => {
-    btn.addEventListener('click', (event) => {
-      if (!modalEl.classList.contains('show')) return;
+  modal.querySelectorAll('[data-bs-dismiss="modal"]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      if (!modal.classList.contains('show')) return;
+
       event.preventDefault();
       event.stopPropagation();
-      closeModal();
+      controller.close();
     });
   });
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape') return;
-    if (!modalEl.classList.contains('show')) return;
-    closeModal();
-  });
-
-  // Garantir CSRF no form
-  const form = modalEl.querySelector('form');
-  if (form) {
-    const csrf = getCsrfToken();
-    if (csrf) {
-      let hidden = form.querySelector('input[name="_token"]');
-      if (!hidden) {
-        hidden = document.createElement('input');
-        hidden.type = 'hidden';
-        hidden.name = '_token';
-        form.appendChild(hidden);
-      }
-      hidden.value = csrf;
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && modal.classList.contains('show')) {
+      controller.close();
     }
-  }
-});
+  });
+}
 
-// Ingredientes: mostrar apenas ao clicar (não no hover)
-document.addEventListener('DOMContentLoaded', () => {
-  // Toggle ao clicar no label .ingredientes
-  document.addEventListener('click', (e) => {
-    const trigger = e.target.closest('.ingredientes');
-    if (!trigger) return;
+function initAddToCartModal() {
+  const modal = document.getElementById(ADD_TO_CART_MODAL_ID);
+  if (!modal) return;
 
-    const wrap = trigger.closest('.ingredientes-wrap');
+  const controller = createAddToCartController(modal);
+
+  controller.reset();
+  ensureCsrfField(modal.querySelector('form'));
+  bindDirectAddButtons(controller);
+  bindCarouselCards(controller);
+  bindModalCloseEvents(modal, controller);
+}
+
+function closeOtherIngredientLists(currentWrap) {
+  document.querySelectorAll(`${INGREDIENTS_WRAP_SELECTOR}.is-open`).forEach((wrap) => {
+    if (wrap !== currentWrap) wrap.classList.remove('is-open');
+  });
+}
+
+function bindIngredientsToggle() {
+  document.addEventListener('click', (event) => {
+    const target = getEventTarget(event);
+    const trigger = target?.closest(INGREDIENTS_SELECTOR);
+
+    if (!trigger) {
+      if (!target?.closest(INGREDIENTS_WRAP_SELECTOR)) {
+        closeOtherIngredientLists(null);
+      }
+      return;
+    }
+
+    const wrap = trigger.closest(INGREDIENTS_WRAP_SELECTOR);
     if (!wrap) return;
 
-    // fecha outros abertos
-    document.querySelectorAll('.ingredientes-wrap.is-open').forEach((el) => {
-      if (el !== wrap) el.classList.remove('is-open');
-    });
-
+    closeOtherIngredientLists(wrap);
     wrap.classList.toggle('is-open');
   });
 
-  // Clicar fora fecha
-  document.addEventListener('click', (e) => {
-    const clickedInside = e.target.closest('.ingredientes-wrap');
-    if (clickedInside) return;
-    document.querySelectorAll('.ingredientes-wrap.is-open').forEach((el) => el.classList.remove('is-open'));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeOtherIngredientLists(null);
+    }
   });
+}
 
-  // ESC fecha
-  document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape') return;
-    document.querySelectorAll('.ingredientes-wrap.is-open').forEach((el) => el.classList.remove('is-open'));
-  });
+document.addEventListener('DOMContentLoaded', () => {
+  initAddToCartModal();
+  bindIngredientsToggle();
 });

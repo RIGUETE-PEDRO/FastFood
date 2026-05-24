@@ -94,6 +94,8 @@ class PedidosFeitosController extends Controller
         return response()->json([
             'checksum' => $dados['checksum'],
             'total' => $dados['total'],
+            'pendentes' => $dados['pendentes'],
+            'ultimoPendenteId' => $dados['ultimoPendenteId'],
             'totalLabel' => $dados['total'] . ' pedidos ativos',
             'resumoHtml' => view('Admin.partials.pedidos-resumo-cards', [
                 'dashboardCards' => $dados['dashboardCards'],

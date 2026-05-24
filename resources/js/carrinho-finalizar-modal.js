@@ -1,336 +1,453 @@
-// Modal de finalizar compra (retirar no local vs entrega)
-// Regras:
-// - Se "retirar" estiver selecionado: pedir número da mesa (obrigatório)
-// - Se "entrega" estiver selecionado: pedir endereço (obrigatório)
-// - Ao confirmar: envia form com campos `tipo_entrega`, `mesa` e/ou `endereco`
+const CHECKOUT_MODAL_IDS = {
+  tipo: 'finalizarModal',
+  mesa: 'mesaModal',
+  endereco: 'enderecoModal',
+  novoEndereco: 'enderecoNovoModal',
+  pagamento: 'pagamentoModal',
+};
 
-(function () {
-    const tipoModal = document.getElementById('finalizarModal');
-    const mesaModal = document.getElementById('mesaModal');
-    const enderecoModal = document.getElementById('enderecoModal');
-    const enderecoNovoModal = document.getElementById('enderecoNovoModal');
-    const pagamentoModal = document.getElementById('pagamentoModal');
+const DELIVERY_TYPES = {
+  retirar: 'retirar',
+  entrega: 'entrega',
+};
 
-    if (!tipoModal || !mesaModal || !enderecoModal || !enderecoNovoModal || !pagamentoModal) return;
+const REQUIRED_ADDRESS_FIELDS = [
+  { key: 'bairro', label: 'Bairro' },
+  { key: 'rua', label: 'Rua' },
+];
 
-    const modals = [tipoModal, mesaModal, enderecoModal, enderecoNovoModal, pagamentoModal];
+function byId(id) {
+  return document.getElementById(id);
+}
 
-    const btnAbrir = document.getElementById('btnFinalizarCompra');
+function getCsrfToken() {
+  return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+}
 
-    const tipoForm = document.getElementById('tipoEntregaForm');
-    const tipoErro = document.getElementById('tipoEntregaErro');
+function setText(element, text = '') {
+  if (element) element.textContent = text;
+}
 
-    const mesaForm = document.getElementById('mesaForm');
-    const mesaInput = document.getElementById('mesa_id');
-    const mesaErro = document.getElementById('mesaErro');
+function syncModalBodyLock(isLocked) {
+  document.body.classList.toggle('ff-modal-open', isLocked);
 
-    const enderecoForm = document.getElementById('enderecoForm');
-    const enderecoSelecionadoErro = document.getElementById('enderecoSelecionadoErro');
+  if (isLocked) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.removeProperty('overflow');
+  }
 
-    const enderecoNovoForm = document.getElementById('enderecoNovoForm');
-    const enderecoNovoErro = document.getElementById('enderecoNovoErro');
-    const enderecoNovoCampos = {
-        bairro: document.getElementById('novo_bairro'),
-        rua: document.getElementById('novo_rua'),
-        numero: document.getElementById('novo_numero'),
-        complemento: document.getElementById('novo_complemento'),
-    };
+  if (window.ff?.syncSidebarLock) {
+    window.ff.syncSidebarLock();
+  }
+}
 
-    function radiosEnderecos() {
-        return enderecoForm ? [...enderecoForm.querySelectorAll('input[name="endereco_opcao"]')] : [];
-    }
+function createCheckoutContext() {
+  const modals = {
+    tipo: byId(CHECKOUT_MODAL_IDS.tipo),
+    mesa: byId(CHECKOUT_MODAL_IDS.mesa),
+    endereco: byId(CHECKOUT_MODAL_IDS.endereco),
+    novoEndereco: byId(CHECKOUT_MODAL_IDS.novoEndereco),
+    pagamento: byId(CHECKOUT_MODAL_IDS.pagamento),
+  };
 
-    function temEnderecosSalvos() {
-        return radiosEnderecos().length > 0;
-    }
+  if (Object.values(modals).some((modal) => !modal)) return null;
 
-    function focusPrimeiroEndereco() {
-        const primeiro = radiosEnderecos()[0];
-        if (primeiro) primeiro.focus();
-    }
+  const forms = {
+    tipo: byId('tipoEntregaForm'),
+    mesa: byId('mesaForm'),
+    endereco: byId('enderecoForm'),
+    novoEndereco: byId('enderecoNovoForm'),
+    pagamento: byId('pagamentoForm'),
+  };
 
-    function focusNovoEndereco() {
-        if (enderecoNovoCampos.bairro) {
-            enderecoNovoCampos.bairro.focus();
-        }
-    }
+  return {
+    modals,
+    modalList: Object.values(modals),
+    openButton: byId('btnFinalizarCompra'),
+    csrfToken: getCsrfToken(),
+    forms,
+    fields: {
+      mesa: byId('mesa_id'),
+      novoEndereco: {
+        bairro: byId('novo_bairro'),
+        rua: byId('novo_rua'),
+        numero: byId('novo_numero'),
+        complemento: byId('novo_complemento'),
+      },
+    },
+    errors: {
+      tipo: byId('tipoEntregaErro'),
+      mesa: byId('mesaErro'),
+      endereco: byId('enderecoSelecionadoErro'),
+      novoEndereco: byId('enderecoNovoErro'),
+    },
+  };
+}
 
-    function focusPagamento() {
-        const primeiro = pagamentoModal.querySelector('input[name="pagamento_metodo"]');
-        if (primeiro) primeiro.focus();
-    }
+function isModalOpen(modal) {
+  return modal.classList.contains('is-open');
+}
 
-    function openModal(el) {
-        if (window.ff?.closeSidebar) window.ff.closeSidebar();
-        el.classList.add('is-open');
-        el.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('ff-modal-open');
-        document.body.style.overflow = 'hidden';
-        if (window.ff?.syncSidebarLock) window.ff.syncSidebarLock();
-    }
+function anyModalOpen(ctx) {
+  return ctx.modalList.some(isModalOpen);
+}
 
-    function closeModal(el) {
-        el.classList.remove('is-open');
-        el.setAttribute('aria-hidden', 'true');
-        if (!modals.some((m) => m !== el && m.classList.contains('is-open'))) {
-            document.body.classList.remove('ff-modal-open');
-            document.body.style.removeProperty('overflow');
-            if (window.ff?.syncSidebarLock) window.ff.syncSidebarLock();
-        }
-    }
+function openModal(ctx, modal) {
+  if (window.ff?.closeSidebar) {
+    window.ff.closeSidebar();
+  }
 
-    function algumModalAberto() {
-        return modals.some((m) => m.classList.contains('is-open'));
-    }
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+  syncModalBodyLock(true);
+}
 
-    function limparErros() {
-        if (tipoErro) tipoErro.textContent = '';
-        if (mesaErro) mesaErro.textContent = '';
-        if (enderecoSelecionadoErro) enderecoSelecionadoErro.textContent = '';
-        if (enderecoNovoErro) enderecoNovoErro.textContent = '';
-    }
+function closeModal(ctx, modal) {
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden', 'true');
 
-    function closeAll() {
-        modals.forEach(closeModal);
-        limparErros();
-    }
+  if (!ctx.modalList.some((item) => item !== modal && isModalOpen(item))) {
+    syncModalBodyLock(false);
+  }
+}
 
-    function abrirFluxo() {
-        closeAll();
-        openModal(tipoModal);
-        const primeiro = tipoModal.querySelector('input[name="tipo_entrega"]');
-        if (primeiro) primeiro.focus();
-    }
+function clearErrors(ctx) {
+  Object.values(ctx.errors).forEach((errorBox) => setText(errorBox));
+}
 
-    function tipoAtual() {
-        const checked = tipoModal.querySelector('input[name="tipo_entrega"]:checked');
-        return checked ? checked.value : null;
-    }
+function closeAllModals(ctx) {
+  ctx.modalList.forEach((modal) => closeModal(ctx, modal));
+  clearErrors(ctx);
+}
 
-    if (btnAbrir) {
-        btnAbrir.addEventListener('click', (e) => {
-            e.preventDefault();
-            abrirFluxo();
-        });
-    }
+function getAddressRadios(ctx) {
+  return ctx.forms.endereco
+    ? [...ctx.forms.endereco.querySelectorAll('input[name="endereco_opcao"]')]
+    : [];
+}
 
-    modals.forEach((m) => {
-        m.querySelectorAll('[data-modal-close]').forEach((btn) => {
-            btn.addEventListener('click', closeAll);
-        });
+function hasSavedAddresses(ctx) {
+  return getAddressRadios(ctx).length > 0;
+}
 
-        const overlay = m.querySelector('.ff-modal__overlay');
-        if (overlay) {
-            overlay.addEventListener('click', closeAll);
-        }
+function focusFirstAddress(ctx) {
+  getAddressRadios(ctx)[0]?.focus();
+}
+
+function focusNewAddress(ctx) {
+  ctx.fields.novoEndereco.bairro?.focus();
+}
+
+function focusPayment(ctx) {
+  ctx.modals.pagamento.querySelector('input[name="pagamento_metodo"]')?.focus();
+}
+
+function focusDeliveryType(ctx) {
+  ctx.modals.tipo.querySelector('input[name="tipo_entrega"]')?.focus();
+}
+
+function focusModalEntry(ctx, modal) {
+  if (modal === ctx.modals.tipo) focusDeliveryType(ctx);
+  if (modal === ctx.modals.mesa) ctx.fields.mesa?.focus();
+  if (modal === ctx.modals.endereco) focusFirstAddress(ctx);
+  if (modal === ctx.modals.novoEndereco) focusNewAddress(ctx);
+  if (modal === ctx.modals.pagamento) focusPayment(ctx);
+}
+
+function openCheckoutFlow(ctx) {
+  closeAllModals(ctx);
+  openModal(ctx, ctx.modals.tipo);
+  focusDeliveryType(ctx);
+}
+
+function getSelectedDeliveryType(ctx) {
+  return ctx.modals.tipo.querySelector('input[name="tipo_entrega"]:checked')?.value || null;
+}
+
+function showDeliveryNextStep(ctx, deliveryType) {
+  closeModal(ctx, ctx.modals.tipo);
+
+  if (deliveryType === DELIVERY_TYPES.retirar) {
+    openModal(ctx, ctx.modals.mesa);
+    ctx.fields.mesa?.focus();
+    return;
+  }
+
+  if (hasSavedAddresses(ctx)) {
+    openModal(ctx, ctx.modals.endereco);
+    focusFirstAddress(ctx);
+    return;
+  }
+
+  openModal(ctx, ctx.modals.novoEndereco);
+  focusNewAddress(ctx);
+}
+
+function getMissingAddressFields(ctx) {
+  return REQUIRED_ADDRESS_FIELDS.filter(({ key }) => {
+    const field = ctx.fields.novoEndereco[key];
+    return !field || !field.value.trim();
+  });
+}
+
+function ensureHiddenInput(form, name, value) {
+  if (!form) return null;
+
+  let input = form.querySelector(`input[name="${name}"]`);
+
+  if (!input) {
+    input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    form.appendChild(input);
+  }
+
+  input.value = value;
+  return input;
+}
+
+function setPaymentSubmitState(ctx, isEnabled, label = 'Confirmar pagamento') {
+  const submitButton = ctx.forms.pagamento?.querySelector('button[type="submit"]');
+  if (!submitButton) return;
+
+  submitButton.disabled = !isEnabled;
+  submitButton.textContent = label;
+}
+
+function preparePaymentForm(ctx, enderecoId = '') {
+  ensureHiddenInput(ctx.forms.pagamento, 'tipo_entrega', DELIVERY_TYPES.entrega);
+
+  if (enderecoId) {
+    ensureHiddenInput(ctx.forms.pagamento, 'endereco_id', enderecoId);
+  }
+}
+
+function openPaymentStep(ctx, { enderecoId = '', waitForAddress = false } = {}) {
+  closeAllModals(ctx);
+  preparePaymentForm(ctx, enderecoId);
+  setPaymentSubmitState(ctx, !waitForAddress, waitForAddress ? 'Preparando pagamento...' : 'Confirmar pagamento');
+  openModal(ctx, ctx.modals.pagamento);
+  focusPayment(ctx);
+}
+
+function validateNewAddressForm(ctx, event) {
+  const missing = getMissingAddressFields(ctx);
+
+  if (!missing.length) {
+    setText(ctx.errors.novoEndereco);
+    return true;
+  }
+
+  event.preventDefault();
+
+  const labels = missing.map(({ label }) => label).join(' e ');
+  setText(ctx.errors.novoEndereco, `Preencha os campos obrigatorios: ${labels}.`);
+
+  const firstMissingField = ctx.fields.novoEndereco[missing[0]?.key];
+  firstMissingField?.focus();
+  return false;
+}
+
+async function submitAddressWithAjax(ctx, form, submitButton) {
+  const originalText = submitButton?.textContent;
+
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = 'Confirmando...';
+  }
+
+  try {
+    const response = await fetch(form.action, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': ctx.csrfToken,
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: new FormData(form),
     });
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && algumModalAberto()) {
-            closeAll();
-        }
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok || !payload?.status) {
+      throw new Error(payload?.mensagem || 'Nao foi possivel confirmar o endereco.');
+    }
+
+    return payload;
+  } catch (error) {
+    throw error;
+  } finally {
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = originalText || 'Usar endereco selecionado';
+    }
+  }
+}
+
+async function syncSavedAddress(ctx, form, selectedAddress) {
+  try {
+    await submitAddressWithAjax(ctx, form, form.querySelector('button[type="submit"]'));
+  } catch (error) {
+    setText(ctx.errors.endereco, error.message || 'Nao foi possivel confirmar o endereco.');
+    closeModal(ctx, ctx.modals.pagamento);
+    openModal(ctx, ctx.modals.endereco);
+    focusFirstAddress(ctx);
+  }
+}
+
+async function syncNewAddress(ctx, form) {
+  try {
+    const payload = await submitAddressWithAjax(ctx, form, form.querySelector('button[type="submit"]'));
+    const enderecoId = payload?.endereco?.id;
+
+    if (enderecoId) {
+      preparePaymentForm(ctx, enderecoId);
+      setPaymentSubmitState(ctx, true);
+      return;
+    }
+
+    throw new Error('Nao foi possivel identificar o endereco cadastrado.');
+  } catch (error) {
+    setText(ctx.errors.novoEndereco, error.message || 'Nao foi possivel cadastrar o endereco.');
+    closeModal(ctx, ctx.modals.pagamento);
+    openModal(ctx, ctx.modals.novoEndereco);
+    focusNewAddress(ctx);
+  }
+}
+
+function handleSavedAddressSubmit(ctx, event) {
+  const selectedAddress = ctx.forms.endereco.querySelector('input[name="endereco_opcao"]:checked');
+
+  if (!selectedAddress) {
+    event.preventDefault();
+
+    if (hasSavedAddresses(ctx)) {
+      setText(ctx.errors.endereco, 'Selecione um endereco para continuar.');
+      focusFirstAddress(ctx);
+    } else {
+      openModal(ctx, ctx.modals.novoEndereco);
+      focusNewAddress(ctx);
+    }
+
+    return;
+  }
+
+  setText(ctx.errors.endereco);
+  event.preventDefault();
+  openPaymentStep(ctx, { enderecoId: selectedAddress.value });
+
+  if (!ctx.csrfToken || typeof window.fetch !== 'function') return;
+  syncSavedAddress(ctx, ctx.forms.endereco, selectedAddress);
+}
+
+function handleNewAddressSubmit(ctx, event) {
+  event.preventDefault();
+
+  if (!validateNewAddressForm(ctx, event)) return;
+
+  if (!ctx.csrfToken || typeof window.fetch !== 'function') {
+    ctx.forms.novoEndereco.submit();
+    return;
+  }
+
+  openPaymentStep(ctx, { waitForAddress: true });
+  syncNewAddress(ctx, ctx.forms.novoEndereco);
+}
+
+function bindModalCloseEvents(ctx) {
+  ctx.modalList.forEach((modal) => {
+    modal.querySelectorAll('[data-modal-close]').forEach((button) => {
+      button.addEventListener('click', () => closeAllModals(ctx));
     });
 
-    document.querySelectorAll('[data-modal-back]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const targetId = btn.dataset.modalBack || 'finalizarModal';
-            const current = btn.closest('.ff-modal');
-            if (current) closeModal(current);
-            const targetModal = document.getElementById(targetId);
-            if (targetModal) {
-                openModal(targetModal);
-                if (targetModal === tipoModal) {
-                    const primeiro = tipoModal.querySelector('input[name="tipo_entrega"]');
-                    if (primeiro) primeiro.focus();
-                } else if (targetModal === enderecoModal) {
-                    focusPrimeiroEndereco();
-                } else if (targetModal === enderecoNovoModal) {
-                    focusNovoEndereco();
-                } else if (targetModal === pagamentoModal) {
-                    focusPagamento();
-                }
-            }
-        });
+    modal.querySelector('.ff-modal__overlay')?.addEventListener('click', () => closeAllModals(ctx));
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && anyModalOpen(ctx)) {
+      closeAllModals(ctx);
+    }
+  });
+}
+
+function bindNavigationEvents(ctx) {
+  document.querySelectorAll('[data-modal-back]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const currentModal = button.closest('.ff-modal');
+      const targetModal = byId(button.dataset.modalBack || CHECKOUT_MODAL_IDS.tipo);
+
+      if (currentModal) closeModal(ctx, currentModal);
+      if (!targetModal) return;
+
+      openModal(ctx, targetModal);
+      focusModalEntry(ctx, targetModal);
     });
+  });
 
-    document.querySelectorAll('[data-modal-open]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const targetId = btn.dataset.modalOpen;
-            if (!targetId) return;
-            const targetModal = document.getElementById(targetId);
-            if (!targetModal) return;
-            const current = btn.closest('.ff-modal');
-            if (current) closeModal(current);
-            openModal(targetModal);
-            if (targetModal === enderecoNovoModal) {
-                focusNovoEndereco();
-            } else if (targetModal === enderecoModal) {
-                focusPrimeiroEndereco();
-            } else if (targetModal === pagamentoModal) {
-                focusPagamento();
-            }
-        });
+  document.querySelectorAll('[data-modal-open]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const targetModal = byId(button.dataset.modalOpen);
+      const currentModal = button.closest('.ff-modal');
+
+      if (!targetModal) return;
+
+      if (currentModal) closeModal(ctx, currentModal);
+      openModal(ctx, targetModal);
+      focusModalEntry(ctx, targetModal);
     });
+  });
+}
 
-    if (tipoForm) {
-        tipoForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const tipo = tipoAtual();
-            if (!tipo) {
-                if (tipoErro) tipoErro.textContent = 'Selecione uma opção para continuar.';
-                return;
-            }
-            if (tipoErro) tipoErro.textContent = '';
+function bindFormEvents(ctx) {
+  ctx.forms.tipo?.addEventListener('submit', (event) => {
+    event.preventDefault();
 
-            closeModal(tipoModal);
+    const deliveryType = getSelectedDeliveryType(ctx);
 
-            if (tipo === 'retirar') {
-                openModal(mesaModal);
-                if (mesaInput) mesaInput.focus();
-            } else if (temEnderecosSalvos()) {
-                openModal(enderecoModal);
-                focusPrimeiroEndereco();
-            } else {
-                openModal(enderecoNovoModal);
-                focusNovoEndereco();
-            }
-        });
+    if (!deliveryType) {
+      setText(ctx.errors.tipo, 'Selecione uma opcao para continuar.');
+      return;
     }
 
-    
+    setText(ctx.errors.tipo);
+    showDeliveryNextStep(ctx, deliveryType);
+  });
 
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    const suportaAjaxEndereco = typeof window.fetch === 'function' && Boolean(csrfToken);
+  ctx.forms.endereco?.addEventListener('submit', (event) => handleSavedAddressSubmit(ctx, event));
+  ctx.forms.novoEndereco?.addEventListener('submit', (event) => handleNewAddressSubmit(ctx, event));
+}
 
-    if (enderecoForm) {
-        const enderecoSubmitBtn = enderecoForm.querySelector('button[type="submit"]');
+function openInitialModalFromSession(ctx) {
+  const modalId = document.body?.dataset?.openModal;
+  const targetModal = modalId ? byId(modalId) : null;
 
-        enderecoForm.addEventListener('submit', async (e) => {
-            const selecionado = enderecoForm.querySelector('input[name="endereco_opcao"]:checked');
-            if (!selecionado) {
-                e.preventDefault();
-                if (temEnderecosSalvos()) {
-                    if (enderecoSelecionadoErro) {
-                        enderecoSelecionadoErro.textContent = 'Selecione um endereço para continuar.';
-                    }
-                    focusPrimeiroEndereco();
-                } else {
-                    openModal(enderecoNovoModal);
-                    focusNovoEndereco();
-                }
-                return;
-            }
+  if (!targetModal) return;
 
-            if (enderecoSelecionadoErro) enderecoSelecionadoErro.textContent = '';
+  closeAllModals(ctx);
 
-            if (!suportaAjaxEndereco) {
-                return;
-            }
+  if ([CHECKOUT_MODAL_IDS.endereco, CHECKOUT_MODAL_IDS.novoEndereco, CHECKOUT_MODAL_IDS.pagamento].includes(modalId)) {
+    const deliveryRadio = ctx.modals.tipo.querySelector(`input[name="tipo_entrega"][value="${DELIVERY_TYPES.entrega}"]`);
+    if (deliveryRadio) deliveryRadio.checked = true;
+  }
 
-            e.preventDefault();
+  openModal(ctx, targetModal);
+  focusModalEntry(ctx, targetModal);
+}
 
-            const textoOriginal = enderecoSubmitBtn?.textContent;
-            if (enderecoSubmitBtn) {
-                enderecoSubmitBtn.disabled = true;
-                enderecoSubmitBtn.textContent = 'Confirmando...';
-            }
+function initCheckoutModal() {
+  const ctx = createCheckoutContext();
+  if (!ctx) return;
 
-            try {
-                const resposta = await fetch(enderecoForm.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json',
-                    },
-                    body: new FormData(enderecoForm),
-                });
+  ctx.openButton?.addEventListener('click', (event) => {
+    event.preventDefault();
+    openCheckoutFlow(ctx);
+  });
 
-                const payload = await resposta.json().catch(() => ({}));
+  bindModalCloseEvents(ctx);
+  bindNavigationEvents(ctx);
+  bindFormEvents(ctx);
+  openInitialModalFromSession(ctx);
+}
 
-                if (!resposta.ok || !payload?.status) {
-                    if (enderecoSelecionadoErro) {
-                        enderecoSelecionadoErro.textContent = payload?.mensagem || 'Não foi possível confirmar o endereço.';
-                    }
-                    openModal(enderecoModal);
-                    focusPrimeiroEndereco();
-                    return;
-                }
-
-                closeAll();
-                openModal(pagamentoModal);
-                focusPagamento();
-            } catch (error) {
-                if (enderecoSelecionadoErro) {
-                    enderecoSelecionadoErro.textContent = 'Não foi possível confirmar o endereço. Tente novamente.';
-                }
-                openModal(enderecoModal);
-                focusPrimeiroEndereco();
-            } finally {
-                if (enderecoSubmitBtn) {
-                    enderecoSubmitBtn.disabled = false;
-                    enderecoSubmitBtn.textContent = textoOriginal || 'Usar endereço selecionado';
-                }
-            }
-        });
-    }
-
-    if (enderecoNovoForm) {
-        enderecoNovoForm.addEventListener('submit', (e) => {
-            const obrigatorios = [
-                { chave: 'bairro', rotulo: 'Bairro' },
-                { chave: 'rua', rotulo: 'Rua' },
-            ];
-
-            const faltando = obrigatorios.filter(({ chave }) => {
-                const campo = enderecoNovoCampos[chave];
-                if (!campo) return true;
-                return !campo.value.trim();
-            });
-
-            if (faltando.length) {
-                e.preventDefault();
-                if (enderecoNovoErro) {
-                    const etiquetas = faltando.map(({ rotulo }) => rotulo).join(' e ');
-                    enderecoNovoErro.textContent = `Preencha os campos obrigatórios: ${etiquetas}.`;
-                }
-
-                const primeiro = faltando[0]?.chave;
-                const campoFoco = primeiro ? enderecoNovoCampos[primeiro] : null;
-                if (campoFoco) campoFoco.focus();
-                return;
-            }
-
-            if (enderecoNovoErro) enderecoNovoErro.textContent = '';
-            closeAll();
-        });
-    }
-
-    const autoModalId = document.body?.dataset?.openModal;
-    if (autoModalId) {
-        const targetModal = document.getElementById(autoModalId);
-        if (targetModal) {
-            closeAll();
-
-            if (autoModalId === 'enderecoModal' || autoModalId === 'enderecoNovoModal' || autoModalId === 'pagamentoModal') {
-                const entregaRadio = tipoModal.querySelector('input[name="tipo_entrega"][value="entrega"]');
-                if (entregaRadio) entregaRadio.checked = true;
-            }
-
-            openModal(targetModal);
-
-            if (targetModal === enderecoModal) {
-                focusPrimeiroEndereco();
-            } else if (targetModal === enderecoNovoModal) {
-                focusNovoEndereco();
-            } else if (targetModal === mesaModal) {
-                mesaInput?.focus();
-            } else if (targetModal === tipoModal) {
-                const primeiro = tipoModal.querySelector('input[name="tipo_entrega"]');
-                if (primeiro) primeiro.focus();
-            } else if (targetModal === pagamentoModal) {
-                focusPagamento();
-            }
-        }
-    }
-})();
+document.addEventListener('DOMContentLoaded', initCheckoutModal);

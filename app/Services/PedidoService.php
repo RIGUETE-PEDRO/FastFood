@@ -29,10 +29,13 @@ class PedidoService
                 'updated_at' => optional($pedido->updated_at)?->toIso8601String(),
             ])
             ->values();
+        $pendentes = $snapshot->where('status', EnumStatusPedidos::PENDENTE->value)->values();
 
         return [
             'checksum' => md5($snapshot->toJson()),
             'total' => $snapshot->count(),
+            'pendentes' => $pendentes->count(),
+            'ultimoPendenteId' => $pendentes->max('id'),
         ];
     }
 
@@ -43,6 +46,8 @@ class PedidoService
         return [
             'checksum' => $dados['realtimeChecksum'],
             'total' => $dados['totalPedidos'],
+            'pendentes' => $dados['pedidosPendentes'],
+            'ultimoPendenteId' => $dados['ultimoPedidoPendenteId'],
             'dashboardCards' => $dados['dashboardCards'],
             'pedidos' => $dados['pedidos'],
             'pedidosPorStatus' => $dados['pedidosPorStatus'],
@@ -136,6 +141,8 @@ class PedidoService
             'pedidosPorStatus' => $pedidosPorStatus,
             'dashboardCards' => $dashboardCards,
             'totalPedidos' => $pedidosCollection->count(),
+            'pedidosPendentes' => $contagens->get(EnumStatusPedidos::PENDENTE->value, 0),
+            'ultimoPedidoPendenteId' => optional($pedidos->where('status_enum', EnumStatusPedidos::PENDENTE)->sortByDesc('id')->first())->id,
             'realtimeChecksum' => $realtimeChecksum,
             'usuario' => $usuarioLogado,
             'nomeUsuario' => $primeiroNome,

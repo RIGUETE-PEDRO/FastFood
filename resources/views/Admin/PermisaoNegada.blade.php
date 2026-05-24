@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    @include('partials.favicon')
     <title>Permissão Negada</title>
     <link rel="stylesheet" href="{{ asset('css/PermissaoNegada.css') }}">
 </head>

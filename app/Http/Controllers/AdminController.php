@@ -68,6 +68,18 @@ class AdminController extends Controller
         ]);
     }
 
+    public function configuracoes()
+    {
+        $usuarioLogado =  $this->genericBase->hasLogado();
+        $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : self::DEFAULT_USER_NAME;
+
+        return view('Admin.Configuracoes', [
+            'usuario' => $usuarioLogado,
+            'nomeUsuario' => $primeiroNome,
+            'tipoUsuario' => $this->mapearTipoUsuario($usuarioLogado->tipo_usuario_id ?? null),
+        ]);
+    }
+
     public function alterarDados(Request $request)
     {
         $user = session('usuario_logado');

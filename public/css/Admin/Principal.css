@@ -119,6 +119,27 @@ body {
     color: var(--ff-text);
     overflow-x: hidden;
     min-width: 320px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ff-action) rgba(47, 38, 34, 0.12);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(47, 38, 34, 0.08);
+}
+
+::-webkit-scrollbar-thumb {
+    border: 2px solid rgba(248, 245, 239, 0.96);
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--ff-accent), var(--ff-action));
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--ff-action), var(--ff-action-dark));
 }
 
 /* Prevent horizontal overflow from children */
@@ -136,29 +157,27 @@ video {
 .circulo_maior {
     height: 90px;
     width: 90px;
+    flex: 0 0 90px;
     border-radius: 50%;
-    background: #f5ed00;
-    background: radial-gradient(
-        circle,
-        rgba(245, 237, 0, 1) 7%,
-        rgba(240, 181, 19, 1) 95%
-    );
-    border: 2px solid #fc6500;
+    background: rgba(255, 255, 255, 0.14);
+    border: 2px solid rgba(255, 255, 255, 0.22);
     /* centraliza o conteúdo */
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
-        rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(31, 26, 23, 0.22);
 }
 
 .profile-image {
     height: 75px;
+    flex: 0 0 75px;
+    display: block;
     width: 75px; /* definir largura igual à altura para ser circular */
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #00000073;
-    background-color: #ffff06; /* opcional: fundo da imagem */
+    border: 2px solid rgba(255, 255, 255, 0.78);
+    background-color: #fff;
 }
 
 .dashboard {
@@ -596,6 +615,24 @@ textarea,
 .ff-sidebar__user-btn > .d-flex {
     flex: 1 1 auto;
     min-width: 0;
+}
+
+.ff-sidebar .circulo_maior {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+    margin-right: 10px !important;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+.ff-sidebar .profile-image {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    display: block;
+    margin: 0;
+    border-color: rgba(255, 255, 255, 0.78);
 }
 
 .ff-sidebar__user-name {

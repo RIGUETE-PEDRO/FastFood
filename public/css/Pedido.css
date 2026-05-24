@@ -1,3 +1,43 @@
+/* ==========================================================================
+   Meus Pedidos - FlashFood
+   ========================================================================== */
+
+:root {
+    --orders-bg: var(--ff-bg, #f8f5ef);
+    --orders-surface: var(--ff-surface, #ffffff);
+    --orders-surface-soft: #fffaf2;
+    --orders-text: var(--ff-text, #1f2937);
+    --orders-muted: var(--ff-muted, #6b7280);
+    --orders-border: rgba(139, 90, 31, 0.16);
+    --orders-border-strong: rgba(139, 90, 31, 0.28);
+    --orders-brand: var(--ff-brand-mid, #2f2622);
+    --orders-brand-dark: var(--ff-brand-end, #1f1a17);
+    --orders-accent: var(--ff-action, #b45309);
+    --orders-accent-soft: rgba(180, 83, 9, 0.12);
+    --orders-success: #16803c;
+    --orders-danger: #b42318;
+    --orders-info: #1d4ed8;
+    --orders-shadow: 0 18px 44px rgba(47, 38, 34, 0.12);
+    --orders-shadow-soft: 0 8px 20px rgba(47, 38, 34, 0.08);
+    --orders-radius: 8px;
+    --orders-radius-pill: 999px;
+}
+
+.ff-pedidos-page {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(248, 245, 239, 0.96)),
+        var(--orders-bg) !important;
+    color: var(--orders-text);
+}
+
+.ff-pedidos-page .ff-main > main {
+    width: 100%;
+    max-width: 1180px;
+    min-width: 0;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+}
+
 @media (min-width: 769px) {
     .ff-pedidos-page .ff-sidebar {
         position: fixed;
@@ -10,203 +50,291 @@
     }
 
     .ff-pedidos-page .ff-main {
-        margin-left: 260px;
         width: calc(100% - 260px);
+        margin-left: 260px;
     }
 }
 
+/* ==========================================================================
+   Layout
+   ========================================================================== */
+
 .conteinner-pedidos {
-    background-color: #ffffff;
-    padding: 32px;
-    border-radius: 18px;
-    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
-    border: 1px solid rgba(15, 23, 42, 0.08);
     width: 100%;
     max-width: 100%;
     min-width: 0;
+    overflow: hidden;
+    padding: 0;
+    border: 1px solid var(--orders-border);
+    border-radius: var(--orders-radius);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: var(--orders-shadow);
 }
 
-.conteinner-pedidos h1 {
-    margin-bottom: 18px;
-    color: #0f172a;
+.conteinner-pedidos > h1 {
+    margin: 0;
+    padding: 24px;
+    background:
+        linear-gradient(135deg, rgba(47, 38, 34, 0.98), rgba(66, 45, 30, 0.94)),
+        var(--orders-brand);
+    color: #fff;
+    font-size: clamp(1.35rem, 2vw, 1.8rem);
+    line-height: 1.15;
+}
+
+.conteinner-pedidos > .text-muted {
+    margin: 0;
+    padding: 28px 24px;
+    color: var(--orders-muted) !important;
 }
 
 .lista-pedidos {
     display: grid;
-    gap: 24px;
+    gap: 16px;
+    padding: 18px;
 }
 
+/* ==========================================================================
+   Card
+   ========================================================================== */
+
 .pedido-card {
-    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: 0 18px 35px rgba(15, 23, 42, 0.12);
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
     min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--orders-border);
+    border-radius: var(--orders-radius);
+    background: linear-gradient(180deg, #fff 0%, var(--orders-surface-soft) 100%);
+    box-shadow: var(--orders-shadow-soft);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
 .pedido-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 22px 45px rgba(15, 23, 42, 0.18);
+    border-color: var(--orders-border-strong);
+    box-shadow: var(--orders-shadow);
+    transform: translateY(-2px);
 }
 
 .pedido-card__header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: 16px;
+    padding: 18px;
+    border-bottom: 1px solid var(--orders-border);
+    background: rgba(255, 255, 255, 0.72);
+}
+
+.pedido-card__header > div {
+    min-width: 0;
 }
 
 .pedido-card__titulo {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #0f172a;
     margin: 0;
+    color: var(--orders-text);
+    font-size: 1.12rem;
+    font-weight: 800;
+    line-height: 1.2;
 }
 
 .pedido-card__subtitulo {
     display: block;
+    margin-top: 5px;
+    color: var(--orders-muted);
     font-size: 0.9rem;
-    color: #64748b;
-    margin-top: 4px;
-}
-
-.badge-status {
-    padding: 6px 14px;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
-}
-
-.badge-status--pendente {
-    background: rgba(250, 204, 21, 0.2);
-    color: #b45309;
-}
-
-.badge-status--preparo {
-    background: rgba(59, 130, 246, 0.18);
-    color: #1d4ed8;
-}
-
-.badge-status--entregue {
-    background: rgba(16, 185, 129, 0.18);
-    color: #047857;
-}
-
-.badge-status--cancelado {
-    background: rgba(248, 113, 113, 0.18);
-    color: #b91c1c;
-}
-
-.badge-status--padrao {
-    background: rgba(148, 163, 184, 0.18);
-    color: #475569;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
 }
 
 .pedido-card__secao {
-    margin-bottom: 24px;
+    padding: 18px;
+    border-bottom: 1px solid rgba(139, 90, 31, 0.1);
 }
 
 .pedido-card__secao:last-of-type {
-    margin-bottom: 0;
+    border-bottom: 0;
 }
 
 .pedido-card__secao-titulo {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 14px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 9px;
+    margin: 0 0 12px;
+    color: var(--orders-brand-dark);
+    font-size: 0.94rem;
+    font-weight: 850;
+    line-height: 1.2;
 }
 
 .pedido-card__secao-titulo::before {
     content: "";
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
+    flex: 0 0 8px;
     border-radius: 50%;
-    background: #6366f1;
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+    background: var(--orders-accent);
+    box-shadow: 0 0 0 4px var(--orders-accent-soft);
 }
+
+/* ==========================================================================
+   Status
+   ========================================================================== */
+
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    max-width: 100%;
+    padding: 0 12px;
+    border: 1px solid transparent;
+    border-radius: var(--orders-radius-pill);
+    font-size: 0.72rem;
+    font-weight: 850;
+    letter-spacing: 0.04em;
+    line-height: 1.15;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: normal;
+}
+
+.badge-status--pendente {
+    border-color: rgba(180, 83, 9, 0.24);
+    background: rgba(250, 204, 21, 0.2);
+    color: #92400e;
+}
+
+.badge-status--preparo {
+    border-color: rgba(29, 78, 216, 0.18);
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--orders-info);
+}
+
+.badge-status--entregue {
+    border-color: rgba(22, 128, 60, 0.18);
+    background: rgba(22, 128, 60, 0.12);
+    color: var(--orders-success);
+}
+
+.badge-status--cancelado {
+    border-color: rgba(180, 35, 24, 0.18);
+    background: rgba(180, 35, 24, 0.1);
+    color: var(--orders-danger);
+}
+
+.badge-status--padrao {
+    border-color: rgba(107, 114, 128, 0.18);
+    background: rgba(107, 114, 128, 0.1);
+    color: #4b5563;
+}
+
+/* ==========================================================================
+   Dados
+   ========================================================================== */
 
 .pedido-dados,
 .pedido-endereco {
     display: grid;
-    gap: 12px;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin: 0;
 }
 
 .pedido-dados div,
 .pedido-endereco div {
-    padding: 12px 14px;
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.75);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid var(--orders-border);
+    border-radius: var(--orders-radius);
+    background: rgba(255, 255, 255, 0.74);
 }
 
 .pedido-dados dt,
 .pedido-endereco dt {
-    font-size: 0.75rem;
-    text-transform: uppercase;
+    margin: 0 0 5px;
+    color: var(--orders-muted);
+    font-size: 0.72rem;
+    font-weight: 850;
     letter-spacing: 0.06em;
-    color: #94a3b8;
-    margin-bottom: 4px;
+    line-height: 1.2;
+    text-transform: uppercase;
 }
 
 .pedido-dados dd,
 .pedido-endereco dd {
     margin: 0;
-    font-weight: 600;
-    color: #1e293b;
+    color: var(--orders-text);
+    font-size: 0.96rem;
+    font-weight: 700;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
 }
 
+/* ==========================================================================
+   Itens
+   ========================================================================== */
+
 .pedido-itens {
-    list-style: none;
-    padding: 0;
+    display: grid;
+    gap: 10px;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    padding: 0;
+    list-style: none;
 }
 
 .pedido-itens__linha {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    background: rgba(255, 255, 255, 0.75);
+    gap: 14px;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid var(--orders-border);
+    border-radius: var(--orders-radius);
+    background: rgba(255, 255, 255, 0.78);
+}
+
+.pedido-itens__linha > div {
     min-width: 0;
 }
 
 .pedido-itens__titulo {
-    font-weight: 600;
-    color: #0f172a;
     display: block;
+    color: var(--orders-text);
+    font-weight: 800;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
 }
 
 .pedido-itens__detalhe {
-    font-size: 0.85rem;
-    color: #64748b;
+    display: block;
+    margin-top: 4px;
+    color: var(--orders-muted);
+    font-size: 0.86rem;
+    line-height: 1.25;
 }
 
+.pedido-itens__linha strong {
+    color: var(--orders-brand-dark);
+    font-weight: 850;
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
 @media (max-width: 768px) {
-    .conteinner-pedidos {
-        padding: 18px;
-        border-radius: 14px;
+    .ff-pedidos-page .ff-main > main {
+        padding: 16px 12px 32px;
     }
 
-    .pedido-card {
-        padding: 20px;
+    .conteinner-pedidos > h1 {
+        padding: 20px 18px;
+    }
+
+    .lista-pedidos {
+        padding: 14px;
     }
 
     .pedido-card:hover {
@@ -215,36 +343,39 @@
 
     .pedido-card__header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
     }
 
-    .pedido-itens__linha {
-        flex-direction: column;
-        align-items: flex-start;
-        overflow-wrap: anywhere;
-    }
-
-    .pedido-itens__linha strong {
-        align-self: flex-end;
-    }
-}
-
-@media (max-width: 480px) {
-    .conteinner-pedidos {
-        padding: 14px;
-    }
-
-    .pedido-card {
-        padding: 14px;
-        border-radius: 14px;
-    }
-
-    .pedido-card__titulo {
-        font-size: 1.05rem;
+    .badge-status {
+        align-self: flex-start;
     }
 
     .pedido-dados,
     .pedido-endereco {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .ff-pedidos-page .ff-main > main {
+        padding-inline: 10px;
+    }
+
+    .lista-pedidos {
+        gap: 12px;
+        padding: 10px;
+    }
+
+    .pedido-card__header,
+    .pedido-card__secao {
+        padding: 14px;
+    }
+
+    .pedido-itens__linha {
+        grid-template-columns: 1fr;
+    }
+
+    .pedido-itens__linha strong {
+        justify-self: end;
     }
 }

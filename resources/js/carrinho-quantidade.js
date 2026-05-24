@@ -1,30 +1,39 @@
-// Atualização automática da quantidade no carrinho (sem precisar clicar em botão)
-// - Espera o usuário parar de digitar (debounce)
-// - Evita enviar "1" antes de "10" / "101" etc.
+const QUANTITY_FORM_SELECTOR = 'form[data-qty-form]';
+const QUANTITY_INPUT_SELECTOR = 'input[name="quantidade"]';
+const QUANTITY_DEBOUNCE_MS = 400;
 
-function debounce(fn, delay = 400) {
-  let timer;
+function debounce(callback, delay = QUANTITY_DEBOUNCE_MS) {
+  let timerId;
+
   return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), delay);
+    window.clearTimeout(timerId);
+    timerId = window.setTimeout(() => callback(...args), delay);
   };
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('form[data-qty-form]').forEach((form) => {
-    const input = form.querySelector('input[name="quantidade"]');
-    if (!input) return;
+function submitForm(form) {
+  if (typeof form.requestSubmit === 'function') {
+    form.requestSubmit();
+    return;
+  }
 
-    const submitDebounced = debounce(() => {
-      // não envia vazio
-      if (input.value === '') return;
-      if (typeof form.requestSubmit === 'function') {
-        form.requestSubmit();
-      } else {
-        form.submit();
-      }
-    }, 400);
+  form.submit();
+}
 
-    input.addEventListener('input', submitDebounced);
+function bindQuantityForm(form) {
+  const input = form.querySelector(QUANTITY_INPUT_SELECTOR);
+  if (!input) return;
+
+  const submitAfterTyping = debounce(() => {
+    if (input.value === '') return;
+    submitForm(form);
   });
-});
+
+  input.addEventListener('input', submitAfterTyping);
+}
+
+function initCartQuantityAutoSubmit() {
+  document.querySelectorAll(QUANTITY_FORM_SELECTOR).forEach(bindQuantityForm);
+}
+
+document.addEventListener('DOMContentLoaded', initCartQuantityAutoSubmit);

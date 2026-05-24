@@ -8,6 +8,27 @@
 body {
     background: #fff6e7;
     color: #1f2937;
+    scrollbar-width: thin;
+    scrollbar-color: #d62828 rgba(255, 123, 0, 0.16);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 123, 0, 0.12);
+}
+
+::-webkit-scrollbar-thumb {
+    border: 2px solid #fff6e7;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ff7b00, #d62828);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #d62828, #9f1d1d);
 }
 
 .kc-layout {
@@ -416,5 +437,4 @@ body {
         max-width: 100%;
     }
 }
-
 

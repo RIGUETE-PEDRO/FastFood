@@ -1,6 +1,7 @@
 @php
 $isAdmin = request()->routeIs('Administrativo')
 || request()->routeIs('admin.bemvindo')
+|| request()->routeIs('admin.configuracoes')
 || request()->routeIs('gerenciamento_*')
 || request()->routeIs('Pedidos_Administrativo')
 || request()->routeIs('gerenciamento_Produtos')
@@ -9,6 +10,10 @@ $isAdmin = request()->routeIs('Administrativo')
 || request()->routeIs('mesas.*')
 || request()->routeIs('garcom')
 || request()->routeIs('entregas');
+@endphp
+@php
+    $usuarioAtual = auth()->user() ?? ($usuario ?? null);
+    $isAdministrador = (int) data_get($usuarioAtual, 'tipo_usuario_id') === 3;
 @endphp
 
 <nav class="ff-sidebar d-flex flex-column">
@@ -98,7 +103,7 @@ $isAdmin = request()->routeIs('Administrativo')
                 <div class="d-flex align-items-center me-2">
                     <div class="circulo_maior me-2">
                         <img class="profile-image" id="preview-image"
-                            src="{{ isset($usuario['url_imagem_perfil']) && $usuario['url_imagem_perfil'] ? asset('img/perfil/' . $usuario['url_imagem_perfil']) : (isset($usuario->url_imagem_perfil) && $usuario->url_imagem_perfil ? asset('img/perfil/' . $usuario->url_imagem_perfil) : asset('img/person.png')) }}"
+                            src="{{ isset($usuario['url_imagem_perfil']) && $usuario['url_imagem_perfil'] ? asset('img/perfil/' . $usuario['url_imagem_perfil']) : (isset($usuario->url_imagem_perfil) && $usuario->url_imagem_perfil ? asset('img/perfil/' . $usuario->url_imagem_perfil) : asset('img/perfil/personPadrao.svg')) }}"
                             alt="Foto do usuário">
                     </div>
                     <span class="text text-truncate ff-sidebar__user-name">
@@ -108,7 +113,9 @@ $isAdmin = request()->routeIs('Administrativo')
             </button>
             <ul class="dropdown-menu dropdown-menu-end list w-100">
                 <li><a class="dropdown-item text" href="{{ route('perfil', [], false) }}">Perfil</a></li>
-                <li><a class="dropdown-item text" href="#">Configurações</a></li>
+                @if($isAdministrador)
+                    <li><a class="dropdown-item text" href="{{ route('admin.configuracoes', [], false) }}">Configurações</a></li>
+                @endif
                 <li>
                     <hr class="dropdown-divider">
                 </li>

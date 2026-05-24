@@ -30,6 +30,27 @@ body {
     color: var(--text-primary);
     position: relative;
     overflow: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--police-red) rgba(15, 95, 255, 0.16);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(15, 95, 255, 0.14);
+}
+
+::-webkit-scrollbar-thumb {
+    border: 2px solid var(--police-bg);
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--police-blue), var(--police-red));
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--police-blue-dark), var(--police-red-dark));
 }
 
 body::before,

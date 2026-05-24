@@ -11,6 +11,27 @@ body {
     align-items: center;
     padding: 16px;
     box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: #b45309 rgba(57, 46, 41, 0.16);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(57, 46, 41, 0.14);
+}
+
+::-webkit-scrollbar-thumb {
+    border: 2px solid #f8dfc5;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #c9872f, #b45309);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #b45309, #92400e);
 }
 
 /* Container principal: duas colunas */

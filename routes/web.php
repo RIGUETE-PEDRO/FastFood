@@ -115,6 +115,10 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
     Route::get('/admin/bem-vindo', [AdminController::class, 'bemVindo'])
         ->name('admin.bemvindo');
 
+    Route::get('/admin/configuracoes', [AdminController::class, 'configuracoes'])
+        ->middleware('admin.access:3')
+        ->name('admin.configuracoes');
+
     Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])
         ->middleware('SecureKey.role:' . Roles::DASHBORD)
         ->name('Administrativo');
