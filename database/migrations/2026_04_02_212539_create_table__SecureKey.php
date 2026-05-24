@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('keyclock_tipo_usuario', function (Blueprint $table) {
+        Schema::create('SecureKey_tipo_usuario', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->foreignId('tipo_usuario_id')->constrained('tipo_usuarios');
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('keyclock_tipo_usuario');
+        Schema::dropIfExists('SecureKey_tipo_usuario');
     }
 };

@@ -3,11 +3,11 @@
 namespace App\Services;
 
 use App\Models\UsuarioModel;
-use App\Repository\KeyClockRepository;
+use App\Repository\SecureKeyRepository;
 
 class KeyClockService
 {
-    public function __construct(private KeyClockRepository $repository)
+    public function __construct(private SecureKeyRepository $repository)
     {
 
     }
