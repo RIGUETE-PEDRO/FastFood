@@ -7,4 +7,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface AuditoriaRepository
 {
     public function buscar(array $filtros = [], int $porPagina = 20): LengthAwarePaginator;
+
+    public function estatisticas(array $filtros = []): array;
 }

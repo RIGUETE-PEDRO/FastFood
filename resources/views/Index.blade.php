@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     @include('partials.favicon')
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -64,6 +65,16 @@
 
 
 
+        <section class="home-products" aria-labelledby="home-products-title">
+            <div class="home-products__header">
+                <div>
+                    <span class="home-products__eyebrow">Cardapio</span>
+                    <h1 id="home-products-title">Escolha seu pedido</h1>
+                    <p>Produtos em destaque com preco, ingredientes e acao rapida para adicionar ao carrinho.</p>
+                </div>
+                <span class="home-products__count">{{ $produtos->count() }} itens</span>
+            </div>
+
         <div class="container-produtos mt-4">
             @foreach ($produtos as $produto)
 
@@ -72,24 +83,26 @@
                     <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" loading="lazy">
                     <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $produto->preco, 2, ',', '.') }}</span>
                 </div>
-                <div class="preco-conteiner">
-                    <label class="lanche">{{ $produto->nome }}</label>
-                </div>
+                <div class="produto-body">
+                    <div class="preco-conteiner">
+                        <h2 class="lanche">{{ $produto->nome }}</h2>
+                    </div>
                 @if(!empty($produto->descricao))
                 <div class="ingredientes-wrap">
-                    <span class="ingredientes">ingredientes:</span>
+                    <span class="ingredientes">Ingredientes</span>
                     <div class="ingredientes-lista">{{ $produto->descricao }}</div>
                 </div>
                 @else
-                <br>
-                <br>
+                <p class="produto-empty-description">Descricao nao informada.</p>
                 @endif
-                <div>
+                <div class="produto-action">
                     <button type="button" class="button-adicionar">Adicionar ao carrinho</button>
+                </div>
                 </div>
             </div>
             @endforeach
         </div>
+        </section>
 
         <!-- Modal: Adicionar ao carrinho -->
         <div class="modal fade " id="addToCartModal" tabindex="-1" aria-hidden="true">

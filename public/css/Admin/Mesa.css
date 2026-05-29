@@ -189,6 +189,39 @@ body {
     text-decoration: none;
 }
 
+.mesa-btn--edit,
+.mesa-btn--checkout {
+    display: grid;
+    gap: 2px;
+    align-content: center;
+    min-height: 58px;
+    border-radius: 8px;
+    padding: 10px 14px;
+    line-height: 1.15;
+}
+
+.mesa-btn--edit span,
+.mesa-btn--checkout span {
+    font-weight: 900;
+}
+
+.mesa-btn--edit small,
+.mesa-btn--checkout small {
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.mesa-btn--checkout {
+    border: 1px solid rgba(249, 115, 22, 0.24);
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.mesa-btn--checkout small {
+    color: #9a3412;
+}
+
 .mesa-btn:disabled {
     cursor: not-allowed;
     opacity: 0.55;
@@ -902,5 +935,402 @@ body {
 
     .mesa-modal-heading p {
         font-size: 0.86rem;
+    }
+}
+
+/* ===== Detalhes da mesa: dar baixa e editar pedido ===== */
+.mesa-summary-card,
+.mesa-order-editor {
+    border: 1px solid #d9e1ec !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08) !important;
+}
+
+.mesa-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.mesa-summary__item {
+    display: grid;
+    gap: 4px;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.mesa-summary__item span {
+    color: #667085;
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.mesa-summary__item strong {
+    color: #101828;
+    font-size: 1.1rem;
+}
+
+.mesa-summary__item--total {
+    border-color: rgba(249, 115, 22, 0.22);
+    background: #fff7ed;
+}
+
+.mesa-summary__item--total strong {
+    color: #c2410c;
+    font-size: clamp(1.35rem, 2.4vw, 1.8rem);
+}
+
+.mesa-order-editor {
+    overflow: hidden;
+    padding: 0 !important;
+}
+
+.mesa-order-editor__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 22px;
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(135deg, #fff, #fff7ed);
+}
+
+.mesa-order-editor__eyebrow {
+    display: block;
+    margin-bottom: 4px;
+    color: #c2410c;
+    font-size: 0.76rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.mesa-order-editor__header h2 {
+    margin: 0;
+    color: #101828;
+    font-size: clamp(1.25rem, 2vw, 1.55rem);
+}
+
+.mesa-order-editor__count {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: #fff;
+    color: #667085;
+    font-weight: 900;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+}
+
+.mesa-order-table-wrap {
+    padding: 8px 14px 0;
+}
+
+.mesa-order-table {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.mesa-order-table thead th {
+    border: 0;
+    color: #667085;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.mesa-order-table tbody tr {
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.mesa-order-table tbody td {
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+    vertical-align: middle;
+}
+
+.mesa-order-table tbody td:first-child {
+    border-left: 1px solid #e5e7eb;
+    border-radius: 8px 0 0 8px;
+}
+
+.mesa-order-table tbody td:last-child {
+    border-right: 1px solid #e5e7eb;
+    border-radius: 0 8px 8px 0;
+}
+
+.mesa-check {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+}
+
+.mesa-check input {
+    position: absolute;
+    opacity: 0;
+}
+
+.mesa-check span {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #cbd5e1;
+    border-radius: 7px;
+    background: #fff;
+    transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.mesa-check input:checked + span {
+    border-color: #c2410c;
+    background: #f97316;
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.14);
+}
+
+.mesa-check input:checked + span::after {
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: 10px;
+    width: 6px;
+    height: 11px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.mesa-item-name {
+    display: grid;
+    gap: 2px;
+}
+
+.mesa-item-name strong {
+    color: #101828;
+}
+
+.mesa-item-name small {
+    color: #667085;
+    font-weight: 700;
+}
+
+.mesa-qty-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.mesa-qty-open {
+    min-width: 34px;
+    color: #667085;
+    font-weight: 900;
+    text-align: center;
+}
+
+.mesa-qty-control [data-qtd-dec],
+.mesa-qty-control [data-qtd-inc] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    min-height: 34px;
+    padding: 0;
+    border: 1px solid #d9e1ec !important;
+    border-radius: 6px !important;
+    background: #fff !important;
+    color: #101828 !important;
+    font-weight: 900;
+}
+
+.mesa-qty-input {
+    width: 70px !important;
+    max-width: 70px !important;
+    height: 34px;
+    min-height: 34px;
+    padding: 0 8px;
+    text-align: center;
+    font-weight: 900;
+}
+
+.mesa-edit-actions {
+    display: grid;
+    gap: 8px;
+    justify-items: end;
+}
+
+.mesa-edit-form {
+    display: grid;
+    grid-template-columns: auto 76px auto;
+    align-items: center;
+    gap: 8px;
+}
+
+.mesa-edit-form label {
+    margin: 0;
+    color: #667085;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.mesa-edit-input {
+    width: 76px !important;
+    text-align: center;
+    font-weight: 900;
+}
+
+.mesa-btn-save,
+.mesa-btn-remove {
+    min-height: 38px;
+    border-radius: 8px !important;
+    font-weight: 900;
+}
+
+.mesa-btn-save {
+    border: 0 !important;
+    background: #fff7ed !important;
+    color: #c2410c !important;
+}
+
+.mesa-btn-remove {
+    border: 0 !important;
+    background: #fef2f2 !important;
+    color: #b91c1c !important;
+}
+
+.mesa-checkout-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 12px;
+    padding: 16px 22px;
+    border-top: 1px solid #e5e7eb;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(12px);
+}
+
+.mesa-checkout-bar div {
+    display: grid;
+    gap: 2px;
+}
+
+.mesa-checkout-bar strong {
+    color: #101828;
+}
+
+.mesa-checkout-bar span {
+    color: #667085;
+    font-size: 0.92rem;
+}
+
+.abater-total-card {
+    border-color: rgba(249, 115, 22, 0.2) !important;
+    background: #fff7ed !important;
+}
+
+.abater-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.abater-total span {
+    color: #667085;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.abater-total strong {
+    color: #c2410c;
+    font-size: 1.6rem;
+}
+
+@media (max-width: 860px) {
+    .mesa-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .mesa-order-editor__header,
+    .mesa-checkout-bar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .mesa-checkout-bar .btn {
+        width: 100%;
+    }
+
+    .mesa-order-table thead {
+        display: none;
+    }
+
+    .mesa-order-table,
+    .mesa-order-table tbody,
+    .mesa-order-table tr,
+    .mesa-order-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .mesa-order-table tbody tr {
+        margin-bottom: 12px;
+        padding: 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background: #fff;
+    }
+
+    .mesa-order-table tbody td,
+    .mesa-order-table tbody td:first-child,
+    .mesa-order-table tbody td:last-child {
+        display: grid;
+        grid-template-columns: minmax(110px, 38%) 1fr;
+        gap: 10px;
+        padding: 9px 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+    }
+
+    .mesa-order-table tbody td::before {
+        content: attr(data-label);
+        color: #667085;
+        font-size: 0.72rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .mesa-edit-actions,
+    .mesa-order-table tbody td > .mesa-check,
+    .mesa-order-table tbody td > .mesa-qty-control,
+    .mesa-order-table tbody td > .mesa-item-name {
+        justify-self: end;
+    }
+
+    .mesa-edit-form {
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+
+    .mesa-edit-input,
+    .mesa-btn-save,
+    .mesa-btn-remove {
+        width: 100% !important;
     }
 }

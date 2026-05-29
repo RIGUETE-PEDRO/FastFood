@@ -49,23 +49,28 @@ class SecureKeyController
 
     public function auditoria(Request $request)
     {
-        $filtros = $request->only(['filtro', 'valor', 'ordem_data', 'data_inicio', 'data_fim']);
+        $filtros = $this->auditoriaConsultaService->normalizarFiltros(
+            $request->only(['filtro', 'valor', 'ordem_data', 'data_inicio', 'data_fim'])
+        );
         $auditorias = $this->auditoriaConsultaService->listar($filtros, 20);
+        $estatisticas = $this->auditoriaConsultaService->estatisticas($filtros);
 
         if ($request->ajax()) {
             return response()->json([
-                'total' => $auditorias->total(),
+                'total' => $estatisticas['total'],
                 'rowsHtml' => view('Admin.partials.SecureKey_auditoria_rows', [
                     'auditorias' => $auditorias,
                 ])->render(),
                 'statsHtml' => view('Admin.partials.SecureKey_auditoria_stats', [
                     'auditorias' => $auditorias,
+                    'estatisticas' => $estatisticas,
                 ])->render(),
             ]);
         }
 
         return view('Admin.SecureKey_auditoria', [
             'auditorias' => $auditorias,
+            'estatisticas' => $estatisticas,
             'filtro' => $filtros['filtro'] ?? null,
             'valor' => $filtros['valor'] ?? null,
             'ordem_data' => $filtros['ordem_data'] ?? 'desc',

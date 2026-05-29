@@ -7,6 +7,7 @@ use App\Services\AdminService;
 use App\Http\Middleware\UsuarioAutenticado;
 use Illuminate\Http\Request;
 use App\Enum\TipoUsuario as EnumsTipoUsuario;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -25,8 +26,11 @@ class AdminController extends Controller
 
     public function infoPerfil(Request $request)
     {
-        $usuarioLogado =  $this->genericBase->hasLogado();
-        $this->adminService->verificarAcessoPerfil();
+        $usuarioLogado = $this->genericBase->hasLogado() ?? Auth::user();
+
+        if (!$usuarioLogado) {
+            return redirect()->route('login.form')->with('erro', 'Faça login para acessar seu perfil.');
+        }
 
         $perfilReturnUrl = $this->adminService->resolverReturnUrl($request);
 
@@ -82,9 +86,16 @@ class AdminController extends Controller
 
     public function alterarDados(Request $request)
     {
-        $user = session('usuario_logado');
+        $user = session('usuario_logado') ?? Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login.form')->with('erro', 'Faça login para editar seu perfil.');
+        }
 
         $request->validate([
+            'nome' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'telefone' => 'nullable|string|max:20',
             'url_imagem_perfil' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 

@@ -4,22 +4,43 @@
     flex-direction: column;
     gap: 24px;
     padding: 16px 20px 28px;
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
 }
 
 .bemvindo-hero {
+    position: relative;
+    overflow: hidden;
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
     gap: 20px;
-    padding: 24px;
-    border-radius: 20px;
-    background: linear-gradient(130deg, #0f172a 0%, #1e293b 65%, #334155 100%);
-    color: #fff;
+    padding: clamp(22px, 4vw, 36px);
+    border: 1px solid rgba(249, 115, 22, 0.16) !important;
+    border-radius: 8px;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 247, 237, 0.96)) !important;
+    color: #101828 !important;
     text-align: left;
+    box-shadow: 0 18px 44px rgba(63, 52, 45, 0.10) !important;
+}
+
+.bemvindo-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto -40px -70px auto;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(249, 115, 22, 0.12);
+    pointer-events: none;
 }
 
 .bemvindo-hero > div:first-child {
     max-width: 600px;
+    position: relative;
+    z-index: 1;
 }
 
 .bemvindo-hero__tag {
@@ -28,42 +49,99 @@
     gap: 8px;
     padding: 6px 12px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.14);
+    background: rgba(249, 115, 22, 0.12);
+    color: #c2410c;
     font-size: 0.85rem;
+    font-weight: 800;
     letter-spacing: 0.02em;
 }
 
 .bemvindo-hero h1 {
     margin: 10px 0 6px;
+    color: #101828 !important;
     font-size: clamp(1.6rem, 2.6vw, 2.2rem);
 }
 
 .bemvindo-hero__subtitle {
     margin: 0;
     font-size: 0.98rem;
-    color: rgba(255, 255, 255, 0.85);
+    color: #667085 !important;
     max-width: 520px;
 }
 
 .bemvindo-hero__badge {
+    position: relative;
+    z-index: 1;
     min-width: 190px;
     padding: 16px 20px;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(249, 115, 22, 0.18);
+    border-radius: 8px;
+    background: #fff;
     text-align: center;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.25);
+    box-shadow: 0 10px 24px rgba(63, 52, 45, 0.08);
 }
 
 .bemvindo-hero__badge span {
     display: block;
     font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.75);
+    color: #667085;
 }
 
 .bemvindo-hero__badge strong {
     display: block;
     margin-top: 6px;
+    color: #101828;
     font-size: 1.1rem;
+}
+
+.bemvindo-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.bemvindo-action {
+    display: grid;
+    gap: 8px;
+    min-height: 150px;
+    padding: 18px;
+    border: 1px solid #d9e1ec;
+    border-radius: 8px;
+    background: #fff;
+    color: #101828;
+    text-decoration: none;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+    transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.bemvindo-action:hover,
+.bemvindo-action:focus-visible {
+    border-color: rgba(249, 115, 22, 0.42);
+    color: #101828;
+    transform: translateY(-2px);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
+}
+
+.bemvindo-action__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    background: #fff7ed;
+    color: #c2410c;
+    font-size: 0.82rem;
+    font-weight: 900;
+}
+
+.bemvindo-action strong {
+    font-size: 1.05rem;
+}
+
+.bemvindo-action small {
+    color: #667085;
+    line-height: 1.45;
 }
 
 .bemvindo-cards {
@@ -77,14 +155,16 @@
     flex-direction: column;
     gap: 12px;
     padding: 20px;
-    border-radius: 18px;
+    border-radius: 8px;
     background: #fff;
     box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
     text-align: left;
 }
 
 .bemvindo-card h2 {
-    text-align: center;
+    margin: 0;
+    color: #101828;
+    text-align: left;
 }
 
 .bemvindo-tips {
@@ -95,7 +175,23 @@
     list-style: none;
     display: grid;
     gap: 8px;
-    text-align: center;
+    text-align: left;
+}
+
+.bemvindo-tips li {
+    position: relative;
+    padding-left: 22px;
+}
+
+.bemvindo-tips li::before {
+    content: "";
+    position: absolute;
+    top: 0.75em;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f97316;
 }
 
 @media (max-width: 900px) {

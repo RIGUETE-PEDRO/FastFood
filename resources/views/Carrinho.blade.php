@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Carrinho</title>
     @vite(['resources/js/app.js'])
+    @include('partials.favicon')
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Index.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Carrinho.css') }}">

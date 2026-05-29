@@ -6,7 +6,7 @@
                 <strong>{{ $auditoria->usuario->nome }}</strong><br>
                 <small class="text-muted">{{ $auditoria->usuario->email }}</small>
             @else
-                <span class="badge badge-warning">Usuário deletado</span>
+                <span class="badge badge-warning">Usuario deletado</span>
             @endif
         </td>
         <td>
@@ -16,26 +16,26 @@
             @if($auditoria->recurso)
                 <code>{{ $auditoria->recurso }}</code>
             @else
-                <span class="text-muted">—</span>
+                <span class="text-muted">-</span>
             @endif
         </td>
         <td>
-            <small>{{ $auditoria->ip ?? '—' }}</small>
+            <small>{{ $auditoria->ip ?? '-' }}</small>
         </td>
         <td>
             <small class="text-muted" title="{{ $auditoria->user_agent }}">
-                {{ Str::limit($auditoria->user_agent ?? '—', 30) }}
+                {{ Str::limit($auditoria->user_agent ?? '-', 30) }}
             </small>
         </td>
         <td>
             <small class="text-muted">
-                <i class="far fa-calendar"></i> {{ $auditoria->created_at?->format('d/m/Y H:i:s') ?? '—' }}
+                <i class="far fa-calendar" aria-hidden="true"></i> {{ $auditoria->created_at?->format('d/m/Y H:i:s') ?? '-' }}
             </small>
         </td>
         <td>
             @if($auditoria->detalhes)
                 <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#modalDetalhes{{ $auditoria->id }}">
-                    <i class="fas fa-eye"></i> Ver
+                    <i class="fas fa-eye" aria-hidden="true"></i> Ver
                 </button>
 
                 <div class="modal fade auditoria-modal" id="modalDetalhes{{ $auditoria->id }}" tabindex="-1">
@@ -43,7 +43,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title">Detalhes - Auditoria #{{ $auditoria->id }}</h5>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                             </div>
                             <div class="modal-body">
                                 <pre><code>{{ json_encode($auditoria->detalhes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</code></pre>
@@ -55,7 +55,7 @@
                     </div>
                 </div>
             @else
-                <span class="text-muted">—</span>
+                <span class="text-muted">-</span>
             @endif
         </td>
     </tr>
@@ -63,7 +63,7 @@
     <tr>
         <td colspan="8">
             <div class="auditoria-empty">
-                <i class="fas fa-inbox"></i>
+                <i class="fas fa-inbox" aria-hidden="true"></i>
                 <p>Nenhum registro de auditoria encontrado.</p>
             </div>
         </td>

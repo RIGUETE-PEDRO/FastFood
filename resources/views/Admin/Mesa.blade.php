@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     @include('partials.favicon')
     <title>Gerenciamento de Mesas</title>
@@ -191,11 +192,13 @@
                             </div>
 
                             <div class="mesa-card__footer">
-                                <a href="{{ route('mesas.detalhes', $mesa->id) }}" class="mesa-btn">
-                                    Editar pedidos
+                                <a href="{{ route('mesas.detalhes', $mesa->id) }}" class="mesa-btn mesa-btn--edit">
+                                    <span>Editar</span>
+                                    <small>Itens da comanda</small>
                                 </a>
-                                <a href="{{ route('mesas.detalhes', $mesa->id) }}" class="mesa-btn mesa-btn--ghost">
-                                    Dar baixa
+                                <a href="{{ route('mesas.detalhes', $mesa->id) }}" class="mesa-btn mesa-btn--checkout">
+                                    <span>Dar baixa</span>
+                                    <small>Pagamento parcial</small>
                                 </a>
                             </div>
                         </article>

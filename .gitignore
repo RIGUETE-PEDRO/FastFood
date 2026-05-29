@@ -31,3 +31,17 @@ diagrama_classes.puml
 cypress.env.json
 docker-compose.yml
 docker-compose.yml
+storage/framework/views/*
+
+storage/framework/views/1b24991b9ea809e7069edefdd403bf0a.php
+storage/framework/views/6ddf7f4a0ea394683bcfe1c6cf4947b8.php
+storage/framework/views/9c5710b6684b7e2e9675bb7d7efef58a.php
+storage/framework/views/67c1a23171e1d42813a725add45364de.php
+storage/framework/views/72d667399419612e28b98de6818562a4.php
+storage/framework/views/278c2e8d6b9e4ffe49ba0ab6c9fa9232.php
+storage/framework/views/670d2e6d8d97b2bc612f6dadffe0f1ca.php
+storage/framework/views/c8e1aba33a55ec1a02eb1e77b8b44af1.php
+storage/framework/views/dfdfca7a08649442bb73cc275d4fd22e.php
+storage/framework/views/e90d321e6746c4f1e46b2ddfb60ab7e4.php
+storage/framework/views/f790d6d9f071461c80b627267b185e2a.php
+storage/framework/views/fd261554497538500f5ff426733851b5.php

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     @include('partials.favicon')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>SecureKey - Grupos</title>
@@ -14,27 +15,30 @@
 <body>
     <div class="kc-layout">
         <aside class="kc-sidebar">
-            <div class="kc-brand">SecureKey</div>
+            <div class="kc-brand">
+                <span class="kc-brand__icon" aria-hidden="true">&#128274;</span>
+                <span>SecureKey</span>
+            </div>
 
-            <nav class="kc-nav">
-                <a href="{{ route('SecureKey.index') }}" class="kc-link">Visão geral</a>
-
-                <a href="{{ route('SecureKey.grupo') }}" class="kc-link active">Grupos</a>
-                <a href="{{ route('SecureKey.permissoes') }}" class="kc-link">Criar roles</a>
-                <a href="{{ route('SecureKey.auditoria') }}" class="kc-link">Auditoria</a>
-                <a href="{{ route('login.form') }}" class="kc-link kc-link-login">Voltar para login</a>
+            <nav class="kc-nav" aria-label="Navegacao SecureKey">
+                <a href="{{ route('SecureKey.index') }}" class="kc-link"><span aria-hidden="true">&#8962;</span>Visao geral</a>
+                <a href="{{ route('SecureKey.grupo') }}" class="kc-link active"><span aria-hidden="true">&#128101;</span>Grupos</a>
+                <a href="{{ route('SecureKey.permissoes') }}" class="kc-link"><span aria-hidden="true">&#128273;</span>Criar roles</a>
+                <a href="{{ route('SecureKey.auditoria') }}" class="kc-link"><span aria-hidden="true">&#128221;</span>Auditoria</a>
+                <a href="{{ route('admin.bemvindo') }}" class="kc-link kc-link-login"><span aria-hidden="true">&#8592;</span>Voltar ao sistema</a>
             </nav>
         </aside>
 
         <main class="kc-content">
             <header class="kc-header">
+                <span class="kc-kicker">Permissoes por perfil</span>
                 <h1>Grupos</h1>
-                <p>Defina uma role padrão para cada grupo.</p>
+                <p>Defina quais roles cada grupo pode acessar no sistema.</p>
             </header>
 
             <section class="kc-card">
-                <h2>Atribuição de role por grupo</h2>
-                <p>As roles salvas aqui são aplicadas ao tipo de usuário do grupo.</p>
+                <h2>Atribuicao de role por grupo</h2>
+                <p>As roles salvas aqui sao aplicadas ao tipo de usuario do grupo.</p>
             </section>
 
             <section class="kc-users-list">
@@ -59,9 +63,9 @@
                         >
                             <div class="kc-user-info">
                                 <strong>{{ $grupo->nome }}</strong>
-
+                                <span>{{ count($rolesDoGrupo) }} roles vinculadas</span>
                             </div>
-                            <span class="kc-user-toggle__icon">▾</span>
+                            <span class="kc-user-toggle__icon">&#9662;</span>
                         </button>
 
                         <div id="roles_grupo_{{ $grupo->id }}" class="kc-roles-expanded" hidden>
@@ -84,8 +88,8 @@
                             <ul class="kc-role-added-list">
                                 @forelse ($rolesDoGrupo as $role)
                                     <li class="kc-role-added-item" data-role-id="{{ $role['id'] }}" data-grupo-id="{{ $grupo->id }}">
-                                        <button type="button" class="kc-role-remove-btn">Remover</button>
                                         <span>{{ $role['nome'] }}</span>
+                                        <button type="button" class="kc-role-remove-btn">Remover</button>
                                     </li>
                                 @empty
                                     <li class="kc-role-added-item kc-role-added-item--empty">

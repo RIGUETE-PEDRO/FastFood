@@ -128,7 +128,7 @@ class GenericBase
 
     public function pegarUsuarioLogado()
     {
-        $usuario = session('usuario_logado');
+        $usuario = session('usuario_logado') ?? Auth::user();
         // Se não tiver sessão, considera deslogado.
         if (!$usuario) {
             return null;

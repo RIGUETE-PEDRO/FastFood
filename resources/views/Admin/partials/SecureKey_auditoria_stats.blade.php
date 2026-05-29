@@ -1,8 +1,19 @@
+@php
+    $estatisticas = $estatisticas ?? [
+        'total' => $auditorias->total(),
+        'usuarios_ativos' => $auditorias->getCollection()->whereNotNull('usuario_id')->pluck('usuario_id')->unique()->count(),
+        'tipos_acao' => $auditorias->getCollection()->whereNotNull('acao')->pluck('acao')->unique()->count(),
+        'ultima_acao' => $auditorias->first(),
+    ];
+
+    $ultimaAcao = $estatisticas['ultima_acao'] ?? null;
+@endphp
+
 <div class="col-md-3">
     <div class="card">
         <div class="card-body">
-            <h6 class="card-title text-muted">Total de Registros</h6>
-            <h3 class="text-primary">{{ $auditorias->total() }}</h3>
+            <h6 class="card-title text-muted">Total de registros</h6>
+            <h3 class="text-primary">{{ $estatisticas['total'] }}</h3>
         </div>
     </div>
 </div>
@@ -10,14 +21,14 @@
     <div class="card">
         <div class="card-body">
             <h6 class="card-title text-muted">
-                <i class="fas fa-clock text-warning"></i> Última Ação
+                <i class="fas fa-clock text-warning" aria-hidden="true"></i> Ultima acao
             </h6>
-            @if($auditorias->first())
+            @if($ultimaAcao)
                 <p class="auditoria-timestamp mb-1">
-                    {{ $auditorias->first()->created_at?->format('d/m/Y') }}
+                    {{ $ultimaAcao->created_at?->format('d/m/Y') }}
                 </p>
                 <small class="text-muted">
-                    {{ $auditorias->first()->created_at?->format('H:i:s') }}
+                    {{ $ultimaAcao->created_at?->format('H:i:s') }}
                 </small>
             @else
                 <p class="text-secondary mb-0">Nenhum registro</p>
@@ -28,16 +39,16 @@
 <div class="col-md-3">
     <div class="card">
         <div class="card-body">
-            <h6 class="card-title text-muted">Usuários Ativos</h6>
-            <h3 class="text-info">{{ $auditorias->groupBy('usuario_id')->count() }}</h3>
+            <h6 class="card-title text-muted">Usuarios ativos</h6>
+            <h3 class="text-info">{{ $estatisticas['usuarios_ativos'] }}</h3>
         </div>
     </div>
 </div>
 <div class="col-md-3">
     <div class="card">
         <div class="card-body">
-            <h6 class="card-title text-muted">Tipos de Ação</h6>
-            <h3 class="text-warning">{{ $auditorias->groupBy('acao')->count() }}</h3>
+            <h6 class="card-title text-muted">Tipos de acao</h6>
+            <h3 class="text-warning">{{ $estatisticas['tipos_acao'] }}</h3>
         </div>
     </div>
 </div>

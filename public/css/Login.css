@@ -1,7 +1,11 @@
+@import url("FlashFoodDesignSystem.css");
+
 /* Body e fonte */
 body {
-    background: #F8DFC5;
-    background: radial-gradient(circle,rgba(248, 223, 197, 1) 27%, rgba(57, 46, 41, 1) 100%);
+    background:
+        radial-gradient(circle at top left, rgba(20, 184, 166, 0.14), transparent 28rem),
+        radial-gradient(circle at bottom right, rgba(249, 115, 22, 0.18), transparent 26rem),
+        #faf7f2;
     font-family: Arial, sans-serif;
     margin: 0;
     min-height: 100vh;
@@ -39,17 +43,17 @@ body {
     display: flex;
     width: min(900px, 100%);
     max-height: min(92vh, 920px);
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    border-radius: 10px;
+    box-shadow: 0 24px 64px rgba(63, 52, 45, 0.18);
+    border-radius: 8px;
     overflow: hidden;
-    border: 2px solid black;
+    border: 1px solid rgba(63, 52, 45, 0.12);
 }
 
 
 /* Coluna da imagem */
 .login-container .login-image {
     flex: 1;
-    border-right: 1px solid black;
+    border-right: 1px solid rgba(15, 23, 42, 0.10);
 }
 
 .login-container .login-image img {
@@ -61,9 +65,9 @@ body {
 /* Coluna do formulário */
 .login-container .container {
     flex: 1;
-    background-color: #f8f8f8;
+    background-color: rgba(255, 255, 255, 0.96);
     padding: clamp(20px, 3vw, 28px);
-    border-left: 1px solid black;
+    border-left: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -113,16 +117,16 @@ body {
 
 input {
     width: 100%;
-    padding: 10px 0;
-    border: none;
-    border-bottom: 2px solid #ccc;
+    padding: 12px;
+    border: 1px solid #d9e1ec;
+    border-radius: 8px;
     outline: none;
     transition: border-color 0.5s;
     font-size: 16px;
 }
 
 input:focus {
-    border-bottom-color: #002fff; /* muda cor quando ativo */
+    border-color: var(--ff-primary);
 }
 
 
@@ -137,10 +141,10 @@ button {
     width: 100%;
     box-sizing: border-box;
     padding: 10px;
-    background-color: #39c259;
+    background: linear-gradient(135deg, var(--ff-primary), var(--ff-primary-dark));
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 15px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
@@ -148,9 +152,9 @@ button {
 }
 
 button:hover {
-    background-color: #18a737;
-    transition: 1s;
-    box-shadow: none;
+    filter: brightness(1.02);
+    transition: 0.2s;
+    transform: translateY(-1px);
 }
 
 /* Botão Registrar */
@@ -165,9 +169,10 @@ button:hover {
     width: 100%;
     box-sizing: border-box;
     padding: 10px 12px;
-    background-color: #e93131;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    background-color: #f3f4f6;
+    border: 1px solid #d9e1ec;
+    border-radius: 8px;
+    color: #101828;
     font-size: 15px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
     margin-bottom: 10px;
@@ -175,9 +180,9 @@ button:hover {
 }
 
 .register:hover {
-    background-color: #c10707;
-    transition: 1s;
-    box-shadow: none;
+    background-color: #e5e7eb;
+    transition: 0.2s;
+    transform: translateY(-1px);
 }
 
 /* Link esquecer senha */
@@ -186,7 +191,7 @@ button:hover {
     margin-top: 12px;
     text-align: center;
     font-size: 15px;
-    color: #0066cc;
+    color: var(--ff-primary-dark);
     text-decoration: none;
 
 }

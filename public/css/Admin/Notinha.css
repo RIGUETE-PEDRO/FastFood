@@ -2,7 +2,11 @@
     --receipt-width: 80mm;
     --receipt-ink: #000;
     --receipt-paper: #fff;
-    --receipt-screen-bg: #eef1f5;
+    --receipt-screen-bg: #f4f6f8;
+    --receipt-ui-ink: #111827;
+    --receipt-ui-muted: #6b7280;
+    --receipt-ui-border: #d8dde6;
+    --receipt-ui-accent: #e84d2f;
 }
 
 * {
@@ -18,20 +22,54 @@ body {
 
 .receipt-page {
     min-height: 100vh;
-    padding: 24px 12px;
+    padding: 24px 12px 36px;
+}
+
+.receipt-toolbar {
+    width: min(100%, 760px);
+    margin: 0 auto 18px;
+    color: var(--receipt-ui-ink);
+    font-family: Arial, sans-serif;
+}
+
+.receipt-toolbar__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border: 1px solid var(--receipt-ui-border);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    padding: 14px;
+}
+
+.receipt-eyebrow {
+    display: block;
+    color: var(--receipt-ui-muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.receipt-toolbar h1 {
+    margin: 2px 0 0;
+    font-size: 22px;
+    line-height: 1.1;
 }
 
 .receipt-actions {
     display: flex;
-    justify-content: center;
     gap: 8px;
-    margin-bottom: 16px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .receipt-button {
-    border: 1px solid #111;
+    border: 1px solid var(--receipt-ui-ink);
     border-radius: 6px;
-    background: #111;
+    background: var(--receipt-ui-ink);
     color: #fff;
     cursor: pointer;
     font-family: Arial, sans-serif;
@@ -39,11 +77,22 @@ body {
     font-weight: 700;
     min-height: 38px;
     padding: 0 16px;
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
 
 .receipt-button--ghost {
     background: #fff;
-    color: #111;
+    color: var(--receipt-ui-ink);
+}
+
+.receipt-button:hover {
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
+    transform: translateY(-1px);
+}
+
+.receipt-button:focus-visible {
+    outline: 3px solid rgba(232, 77, 47, 0.34);
+    outline-offset: 2px;
 }
 
 .cupom-container {
@@ -52,6 +101,19 @@ body {
     margin: 0 auto;
     background: var(--receipt-paper);
     box-shadow: 0 16px 45px rgba(15, 23, 42, 0.18);
+    position: relative;
+}
+
+.receipt-preview-label {
+    display: block;
+    padding: 10px 8px 0;
+    color: var(--receipt-ui-muted);
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-align: center;
+    text-transform: uppercase;
 }
 
 .cupom {
@@ -126,6 +188,13 @@ body {
     font-size: 10px;
 }
 
+.receipt-pill {
+    border: 1px solid var(--receipt-ink);
+    border-radius: 999px;
+    padding: 1px 6px;
+    text-transform: uppercase;
+}
+
 .receipt-item {
     margin-bottom: 7px;
     break-inside: avoid;
@@ -171,7 +240,8 @@ body {
         padding: 0;
     }
 
-    .receipt-actions {
+    .receipt-toolbar,
+    .receipt-preview-label {
         display: none;
     }
 
@@ -184,5 +254,35 @@ body {
     .cupom {
         padding: 3mm;
         font-size: 10.5px;
+    }
+}
+
+@media (max-width: 520px) {
+    .receipt-page {
+        padding: 12px 10px 24px;
+    }
+
+    .receipt-toolbar__content {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .receipt-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .receipt-button {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .receipt-button {
+        transition: none;
+    }
+
+    .receipt-button:hover {
+        transform: none;
     }
 }

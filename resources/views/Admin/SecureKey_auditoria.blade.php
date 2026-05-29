@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     @include('partials.favicon')
     <title>Auditoria SecureKey</title>
     @vite(['resources/js/app.js'])
@@ -15,118 +16,118 @@
 <body>
     <div class="kc-layout">
         <aside class="kc-sidebar">
-            <div class="kc-brand">SecureKey</div>
+            <div class="kc-brand">
+                <span class="kc-brand__icon" aria-hidden="true">&#128274;</span>
+                <span>SecureKey</span>
+            </div>
 
-            <nav class="kc-nav">
-                <a href="{{ route('SecureKey.index') }}" class="kc-link">Visão geral</a>
-                <a href="{{ route('SecureKey.grupo') }}" class="kc-link">Grupos</a>
-                <a href="{{ route('SecureKey.permissoes') }}" class="kc-link">Criar roles</a>
-                <a href="{{ route('SecureKey.auditoria') }}" class="kc-link active">Auditoria</a>
-                <a href="{{ route('login.form') }}" class="kc-link kc-link-login">Voltar para login</a>
+            <nav class="kc-nav" aria-label="Navegacao SecureKey">
+                <a href="{{ route('SecureKey.index') }}" class="kc-link"><span aria-hidden="true">&#8962;</span>Visao geral</a>
+                <a href="{{ route('SecureKey.grupo') }}" class="kc-link"><span aria-hidden="true">&#128101;</span>Grupos</a>
+                <a href="{{ route('SecureKey.permissoes') }}" class="kc-link"><span aria-hidden="true">&#128273;</span>Criar roles</a>
+                <a href="{{ route('SecureKey.auditoria') }}" class="kc-link active"><span aria-hidden="true">&#128221;</span>Auditoria</a>
+                <a href="{{ route('admin.bemvindo') }}" class="kc-link kc-link-login"><span aria-hidden="true">&#8592;</span>Voltar ao sistema</a>
             </nav>
         </aside>
 
         <main class="kc-content auditoria-container">
-                <section class="auditoria-header">
-                    <h1>📋 Auditoria SecureKey</h1>
-                    <p>Histórico de ações, eventos de autenticação e segurança do sistema.</p>
-                </section>
+            <section class="auditoria-header">
+                <span class="kc-kicker">Historico de seguranca</span>
+                <h1>Auditoria SecureKey</h1>
+                <p>Historico de acoes, eventos de autenticacao e seguranca do sistema.</p>
+            </section>
 
-                <!-- Filtros -->
-                <section class="card auditoria-filters mb-4">
-                    <div class="card-header">
-                        <h5>🔍 Filtros</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="GET" action="{{ route('SecureKey.auditoria') }}" class="row g-3">
-                            <div class="col-md-3">
-                                <label for="filtro" class="form-label">Tipo de Filtro</label>
-                                <select name="filtro" id="filtro" class="form-select">
-                                    <option value="">-- Selecione --</option>
-                                    <option value="acao" {{ request('filtro') === 'acao' ? 'selected' : '' }}>Por Ação</option>
-                                    <option value="usuario" {{ request('filtro') === 'usuario' ? 'selected' : '' }}>Por Usuário</option>
-                                    <option value="recurso" {{ request('filtro') === 'recurso' ? 'selected' : '' }}>Por Recurso</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="valor" class="form-label">Valor</label>
-                                <input type="text" name="valor" id="valor" class="form-control" placeholder="Digite o valor..." value="{{ request('valor') }}">
-                            </div>
-
-                            <div class="col-md-2">
-                                <label for="ordem_data" class="form-label">Data</label>
-                                <select name="ordem_data" id="ordem_data" class="form-select">
-                                    <option value="desc" {{ (request('ordem_data', 'desc') === 'desc') ? 'selected' : '' }}>Mais recentes</option>
-                                    <option value="asc" {{ request('ordem_data') === 'asc' ? 'selected' : '' }}>Mais antigas</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-2">
-                                <label for="data_inicio" class="form-label">De</label>
-                                <input type="date" name="data_inicio" id="data_inicio" class="form-control" value="{{ request('data_inicio') }}">
-                            </div>
-
-                            <div class="col-md-2">
-                                <label for="data_fim" class="form-label">Até</label>
-                                <input type="date" name="data_fim" id="data_fim" class="form-control" value="{{ request('data_fim') }}">
-                            </div>
-
-                            <div class="col-md-2 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fas fa-search"></i> Buscar
-                                </button>
-                            </div>
-
-                            <div class="col-md-2 d-flex align-items-end">
-                                <a href="{{ route('SecureKey.auditoria') }}" class="btn btn-secondary w-100">
-                                    <i class="fas fa-redo"></i> Limpar
-                                </a>
-                            </div>
-                        </form>
-                    </div>
-                </section>
-
-                <!-- Tabela de Auditoria -->
-                <section class="card auditoria-table">
-                    <div id="auditoria-config" data-url="{{ route('SecureKey.auditoria') }}" hidden></div>
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5>📊 Registros de Auditoria</h5>
-                        <span class="badge bg-light text-dark" id="auditoria-total-badge">{{ $auditorias->total() }} registros</span>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Usuário</th>
-                                    <th>Ação</th>
-                                    <th>Recurso</th>
-                                    <th>IP</th>
-                                    <th>User Agent</th>
-                                    <th>Data/Hora</th>
-                                    <th>Detalhes</th>
-                                </tr>
-                            </thead>
-                            <tbody id="auditoria-table-body">
-                                @include('Admin.partials.SecureKey_auditoria_rows', ['auditorias' => $auditorias])
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Paginação -->
-                    @if($auditorias->hasPages())
-                        <div class="card-footer auditoria-pagination">
-                            {{ $auditorias->links('pagination::bootstrap-5') }}
-                        </div>
-                    @endif
-                </section>
-
-                <!-- Estatísticas Rápidas -->
-                <div class="row auditoria-stats mt-4" id="auditoria-stats-container">
-                    @include('Admin.partials.SecureKey_auditoria_stats', ['auditorias' => $auditorias])
+            <section class="card auditoria-filters mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-filter" aria-hidden="true"></i> Filtros</h5>
                 </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ route('SecureKey.auditoria') }}" class="auditoria-filter-form">
+                        <div class="auditoria-filter-field">
+                            <label for="filtro" class="form-label">Tipo de filtro</label>
+                            <select name="filtro" id="filtro" class="form-select">
+                                <option value="">Selecione</option>
+                                <option value="acao" {{ request('filtro') === 'acao' ? 'selected' : '' }}>Por acao</option>
+                                <option value="usuario" {{ request('filtro') === 'usuario' ? 'selected' : '' }}>Por usuario</option>
+                                <option value="recurso" {{ request('filtro') === 'recurso' ? 'selected' : '' }}>Por recurso</option>
+                            </select>
+                        </div>
+
+                        <div class="auditoria-filter-field auditoria-filter-field--wide">
+                            <label for="valor" class="form-label">Valor</label>
+                            <input type="text" name="valor" id="valor" class="form-control" placeholder="Digite o valor..." value="{{ request('valor') }}">
+                        </div>
+
+                        <div class="auditoria-filter-field">
+                            <label for="ordem_data" class="form-label">Data</label>
+                            <select name="ordem_data" id="ordem_data" class="form-select">
+                                <option value="desc" {{ (request('ordem_data', 'desc') === 'desc') ? 'selected' : '' }}>Mais recentes</option>
+                                <option value="asc" {{ request('ordem_data') === 'asc' ? 'selected' : '' }}>Mais antigas</option>
+                            </select>
+                        </div>
+
+                        <div class="auditoria-filter-field">
+                            <label for="data_inicio" class="form-label">De</label>
+                            <input type="date" name="data_inicio" id="data_inicio" class="form-control" value="{{ request('data_inicio') }}">
+                        </div>
+
+                        <div class="auditoria-filter-field">
+                            <label for="data_fim" class="form-label">Ate</label>
+                            <input type="date" name="data_fim" id="data_fim" class="form-control" value="{{ request('data_fim') }}">
+                        </div>
+
+                        <div class="auditoria-filter-actions">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search" aria-hidden="true"></i> Buscar
+                            </button>
+                            <a href="{{ route('SecureKey.auditoria') }}" class="btn btn-secondary w-100">
+                                <i class="fas fa-redo" aria-hidden="true"></i> Limpar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section class="card auditoria-table">
+                <div id="auditoria-config" data-url="{{ route('SecureKey.auditoria') }}" hidden></div>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-shield-alt" aria-hidden="true"></i> Registros de auditoria</h5>
+                    <span class="badge bg-light text-dark" id="auditoria-total-badge">{{ $auditorias->total() }} registros</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Acao</th>
+                                <th>Recurso</th>
+                                <th>IP</th>
+                                <th>User Agent</th>
+                                <th>Data/Hora</th>
+                                <th>Detalhes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditoria-table-body">
+                            @include('Admin.partials.SecureKey_auditoria_rows', ['auditorias' => $auditorias])
+                        </tbody>
+                    </table>
+                </div>
+
+                @if($auditorias->hasPages())
+                    <div class="card-footer auditoria-pagination">
+                        {{ $auditorias->links('pagination::bootstrap-5') }}
+                    </div>
+                @endif
+            </section>
+
+            <div class="row auditoria-stats mt-4" id="auditoria-stats-container">
+                @include('Admin.partials.SecureKey_auditoria_stats', [
+                    'auditorias' => $auditorias,
+                    'estatisticas' => $estatisticas,
+                ])
+            </div>
         </main>
     </div>
 

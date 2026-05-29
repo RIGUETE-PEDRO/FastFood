@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     @include('partials.favicon')
     <title>Detalhes da Mesa</title>
@@ -33,15 +34,27 @@
                     </header>
 
 
-                    <div class="card p-3 mb-3">
-                        <div class="d-flex flex-wrap gap-3 justify-content-between">
-                            <div><strong>Status:</strong> {{ $mesa->status }}</div>
-                            <div><strong>Total em aberto:</strong> R$ {{ number_format((float) $totalAberto, 2, ',', '.') }}</div>
+                    <div class="card p-3 mb-3 mesa-summary-card">
+                        <div class="mesa-summary">
+                            <div class="mesa-summary__item">
+                                <span>Status da mesa</span>
+                                <strong>{{ $mesa->status }}</strong>
+                            </div>
+                            <div class="mesa-summary__item mesa-summary__item--total">
+                                <span>Total em aberto</span>
+                                <strong>R$ {{ number_format((float) $totalAberto, 2, ',', '.') }}</strong>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="card p-3 mb-3">
-                        <h2 class="h5 mb-3">Pedidos em aberto</h2>
+                    <div class="card p-3 mb-3 mesa-order-editor">
+                        <div class="mesa-order-editor__header">
+                            <div>
+                                <span class="mesa-order-editor__eyebrow">Comanda ativa</span>
+                                <h2>Pedidos em aberto</h2>
+                            </div>
+                            <span class="mesa-order-editor__count">{{ $itensAbertos->count() }} {{ $itensAbertos->count() === 1 ? 'item' : 'itens' }}</span>
+                        </div>
 
                         @if ($itensAbertos->isEmpty())
                             <div class="alert alert-info mb-0">Nenhum item em aberto nesta mesa.</div>
@@ -50,8 +63,8 @@
                                 @csrf
                             </form>
 
-                            <div class="table-responsive">
-                                <table class="table align-middle">
+                            <div class="table-responsive mesa-order-table-wrap">
+                                <table class="table align-middle mesa-order-table">
                                     <thead>
                                         <tr>
                                             <th style="width:40px;"></th>
@@ -74,7 +87,8 @@
                                                 $maxParaAbater = $valorPago > 0 ? 1 : (int) $item->quantidade;
                                             @endphp
                                             <tr>
-                                                <td>
+                                                <td data-label="Baixa">
+                                                    <label class="mesa-check" aria-label="Selecionar {{ $nome }} para baixa">
                                                     <input
                                                         class="form-check-input"
                                                         type="checkbox"
@@ -86,17 +100,23 @@
                                                         data-max="{{ (int) $item->quantidade }}"
                                                         {{ $preselectId === (int) $item->id ? 'checked' : '' }}
                                                     >
+                                                        <span></span>
+                                                    </label>
                                                 </td>
-                                                <td>{{ $nome }}</td>
-                                                <td>
-                                                    <div class="d-flex align-items-center gap-2" style="max-width: 220px;">
-                                                        <span class="text-muted" style="min-width: 36px;">{{ (int) $item->quantidade }}x</span>
+                                                <td data-label="Item">
+                                                    <div class="mesa-item-name">
+                                                        <strong>{{ $nome }}</strong>
+                                                        <small>Item #{{ $item->id }}</small>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Quantidade">
+                                                    <div class="mesa-qty-control">
+                                                        <span class="mesa-qty-open">{{ (int) $item->quantidade }}x</span>
 
                                                         <button type="button" class="btn btn-secondary btn-sm" data-qtd-dec data-item-id="{{ $item->id }}">−</button>
                                                         <input
                                                             type="number"
-                                                            class="form-control form-control-sm"
-                                                            style="max-width: 90px;"
+                                                            class="form-control form-control-sm mesa-qty-input"
                                                             min="0"
                                                             max="{{ $maxParaAbater }}"
                                                             step="1"
@@ -108,34 +128,35 @@
                                                         >
                                                         <button type="button" class="btn btn-secondary btn-sm" data-qtd-inc data-item-id="{{ $item->id }}">+</button>
                                                     </div>
-                                                    <small class="text-muted">Quantidade para abater agora</small>
+                                                    <small class="text-muted">Quantidade para dar baixa agora</small>
                                                 </td>
-                                                <td>R$ {{ number_format($unit, 2, ',', '.') }}</td>
-                                                <td>
+                                                <td data-label="Unit.">R$ {{ number_format($unit, 2, ',', '.') }}</td>
+                                                <td data-label="Subtotal">
                                                     <div>R$ {{ number_format($sub, 2, ',', '.') }}</div>
                                                     @if($valorPago > 0)
                                                         <small class="text-muted">Pago: R$ {{ number_format($valorPago, 2, ',', '.') }} | Falta: R$ {{ number_format($restanteLinha, 2, ',', '.') }}</small>
                                                     @endif
                                                 </td>
-                                                <td>
-                                                    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-end">
-                                                        <form action="{{ route('mesas.conta.item.atualizar', ['id' => $mesa->id, 'itemId' => $item->id]) }}" method="POST" class="d-flex gap-2 align-items-center">
+                                                <td data-label="Editar pedido">
+                                                    <div class="mesa-edit-actions">
+                                                        <form action="{{ route('mesas.conta.item.atualizar', ['id' => $mesa->id, 'itemId' => $item->id]) }}" method="POST" class="mesa-edit-form">
                                                             @csrf
+                                                            <label for="editar-qtd-{{ $item->id }}">Nova qtd.</label>
                                                             <input
                                                                 type="number"
                                                                 name="quantidade"
-                                                                class="form-control form-control-sm"
+                                                                id="editar-qtd-{{ $item->id }}"
+                                                                class="form-control form-control-sm mesa-edit-input"
                                                                 min="1"
                                                                 max="1000"
                                                                 value="{{ (int) $item->quantidade }}"
-                                                                style="width: 88px;"
                                                             >
-                                                            <button type="submit" class="btn btn-sm btn-warning">Salvar</button>
+                                                            <button type="submit" class="btn btn-sm btn-warning mesa-btn-save">Salvar</button>
                                                         </form>
 
                                                         <form action="{{ route('mesas.conta.item.remover', ['id' => $mesa->id, 'itemId' => $item->id]) }}" method="POST" data-confirm-remove-item>
                                                             @csrf
-                                                            <button type="submit" class="btn btn-sm btn-danger">Remover</button>
+                                                            <button type="submit" class="btn btn-sm btn-danger mesa-btn-remove">Remover</button>
                                                         </form>
                                                     </div>
                                                 </td>
@@ -145,9 +166,12 @@
                                 </table>
                             </div>
 
-                            <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
-                                <div class="text-muted">Marque os itens que a pessoa vai pagar agora.</div>
-                                <button class="btn btn-primary" type="button" id="btnAbrirAbaterModal">Abater selecionados (Pago)</button>
+                            <div class="mesa-checkout-bar">
+                                <div>
+                                    <strong>Dar baixa parcial ou total</strong>
+                                    <span>Marque os itens que a pessoa vai pagar agora.</span>
+                                </div>
+                                <button class="btn btn-primary" type="button" id="btnAbrirAbaterModal">Dar baixa selecionados</button>
                             </div>
 
                             <!-- Modal: confirmar abatimento e forma de pagamento -->
@@ -155,15 +179,16 @@
                                 <div class="ff-modal__overlay" aria-hidden="true"></div>
                                 <div class="ff-modal__card" role="dialog" aria-modal="true" aria-labelledby="abaterModalTitle">
                                     <div class="ff-modal__header">
-                                        <h2 id="abaterModalTitle">Abater itens (pagar)</h2>
+                                        <h2 id="abaterModalTitle">Dar baixa nos itens</h2>
                                         <button type="button" class="ff-modal__close" data-abater-modal-close aria-label="Fechar">×</button>
                                     </div>
 
                                     <p class="ff-modal__hint">Selecione a forma de pagamento e informe o valor a pagar agora. Você pode pagar em partes (ex: Pix e depois Cartão).</p>
 
-                                    <div class="card p-3 mb-3">
-                                        <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center">
-                                            <div><strong>Total selecionado:</strong> <span id="abaterTotalTexto">R$ 0,00</span></div>
+                                    <div class="card p-3 mb-3 abater-total-card">
+                                        <div class="abater-total">
+                                            <span>Total selecionado</span>
+                                            <strong id="abaterTotalTexto">R$ 0,00</strong>
                                         </div>
                                         <div class="mt-2">
                                             <label for="abaterValorInput" class="form-label mb-1"><strong>Valor do pagamento (R$)</strong></label>

@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     @include('partials.favicon')
     <title>Perfil</title>
@@ -24,6 +25,18 @@
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
+            </div>
+        @endif
+
+        @if (session('sucesso'))
+            <div class="alert alert-success">
+                {{ session('sucesso') }}
+            </div>
+        @endif
+
+        @if (session('erro'))
+            <div class="alert alert-danger">
+                {{ session('erro') }}
             </div>
         @endif
 

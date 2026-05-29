@@ -3,10 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    
-    @include('partials.favicon')
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
     <title>Bem-vindo | Admin</title>
     @vite(['resources/js/app.js'])
+    @include('partials.favicon')
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Admin/BemVindo.css') }}">
 </head>
@@ -32,6 +34,40 @@
                         <span>Perfil</span>
                         <strong>{{ $tipoUsuario ?? 'Usuário' }}</strong>
                     </div>
+                </section>
+
+                <section class="bemvindo-actions" aria-label="Acoes rapidas do administrativo">
+                    @role('DASHBORD')
+                    <a class="bemvindo-action" href="{{ route('Administrativo', [], false) }}">
+                        <span class="bemvindo-action__icon">01</span>
+                        <strong>Dashboard</strong>
+                        <small>Indicadores de vendas, produtos e pedidos.</small>
+                    </a>
+                    @endrole
+
+                    @role('PEDIDOS')
+                    <a class="bemvindo-action" href="{{ route('Pedidos_Administrativo', [], false) }}">
+                        <span class="bemvindo-action__icon">02</span>
+                        <strong>Pedidos</strong>
+                        <small>Acompanhe preparo, status e cupons.</small>
+                    </a>
+                    @endrole
+
+                    @role('GERENCIAMENTO_PRODUTOS')
+                    <a class="bemvindo-action" href="{{ route('gerenciamento_Produtos', [], false) }}">
+                        <span class="bemvindo-action__icon">03</span>
+                        <strong>Produtos</strong>
+                        <small>Atualize cardapio, precos e disponibilidade.</small>
+                    </a>
+                    @endrole
+
+                    @role('MESAS')
+                    <a class="bemvindo-action" href="{{ route('mesas.index', [], false) }}">
+                        <span class="bemvindo-action__icon">04</span>
+                        <strong>Mesas</strong>
+                        <small>Gerencie comandas e consumo no salao.</small>
+                    </a>
+                    @endrole
                 </section>
 
                 <section class="bemvindo-cards">

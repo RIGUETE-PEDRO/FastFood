@@ -309,7 +309,7 @@ Route::post('/registro', [RegisterController::class, 'register'])->name('registr
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/esqueci-senha', [LoginController::class, 'recuperarSenha'])->name('senha.recuperar');
 Route::post('/redefinir-senha', [LoginController::class, 'atualizarSenha'])->name('senha.atualizar');
-Route::post('/Alterar_Dados', [AdminController::class, 'AlterarDados'])->name('Alterar_Dados');
+Route::post('/Alterar_Dados', [AdminController::class, 'AlterarDados'])->name('Alterar_Dados')->middleware('auth');
 
 
 

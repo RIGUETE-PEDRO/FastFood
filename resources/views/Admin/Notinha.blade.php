@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     @include('partials.favicon')
     <title>Cupom #{{ str_pad($pedido->id, 6, '0', STR_PAD_LEFT) }}</title>
@@ -14,15 +15,27 @@
         $subtotal = (float) $pedido->itens->sum(fn ($item) => $item->quantidade * $item->preco_unitario);
         $temEnderecoEntrega = filled(optional($pedido->endereco)->logradouro);
         $numeroMesa = optional($pedido->mesa)->numero_da_mesa;
+        $horarioFuncionamento = $dadosEmpresa['Horario de Funcionamento'] ?? null;
     @endphp
 
     <div class="receipt-page">
-        <div class="receipt-actions" aria-label="Acoes do cupom">
-            <button type="button" class="receipt-button" onclick="window.print()">Imprimir</button>
-            <button type="button" class="receipt-button receipt-button--ghost" onclick="history.back()">Voltar</button>
+        <div class="receipt-toolbar" aria-label="Acoes do cupom">
+            <div class="receipt-toolbar__content">
+                <div>
+                    <span class="receipt-eyebrow">Cupom do pedido</span>
+                    <h1>#{{ str_pad($pedido->id, 6, '0', STR_PAD_LEFT) }}</h1>
+                </div>
+
+                <div class="receipt-actions">
+                    <button type="button" class="receipt-button receipt-button--ghost" onclick="history.back()">Voltar</button>
+                    <button type="button" class="receipt-button" onclick="window.print()">Imprimir</button>
+                </div>
+            </div>
         </div>
 
         <main class="cupom-container" aria-label="Cupom do pedido">
+            <span class="receipt-preview-label" aria-hidden="true">Pre-visualizacao de impressao</span>
+
             <section class="cupom">
                 <header class="receipt-header">
                     <strong class="receipt-store">{{ $dadosEmpresa['Nome da Empresa'] ?? 'FlashFood' }}</strong>
@@ -53,11 +66,11 @@
                     </div>
                     <div class="receipt-row">
                         <span>Cliente</span>
-                        <span>{{ optional($pedido->usuario)->nome ?? 'Nao informado' }}</span>
+                        <strong>{{ optional($pedido->usuario)->nome ?? 'Nao informado' }}</strong>
                     </div>
                     <div class="receipt-row">
                         <span>Tipo</span>
-                        <strong>{{ $temEnderecoEntrega ? 'Entrega' : 'Retirada no local' }}</strong>
+                        <strong class="receipt-pill">{{ $temEnderecoEntrega ? 'Entrega' : 'Retirada' }}</strong>
                     </div>
                     @unless($temEnderecoEntrega)
                         <div class="receipt-row">
@@ -84,7 +97,7 @@
                 <div class="receipt-separator"></div>
 
                 <section class="receipt-block">
-                    <h2 class="receipt-title">Itens</h2>
+                    <h2 class="receipt-title">Itens do pedido</h2>
                     @forelse($pedido->itens as $item)
                         @php
                             $totalItem = (float) $item->quantidade * (float) $item->preco_unitario;
@@ -130,8 +143,8 @@
                     <strong>Obrigado pela preferencia!</strong>
                     <span>Este cupom nao tem validade fiscal.</span>
                     <span>Guarde para eventuais conferencias.</span>
-                    @if(!empty($dadosEmpresa['Horario de Funcionamento']))
-                        <span>Atendimento: {{ $dadosEmpresa['Horario de Funcionamento'] }}</span>
+                    @if(!empty($horarioFuncionamento))
+                        <span>Atendimento: {{ $horarioFuncionamento }}</span>
                     @elseif(!empty($dadosEmpresa['Horário de Funcionamento']))
                         <span>Atendimento: {{ $dadosEmpresa['Horário de Funcionamento'] }}</span>
                     @endif

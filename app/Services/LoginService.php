@@ -33,14 +33,11 @@ class LoginService
         $usuario = $this->loginRepository->buscarUsuarioPorEmail($credenciais['email']);
 
         if (!$usuario || !Hash::check($credenciais['senha'], $usuario->senha)) {
-
-            redirect()->back()->with('erro', ErroMensagens::CREDENCIAIS_INVALIDAS);
-            return $autenticou = false;
+            return false;
         }
 
         if (!$this->loginRepository->existeUsuarioPorEmail($credenciais['email'])) {
-            redirect()->back()->with('erro', ErroMensagens::EMAIL_NAO_CADASTRADO);
-            return $autenticou = false;
+            return false;
         }
 
         $autenticou = true;
