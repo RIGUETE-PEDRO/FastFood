@@ -254,6 +254,13 @@ body {
     font-weight: 850;
 }
 
+.pedidos-lista-vazia {
+    margin: 4px 0 18px;
+    padding: 0;
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
 .titulo-card {
     color: var(--orders-brand-dark);
     font-size: 1.3rem;

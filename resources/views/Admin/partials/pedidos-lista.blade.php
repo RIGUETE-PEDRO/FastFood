@@ -19,11 +19,7 @@
                 'iniciarRecolhido' => true,
             ])
         @empty
-            <div class="card shadow-sm mb-4">
-                <div class="card-body text-center py-4">
-                    <p class="texto-suave mb-0">Nenhum pedido em preparo ou a caminho agora.</p>
-                </div>
-            </div>
+            <p class="pedidos-lista-vazia texto-suave">Nenhum pedido em preparo ou a caminho agora.</p>
         @endforelse
     </section>
 
