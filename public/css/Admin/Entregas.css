@@ -7,6 +7,29 @@
     border-radius: 16px;
     border: 1px solid rgba(255, 145, 0, 0.18);
     box-shadow: 0 14px 28px -24px rgba(194, 65, 12, 0.55);
+    overflow: hidden;
+}
+
+.entregas-card::before,
+.acordeao-pedidos__conteudo .pedido-card::before {
+    width: 6px;
+    pointer-events: none;
+}
+
+.entregas-card .pedido-card__header,
+.acordeao-pedidos__conteudo .pedido-card__header {
+    padding-left: 28px;
+    padding-right: 16px;
+}
+
+.entregas-card .pedido-card__header > div,
+.acordeao-pedidos__conteudo .pedido-card__header > div {
+    min-width: 0;
+}
+
+.entregas-card .pedido-card__subtitulo,
+.acordeao-pedidos__conteudo .pedido-card__subtitulo {
+    overflow-wrap: anywhere;
 }
 
 .entregas-card .pedido-card__secao {
@@ -14,18 +37,51 @@
     border: 1px solid rgba(255, 145, 0, 0.12);
     border-radius: 12px;
     padding: 12px 14px;
+    margin-left: 22px;
+    margin-right: 14px;
 }
 
 .entregas-card .pedido-card__secao + .pedido-card__secao {
     margin-top: 10px;
 }
 
+.entregas-card .pedido-card__header + .pedido-card__secao {
+    margin-top: 12px;
+}
+
 .entregas-card .pedido-card__secao p {
     margin-bottom: 6px;
+    overflow-wrap: anywhere;
 }
 
 .entregas-card .pedido-card__secao p:last-child {
     margin-bottom: 0;
+}
+
+.entregas-card > p {
+    margin: 0 14px 8px 22px !important;
+    padding: 10px 12px;
+    border: 1px solid rgba(255, 145, 0, 0.12);
+    border-radius: 12px;
+    background: rgba(255, 248, 237, 0.72);
+    color: #374151;
+    overflow-wrap: anywhere;
+}
+
+.entregas-card > p:first-of-type {
+    margin-top: 12px !important;
+}
+
+.entregas-card > .mt-3 {
+    margin: 12px 14px 14px 22px !important;
+}
+
+.acordeao-pedidos__conteudo .pedido-card {
+    overflow: hidden;
+}
+
+.acordeao-pedidos__conteudo .pedido-card__header {
+    align-items: flex-start;
 }
 
 .entregas-card .btn-add {
@@ -56,8 +112,22 @@
 }
 
 @media (max-width: 768px) {
+    .entregas-card .pedido-card__header,
+    .acordeao-pedidos__conteudo .pedido-card__header {
+        padding-left: 24px;
+        padding-right: 12px;
+    }
+
     .entregas-card .pedido-card__secao {
         padding: 10px 11px;
+        margin-left: 18px;
+        margin-right: 10px;
+    }
+
+    .entregas-card > p,
+    .entregas-card > .mt-3 {
+        margin-left: 18px !important;
+        margin-right: 10px !important;
     }
 
     .entregas-card .btn-add {

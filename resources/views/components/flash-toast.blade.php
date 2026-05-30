@@ -117,4 +117,50 @@
         }
     </style>
 
+    <script>
+        (function () {
+            if (window.flashFoodToastFallbackReady) return;
+            window.flashFoodToastFallbackReady = true;
+
+            function hideToast(toast) {
+                if (!toast || toast.classList.contains('is-hiding')) return;
+
+                toast.classList.add('is-hiding');
+                window.setTimeout(function () {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 220);
+            }
+
+            function prepareToasts() {
+                document.querySelectorAll('.ff-toast').forEach(function (toast) {
+                    if (toast.dataset.flashToastReady === '1') return;
+                    toast.dataset.flashToastReady = '1';
+
+                    var timeout = parseInt(toast.getAttribute('data-timeout') || '5000', 10);
+                    if (!Number.isFinite(timeout) || timeout < 500) timeout = 5000;
+
+                    window.setTimeout(function () {
+                        hideToast(toast);
+                    }, timeout);
+                });
+            }
+
+            document.addEventListener('click', function (event) {
+                var close = event.target.closest('.ff-toast__close');
+                if (!close) return;
+
+                event.preventDefault();
+                hideToast(close.closest('.ff-toast'));
+            });
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', prepareToasts, { once: true });
+            } else {
+                prepareToasts();
+            }
+        })();
+    </script>
+
 @endif
