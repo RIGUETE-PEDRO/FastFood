@@ -4,11 +4,29 @@ namespace App\Repositoryimpl;
 
 use App\Models\Dados_empresa;
 use App\Models\PedidoModel;
+use App\Repository\PedidoRepository;
 use Illuminate\Support\Collection;
 
-class PedidoRepositoryimpl
+class PedidoRepositoryimpl implements PedidoRepository
 {
-    public function listarParaChecksum()
+    public function filtrarPedidosDataNome($data, $nome): Collection
+    {
+        return PedidoModel::query()
+
+            ->when($data, function ($query) use ($data) {
+                $query->whereDate('created_at', $data);
+            })
+
+            ->when($nome, function ($query) use ($nome) {
+                $query->whereHas('usuario', function ($q) use ($nome) {
+                    $q->where('nome', 'like', "%{$nome}%");
+                });
+            })
+
+            ->latest()
+            ->get();
+    }
+    public function listarParaChecksum() : Collection
     {
         return PedidoModel::query()
             ->select(['id', 'status', 'updated_at'])
@@ -16,7 +34,7 @@ class PedidoRepositoryimpl
             ->get();
     }
 
-    public function pegarPedidosDoUsuario(int $usuarioId)
+    public function pegarPedidosDoUsuario(int $usuarioId) :Collection
     {
         return PedidoModel::with([
             'statusRelacionamento',
@@ -28,8 +46,8 @@ class PedidoRepositoryimpl
             ->orderByDesc('created_at')
             ->get();
     }
-    
-    public function buscarDadosEmpresa(): Collection
+
+    public function buscarDadosEmpresa() :Collection 
     {
         return Dados_empresa::all()
             ->pluck('Valor', 'Informacao');

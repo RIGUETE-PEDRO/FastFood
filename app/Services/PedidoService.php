@@ -5,19 +5,28 @@ namespace App\Services;
 use App\Enum\StatusPedidos as EnumStatusPedidos;
 use App\Models\PedidoModel;
 use App\Models\UsuarioModel;
-use App\Repositoryimpl\PedidoRepositoryimpl;
+use App\Repository\PedidoRepository;
+
+use Illuminate\Http\Request;
 
 class PedidoService
 {
     protected GenericBase $genericBase;
     protected PedidosFeitosService $service;
-    protected PedidoRepositoryimpl $repository;
+    protected PedidoRepository $repository;
 
-    public function __construct(GenericBase $genericBase, PedidosFeitosService $service, PedidoRepositoryimpl $repository)
+    public function __construct(GenericBase $genericBase, PedidosFeitosService $service, PedidoRepository $repository)
     {
         $this->genericBase = $genericBase;
         $this->service = $service;
         $this->repository = $repository;
+    }
+
+    public function filtrarPedidosDataNome(Request $request){
+        $data = $request->dia;
+        $nome = $request->cliente;
+
+        return $this->repository->filtrarPedidosDataNome($data, $nome);
     }
 
     public function checksumBasico(): array
@@ -59,6 +68,7 @@ class PedidoService
 
     public function pegarPedidosDoUsuario(UsuarioModel|int $usuario)
     {
+
         $usuarioId = $usuario instanceof UsuarioModel
             ? (int) $usuario->id
             : (int) $usuario;

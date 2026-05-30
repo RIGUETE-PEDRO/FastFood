@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Services\GenericBase;
 use App\Services\PedidoService;
+use Illuminate\Http\Request;
 
 class PedidoController extends Controller
 {
@@ -17,9 +18,23 @@ class PedidoController extends Controller
         $this->PedidoService = $PedidoService;
     }
 
+    public function pedidosFiltro(Request $request)
+    {
+        $usuarioLogado =  $this->genericBase->hasLogado();
+
+
+        $pedido = $this->PedidoService->filtrarPedidosDataNome($request);
+
+        return view('Admin.Pedidos', [
+            'usuario' => $usuarioLogado,
+            'pedidos' => $pedido,
+        ]);
+    }
+
     public function verpedido()
     {
         $usuarioLogado =  $this->genericBase->hasLogado();
+
 
         $pedido = $this->PedidoService->pegarPedidosDoUsuario((int) ($usuarioLogado?->id ?? 0));
 

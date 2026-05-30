@@ -126,6 +126,9 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
     Route::get('/Pedidos_Administrativo', [PedidosFeitosController::class, 'verPedidosAdmin'])
         ->middleware('SecureKey.role:' . Roles::PEDIDOS)
         ->name('Pedidos_Administrativo');
+    Route::get('/admin/pedidos', [PedidoController::class, 'pedidosFiltro'])
+    ->middleware('SecureKey.role:' . Roles::PEDIDOS)
+    ->name('admin.pedidos');
 
     Route::get('/entregas', [EntregasController::class, 'index'])
         ->middleware('SecureKey.role:' . Roles::ENTREGAS)

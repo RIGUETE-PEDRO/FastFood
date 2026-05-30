@@ -45,6 +45,7 @@
                             placeholder="Nome do cliente"
                             autocomplete="off"
                             data-filtro-clientes-entregues
+                            value="{{ request('cliente') }}"
                         >
                     </label>
                     <label for="filtroDiaEntregues">
@@ -54,6 +55,7 @@
                             id="filtroDiaEntregues"
                             class="pedidos-finalizados-filtro__input"
                             data-filtro-dia-entregues
+                            value="{{ request('dia') }}"
                         >
                     </label>
                 </div>

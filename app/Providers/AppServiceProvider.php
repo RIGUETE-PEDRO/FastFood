@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\Repository\PedidoRepository;
+use App\Repositoryimpl\PedidoRepositoryimpl;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SecureKeyRepository::class, SecureKeyRepositoryimpl::class);
         $this->app->bind(PedidosFeitosRepository::class,PedidosFeitosRepositoryimpl::class);
         $this->app->bind(IndexProdutoRepository::class, IndexProdutoRepositoryimpl::class);
+        $this->app->bind(PedidoRepository::class, PedidoRepositoryimpl::class);
     }
 
 
