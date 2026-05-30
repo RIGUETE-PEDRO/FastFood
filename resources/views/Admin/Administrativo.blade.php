@@ -9,7 +9,6 @@
     <title>Administrativo</title>
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
@@ -27,20 +26,28 @@
                 </section>
 
                 <section class="dashboard-toolbar painel">
-                    <form method="GET" action="{{ route('Administrativo') }}" class="dashboard-filtro-form">
+                    <form method="GET" action="{{ route('Administrativo') }}" class="dashboard-filtro-form" data-dashboard-filter-form>
                         <label for="periodo">Agrupar por</label>
-                        <select name="periodo" id="periodo" data-auto-submit-on-change>
+                        <select name="periodo" id="periodo" data-dashboard-periodo>
                             <option value="dia" {{ ($periodoSelecionado ?? 'mes') === 'dia' ? 'selected' : '' }}>Dia</option>
                             <option value="mes" {{ ($periodoSelecionado ?? 'mes') === 'mes' ? 'selected' : '' }}>Mês</option>
                             <option value="ano" {{ ($periodoSelecionado ?? 'mes') === 'ano' ? 'selected' : '' }}>Ano</option>
                         </select>
 
+                        <label for="referencia" data-dashboard-referencia-label>
+                            {{ match($periodoSelecionado ?? 'mes') {
+                                'dia' => 'Filtrar pelo dia',
+                                'ano' => 'Filtrar pelo ano',
+                                default => 'Filtrar pelo mês',
+                            } }}
+                        </label>
+
                         @if (($periodoSelecionado ?? 'mes') === 'dia')
-                            <input type="date" name="referencia" value="{{ $referenciaSelecionada ?? now()->format('Y-m-d') }}">
+                            <input type="date" id="referencia" name="referencia" value="{{ $referenciaSelecionada ?? now()->format('Y-m-d') }}" data-dashboard-referencia>
                         @elseif (($periodoSelecionado ?? 'mes') === 'ano')
-                            <input type="number" min="2000" max="2100" step="1" name="referencia" value="{{ $referenciaSelecionada ?? now()->format('Y') }}">
+                            <input type="number" id="referencia" min="2000" max="2100" step="1" name="referencia" value="{{ $referenciaSelecionada ?? now()->format('Y') }}" data-dashboard-referencia>
                         @else
-                            <input type="month" name="referencia" value="{{ $referenciaSelecionada ?? now()->translatedFormat('F') }}">
+                            <input type="month" id="referencia" name="referencia" value="{{ $referenciaSelecionada ?? now()->format('Y-m') }}" data-dashboard-referencia>
                         @endif
 
                         <button type="submit">Aplicar</button>

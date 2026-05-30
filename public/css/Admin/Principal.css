@@ -1620,3 +1620,44 @@ body:has(.ff-modal.is-open) .ff-sidebar-toggle {
         padding-bottom: env(safe-area-inset-bottom, 0px) !important;
     }
 }
+
+/* Visual unificado dos cards do sistema, inspirado na tela principal */
+.ff-main .painel,
+.ff-main .table-card,
+.ff-main .table-corpo,
+.ff-main .config-card,
+.ff-main .mesa-card,
+.ff-main .produto,
+.ff-main .produto-card-mini,
+.ff-main .card,
+.ff-main .empty-state {
+    border: 1px solid rgba(249, 115, 22, 0.16) !important;
+    border-radius: 8px !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 247, 237, 0.94)) !important;
+    box-shadow: 0 18px 44px rgba(63, 52, 45, 0.10) !important;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.ff-main .painel:hover,
+.ff-main .table-card:hover,
+.ff-main .config-card:hover,
+.ff-main .mesa-card:hover,
+.ff-main .produto--interactive:hover,
+.ff-main .produto-card-mini:hover,
+.ff-main .card:hover,
+.ff-main .empty-state:hover {
+    border-color: rgba(249, 115, 22, 0.28) !important;
+    box-shadow: 0 20px 48px rgba(63, 52, 45, 0.14) !important;
+}
+
+.ff-main .table-header,
+.ff-main .card-header,
+.ff-main .config-card h2 {
+    color: #101828 !important;
+}
+
+.ff-main .card-header,
+.ff-main .table-header {
+    border-bottom-color: rgba(249, 115, 22, 0.12) !important;
+    background: rgba(255, 255, 255, 0.58) !important;
+}

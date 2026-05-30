@@ -1,8 +1,8 @@
-document.addEventListener('DOMContentLoaded', function () {
-    if (typeof Chart === 'undefined') {
-        return;
-    }
+import { Chart, registerables } from 'chart.js';
 
+Chart.register(...registerables);
+
+function initAdminDashboardCharts() {
     const dashboardDataEl = document.getElementById('dashboard-data');
     const statusCtx = document.getElementById('pedidosStatusChart');
     const topProdutosCtx = document.getElementById('topProdutosChart');
@@ -11,7 +11,14 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    const dashboardData = JSON.parse(dashboardDataEl.textContent || '{}');
+    let dashboardData = {};
+
+    try {
+        dashboardData = JSON.parse(dashboardDataEl.textContent || '{}');
+    } catch (error) {
+        console.error('Nao foi possivel ler os dados do dashboard.', error);
+        return;
+    }
 
     const statusLabels = dashboardData.statusLabels || [];
     const statusValores = dashboardData.statusValores || [];
@@ -19,6 +26,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const topProdutosValores = dashboardData.topProdutosValores || [];
 
     if (statusCtx) {
+        window.flashFoodDashboardCharts?.status?.destroy();
+
+        window.flashFoodDashboardCharts = window.flashFoodDashboardCharts || {};
         new Chart(statusCtx, {
             type: 'bar',
             data: {
@@ -55,9 +65,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         });
+
+        window.flashFoodDashboardCharts.status = Chart.getChart(statusCtx);
     }
 
     if (topProdutosCtx) {
+        window.flashFoodDashboardCharts?.topProdutos?.destroy();
+
+        window.flashFoodDashboardCharts = window.flashFoodDashboardCharts || {};
         new Chart(topProdutosCtx, {
             type: 'bar',
             data: {
@@ -91,5 +106,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         });
+
+        window.flashFoodDashboardCharts.topProdutos = Chart.getChart(topProdutosCtx);
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdminDashboardCharts, { once: true });
+} else {
+    initAdminDashboardCharts();
+}

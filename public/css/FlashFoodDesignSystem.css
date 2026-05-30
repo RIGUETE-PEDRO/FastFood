@@ -172,14 +172,27 @@ textarea:focus,
 .table-card,
 .table-corpo,
 .produto,
+.produto-card-mini,
 .ff-modal__card,
 .overlay-panel,
 .card,
 .empty-state {
-    border: 1px solid var(--ff-border) !important;
+    border: 1px solid rgba(249, 115, 22, 0.16) !important;
     border-radius: var(--ff-radius) !important;
-    background: rgba(255, 255, 255, 0.94) !important;
-    box-shadow: var(--ff-shadow-soft) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 247, 237, 0.92)) !important;
+    box-shadow: 0 18px 44px rgba(63, 52, 45, 0.10) !important;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.painel:hover,
+.table-card:hover,
+.table-corpo:hover,
+.produto--interactive:hover,
+.produto-card-mini:hover,
+.card:hover,
+.empty-state:hover {
+    border-color: rgba(249, 115, 22, 0.26) !important;
+    box-shadow: 0 20px 48px rgba(63, 52, 45, 0.14) !important;
 }
 
 .dashboard-header,
