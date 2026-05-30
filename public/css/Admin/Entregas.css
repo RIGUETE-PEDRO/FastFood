@@ -3,6 +3,13 @@
     width: 100%;
 }
 
+.entregas-lista-vazia {
+    margin: 4px 0 18px;
+    padding: 0;
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
 .entregas-card {
     border-radius: 16px;
     border: 1px solid rgba(255, 145, 0, 0.18);

@@ -110,11 +110,7 @@
                         </section>
                     </article>
                     @empty
-                    <div class="card shadow-sm">
-                        <div class="card-body text-center py-4">
-                            <p class="texto-suave mb-0">Nenhum pedido de entrega em aberto no momento.</p>
-                        </div>
-                    </div>
+                    <p class="entregas-lista-vazia texto-suave">Nenhum pedido de entrega em aberto no momento.</p>
                     @endforelse
                 </section>
 
@@ -165,11 +161,7 @@
                         @endif
                     </article>
                     @empty
-                    <div class="card shadow-sm">
-                        <div class="card-body text-center py-4">
-                            <p class="texto-suave mb-0">Nenhum pedido aceito até o momento.</p>
-                        </div>
-                    </div>
+                    <p class="entregas-lista-vazia texto-suave">Nenhum pedido aceito até o momento.</p>
                     @endforelse
                 </section>
 
