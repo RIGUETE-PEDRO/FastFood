@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+  window.__ffMesaDetalhesAbaterInitialized = true;
+
   document.querySelectorAll('form[data-confirm-remove-item]').forEach((removeForm) => {
     removeForm.addEventListener('submit', (event) => {
       const ok = window.confirm('Remover este item da comanda?');

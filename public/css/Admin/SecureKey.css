@@ -223,10 +223,10 @@ body {
     align-items: center;
     justify-content: center;
     border-radius: var(--ff-radius);
-    background: #211d1a;
-    color: #fff;
+    background: #fff7ed;
+    color: #c2410c;
     font-size: 1.6rem;
-    box-shadow: 0 14px 30px rgba(33, 29, 26, 0.18);
+    box-shadow: 0 14px 30px rgba(194, 65, 12, 0.14);
 }
 
 .kc-overview-grid {

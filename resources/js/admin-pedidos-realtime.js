@@ -187,6 +187,61 @@
     }
 
     function initInteractions() {
+      document.querySelectorAll('[data-filtro-clientes-entregues]').forEach((input) => {
+        if (input.dataset.enhanced === '1') return;
+        input.dataset.enhanced = '1';
+
+        const filterDeliveredOrders = () => {
+          const container = input.closest('.acordeao-pedidos__conteudo');
+          if (!container) return;
+
+          const term = input.value.trim().toLocaleLowerCase('pt-BR');
+          const dateInput = container.querySelector('[data-filtro-dia-entregues]');
+          const day = dateInput?.value || '';
+
+          container.querySelectorAll('.pedido-card').forEach((card) => {
+            const client = card.dataset.cliente?.toLocaleLowerCase('pt-BR')
+              || card.querySelector('.pedido-card__cliente')?.textContent.toLocaleLowerCase('pt-BR')
+              || '';
+            const cardDay = card.dataset.pedidoData || '';
+            const matchesClient = term === '' || client.includes(term);
+            const matchesDay = day === '' || cardDay === day;
+
+            card.classList.toggle('is-filter-hidden', !matchesClient || !matchesDay);
+          });
+        };
+
+        input.addEventListener('input', filterDeliveredOrders);
+        input.closest('.acordeao-pedidos__conteudo')?.querySelector('[data-filtro-dia-entregues]')?.addEventListener('input', filterDeliveredOrders);
+        filterDeliveredOrders();
+      });
+
+      document.querySelectorAll('.pedido-collapse').forEach((details) => {
+        if (details.dataset.enhanced === '1') return;
+        details.dataset.enhanced = '1';
+
+        const summary = details.querySelector('.pedido-collapse__summary');
+        if (!summary) return;
+
+        summary.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          const shouldOpen = !details.open;
+          const group = details.closest('.lista-pedidos-admin, .acordeao-pedidos__conteudo');
+
+          if (group) {
+            group.querySelectorAll('.pedido-collapse[open]').forEach((other) => {
+              if (other !== details) {
+                other.open = false;
+              }
+            });
+          }
+
+          details.open = shouldOpen;
+        });
+      });
+
       document.querySelectorAll('.acordeao-pedidos__gatilho').forEach((button) => {
         const selector = button.dataset.target;
         const content = selector ? document.querySelector(selector) : null;

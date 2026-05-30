@@ -15,7 +15,12 @@
     $temEnderecoEntrega = filled(optional($pedido->endereco)->logradouro);
 @endphp
 
-<article class="pedido-card shadow-sm" data-status="{{ $statusAtualValor }}">
+<article
+    class="pedido-card shadow-sm"
+    data-status="{{ $statusAtualValor }}"
+    data-cliente="{{ Str::lower(optional($pedido->usuario)->nome ?? 'desconhecido') }}"
+    data-pedido-data="{{ optional($pedido->created_at)->format('Y-m-d') }}"
+>
     @if($colapsavel)
         <details class="pedido-collapse" @if(!$iniciarRecolhido) open @endif>
             <summary class="pedido-collapse__summary">
@@ -143,6 +148,13 @@
                 </div>
             </section>
         @endunless
+        @if(!empty($desabilitarAcoes) && $statusAtualValor === 4)
+            <section class="pedido-card__secao pedido-card__secao--acoes pedido-card__secao--cupom">
+                <form method="GET" action="{{ route('Pedidos.GerarCupom', $pedido) }}" class="m-0 pedido-cupom-form">
+                    <button type="submit" class="btn btn-outline-secondary btn-geraCupom" aria-label="Gerar cupom do pedido #{{ $pedido->id }}">Gerar cupom</button>
+                </form>
+            </section>
+        @endif
     @if($colapsavel)
             </div>
         </details>

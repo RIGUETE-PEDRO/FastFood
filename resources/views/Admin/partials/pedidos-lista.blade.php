@@ -15,6 +15,8 @@
                 'statusTimeline' => $statusTimeline,
                 'statusLabels' => $statusLabels,
                 'desabilitarAcoes' => false,
+                'colapsavel' => true,
+                'iniciarRecolhido' => true,
             ])
         @empty
             <div class="card shadow-sm mb-4">
@@ -32,6 +34,34 @@
             <span class="acordeao-pedidos__icone" aria-hidden="true"></span>
         </button>
         <div class="acordeao-pedidos__conteudo" id="pedidosFinalizados" hidden>
+            <div class="pedidos-finalizados-filtro">
+                <div class="pedidos-finalizados-filtro__header">
+                    <span>Filtrar entregues</span>
+                    <small>Refine por cliente e dia do pedido</small>
+                </div>
+                <div class="pedidos-finalizados-filtro__campos">
+                    <label for="filtroClienteEntregues">
+                        <span>Cliente</span>
+                        <input
+                            type="search"
+                            id="filtroClienteEntregues"
+                            class="pedidos-finalizados-filtro__input"
+                            placeholder="Nome do cliente"
+                            autocomplete="off"
+                            data-filtro-clientes-entregues
+                        >
+                    </label>
+                    <label for="filtroDiaEntregues">
+                        <span>Dia</span>
+                        <input
+                            type="date"
+                            id="filtroDiaEntregues"
+                            class="pedidos-finalizados-filtro__input"
+                            data-filtro-dia-entregues
+                        >
+                    </label>
+                </div>
+            </div>
             @forelse(($pedidosPorStatus['finalizados'] ?? collect()) as $pedido)
                 @include('Admin.partials.pedido-card', [
                     'pedido' => $pedido,

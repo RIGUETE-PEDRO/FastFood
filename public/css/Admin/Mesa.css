@@ -472,7 +472,7 @@ body {
         rgba(255, 0, 0, 1) 1%,
         rgba(255, 123, 0, 1) 46%,
         rgba(255, 0, 0, 1) 90%
-    );
+    ) !important;
     border-bottom: 1px solid rgba(17, 24, 39, 0.12);
 }
 
@@ -480,7 +480,7 @@ body {
     margin: 0;
     font-size: 1.05rem;
     font-weight: 900;
-    color: rgba(255, 251, 6, 0.95);
+    color: rgba(255, 251, 6, 0.95) !important;
 }
 
 .ff-modal__close {
@@ -488,8 +488,8 @@ body {
     height: 34px;
     border-radius: 10px;
     border: 0;
-    background: rgba(255, 251, 6, 0.18);
-    color: rgba(255, 251, 6, 0.95);
+    background: rgba(255, 251, 6, 0.18) !important;
+    color: rgba(255, 251, 6, 0.95) !important;
     font-size: 22px;
     line-height: 1;
     cursor: pointer;
@@ -758,9 +758,10 @@ body {
 }
 
 .mesa-action-modal .modal-header {
+    position: relative;
     min-height: 96px;
     align-items: flex-start;
-    padding: 18px 20px;
+    padding: 18px 64px 18px 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.16) !important;
 }
 
@@ -768,9 +769,8 @@ body {
 .editar-mesa-modal,
 .remover-mesa-modal {
     background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 42%),
-        linear-gradient(135deg, #3b2f2a 0%, #2f2622 52%, #1f1a17 100%) !important;
-    color: #f8f5ef;
+        linear-gradient(135deg, #fff7ed 0%, #ffffff 100%) !important;
+    color: #1f2937;
 }
 
 .adicionar-mesa-modal {
@@ -800,9 +800,9 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: rgba(248, 245, 239, 0.14);
-    border: 1px solid rgba(248, 245, 239, 0.2);
-    color: #f8f5ef;
+    background: rgba(249, 115, 22, 0.12);
+    border: 1px solid rgba(249, 115, 22, 0.16);
+    color: #c2410c;
     font-size: 1.15rem;
     font-weight: 900;
     line-height: 1;
@@ -810,7 +810,7 @@ body {
 
 .mesa-modal-heading .modal-title {
     margin: 0;
-    color: #f8f5ef !important;
+    color: #1f2937 !important;
     font-size: 1.2rem;
     font-weight: 800;
     letter-spacing: 0;
@@ -818,18 +818,37 @@ body {
 
 .mesa-modal-heading p {
     margin: 4px 0 0;
-    color: rgba(248, 245, 239, 0.78);
+    color: #6b7280;
     font-size: 0.92rem;
     line-height: 1.35;
 }
 
 .mesa-action-modal .btn-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
     width: 38px;
     height: 38px;
     border-radius: 12px;
-    background-color: rgba(248, 245, 239, 0.16);
+    background-color: rgba(249, 115, 22, 0.12);
     opacity: 1;
-    filter: invert(1) grayscale(100%) brightness(200%);
+    filter: none;
+    background-image: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mesa-action-modal .btn-close::before {
+    content: "x";
+    color: #9a3412;
+    font-size: 20px;
+    line-height: 1;
+    font-weight: 900;
+}
+
+.mesa-action-modal .btn-close:hover {
+    background-color: rgba(249, 115, 22, 0.20);
 }
 
 .mesa-action-modal .modal-body {
@@ -922,7 +941,7 @@ body {
 
 @media (max-width: 520px) {
     .mesa-action-modal .modal-header {
-        padding: 16px;
+        padding: 16px 60px 16px 16px;
     }
 
     .mesa-modal-heading {
@@ -1165,16 +1184,19 @@ body {
 }
 
 .mesa-edit-actions {
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
-    justify-items: end;
+    align-items: center;
+    justify-content: flex-end;
 }
 
 .mesa-edit-form {
-    display: grid;
-    grid-template-columns: auto 76px auto;
+    display: flex;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 8px;
+    margin: 0;
 }
 
 .mesa-edit-form label {
@@ -1186,6 +1208,8 @@ body {
 
 .mesa-edit-input {
     width: 76px !important;
+    min-width: 76px;
+    min-height: 38px;
     text-align: center;
     font-weight: 900;
 }
@@ -1220,7 +1244,7 @@ body {
     margin-top: 12px;
     padding: 16px 22px;
     border-top: 1px solid #e5e7eb;
-    background: rgba(255, 255, 255, 0.94);
+    background: rgba(255, 250, 245, 0.96);
     backdrop-filter: blur(12px);
 }
 
@@ -1236,6 +1260,13 @@ body {
 .mesa-checkout-bar span {
     color: #667085;
     font-size: 0.92rem;
+}
+
+.mesa-checkout-bar .btn {
+    min-height: 44px;
+    border-radius: 8px !important;
+    font-weight: 900;
+    white-space: nowrap;
 }
 
 .abater-total-card {
@@ -1324,6 +1355,7 @@ body {
     }
 
     .mesa-edit-form {
+        display: grid;
         grid-template-columns: 1fr;
         width: 100%;
     }

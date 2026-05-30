@@ -28,8 +28,8 @@
     gap: 12px;
     padding: 14px 16px;
     border-bottom: 1px solid var(--ff-border);
-    background: #211d1a;
-    color: #fff;
+    background: linear-gradient(135deg, #fff7ed, #ffffff);
+    color: var(--ff-text);
 }
 
 .auditoria-filters .card-header h5,
@@ -310,8 +310,12 @@
 
 .auditoria-modal .modal-header {
     border-bottom: 0;
-    background: #211d1a;
-    color: #fff;
+    background: linear-gradient(135deg, #fff7ed, #ffffff);
+    color: var(--ff-text);
+}
+
+.auditoria-modal .btn-close-white {
+    filter: none;
 }
 
 .auditoria-modal .modal-title {

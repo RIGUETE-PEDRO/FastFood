@@ -297,21 +297,22 @@ textarea:focus,
 .ff-modal__header,
 .cart-page-header {
     background:
-        linear-gradient(135deg, rgba(63, 52, 45, 0.98), rgba(33, 29, 26, 0.96)) !important;
-    color: #fff !important;
+        linear-gradient(135deg, #fff7ed, #ffffff) !important;
+    color: var(--ff-text) !important;
+    border: 1px solid rgba(249, 115, 22, 0.12);
 }
 
 .overlay-header h3,
 .ff-modal__header h2,
 .cart-page-header h1 {
-    color: #fff !important;
+    color: var(--ff-text) !important;
 }
 
 .overlay-close,
 .ff-modal__close {
     border-radius: var(--ff-radius-sm) !important;
-    background: rgba(255, 255, 255, 0.12) !important;
-    color: #fff !important;
+    background: rgba(249, 115, 22, 0.10) !important;
+    color: var(--ff-text) !important;
 }
 
 .produto--interactive:hover,
@@ -322,8 +323,8 @@ textarea:focus,
 }
 
 .produto-card-mini {
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    background: #211d1a !important;
+    border: 1px solid var(--ff-border);
+    background: #ffffff !important;
     border-radius: var(--ff-radius) !important;
 }
 
