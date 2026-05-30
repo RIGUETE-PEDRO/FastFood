@@ -6,7 +6,7 @@ use App\Services\AuthService;
 use App\Services\GenericBase;
 use Illuminate\Http\Request;
 use App\Mensagens\ErroMensagens;
-
+use App\Mensagens\PassMensagens;
 
 class RegisterController extends Controller
 {
@@ -44,16 +44,28 @@ class RegisterController extends Controller
     //registrar usuário
     public function register(Request $request)
     {
-        $data = $request->only('nome', 'email', 'senha','senha_confirmation','telefone');
-        $data['tipo_usuario_id'] = 1;
-        $usuario = $this->authService->register($data);
+        $data = $request->only(
+            'nome',
+            'email',
+            'senha',
+            'senha_confirmation',
+            'telefone'
+        );
 
-        if (!$usuario) {
-            return redirect()->back()
-                ->with('erro', ErroMensagens::ERRO_REGISTRAR_USUARIO)
+        $data['tipo_usuario_id'] = 1;
+
+        $resultado = $this->authService->register($data);
+
+        if ($resultado !== PassMensagens::CADASTRO_REALIZADO) {
+
+            return redirect()
+                ->route('registro.form')
+                ->with('erro', $resultado)
                 ->withInput();
         }
 
-        return redirect()->route('registro');
+        return redirect()
+            ->route('login')
+            ->with('sucesso', $resultado);
     }
 }

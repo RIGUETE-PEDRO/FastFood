@@ -21,22 +21,18 @@ class AuthService
     //função de registro de usuário
     public function register(array $data)
     {
-        // Verifica se o email já está cadastrado
         if ($this->genericBase->pegarUsuarioEmail($data) !== null) {
-            return redirect()->back()->with('erro', ErroMensagens::EMAIL_JA_CADASTRADO);
+            return ErroMensagens::EMAIL_JA_CADASTRADO;
         }
 
-         // Verifica o tamanho da senha
         if (strlen($data['senha']) < 6) {
-            return redirect()->back()->with('erro', ErroMensagens::MIN_CARACTERES_SENHA);
+            return ErroMensagens::MIN_CARACTERES_SENHA;
         }
 
-        // Verifica se as senhas coincidem
         if ($data['senha'] !== $data['senha_confirmation']) {
-            return redirect()->back()->with('erro', ErroMensagens::SENHAS_NAO_COINCIDEM);
+            return ErroMensagens::SENHAS_NAO_COINCIDEM;
         }
 
-        // Cria o novo usuário no banco de dados
         $usuarioCriado = $this->authRepository->criarUsuario([
             'nome' => $data['nome'],
             'email' => $data['email'],
@@ -47,8 +43,6 @@ class AuthService
         ]);
 
         if ($data['tipo_usuario_id'] !== 1 && $data['tipo_usuario_id'] !== null) {
-
-
             $this->authRepository->criarFuncionario([
                 'usuario_id' => $usuarioCriado->id,
                 'has_ativo' => $data['has_ativo'] ?? true,
@@ -56,10 +50,7 @@ class AuthService
             ]);
         }
 
-
-        // Retorna sucesso
-        return redirect()->back()
-            ->with('sucesso', PassMensagens::CADASTRO_REALIZADO);
+        return PassMensagens::CADASTRO_REALIZADO;
     }
 
     public function autenticarAdm($usuario)
