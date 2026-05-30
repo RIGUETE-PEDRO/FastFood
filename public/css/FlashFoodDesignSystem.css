@@ -147,6 +147,7 @@ textarea:focus,
     border: 1px solid transparent;
     color: rgba(249, 250, 251, 0.82) !important;
     font-family: inherit !important;
+    text-decoration: none !important;
 }
 
 .ff-sidebar__nav .nav-link.active {
