@@ -169,9 +169,12 @@
                             <div class="mesa-checkout-bar">
                                 <div>
                                     <strong>Dar baixa parcial ou total</strong>
-                                    <span>Marque os itens que a pessoa vai pagar agora.</span>
+                                    <span id="mesaCheckoutHint">Marque os itens que a pessoa vai pagar agora.</span>
                                 </div>
-                                <button class="btn btn-primary" type="button" id="btnAbrirAbaterModal">Dar baixa selecionados</button>
+                                <div class="mesa-checkout-bar__actions">
+                                    <strong class="mesa-checkout-total" id="mesaCheckoutTotalTexto">R$ 0,00</strong>
+                                    <button class="btn btn-primary" type="button" id="btnAbrirAbaterModal" disabled>Dar baixa selecionados</button>
+                                </div>
                             </div>
 
                             <!-- Modal: confirmar abatimento e forma de pagamento -->
@@ -272,6 +275,7 @@
         </div>
     </div>
     @include('components.flash-toast')
+    <script src="{{ asset('js/mesa-detalhes-abater-modal.js') }}?v={{ filemtime(public_path('js/mesa-detalhes-abater-modal.js')) }}"></script>
 </body>
 
 </html>

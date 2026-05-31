@@ -33,37 +33,45 @@ class CarrinhoService
         $resultado = $this->registraPedido($request, $enderecoId);
 
         if (!($resultado['status'] ?? false)) {
-            return redirect()->route('carrinho')->with($resultado['tipo'] ?? 'error', $resultado['mensagem'] ?? ErroMensagens::ERRO_PROCESSAR);
+            return $resultado;
         }
 
         $pedidoId = $resultado['pedido_id'] ?? null;
         if ($pedidoId) {
             $this->limparCarrinhoAposPedido($request, $pedidoId);
         }
+
+        return $resultado;
     }
 
     public function escolherMesa(Request $request)
     {
         $mesaId = $request->input('mesa_id');
         if (!$mesaId) {
-            return redirect()->route('carrinho')->with('error', ErroMensagens::SEM_ID_MESA);
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => ErroMensagens::SEM_ID_MESA,
+            ];
         }
 
         $resultado = $this->selecionarMesaNoCarrinho($mesaId);
 
         if (!($resultado['status'] ?? false)) {
-            return redirect()->route('carrinho')->with('error', $resultado['mensagem'] ?? 'Mesa inválida.');
+            return $resultado;
         }
 
         $pedidoResultado = $this->registraPedido($request, null);
         if (!($pedidoResultado['status'] ?? false)) {
-            return redirect()->route('carrinho')->with($pedidoResultado['tipo'] ?? 'error', $pedidoResultado['mensagem'] ?? ErroMensagens::ERRO_PROCESSAR);
+            return $pedidoResultado;
         }
 
         $pedidoId = $pedidoResultado['pedido_id'] ?? null;
         if ($pedidoId) {
             $this->limparCarrinhoAposPedido($request, $pedidoId);
         }
+
+        return $pedidoResultado;
     }
 
     public function pegarDadosPedido()
@@ -180,7 +188,7 @@ class CarrinhoService
         return $cidade;
     }
 
-    public function toggleSelecionarProdutoNoCarrinho($id)
+    public function toggleSelecionarProdutoNoCarrinho(Request $request, $id)
     {
         if (!Auth::check()) {
             abort(401);
@@ -191,10 +199,13 @@ class CarrinhoService
             abort(404);
         }
 
-        $itemCarrinho->selecionado = !$itemCarrinho->selecionado;
+        $itemCarrinho->selecionado = $request->boolean('ativo');
         $itemCarrinho->save();
 
-        return back();
+        return [
+            'status' => true,
+            'selecionado' => (bool) $itemCarrinho->selecionado,
+        ];
     }
 
 
@@ -457,6 +468,7 @@ class CarrinhoService
             $pedido = $this->carrinhoRepository->criarPedido([
                 'usuario_id' => $usuarioId,
                 'endereco_id' => $enderecoId,
+                'mesa_id' => $tipoEntrega === 'retirar' ? $mesaId : null,
                 'tipo_pagamento_id' => $pagamentoenum ? $pagamentoenum->value : null,
                 'observacoes_pagamento' => $tipoEntrega === 'entrega' ? $request->input('observacoes_pagamento') : null,
                 'valor_total' => $valor_total,

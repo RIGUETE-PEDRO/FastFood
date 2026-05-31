@@ -95,6 +95,7 @@
         'topProdutosLabels' => $topProdutosLabels ?? [],
         'topProdutosValores' => $topProdutosValores ?? [],
     ], JSON_UNESCAPED_UNICODE) !!}</script>
+    <script src="{{ asset('js/admin-dashboard-charts-fallback.js') }}?v={{ filemtime(public_path('js/admin-dashboard-charts-fallback.js')) }}"></script>
 
 </body>
 

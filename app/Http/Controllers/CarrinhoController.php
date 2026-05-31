@@ -69,9 +69,15 @@ class CarrinhoController extends Controller
 
         $this->genericBase->hasLogado();
 
-        $this->carrinhoService->escolherMesa($request);
+        $resultado = $this->carrinhoService->escolherMesa($request);
 
-        return redirect()->route('pedidos')->with($pedidoResultado['tipo'] ?? 'success', $pedidoResultado['mensagem'] ?? PassMensagens::PEDIDO_REALIZADO_SUCESSO);
+        if (!($resultado['status'] ?? false)) {
+            return redirect()->route('carrinho')
+                ->with($resultado['tipo'] ?? 'error', $resultado['mensagem'] ?? ErroMensagens::ERRO_PROCESSAR);
+        }
+
+        return redirect()->route('pedidos')
+            ->with($resultado['tipo'] ?? 'success', $resultado['mensagem'] ?? PassMensagens::PEDIDO_REALIZADO_SUCESSO);
     }
 
     public function atualizarQuantidade(Request $request, $id)
@@ -100,10 +106,14 @@ class CarrinhoController extends Controller
     }
 
 
-    public function toggleSelecionar($id)
+    public function toggleSelecionar(Request $request, $id)
     {
         $this->genericBase->hasLogado();
-        $this->carrinhoService->toggleSelecionarProdutoNoCarrinho($id);
+        $resultado = $this->carrinhoService->toggleSelecionarProdutoNoCarrinho($request, $id);
+
+        if ($request->expectsJson()) {
+            return response()->json($resultado);
+        }
 
         return redirect()->route('carrinho');
     }
@@ -133,9 +143,15 @@ class CarrinhoController extends Controller
     {
 
         $this->genericBase->hasLogado();
-        $this->carrinhoService->validarCarrinhoAntesRegistrarPedido($request);
+        $resultado = $this->carrinhoService->validarCarrinhoAntesRegistrarPedido($request);
 
-        return redirect()->route('pedidos')->with($resultado['tipo'] ?? 'success', $resultado['mensagem'] ?? PassMensagens::PEDIDO_REALIZADO_SUCESSO);
+        if (!($resultado['status'] ?? false)) {
+            return redirect()->route('carrinho')
+                ->with($resultado['tipo'] ?? 'error', $resultado['mensagem'] ?? ErroMensagens::ERRO_PROCESSAR);
+        }
+
+        return redirect()->route('pedidos')
+            ->with($resultado['tipo'] ?? 'success', $resultado['mensagem'] ?? PassMensagens::PEDIDO_REALIZADO_SUCESSO);
     }
 
     public function selecionarCidade(Request $request)

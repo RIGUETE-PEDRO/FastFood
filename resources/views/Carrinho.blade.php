@@ -25,6 +25,9 @@ $podeRemoverEndereco = $totalEnderecos > 1;
 $pagamentoSalvo = session('checkout.pagamento', []);
 $pagamentoMetodoSelecionado = old('pagamento_metodo', $pagamentoSalvo['metodo'] ?? 'cartao_credito');
 $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoes'] ?? '');
+$itensSelecionados = $carrinho->filter(fn ($item) => (bool) $item->selecionado);
+$totalSelecionado = $itensSelecionados->sum(fn ($item) => (float) $item->preco_total);
+$temItensSelecionados = $itensSelecionados->count() > 0;
 @endphp
 
 <body @if ($modalReabrir) data-open-modal="{{ $modalReabrir }}" @endif>
@@ -75,11 +78,11 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                             @foreach ($carrinho as $item)
                             <tr>
                                 <td data-label="Selecionar">
-                                    <form action="{{ route('carrinho.toggle', $item->id) }}" method="POST">
+                                    <form action="{{ route('carrinho.toggle', $item->id) }}" method="POST" data-cart-selection-form>
                                         @csrf
                                         @method('PUT')
                                         <label class="cbx-container">
-                                            <input type="checkbox" class="cbx" name="ativo" value="1" {{ $item->selecionado ? 'checked' : '' }} data-auto-submit-on-change>
+                                            <input type="checkbox" class="cbx" name="ativo" value="1" {{ $item->selecionado ? 'checked' : '' }} data-cart-select data-line-total="{{ (float) $item->preco_total }}">
                                             <span class="cbx-custom"></span>
                                         </label>
                                     </form>
@@ -112,18 +115,11 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
                     @endif
 
                     <div class="finalizar-compra">
-                        @if ($carrinho->where('selecionado', true)->count() > 0)
-                        <button id="btnFinalizarCompra" type="button" class="btn btn-primary">Finalizar pedido</button>
+                        <button id="btnFinalizarCompra" type="button" class="btn btn-primary" data-checkout-button @disabled(!$temItensSelecionados)>Finalizar pedido</button>
                         <span class="total-compra">
-                            Total: R$ {{ number_format((float) $carrinho->where('selecionado', true)->sum('preco_total'), 2, ',', '.') }}
+                            Total: R$ <span data-cart-total>{{ number_format($totalSelecionado, 2, ',', '.') }}</span>
+                            <span class="aviso" data-cart-warning @hidden($temItensSelecionados)>selecione um produto</span>
                         </span>
-                        @else
-                        <button id="btnFinalizarCompra" type="button" class="btn btn-primary" disabled>Finalizar pedido</button>
-                        <span class="total-compra">
-                            Total: R$ {{ number_format((float) $carrinho->where('selecionado', true)->sum('preco_total'), 2, ',', '.') }}
-                            <span class="aviso">selecione um produto</span>
-                        </span>
-                        @endif
                     </div>
                 </div>
             </main>
@@ -405,6 +401,7 @@ $pagamentoObservacoes = old('observacoes_pagamento', $pagamentoSalvo['observacoe
         </div>
     </div>
     @include('components.flash-toast')
+    <script src="{{ asset('js/carrinho-selecao-finalizacao.js') }}?v={{ filemtime(public_path('js/carrinho-selecao-finalizacao.js')) }}"></script>
 </body>
 
 </html>

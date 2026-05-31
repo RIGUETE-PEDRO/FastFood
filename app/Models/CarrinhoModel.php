@@ -23,6 +23,12 @@ class CarrinhoModel extends Model
         'deleted'
     ];
 
+    protected $casts = [
+        'selecionado' => 'boolean',
+        'preco_total' => 'float',
+        'quantidade' => 'integer',
+    ];
+
 
     public function usuario()
     {

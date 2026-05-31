@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  if (window.__ffMesaDetalhesAbaterInitialized) return;
   window.__ffMesaDetalhesAbaterInitialized = true;
 
   document.querySelectorAll('form[data-confirm-remove-item]').forEach((removeForm) => {
@@ -14,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnOpen = document.getElementById('btnAbrirAbaterModal');
   const btnConfirm = document.getElementById('btnConfirmarAbater');
   const totalText = document.getElementById('abaterTotalTexto');
+  const checkoutTotalText = document.getElementById('mesaCheckoutTotalTexto');
+  const checkoutHint = document.getElementById('mesaCheckoutHint');
   const valorInput = document.getElementById('abaterValorInput');
   const errorBox = document.getElementById('abaterModalErro');
   const form = document.getElementById('abaterForm');
@@ -78,10 +81,26 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateModalTotal() {
     const total = calcSelectedTotal();
     totalText.textContent = formatBRL(total);
+    if (checkoutTotalText) checkoutTotalText.textContent = formatBRL(total);
 
     if (valorInput && !valorFoiEditado) {
       valorInput.value = total.toFixed(2).replace('.', ',');
     }
+  }
+
+  function syncCheckoutBar() {
+    const selected = getSelectedCheckboxes();
+    const total = calcSelectedTotal();
+    const hasSelection = selected.length > 0 && total > 0;
+
+    if (checkoutTotalText) checkoutTotalText.textContent = formatBRL(total);
+    if (checkoutHint) {
+      checkoutHint.textContent = hasSelection
+        ? `${selected.length} item(ns) selecionado(s) para baixa.`
+        : 'Marque os itens que a pessoa vai pagar agora.';
+    }
+
+    btnOpen.disabled = !hasSelection;
   }
 
   function clamp(val, min, max) {
@@ -164,6 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (modal.classList.contains('is-open')) {
         updateModalTotal();
       }
+
+      syncCheckoutBar();
     });
   });
 
@@ -180,6 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (modal.classList.contains('is-open')) {
         updateModalTotal();
       }
+
+      syncCheckoutBar();
     });
   });
 
@@ -196,6 +219,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modal.classList.contains('is-open')) {
       updateModalTotal();
     }
+
+    syncCheckoutBar();
   }
 
   document.querySelectorAll('[data-qtd-inc]').forEach((btn) => {
@@ -255,4 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.submit();
   });
+
+  syncCheckoutBar();
 });
