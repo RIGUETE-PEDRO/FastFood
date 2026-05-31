@@ -295,6 +295,8 @@
         const btnOpen = document.getElementById('btnAbrirAbaterModal');
         const btnConfirm = document.getElementById('btnConfirmarAbater');
         const totalText = document.getElementById('abaterTotalTexto');
+        const checkoutTotalText = document.getElementById('mesaCheckoutTotalTexto');
+        const checkoutHint = document.getElementById('mesaCheckoutHint');
         const valorInput = document.getElementById('abaterValorInput');
         const errorBox = document.getElementById('abaterModalErro');
         const form = document.getElementById('abaterForm');
@@ -362,9 +364,25 @@
         function updateModalTotal() {
             const total = calcSelectedTotal();
             totalText.textContent = formatBRL(total);
+            if (checkoutTotalText) checkoutTotalText.textContent = formatBRL(total);
             if (valorInput && !valorFoiEditado) {
                 valorInput.value = total.toFixed(2).replace('.', ',');
             }
+        }
+
+        function syncCheckoutBar() {
+            const selected = getSelectedCheckboxes();
+            const total = calcSelectedTotal();
+            const hasSelection = selected.length > 0;
+
+            if (checkoutTotalText) checkoutTotalText.textContent = formatBRL(total);
+            if (checkoutHint) {
+                checkoutHint.textContent = hasSelection
+                    ? selected.length + ' item(ns) selecionado(s) para baixa.'
+                    : 'Marque os itens que a pessoa vai pagar agora.';
+            }
+
+            btnOpen.disabled = !hasSelection;
         }
 
         function openAbaterModal() {
@@ -409,6 +427,13 @@
             }
 
             updateModalTotal();
+            syncCheckoutBar();
+
+            if (calcSelectedTotal() <= 0) {
+                errorBox.textContent = 'Informe uma quantidade valida para dar baixa.';
+                return;
+            }
+
             openAbaterModal();
         });
 
@@ -434,6 +459,7 @@
                     }
                 }
                 if (modal.classList.contains('is-open')) updateModalTotal();
+                syncCheckoutBar();
             });
         });
 
@@ -446,6 +472,7 @@
                 input.value = String(clamp(Number.isFinite(cur) ? cur : 0, 0, Number.isFinite(max) ? max : 999));
                 syncCheckboxWithQtd(itemId);
                 if (modal.classList.contains('is-open')) updateModalTotal();
+                syncCheckoutBar();
             });
         });
 
@@ -462,6 +489,7 @@
                 input.value = String(clamp((Number.isFinite(cur) ? cur : 0) + delta, 0, Number.isFinite(max) ? max : 999));
                 syncCheckboxWithQtd(itemId);
                 if (modal.classList.contains('is-open')) updateModalTotal();
+                syncCheckoutBar();
             });
         });
 
@@ -509,6 +537,8 @@
 
             form.submit();
         });
+
+        syncCheckoutBar();
     }
 
     function setupPedidosAccordionFallback() {

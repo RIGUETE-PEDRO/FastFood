@@ -169,8 +169,7 @@ function showDeliveryNextStep(ctx, deliveryType) {
   closeModal(ctx, ctx.modals.tipo);
 
   if (deliveryType === DELIVERY_TYPES.retirar) {
-    openModal(ctx, ctx.modals.mesa);
-    ctx.fields.mesa?.focus();
+    submitPickupOrder(ctx);
     return;
   }
 
@@ -182,6 +181,21 @@ function showDeliveryNextStep(ctx, deliveryType) {
 
   openModal(ctx, ctx.modals.novoEndereco);
   focusNewAddress(ctx);
+}
+
+function submitPickupOrder(ctx) {
+  if (!ctx.forms.tipo || window.__ffPickupOrderSubmitting) return;
+
+  window.__ffPickupOrderSubmitting = true;
+  ensureHiddenInput(ctx.forms.tipo, 'tipo_entrega', DELIVERY_TYPES.retirar);
+
+  const submitButton = ctx.forms.tipo.querySelector('button[type="submit"]');
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = 'Finalizando...';
+  }
+
+  HTMLFormElement.prototype.submit.call(ctx.forms.tipo);
 }
 
 function getMissingAddressFields(ctx) {

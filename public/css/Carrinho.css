@@ -611,6 +611,19 @@ button.btn.btn-danger:hover {
     font-size: 0.88rem;
 }
 
+#tipoEntregaForm input[name="tipo_entrega"][value="retirar"] + span small {
+    display: none;
+}
+
+#tipoEntregaForm input[name="tipo_entrega"][value="retirar"] + span::after {
+    content: "Voce retira o pedido no balcao da lanchonete.";
+    display: block;
+    max-width: 42ch;
+    color: var(--cart-muted);
+    font-size: 0.88rem;
+    line-height: 1.35;
+}
+
 .ff-field {
     display: grid;
     gap: 6px;

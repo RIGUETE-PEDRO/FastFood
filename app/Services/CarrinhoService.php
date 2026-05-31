@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Session;
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
 use App\Repository\CarrinhoRepository;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CarrinhoService
@@ -30,18 +31,7 @@ class CarrinhoService
             ?? session('checkout.endereco_id')
             ?? $request->endereco_opcao;
 
-        $resultado = $this->registraPedido($request, $enderecoId);
-
-        if (!($resultado['status'] ?? false)) {
-            return $resultado;
-        }
-
-        $pedidoId = $resultado['pedido_id'] ?? null;
-        if ($pedidoId) {
-            $this->limparCarrinhoAposPedido($request, $pedidoId);
-        }
-
-        return $resultado;
+        return $this->registrarPedidoCompleto($request, $enderecoId);
     }
 
     public function escolherMesa(Request $request)
@@ -61,17 +51,7 @@ class CarrinhoService
             return $resultado;
         }
 
-        $pedidoResultado = $this->registraPedido($request, null);
-        if (!($pedidoResultado['status'] ?? false)) {
-            return $pedidoResultado;
-        }
-
-        $pedidoId = $pedidoResultado['pedido_id'] ?? null;
-        if ($pedidoId) {
-            $this->limparCarrinhoAposPedido($request, $pedidoId);
-        }
-
-        return $pedidoResultado;
+        return $this->registrarPedidoCompleto($request, null);
     }
 
     public function pegarDadosPedido()
@@ -401,6 +381,39 @@ class CarrinhoService
         Session::forget('checkout.modal');
     }
 
+    private function registrarPedidoCompleto(Request $request, $enderecoId): array
+    {
+        try {
+            return DB::transaction(function () use ($request, $enderecoId) {
+                $resultado = $this->registraPedido($request, $enderecoId);
+
+                if (!($resultado['status'] ?? false)) {
+                    return $resultado;
+                }
+
+                $pedidoId = $resultado['pedido_id'] ?? null;
+                if ($pedidoId) {
+                    $this->limparCarrinhoAposPedido($request, $pedidoId);
+                }
+
+                return $resultado;
+            });
+        } catch (\Throwable $e) {
+            Log::error('Erro ao finalizar o pedido completo', [
+                'usuario_id' => Auth::id(),
+                'tipo_entrega' => $request->input('tipo_entrega') ?? Session::get('checkout.tipo_entrega'),
+                'mesa_id' => Session::get('checkout.mesa_id'),
+                'exception' => $e,
+            ]);
+
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => 'Erro ao finalizar o pedido. Tente novamente.',
+            ];
+        }
+    }
+
 
     public function registraPedido($request, $enderecoId)
     {
@@ -412,10 +425,31 @@ class CarrinhoService
             ];
         }
 
+        $tipoEntregaInformado = $request->input('tipo_entrega');
+        $tipoEntrega = $tipoEntregaInformado ?? Session::get('checkout.tipo_entrega');
         $mesaId = Session::get('checkout.mesa_id');
-        $tipoEntrega = $request->input('tipo_entrega') ?? Session::get('checkout.tipo_entrega');
+
+        if ($tipoEntregaInformado === 'retirar' && !$request->filled('mesa_id')) {
+            $mesaId = null;
+            Session::forget('checkout.mesa_id');
+        }
+
         if (!$tipoEntrega) {
             $tipoEntrega = $mesaId ? 'retirar' : 'entrega';
+        }
+
+        if (!in_array($tipoEntrega, ['retirar', 'entrega'], true)) {
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => 'Tipo de pedido invalido.',
+            ];
+        }
+
+        if ($tipoEntrega === 'retirar') {
+            $enderecoId = null;
+            Session::forget('checkout.endereco_id');
+            Session::forget('checkout.cidade_id');
         }
 
         $usuarioId = Auth::id();
@@ -436,15 +470,6 @@ class CarrinhoService
                 'status' => false,
                 'tipo' => 'error',
                 'mensagem' => 'Selecione um endereço para entrega.',
-            ];
-        }
-
-        if ($tipoEntrega === 'retirar' && !$mesaId) {
-            Session::flash('checkout.modal', 'mesaModal');
-            return [
-                'status' => false,
-                'tipo' => 'error',
-                'mensagem' => 'Selecione uma mesa para retirada.',
             ];
         }
 

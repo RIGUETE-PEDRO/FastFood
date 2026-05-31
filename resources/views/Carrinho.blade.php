@@ -136,7 +136,7 @@ $temItensSelecionados = $itensSelecionados->count() > 0;
                         <button type="button" class="ff-modal__close" data-modal-close aria-label="Fechar">×</button>
                     </div>
 
-                    <form id="tipoEntregaForm" method="POST" action="#">
+                    <form id="tipoEntregaForm" method="POST" action="{{ route('carrinho.Pedido') }}">
                         @csrf
                         <p class="ff-modal__hint">Escolha uma opção para continuar.</p>
 

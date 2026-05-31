@@ -99,7 +99,7 @@
         function syncCheckoutBar() {
             const selected = selectedCheckboxes();
             const total = calcSelectedTotal();
-            const hasSelection = selected.length > 0 && total > 0;
+            const hasSelection = selected.length > 0;
 
             if (checkoutTotalText) checkoutTotalText.textContent = formatBRL(total);
             if (checkoutHint) {
@@ -162,6 +162,12 @@
             ensureSelectedQuantities();
             syncCheckoutBar();
             updateModalTotal();
+
+            if (calcSelectedTotal() <= 0) {
+                errorBox.textContent = 'Informe uma quantidade valida para dar baixa.';
+                return;
+            }
+
             openModal();
         });
 

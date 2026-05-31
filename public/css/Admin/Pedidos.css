@@ -1195,21 +1195,34 @@ body {
 .pedido-avancar-form,
 .pedido-card__secao--acoes form.m-0 {
     display: block;
-    padding: 0 10px;
-    border: 0;
-    background: transparent;
+    min-width: 0;
+    padding: 8px;
+    border: 1px solid var(--orders-border);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.72);
 }
 
 .pedido-card__secao--acoes .pedido-avancar-form .btn,
 .pedido-card__secao--acoes form.m-0 .btn {
+    box-sizing: border-box;
     width: 100%;
+    max-width: 100%;
 }
 
 .pedido-card__secao--acoes .btn-avancar-status,
 .pedido-card__secao--acoes .btn-geraCupom {
+    box-sizing: border-box;
     margin-left: 0;
     margin-right: 0;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    white-space: normal;
+}
+
+.btn-avancar-status__text {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .pedido-card__secao--cupom {

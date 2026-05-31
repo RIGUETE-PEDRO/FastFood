@@ -1358,6 +1358,10 @@ body:has(.ff-modal.is-open) .ff-sidebar-toggle {
 }
 
 .ff-sidebar__brand {
+    display: grid !important;
+    align-items: start !important;
+    justify-content: start !important;
+    gap: 10px;
     flex: 0 0 auto;
     min-height: 64px;
     margin-bottom: 16px !important;
@@ -1370,6 +1374,7 @@ body:has(.ff-modal.is-open) .ff-sidebar-toggle {
     align-items: center;
     gap: 10px;
     min-width: 0;
+    max-width: 100%;
 }
 
 .ff-sidebar__logo-icon {
@@ -1395,6 +1400,7 @@ body:has(.ff-modal.is-open) .ff-sidebar-toggle {
 
 .ff-sidebar__Versao {
     flex: 0 0 auto;
+    width: fit-content;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
     padding: 4px 8px;
@@ -1408,6 +1414,7 @@ body:has(.ff-modal.is-open) .ff-sidebar-toggle {
 
 .ff-sidebar__close {
     flex: 0 0 auto;
+    margin-left: 2px;
     width: 34px;
     height: 34px;
     border-radius: 8px;

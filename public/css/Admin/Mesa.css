@@ -13,6 +13,736 @@
     --ff-fechada: #6b7280;
 }
 
+/* ===== Detalhes da mesa: layout renovado ===== */
+.mesa-details-page {
+    display: grid;
+    gap: 18px;
+}
+
+.mesa-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+}
+
+.mesa-detail-header > div {
+    min-width: 0;
+}
+
+.mesa-detail-header__eyebrow {
+    display: block;
+    margin-bottom: 6px;
+    color: #2563eb;
+    font-size: 0.74rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.mesa-detail-header .mesas-title {
+    margin: 0;
+    color: #111827;
+    font-size: 1.9rem;
+    line-height: 1.15;
+}
+
+.mesa-detail-header .mesas-subtitle {
+    max-width: 68ch;
+    margin: 8px 0 0;
+    color: #64748b;
+    font-size: 0.98rem;
+    line-height: 1.45;
+}
+
+.mesa-back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 16px;
+    border: 1px solid #dbe4ee;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #334155;
+    font-weight: 850;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+.mesa-back-button:hover,
+.mesa-back-button:focus-visible {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.mesa-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.mesa-summary-tile {
+    display: grid;
+    gap: 7px;
+    min-width: 0;
+    min-height: 104px;
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+}
+
+.mesa-summary-tile span {
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 900;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.mesa-summary-tile strong {
+    color: #111827;
+    font-size: 1.35rem;
+    font-weight: 900;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.mesa-summary-tile--total {
+    border-color: rgba(37, 99, 235, 0.2);
+    background: #f8fbff;
+}
+
+.mesa-summary-tile--total strong {
+    color: #1d4ed8;
+    font-size: 1.75rem;
+}
+
+.mesa-details-page .mesa-order-editor {
+    overflow: hidden;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08) !important;
+}
+
+.mesa-details-page .mesa-order-editor__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 22px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
+}
+
+.mesa-details-page .mesa-order-editor__eyebrow {
+    display: block;
+    margin-bottom: 5px;
+    color: #2563eb;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.mesa-details-page .mesa-order-editor__header h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 1.25rem;
+    font-weight: 900;
+    line-height: 1.2;
+}
+
+.mesa-details-page .mesa-order-editor__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 68px;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 0.86rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.mesa-empty-state {
+    display: grid;
+    gap: 5px;
+    margin: 18px;
+    padding: 22px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.mesa-empty-state strong {
+    color: #111827;
+    font-size: 1rem;
+}
+
+.mesa-empty-state span {
+    color: #64748b;
+}
+
+.mesa-order-list {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+}
+
+.mesa-order-row {
+    display: grid;
+    grid-template-columns: 36px minmax(180px, 1fr) minmax(250px, 0.85fr);
+    gap: 16px;
+    align-items: center;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+}
+
+.mesa-order-row__select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mesa-order-row__main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+}
+
+.mesa-order-row__numbers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.mesa-order-row__numbers:has(> div:nth-child(3)) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mesa-order-row__numbers div,
+.mesa-order-block {
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.mesa-order-row__numbers span,
+.mesa-order-block > span {
+    display: block;
+    margin-bottom: 5px;
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 900;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.mesa-order-row__numbers strong {
+    display: block;
+    color: #111827;
+    font-size: 0.98rem;
+    font-weight: 900;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.mesa-order-row__controls {
+    grid-column: 2 / -1;
+    display: grid;
+    grid-template-columns: minmax(250px, 0.7fr) minmax(320px, 1fr);
+    gap: 12px;
+    min-width: 0;
+}
+
+.mesa-order-block {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+}
+
+.mesa-item-name {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.mesa-item-name strong {
+    color: #111827;
+    font-size: 1.02rem;
+    font-weight: 900;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.mesa-item-name small {
+    color: #64748b;
+    font-weight: 750;
+}
+
+.mesa-paid-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: #ecfdf5;
+    color: #047857;
+    font-size: 0.72rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.mesa-details-page .mesa-check {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.mesa-details-page .mesa-check input {
+    position: absolute;
+    opacity: 0;
+}
+
+.mesa-details-page .mesa-check span {
+    width: 26px;
+    height: 26px;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+    transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.mesa-details-page .mesa-check input:checked + span {
+    border-color: #1d4ed8;
+    background: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+}
+
+.mesa-details-page .mesa-check input:checked + span::after {
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: 11px;
+    width: 7px;
+    height: 12px;
+    border: solid #ffffff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.mesa-details-page .mesa-qty-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    width: fit-content;
+    max-width: 100%;
+    padding: 5px;
+    border: 1px solid #dbe4ee;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.mesa-details-page .mesa-qty-open {
+    min-width: 34px;
+    color: #475569;
+    font-weight: 900;
+    text-align: center;
+}
+
+.mesa-details-page .mesa-qty-control [data-qtd-dec],
+.mesa-details-page .mesa-qty-control [data-qtd-inc] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    min-height: 34px;
+    padding: 0;
+    border: 1px solid #dbe4ee !important;
+    border-radius: 8px !important;
+    background: #f8fafc !important;
+    color: #111827 !important;
+    font-weight: 900;
+}
+
+.mesa-details-page .mesa-qty-input {
+    width: 68px !important;
+    max-width: 68px !important;
+    height: 34px;
+    min-height: 34px;
+    padding: 0 8px;
+    text-align: center;
+    font-weight: 900;
+}
+
+.mesa-details-page .mesa-edit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.mesa-details-page .mesa-edit-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.mesa-details-page .mesa-edit-form label {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.76rem;
+    font-weight: 900;
+}
+
+.mesa-details-page .mesa-edit-input {
+    width: 72px !important;
+    min-width: 72px;
+    min-height: 38px;
+    text-align: center;
+    font-weight: 900;
+}
+
+.mesa-details-page .mesa-btn-save,
+.mesa-details-page .mesa-btn-remove {
+    min-height: 38px;
+    border-radius: 8px !important;
+    font-weight: 900;
+}
+
+.mesa-details-page .mesa-btn-save {
+    border-color: #fed7aa !important;
+    background: #fff7ed !important;
+    color: #c2410c !important;
+}
+
+.mesa-details-page .mesa-btn-remove {
+    border-color: #fecaca !important;
+    background: #fef2f2 !important;
+    color: #b91c1c !important;
+}
+
+.mesa-details-page .mesa-checkout-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 22px;
+    border-top: 1px solid #e2e8f0;
+    background: rgba(248, 250, 252, 0.98);
+    backdrop-filter: blur(12px);
+}
+
+.mesa-details-page .mesa-checkout-bar > div:first-child {
+    display: grid;
+    gap: 3px;
+}
+
+.mesa-details-page .mesa-checkout-bar strong {
+    color: #111827;
+}
+
+.mesa-details-page .mesa-checkout-bar span {
+    color: #64748b;
+    font-size: 0.92rem;
+}
+
+.mesa-details-page .mesa-checkout-bar .btn {
+    min-height: 44px;
+    border-radius: 8px !important;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.mesa-details-page .mesa-checkout-bar .btn:disabled {
+    opacity: 0.58;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.mesa-details-page .mesa-checkout-bar__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mesa-details-page .mesa-checkout-total {
+    min-width: 110px;
+    color: #1d4ed8 !important;
+    font-size: 1.12rem;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.mesa-details-page .ff-modal__card {
+    border-radius: 8px;
+}
+
+.mesa-details-page .abater-total-card {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 14px;
+    padding: 16px;
+    border: 1px solid rgba(37, 99, 235, 0.18) !important;
+    border-radius: 8px;
+    background: #f8fbff !important;
+}
+
+.mesa-details-page .abater-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.mesa-details-page .abater-total span,
+.mesa-details-page .abater-value-field label {
+    color: #64748b;
+    font-size: 0.76rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.mesa-details-page .abater-total strong {
+    color: #1d4ed8;
+    font-size: 1.7rem;
+}
+
+.mesa-details-page .abater-value-field {
+    display: grid;
+    gap: 7px;
+}
+
+.mesa-details-page .abater-payment-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.mesa-paid-panel {
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+}
+
+.mesa-paid-panel summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    min-height: 56px;
+    gap: 12px;
+    padding: 0 18px;
+    color: #111827;
+    cursor: pointer;
+    font-weight: 900;
+    list-style: none;
+}
+
+.mesa-paid-panel summary::-webkit-details-marker {
+    display: none;
+}
+
+.mesa-paid-panel summary strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    min-height: 30px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 0.86rem;
+}
+
+.mesa-paid-panel__body {
+    border-top: 1px solid #e2e8f0;
+    padding: 14px;
+}
+
+.mesa-paid-empty {
+    margin: 0;
+    color: #64748b;
+}
+
+.mesa-paid-list {
+    display: grid;
+    gap: 10px;
+}
+
+.mesa-paid-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.mesa-paid-item div {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.mesa-paid-item strong {
+    color: #111827;
+    overflow-wrap: anywhere;
+}
+
+.mesa-paid-item span,
+.mesa-paid-item small {
+    color: #64748b;
+}
+
+.mesa-paid-item small {
+    text-align: right;
+    white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+    .mesa-order-row {
+        grid-template-columns: 36px minmax(0, 1fr);
+    }
+
+    .mesa-order-row__numbers,
+    .mesa-order-row__controls {
+        grid-column: 2 / -1;
+    }
+}
+
+@media (max-width: 860px) {
+    .mesa-detail-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .mesa-back-button {
+        width: 100%;
+    }
+
+    .mesa-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mesa-details-page .mesa-order-editor__header,
+    .mesa-details-page .mesa-checkout-bar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .mesa-details-page .mesa-checkout-bar .btn {
+        width: 100%;
+    }
+
+    .mesa-details-page .mesa-checkout-bar__actions {
+        align-items: stretch;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .mesa-details-page .mesa-checkout-total {
+        text-align: left;
+    }
+
+    .mesa-order-row {
+        grid-template-columns: 1fr;
+    }
+
+    .mesa-order-row__select {
+        justify-content: flex-start;
+    }
+
+    .mesa-order-row__numbers,
+    .mesa-order-row__controls {
+        grid-column: auto;
+    }
+
+    .mesa-order-row__numbers,
+    .mesa-order-row__numbers:has(> div:nth-child(3)),
+    .mesa-order-row__controls,
+    .mesa-details-page .abater-payment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mesa-order-row__main,
+    .mesa-paid-item {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .mesa-paid-item small {
+        text-align: left;
+        white-space: normal;
+    }
+}
+
+@media (max-width: 520px) {
+    .mesa-detail-header,
+    .mesa-summary-tile,
+    .mesa-order-row {
+        padding: 14px;
+    }
+
+    .mesa-order-list {
+        padding: 12px;
+    }
+
+    .mesa-details-page .mesa-edit-actions,
+    .mesa-details-page .mesa-edit-form {
+        align-items: stretch;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .mesa-details-page .mesa-edit-input,
+    .mesa-details-page .mesa-btn-save,
+    .mesa-details-page .mesa-btn-remove {
+        width: 100% !important;
+    }
+}
+
 body {
     background:
         

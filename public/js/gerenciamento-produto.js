@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelBtn = document.getElementById('cancelCreateProduct');
     const overlay = document.getElementById('createProductOverlay');
     const form = document.getElementById('formCreateProduct');
+    const imageInput = document.getElementById('produto-imagem');
+    const imageName = document.getElementById('imagem-nome');
 
     const clearForm = () => {
         if (!form) return;
@@ -27,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         form.reset();
         form.action = form.getAttribute('data-cadastro-action') || form.action;
         document.getElementById('produto_id').value = '';
-        document.getElementById('imagem-nome').textContent = '';
+        if (imageName) imageName.textContent = 'Nenhum selecionado';
         setStatus(true);
     };
 
@@ -81,9 +83,16 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('produto-categoria').value = btn.getAttribute('data-categoria-id') || '';
             setStatus(btn.getAttribute('data-ativo') === '1');
 
-            document.getElementById('imagem-nome').textContent = btn.getAttribute('data-imagem-url') || '';
+            if (imageName) {
+                imageName.textContent = btn.getAttribute('data-imagem-url') || 'Nenhum selecionado';
+            }
             openOverlay();
         });
+    });
+
+    imageInput?.addEventListener('change', () => {
+        if (!imageName) return;
+        imageName.textContent = imageInput.files?.[0]?.name || 'Nenhum selecionado';
     });
 
     const searchInput = document.getElementById('searchInput');

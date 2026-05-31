@@ -46,17 +46,16 @@
 @endphp
 
 <nav class="ff-sidebar d-flex flex-column" aria-label="Menu principal">
-    <div class="ff-sidebar__brand d-flex align-items-center justify-content-between">
+    <div class="ff-sidebar__brand">
         <div class="ff-sidebar__brand-mark">
             <span class="ff-sidebar__logo-icon" aria-hidden="true">F</span>
             <span class="ff-sidebar__logo">FlashFood</span>
+            <button type="button" class="ff-sidebar__close" data-sidebar-toggle aria-label="Fechar menu">
+                &times;
+            </button>
         </div>
 
         <span class="ff-sidebar__Versao">v1.0</span>
-
-        <button type="button" class="ff-sidebar__close" data-sidebar-toggle aria-label="Fechar menu">
-            &times;
-        </button>
     </div>
 
     @if ($isAdmin)

@@ -43,8 +43,8 @@
                                 <th>Imagem</th>
                                 <th>Nome</th>
                                 <th>Preço</th>
-                                <th>Status</th>
                                 <th>Categoria</th>
+                                <th>Status</th>
                                 <th>Carrousel</th>
                                 <th>Ações</th>
                             </tr>
@@ -61,13 +61,12 @@
                                 </td>
                                 <td class="nome-cell">{{ $produto->nome }}</td>
                                 <td>R$ {{ number_format($produto->preco, 2, ',', '.') }}</td>
+                                <td>{{ $produto->categoria->nome ?? '-' }}</td>
                                 <td>
                                     <span class="badge {{ $produto->disponivel ? 'bg-success' : 'bg-danger' }}">
                                         {{ $produto->disponivel ? 'Ativo' : 'Inativo' }}
                                     </span>
                                 </td>
-
-                                <td>{{ $produto->categoria->nome ?? '-' }}</td>
                                 <td>
                                     <label class="toggle-switch">
                                         <input type="checkbox" class="toggle-carrousel"
@@ -144,10 +143,23 @@
                         </div>
                         <div class="form-group">
                             <label for="produto-imagem">Imagem</label>
-                            <input type="file" name="imagem" id="produto-imagem" class="form-control">
-                            <span style="display:block; margin-top:6px; color:#981b1e; font-weight:500;">
-                                <strong>Nome da imagem:</strong> <span id="imagem-nome"></span>
+                            <label class="image-upload" for="produto-imagem">
+                                <span class="image-upload__icon" aria-hidden="true">+</span>
+                                <span class="image-upload__body">
+                                    <strong>Selecionar imagem</strong>
+                                    <small>PNG, JPG ou WEBP</small>
+                                </span>
+                            </label>
+                            <input type="file" name="imagem" id="produto-imagem" class="image-upload__input" accept="image/png,image/jpeg,image/webp">
+                            <span class="image-upload__filename">
+                                <strong>Arquivo:</strong> <span id="imagem-nome">Nenhum selecionado</span>
                             </span>
+                        </div>
+                        <div class="form-group">
+                            <label for="produto-ativo">Status</label>
+                            <button type="button" id="btnAtivo" class="btn-status active" data-ativo="1">Ativo</button>
+                            <button type="button" id="btnInativo" class="btn-status" data-ativo="0">Inativo</button>
+                            <input type="hidden" name="ativo" id="produto-ativo" value="1">
                         </div>
                         <div class="form-group">
                             <label for="produto-categoria">Categoria</label>
@@ -157,12 +169,6 @@
                                 <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
                                 @endforeach
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="produto-ativo">Status</label>
-                            <button type="button" id="btnAtivo" class="btn-status active" data-ativo="1">Ativo</button>
-                            <button type="button" id="btnInativo" class="btn-status" data-ativo="0">Inativo</button>
-                            <input type="hidden" name="ativo" id="produto-ativo" value="1">
                         </div>
                     </div>
                     <div class="overlay-actions">

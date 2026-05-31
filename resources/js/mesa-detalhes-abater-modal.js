@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function syncCheckoutBar() {
     const selected = getSelectedCheckboxes();
     const total = calcSelectedTotal();
-    const hasSelection = selected.length > 0 && total > 0;
+    const hasSelection = selected.length > 0;
 
     if (checkoutTotalText) checkoutTotalText.textContent = formatBRL(total);
     if (checkoutHint) {
@@ -155,6 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     updateModalTotal();
+    if (calcSelectedTotal() <= 0) {
+      errorBox.textContent = 'Informe uma quantidade válida para dar baixa.';
+      return;
+    }
+
     openModal();
   });
 
