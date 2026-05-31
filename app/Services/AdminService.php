@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Mensagens\ErroMensagens;
-use Illuminate\Http\Request;
-use App\Mensagens\PassMensagens;
 use App\Enum\StatusPedidos;
+use App\Mensagens\ErroMensagens;
+use App\Mensagens\PassMensagens;
 use App\Repository\AdminRepository;
 use App\Roles\Roles;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 
 class AdminService
@@ -29,7 +29,7 @@ class AdminService
         $usuario = $this->genericBase->findById($data['id']);
 
         if (!$usuario) {
-            return ['status' => false, 'mensagem' => 'Usuário não encontrado.'];
+            return ['status' => false, 'mensagem' => 'Usuario nao encontrado.'];
         }
 
         $usuario->nome = $data['nome'];
@@ -55,7 +55,7 @@ class AdminService
 
         return [
             'status' => true,
-            'mensagem' => "Dados " . PassMensagens::ATUALIZADO_SUCESSO,
+            'mensagem' => 'Dados ' . PassMensagens::ATUALIZADO_SUCESSO,
             'usuario' => $usuario
         ];
     }
@@ -85,15 +85,14 @@ class AdminService
 
     public function buscarFuncionarios($searchTerm)
     {
-        $funcionarios = $this->adminRepositoryimpl->buscarFuncionarios($searchTerm);
-        return $funcionarios;
+        return $this->adminRepositoryimpl->buscarFuncionarios($searchTerm);
     }
-
 
     public function verificarAcessoPerfil()
     {
-        $usuarioLogado =  $this->genericBase->hasLogado();
+        $usuarioLogado = $this->genericBase->hasLogado();
         $hasRole = $this->SecureKeyService->hasRole($usuarioLogado, Roles::ADMIN);
+
         if (!$hasRole) {
             abort(403, ErroMensagens::ACESSO_NEGADO);
         }
@@ -104,9 +103,9 @@ class AdminService
         return $this->genericBase->findFuncionarios();
     }
 
-    public function montarDashboardAdministrativo(?string $periodoSelecionado, ?string $referenciaSelecionada): array
+    public function montarDashboardAdministrativo(?string $dataInicioSelecionada, ?string $dataFimSelecionada): array
     {
-        $periodoDados = $this->resolverPeriodoDashboard($periodoSelecionado, $referenciaSelecionada);
+        $periodoDados = $this->resolverPeriodoDashboard($dataInicioSelecionada, $dataFimSelecionada);
 
         $inicioPeriodo = $periodoDados['inicioPeriodo'];
         $fimPeriodo = $periodoDados['fimPeriodo'];
@@ -153,56 +152,53 @@ class AdminService
             'statusValores' => $statusValores,
             'topProdutosLabels' => $topProdutosLabels,
             'topProdutosValores' => $topProdutosValores,
-            'periodoSelecionado' => $periodoDados['periodo'],
-            'referenciaSelecionada' => $periodoDados['referenciaView'],
+            'dataInicioSelecionada' => $periodoDados['dataInicioView'],
+            'dataFimSelecionada' => $periodoDados['dataFimView'],
             'periodoTexto' => $periodoDados['periodoTexto'],
         ];
     }
 
-    private function resolverPeriodoDashboard(?string $periodoSelecionado, ?string $referenciaSelecionada): array
+    private function resolverPeriodoDashboard(?string $dataInicioSelecionada, ?string $dataFimSelecionada): array
     {
-        $periodo = in_array($periodoSelecionado, ['dia', 'mes', 'ano'], true)
-            ? $periodoSelecionado
-            : 'mes';
-
         $agora = Carbon::now();
-        $referenciaBruta = (string) ($referenciaSelecionada ?? '');
 
-        if ($periodo === 'dia') {
-            $referencia = $referenciaBruta !== '' ? Carbon::parse($referenciaBruta) : $agora->copy();
-            $inicioPeriodo = $referencia->copy()->startOfDay();
-            $fimPeriodo = $referencia->copy()->endOfDay();
-            $referenciaView = $referencia->format('Y-m-d');
-            $periodoTexto = 'Dia ' . $referencia->format('d/m/Y');
-        } elseif ($periodo === 'ano') {
-            $ano = (int) ($referenciaBruta !== '' ? $referenciaBruta : $agora->year);
-            if ($ano < 2000 || $ano > 2100) {
-                $ano = $agora->year;
-            }
+        $inicio = $this->normalizarDataDashboard($dataInicioSelecionada)
+            ?? $agora->copy()->startOfMonth();
+        $fim = $this->normalizarDataDashboard($dataFimSelecionada)
+            ?? $agora->copy()->endOfMonth();
 
-            $inicioPeriodo = Carbon::create($ano, 1, 1)->startOfDay();
-            $fimPeriodo = Carbon::create($ano, 12, 31)->endOfDay();
-            $referenciaView = (string) $ano;
-            $periodoTexto = 'Ano ' . $ano;
-        } else {
-            if (preg_match('/^\d{4}-\d{2}$/', $referenciaBruta) === 1) {
-                $referencia = Carbon::createFromFormat('Y-m', $referenciaBruta);
-            } else {
-                $referencia = $agora->copy();
-            }
-
-            $inicioPeriodo = $referencia->copy()->startOfMonth();
-            $fimPeriodo = $referencia->copy()->endOfMonth();
-            $referenciaView = $referencia->format('Y-m');
-            $periodoTexto = 'Mês ' . ucfirst($referencia->translatedFormat('F/Y'));
+        if ($inicio->greaterThan($fim)) {
+            [$inicio, $fim] = [$fim, $inicio];
         }
 
+        $inicioPeriodo = $inicio->copy()->startOfDay();
+        $fimPeriodo = $fim->copy()->endOfDay();
+        $dataInicioView = $inicioPeriodo->format('Y-m-d');
+        $dataFimView = $fimPeriodo->format('Y-m-d');
+        $periodoTexto = $dataInicioView === $dataFimView
+            ? 'Dia ' . $inicioPeriodo->format('d/m/Y')
+            : $inicioPeriodo->format('d/m/Y') . ' ate ' . $fimPeriodo->format('d/m/Y');
+
         return [
-            'periodo' => $periodo,
             'inicioPeriodo' => $inicioPeriodo,
             'fimPeriodo' => $fimPeriodo,
-            'referenciaView' => $referenciaView,
+            'dataInicioView' => $dataInicioView,
+            'dataFimView' => $dataFimView,
             'periodoTexto' => $periodoTexto,
         ];
+    }
+
+    private function normalizarDataDashboard(?string $data): ?Carbon
+    {
+        $data = trim((string) $data);
+        if ($data === '' || preg_match('/^\d{4}-\d{2}-\d{2}$/', $data) !== 1) {
+            return null;
+        }
+
+        try {
+            return Carbon::createFromFormat('Y-m-d', $data);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }

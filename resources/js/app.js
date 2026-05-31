@@ -9,7 +9,6 @@ import './sidebar';
 
 import './admin-pedidos-realtime';
 import './admin-dashboard';
-import './admin-dashboard-filter';
 import './flash-toast';
 import './profile-image-preview';
 import './mesa-detalhes-abater-modal';

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     @include('partials.favicon')
     <title>Administrativo</title>
     @vite(['resources/js/app.js'])
@@ -22,38 +22,21 @@
             <main>
                 <section class="dashboard-header">
                     <h1>Dashboard administrativo</h1>
-                    <p>Olá, {{ $nomeUsuario ?? 'Usuário' }}. Acompanhe os indicadores do FlashFood.</p>
+                    <p>Ola, {{ $nomeUsuario ?? 'Usuario' }}. Acompanhe os indicadores do FlashFood.</p>
                 </section>
 
                 <section class="dashboard-toolbar painel">
-                    <form method="GET" action="{{ route('Administrativo') }}" class="dashboard-filtro-form" data-dashboard-filter-form>
-                        <label for="periodo">Agrupar por</label>
-                        <select name="periodo" id="periodo" data-dashboard-periodo>
-                            <option value="dia" {{ ($periodoSelecionado ?? 'mes') === 'dia' ? 'selected' : '' }}>Dia</option>
-                            <option value="mes" {{ ($periodoSelecionado ?? 'mes') === 'mes' ? 'selected' : '' }}>Mês</option>
-                            <option value="ano" {{ ($periodoSelecionado ?? 'mes') === 'ano' ? 'selected' : '' }}>Ano</option>
-                        </select>
+                    <form method="GET" action="{{ route('Administrativo') }}" class="dashboard-filtro-form">
+                        <label for="data_inicio">Data inicial</label>
+                        <input type="date" id="data_inicio" name="data_inicio" value="{{ $dataInicioSelecionada ?? now()->startOfMonth()->format('Y-m-d') }}">
 
-                        <label for="referencia" data-dashboard-referencia-label>
-                            {{ match($periodoSelecionado ?? 'mes') {
-                                'dia' => 'Filtrar pelo dia',
-                                'ano' => 'Filtrar pelo ano',
-                                default => 'Filtrar pelo mês',
-                            } }}
-                        </label>
-
-                        @if (($periodoSelecionado ?? 'mes') === 'dia')
-                            <input type="date" id="referencia" name="referencia" value="{{ $referenciaSelecionada ?? now()->format('Y-m-d') }}" data-dashboard-referencia>
-                        @elseif (($periodoSelecionado ?? 'mes') === 'ano')
-                            <input type="number" id="referencia" min="2000" max="2100" step="1" name="referencia" value="{{ $referenciaSelecionada ?? now()->format('Y') }}" data-dashboard-referencia>
-                        @else
-                            <input type="month" id="referencia" name="referencia" value="{{ $referenciaSelecionada ?? now()->format('Y-m') }}" data-dashboard-referencia>
-                        @endif
+                        <label for="data_fim">Data final</label>
+                        <input type="date" id="data_fim" name="data_fim" value="{{ $dataFimSelecionada ?? now()->endOfMonth()->format('Y-m-d') }}">
 
                         <button type="submit">Aplicar</button>
                     </form>
 
-                    <p class="dashboard-periodo">Período atual: <strong>{{ $periodoTexto ?? 'Mês atual' }}</strong></p>
+                    <p class="dashboard-periodo">Periodo atual: <strong>{{ $periodoTexto ?? 'Mes atual' }}</strong></p>
                 </section>
 
                 <section class="dashboard-kpis">
@@ -77,12 +60,12 @@
                 <section class="dashboard-charts">
                     <article class="painel chart-card">
                         <h3>Pedidos por status</h3>
-                        <canvas id="pedidosStatusChart" aria-label="Gráfico de pedidos por status"></canvas>
+                        <canvas id="pedidosStatusChart" aria-label="Grafico de pedidos por status"></canvas>
                     </article>
 
                     <article class="painel chart-card">
                         <h3>Top 5 produtos vendidos</h3>
-                        <canvas id="topProdutosChart" aria-label="Gráfico de produtos mais vendidos"></canvas>
+                        <canvas id="topProdutosChart" aria-label="Grafico de produtos mais vendidos"></canvas>
                     </article>
                 </section>
             </main>

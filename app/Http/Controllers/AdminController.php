@@ -48,8 +48,8 @@ class AdminController extends Controller
         $primeiroNome = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : self::DEFAULT_USER_NAME;
 
         $dashboard = $this->adminService->montarDashboardAdministrativo(
-            $request->query('periodo'),
-            $request->query('referencia')
+            $request->query('data_inicio'),
+            $request->query('data_fim')
         );
 
         return view('Admin.Administrativo', [
