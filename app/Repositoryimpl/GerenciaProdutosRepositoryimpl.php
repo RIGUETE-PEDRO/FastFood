@@ -4,8 +4,9 @@ namespace App\Repositoryimpl;
 
 use App\Models\CategoriaProdutoModel;
 use App\Models\ProdutoModel;
+use App\Repository\GerenciaProdutosRepository;
 
-class GerenciaProdutosRepositoryimpl
+class GerenciaProdutosRepositoryimpl implements GerenciaProdutosRepository
 {
     public function listarProdutosComCategoria()
     {

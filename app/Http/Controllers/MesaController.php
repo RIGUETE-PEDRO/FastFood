@@ -33,6 +33,17 @@ class MesaController extends Controller
         return view('Admin.Mesa', ['usuario' => $usuarioLogado, 'mesas' => $mesas]);
     }
 
+    public function historicoMesas()
+    {
+        $usuarioLogado = $this->genericBase->hasLogado();
+        $fechamentos = $this->mesasService->listarHistoricoMesas();
+
+        return view('Admin.MesasHistorico', [
+            'usuario' => $usuarioLogado,
+            'fechamentos' => $fechamentos,
+        ]);
+    }
+
     public function cadastrarMesa(Request $request)
     {
         $response = $this->mesasService->cadastrarMesa($request);

@@ -30,6 +30,9 @@
                             <p class="mesas-subtitle">Visualização em planta para acompanhar ocupação.</p>
                         </div>
                         <div class="header-actions">
+                            <a href="{{ route('mesas.historico') }}" class="btn topo btn-Historico">
+                                Historico de mesas
+                            </a>
                             <button type="button" class="btn topo btn-Adicionar" data-bs-toggle="modal" data-bs-target="#modalAdicionarMesa">
                                 Adicionar Mesa
                             </button>

@@ -244,6 +244,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::MESAS])->group(function () {
     // Listagem das mesas (Página Principal)
     Route::get('/mesas', [MesaController::class, 'Mesa'])->name('mesas.index');
+    Route::get('/mesas/historico', [MesaController::class, 'historicoMesas'])->name('mesas.historico');
 
     // Cadastro de nova mesa
     Route::post('/mesas/cadastrar', [MesaController::class, 'cadastrarMesa'])->name('mesas.store');

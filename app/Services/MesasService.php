@@ -5,19 +5,19 @@ namespace App\Services;
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
 use App\Models\MesaModel;
-use App\Repositoryimpl\GenericBaseRepositoryimpl;
-use App\Repositoryimpl\MesasRepositoryimpl;
+use App\Repository\GenericBaseRepository;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Request;
+use App\Repository\MesasRepository;
 
 class MesasService extends GenericBase
 {
     public function __construct(
-        GenericBaseRepositoryimpl $repository,
-        private MesasRepositoryimpl $mesasRepository
+        GenericBaseRepository $repository,
+        private MesasRepository $mesasRepository
     ) {
         parent::__construct($repository);
     }
@@ -71,6 +71,11 @@ class MesasService extends GenericBase
         return $this->mesasRepository->listarMesas();
     }
 
+    public function listarHistoricoMesas(int $porPagina = 12)
+    {
+        return $this->mesasRepository->listarHistoricoFechamentos($porPagina);
+    }
+
     public function pegarDetalhesMesa($id)
     {
         $mesa = $this->pegarMesaPorId($id);
@@ -116,6 +121,68 @@ class MesasService extends GenericBase
             $restante = $total - $pago;
             return $restante > 0 ? $restante : 0;
         });
+    }
+
+    private function registrarFechamentoMesa(int $mesaId, Carbon $fechadoEm): void
+    {
+        $mesa = $this->mesasRepository->pegarMesaPorId($mesaId);
+        if (!$mesa) {
+            return;
+        }
+
+        $itensPagos = $this->mesasRepository->pegarItensPagosParaFechamento($mesaId);
+        if ($itensPagos->isEmpty()) {
+            return;
+        }
+
+        $formasPagamento = [];
+        $pagamentosResumo = [];
+        $totalPago = 0.0;
+        $totalItens = 0;
+
+        foreach ($itensPagos as $item) {
+            $quantidade = max(1, (int) $item->quantidade);
+            $valorPago = (float) ($item->valor_pago ?? 0);
+            $valorItem = $valorPago > 0
+                ? $valorPago
+                : ((float) $item->preco_unitario) * $quantidade;
+
+            $totalPago += $valorItem;
+            $totalItens += $quantidade;
+
+            $metodos = collect(preg_split('/\s*\+\s*/', (string) $item->pagamento_metodo) ?: [])
+                ->map(fn ($metodo) => $this->normalizarMetodoPagamento($metodo))
+                ->filter(fn ($metodo) => !empty($metodo))
+                ->values()
+                ->all();
+
+            if (empty($metodos)) {
+                $metodos = ['nao_informado'];
+            }
+
+            foreach ($metodos as $metodo) {
+                $formasPagamento[$metodo] = true;
+            }
+
+            $metodoResumo = implode(' + ', $metodos);
+            $pagamentosResumo[$metodoResumo] = ($pagamentosResumo[$metodoResumo] ?? 0) + $valorItem;
+        }
+
+        $this->mesasRepository->registrarFechamentoMesa([
+            'mesa_id' => $mesa->id,
+            'numero_da_mesa' => $mesa->numero_da_mesa,
+            'total_pago' => round($totalPago, 2),
+            'total_itens' => $totalItens,
+            'formas_pagamento' => array_keys($formasPagamento),
+            'pagamentos_resumo' => collect($pagamentosResumo)
+                ->map(fn ($valor, $metodo) => [
+                    'metodo' => $metodo,
+                    'valor' => round((float) $valor, 2),
+                ])
+                ->values()
+                ->all(),
+            'fechado_em' => $fechadoEm,
+        ]);
     }
 
     public function atualizarPrecoMesa($mesaId): void
@@ -369,6 +436,7 @@ class MesasService extends GenericBase
             $restamAbertos = $this->mesasRepository->existemItensAbertosMesa((int) $mesaId);
 
             if (!$restamAbertos) {
+                $this->registrarFechamentoMesa((int) $mesaId, $agora);
                 $this->finalizarPedidosDaMesa((int) $mesaId);
 
                 $this->mesasRepository->desvincularMesaItensPagos((int) $mesaId);

@@ -5,8 +5,8 @@ namespace App\Repositoryimpl;
 use App\Models\UsuarioModel;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-
-class LoginRepositoryimpl
+use App\Repository\LoginRepository;
+class LoginRepositoryimpl implements LoginRepository
 {
     public function buscarUsuarioPorEmail(string $email): ?UsuarioModel
     {

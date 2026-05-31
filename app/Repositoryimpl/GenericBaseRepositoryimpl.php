@@ -7,8 +7,9 @@ use App\Models\CidadeModel;
 use App\Models\FuncionarioModel;
 use App\Models\ProdutoModel;
 use App\Models\UsuarioModel;
+use App\Repository\GenericBaseRepository;
 
-class GenericBaseRepositoryimpl
+class GenericBaseRepositoryimpl implements  GenericBaseRepository
 {
     public function pegarUsuarioEmail(array $data): ?UsuarioModel
     {

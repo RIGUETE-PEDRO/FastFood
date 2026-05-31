@@ -7,7 +7,7 @@ const CHECKOUT_MODAL_IDS = {
 };
 
 const DELIVERY_TYPES = {
-  retirar: 'retirar',
+  mesa: 'mesa',
   entrega: 'entrega',
 };
 
@@ -168,8 +168,9 @@ function getSelectedDeliveryType(ctx) {
 function showDeliveryNextStep(ctx, deliveryType) {
   closeModal(ctx, ctx.modals.tipo);
 
-  if (deliveryType === DELIVERY_TYPES.retirar) {
-    submitPickupOrder(ctx);
+  if (deliveryType === DELIVERY_TYPES.mesa) {
+    openModal(ctx, ctx.modals.mesa);
+    ctx.fields.mesa?.focus();
     return;
   }
 
@@ -181,21 +182,6 @@ function showDeliveryNextStep(ctx, deliveryType) {
 
   openModal(ctx, ctx.modals.novoEndereco);
   focusNewAddress(ctx);
-}
-
-function submitPickupOrder(ctx) {
-  if (!ctx.forms.tipo || window.__ffPickupOrderSubmitting) return;
-
-  window.__ffPickupOrderSubmitting = true;
-  ensureHiddenInput(ctx.forms.tipo, 'tipo_entrega', DELIVERY_TYPES.retirar);
-
-  const submitButton = ctx.forms.tipo.querySelector('button[type="submit"]');
-  if (submitButton) {
-    submitButton.disabled = true;
-    submitButton.textContent = 'Finalizando...';
-  }
-
-  HTMLFormElement.prototype.submit.call(ctx.forms.tipo);
 }
 
 function getMissingAddressFields(ctx) {
@@ -439,6 +425,11 @@ function openInitialModalFromSession(ctx) {
   if (!targetModal) return;
 
   closeAllModals(ctx);
+
+  if (modalId === CHECKOUT_MODAL_IDS.mesa) {
+    const mesaRadio = ctx.modals.tipo.querySelector(`input[name="tipo_entrega"][value="${DELIVERY_TYPES.mesa}"]`);
+    if (mesaRadio) mesaRadio.checked = true;
+  }
 
   if ([CHECKOUT_MODAL_IDS.endereco, CHECKOUT_MODAL_IDS.novoEndereco, CHECKOUT_MODAL_IDS.pagamento].includes(modalId)) {
     const deliveryRadio = ctx.modals.tipo.querySelector(`input[name="tipo_entrega"][value="${DELIVERY_TYPES.entrega}"]`);

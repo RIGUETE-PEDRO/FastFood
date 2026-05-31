@@ -15,6 +15,7 @@ use App\Repository\SecureKeyRepository;
 use App\Roles\Roles;
 use App\Services\SecureKeyService;
 use App\Models\UsuarioModel;
+use App\Repository\GenericBaseRepository;
 use App\Repositoryimpl\AdminRepositoryimpl;
 use App\Repositoryimpl\AuditoriaRepositoryimpl;
 use App\Repositoryimpl\CarrinhoRepositoryimpl;
@@ -26,6 +27,17 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use App\Repository\PedidoRepository;
 use App\Repositoryimpl\PedidoRepositoryimpl;
+use App\Repositoryimpl\GenericBaseRepositoryimpl;
+use App\Repository\GerenciamentoFuncionarioRepository;
+use App\Repository\GerenciaProdutosRepository;
+use App\Repositoryimpl\GerenciamentoFuncionarioRepositoryimpl;
+use App\Repository\LoginRepository;
+use App\Repository\MesasRepository;
+use App\Repositoryimpl\LoginRepositoryimpl;
+use App\Repositoryimpl\MesasRepositoryimpl;
+use App\Repositoryimpl\GerenciaProdutosRepositoryimpl;
+use App\Repository\AuthRepository;
+use App\Repositoryimpl\AuthRepositoryimpl;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -42,6 +54,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PedidosFeitosRepository::class,PedidosFeitosRepositoryimpl::class);
         $this->app->bind(IndexProdutoRepository::class, IndexProdutoRepositoryimpl::class);
         $this->app->bind(PedidoRepository::class, PedidoRepositoryimpl::class);
+        $this->app->bind(GenericBaseRepository::class, GenericBaseRepositoryimpl::class);
+        $this->app->bind(GerenciamentoFuncionarioRepository::class, GerenciamentoFuncionarioRepositoryimpl::class);
+        $this->app->bind(LoginRepository::class, LoginRepositoryimpl::class);
+        $this->app->bind(MesasRepository::class, MesasRepositoryimpl::class);
+        $this->app->bind(PedidosFeitosRepository::class, PedidosFeitosRepositoryimpl::class);
+        $this->app->bind(GerenciaProdutosRepository::class, GerenciaProdutosRepositoryimpl::class);
+        $this->app->bind(AuditoriaRepository::class, AuditoriaRepositoryimpl::class);
+        $this->app->bind(AuthRepository::class, AuthRepositoryimpl::class);
     }
 
 

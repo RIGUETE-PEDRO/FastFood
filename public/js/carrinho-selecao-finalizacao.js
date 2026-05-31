@@ -137,20 +137,6 @@
         return Boolean(document.querySelector('#enderecoForm input[name="endereco_opcao"]'));
     }
 
-    function submitPickupOrder(form) {
-        if (!form || window.__ffPickupOrderSubmitting) return;
-
-        window.__ffPickupOrderSubmitting = true;
-
-        const submitButton = form.querySelector('button[type="submit"]');
-        if (submitButton) {
-            submitButton.disabled = true;
-            submitButton.textContent = 'Finalizando...';
-        }
-
-        HTMLFormElement.prototype.submit.call(form);
-    }
-
     function bindCheckoutFallbackFlow() {
         const tipoForm = document.getElementById('tipoEntregaForm');
 
@@ -159,8 +145,8 @@
 
             const deliveryType = tipoForm.querySelector('input[name="tipo_entrega"]:checked')?.value;
 
-            if (deliveryType === 'retirar') {
-                submitPickupOrder(tipoForm);
+            if (deliveryType === 'mesa') {
+                openOnly(document.getElementById('mesaModal'));
                 return;
             }
 

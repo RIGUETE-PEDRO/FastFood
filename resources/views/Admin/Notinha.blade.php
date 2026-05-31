@@ -70,7 +70,7 @@
                     </div>
                     <div class="receipt-row">
                         <span>Tipo</span>
-                        <strong class="receipt-pill">{{ $temEnderecoEntrega ? 'Entrega' : 'Retirada' }}</strong>
+                        <strong class="receipt-pill">{{ $temEnderecoEntrega ? 'Entrega' : 'Mesa' }}</strong>
                     </div>
                     @unless($temEnderecoEntrega)
                         <div class="receipt-row">

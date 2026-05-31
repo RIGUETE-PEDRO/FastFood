@@ -131,7 +131,7 @@ $temItensSelecionados = $itensSelecionados->count() > 0;
                     <div class="ff-modal__header">
                         <div>
                             <p class="ff-modal__eyebrow">Etapa 1 de 3</p>
-                            <h2 id="finalizarModalTitle">Como você quer receber?</h2>
+                            <h2 id="finalizarModalTitle">Como você quer pedir?</h2>
                         </div>
                         <button type="button" class="ff-modal__close" data-modal-close aria-label="Fechar">×</button>
                     </div>
@@ -142,18 +142,18 @@ $temItensSelecionados = $itensSelecionados->count() > 0;
 
                         <div class="ff-choice">
                             <label class="ff-choice__item">
-                                <input type="radio" name="tipo_entrega" value="retirar" checked>
+                                <input type="radio" name="tipo_entrega" value="entrega" checked>
                                 <span>
-                                    <strong>Retirar no local</strong>
-                                    <small>Você vai informar o número da mesa no próximo passo.</small>
+                                    <strong>Entrega</strong>
+                                    <small>Você vai informar o endereço no próximo passo.</small>
                                 </span>
                             </label>
 
                             <label class="ff-choice__item">
-                                <input type="radio" name="tipo_entrega" value="entrega">
+                                <input type="radio" name="tipo_entrega" value="mesa">
                                 <span>
-                                    <strong>Entrega</strong>
-                                    <small>Você vai informar o endereço no próximo passo.</small>
+                                    <strong>Mesa</strong>
+                                    <small>Você vai adicionar o pedido a uma comanda da mesa.</small>
                                 </span>
                             </label>
                         </div>
@@ -174,15 +174,15 @@ $temItensSelecionados = $itensSelecionados->count() > 0;
                 <div class="ff-modal__card" role="dialog" aria-modal="true" aria-labelledby="mesaModalTitle">
                     <div class="ff-modal__header">
                         <div>
-                            <p class="ff-modal__eyebrow">Retirada no local</p>
-                            <h2 id="mesaModalTitle">Informe a mesa</h2>
+                            <p class="ff-modal__eyebrow">Comanda da mesa</p>
+                            <h2 id="mesaModalTitle">Escolha a mesa</h2>
                         </div>
                         <button type="button" class="ff-modal__close" data-modal-close aria-label="Fechar">×</button>
                     </div>
 
                     <form id="mesaForm" method="POST" action="{{ route('carrinho.mesa') }}">
                         @csrf
-                        <input type="hidden" name="tipo_entrega" value="retirar">
+                        <input type="hidden" name="tipo_entrega" value="mesa">
 
                         <div class="ff-field">
                             <label for="mesa_id">Número da mesa</label>

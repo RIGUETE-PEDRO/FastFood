@@ -56,7 +56,7 @@ class CarrinhoService
 
     public function pegarDadosPedido()
     {
-        $statusPermitidos = ['disponivel', 'reservada'];
+        $statusPermitidos = ['disponivel', 'reservada', 'ocupada'];
 
         $mesa = $this->carrinhoRepository->pegarMesaSelecionada($statusPermitidos);
 
@@ -429,16 +429,20 @@ class CarrinhoService
         $tipoEntrega = $tipoEntregaInformado ?? Session::get('checkout.tipo_entrega');
         $mesaId = Session::get('checkout.mesa_id');
 
-        if ($tipoEntregaInformado === 'retirar' && !$request->filled('mesa_id')) {
+        if ($tipoEntrega === 'retirar') {
+            $tipoEntrega = 'mesa';
+        }
+
+        if ($tipoEntregaInformado === 'mesa' && !$request->filled('mesa_id')) {
             $mesaId = null;
             Session::forget('checkout.mesa_id');
         }
 
         if (!$tipoEntrega) {
-            $tipoEntrega = $mesaId ? 'retirar' : 'entrega';
+            $tipoEntrega = $mesaId ? 'mesa' : 'entrega';
         }
 
-        if (!in_array($tipoEntrega, ['retirar', 'entrega'], true)) {
+        if (!in_array($tipoEntrega, ['mesa', 'entrega'], true)) {
             return [
                 'status' => false,
                 'tipo' => 'error',
@@ -446,7 +450,7 @@ class CarrinhoService
             ];
         }
 
-        if ($tipoEntrega === 'retirar') {
+        if ($tipoEntrega === 'mesa') {
             $enderecoId = null;
             Session::forget('checkout.endereco_id');
             Session::forget('checkout.cidade_id');
@@ -473,6 +477,15 @@ class CarrinhoService
             ];
         }
 
+        if ($tipoEntrega === 'mesa' && !$mesaId) {
+            Session::flash('checkout.modal', 'mesaModal');
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => ErroMensagens::SEM_ID_MESA,
+            ];
+        }
+
         $pagamentoenum = null;
         if ($tipoEntrega === 'entrega') {
             $pagamentoMetodo = $request->input('pagamento_metodo');
@@ -493,7 +506,7 @@ class CarrinhoService
             $pedido = $this->carrinhoRepository->criarPedido([
                 'usuario_id' => $usuarioId,
                 'endereco_id' => $enderecoId,
-                'mesa_id' => $tipoEntrega === 'retirar' ? $mesaId : null,
+                'mesa_id' => $tipoEntrega === 'mesa' ? $mesaId : null,
                 'tipo_pagamento_id' => $pagamentoenum ? $pagamentoenum->value : null,
                 'observacoes_pagamento' => $tipoEntrega === 'entrega' ? $request->input('observacoes_pagamento') : null,
                 'valor_total' => $valor_total,
@@ -548,6 +561,7 @@ class CarrinhoService
             'disponivel',
             'disponível',
             'reservada',
+            'ocupada',
         ];
 
         if (!in_array($statusNormalizado, $statusPermitidos, true)) {
@@ -555,12 +569,12 @@ class CarrinhoService
             return [
                 'status' => false,
                 'tipo' => 'error',
-                'mensagem' => 'Mesa indisponível para retirada.',
+                'mensagem' => 'Mesa indisponivel para receber pedido.',
             ];
         }
 
         Session::put('checkout.mesa_id', $mesa->id);
-        Session::put('checkout.tipo_entrega', 'retirar');
+        Session::put('checkout.tipo_entrega', 'mesa');
         Session::forget('checkout.endereco_id');
         Session::forget('checkout.cidade_id');
         Session::forget('checkout.pagamento');

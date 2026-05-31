@@ -14,13 +14,13 @@ use Illuminate\Support\Facades\URL;
 class AdminService
 {
     protected GenericBase $genericBase;
-    protected AdminRepository $adminRepositoryimpl;
+    protected AdminRepository $adminRepository;
     protected SecureKeyService $SecureKeyService;
 
-    public function __construct(GenericBase $genericBase, AdminRepository $adminRepositoryimpl, SecureKeyService $SecureKeyService)
+    public function __construct(GenericBase $genericBase, AdminRepository $adminRepository, SecureKeyService $SecureKeyService)
     {
         $this->genericBase = $genericBase;
-        $this->adminRepositoryimpl = $adminRepositoryimpl;
+        $this->adminRepository = $adminRepository;
         $this->SecureKeyService = $SecureKeyService;
     }
 
@@ -85,7 +85,7 @@ class AdminService
 
     public function buscarFuncionarios($searchTerm)
     {
-        return $this->adminRepositoryimpl->buscarFuncionarios($searchTerm);
+        return $this->adminRepository->buscarFuncionarios($searchTerm);
     }
 
     public function verificarAcessoPerfil()
@@ -110,14 +110,14 @@ class AdminService
         $inicioPeriodo = $periodoDados['inicioPeriodo'];
         $fimPeriodo = $periodoDados['fimPeriodo'];
 
-        $totalVendas = $this->adminRepositoryimpl->totalVendasNoPeriodo($inicioPeriodo, $fimPeriodo);
-        $totalPedidos = $this->adminRepositoryimpl->totalPedidosNoPeriodo($inicioPeriodo, $fimPeriodo);
+        $totalVendas = $this->adminRepository->totalVendasNoPeriodo($inicioPeriodo, $fimPeriodo);
+        $totalPedidos = $this->adminRepository->totalPedidosNoPeriodo($inicioPeriodo, $fimPeriodo);
 
-        $produtoMaisVendido = $this->adminRepositoryimpl->produtoMaisVendidoNoPeriodo($inicioPeriodo, $fimPeriodo);
+        $produtoMaisVendido = $this->adminRepository->produtoMaisVendidoNoPeriodo($inicioPeriodo, $fimPeriodo);
         $produtoMaisVendidoNome = $produtoMaisVendido?->produto_nome ?? 'Sem dados';
         $produtoMaisVendidoQtd = (int) ($produtoMaisVendido?->total_qtd ?? 0);
 
-        $contagemStatus = $this->adminRepositoryimpl->contagemStatusNoPeriodo($inicioPeriodo, $fimPeriodo);
+        $contagemStatus = $this->adminRepository->contagemStatusNoPeriodo($inicioPeriodo, $fimPeriodo);
 
         $statusLabels = [];
         $statusValores = [];
@@ -126,7 +126,7 @@ class AdminService
             $statusValores[] = (int) ($contagemStatus[$status->value] ?? 0);
         }
 
-        $topProdutos = $this->adminRepositoryimpl->topProdutosNoPeriodo($inicioPeriodo, $fimPeriodo, 5);
+        $topProdutos = $this->adminRepository->topProdutosNoPeriodo($inicioPeriodo, $fimPeriodo, 5);
 
         $topProdutosLabels = $topProdutos
             ->map(fn($item) => $item->produto_nome ?? 'Produto removido')

@@ -4,13 +4,14 @@ namespace App\Services;
 
 use App\Mensagens\ErroMensagens;
 use App\Models\UsuarioModel;
-use App\Repositoryimpl\GenericBaseRepositoryimpl;
+use App\Repository\GenericBaseRepository;
 use Illuminate\Support\Facades\Auth;
 
 class GenericBase
 {
-    public function __construct(private GenericBaseRepositoryimpl $repository)
+    public function __construct(private GenericBaseRepository $repository)
     {
+        $this->repository = $repository;
     }
 
     public function pegarUsuarioEmail($data){

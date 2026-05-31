@@ -9,7 +9,7 @@ class SecureKeyService
 {
     public function __construct(private SecureKeyRepository $repository)
     {
-
+        $this->repository = $repository;
     }
 
     public function hasRole(UsuarioModel $usuario, string $roleName): bool

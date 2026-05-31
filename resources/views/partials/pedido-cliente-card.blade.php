@@ -35,7 +35,7 @@
             </div>
             <div>
                 <dt>Tipo do pedido</dt>
-                <dd>{{ $temEnderecoEntrega ? 'Entrega' : 'Retirada no local' }}</dd>
+                <dd>{{ $temEnderecoEntrega ? 'Entrega' : 'Mesa' }}</dd>
             </div>
         </dl>
     </section>

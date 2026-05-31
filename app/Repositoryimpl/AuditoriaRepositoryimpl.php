@@ -48,7 +48,7 @@ class AuditoriaRepositoryimpl implements AuditoriaRepository
         ];
     }
 
-    private function aplicarFiltros(Builder $query, array $filtros): void
+    public function aplicarFiltros(Builder $query, array $filtros): void
     {
         $filtro = $filtros['filtro'] ?? null;
         $valor = trim((string) ($filtros['valor'] ?? ''));

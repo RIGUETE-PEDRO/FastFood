@@ -1339,9 +1339,173 @@ body {
     color: #fff !important;
 }
 
+.header-actions .btn-Historico {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+    border-color: #1e40af !important;
+    color: #fff !important;
+    text-decoration: none;
+}
+
+.mesas-history-page {
+    display: grid;
+    gap: 16px;
+}
+
+.mesas-history-header {
+    margin-bottom: 0;
+}
+
+.mesa-history-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+}
+
+.mesa-history-summary article,
+.mesa-history-card {
+    border: 1px solid rgba(139, 90, 31, 0.16);
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+}
+
+.mesa-history-summary article {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+}
+
+.mesa-history-summary span,
+.mesa-history-card__eyebrow,
+.mesa-history-breakdown span {
+    color: #64748b;
+    font-size: 0.74rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.mesa-history-summary strong {
+    color: #1f2937;
+    font-size: 1.5rem;
+    font-weight: 950;
+    line-height: 1;
+}
+
+.mesa-history-list {
+    display: grid;
+    gap: 12px;
+}
+
+.mesa-history-card {
+    display: grid;
+    gap: 14px;
+    padding: 16px;
+}
+
+.mesa-history-card__main {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.mesa-history-card__main h2 {
+    margin: 4px 0 0;
+    color: #111827;
+    font-size: 1.12rem;
+    font-weight: 900;
+}
+
+.mesa-history-card__main p {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-weight: 700;
+}
+
+.mesa-history-card__total {
+    color: #1d4ed8;
+    font-size: 1.35rem;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.mesa-history-card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(139, 90, 31, 0.12);
+}
+
+.mesa-history-card__meta > span {
+    color: #92400e;
+    font-weight: 850;
+}
+
+.mesa-history-payments {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.mesa-history-payments span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.mesa-history-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.mesa-history-breakdown div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid rgba(139, 90, 31, 0.14);
+    border-radius: 8px;
+    background: #fff7ed;
+}
+
+.mesa-history-breakdown strong {
+    color: #1f2937;
+    font-weight: 900;
+    text-align: right;
+}
+
+.mesa-history-pagination {
+    display: flex;
+    justify-content: center;
+}
+
 @media (max-width: 720px) {
     .header-actions .btn.topo {
         width: 100%;
+    }
+
+    .mesa-history-card__main,
+    .mesa-history-card__meta {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .mesa-history-payments {
+        justify-content: flex-start;
     }
 
     .mesa-card__footer {
@@ -2123,5 +2287,273 @@ body {
     .mesa-btn-save,
     .mesa-btn-remove {
         width: 100% !important;
+    }
+}
+
+/* ===== Modal de baixa: acabamento visual do painel administrativo ===== */
+#abaterModal {
+    padding: 18px;
+}
+
+#abaterModal .ff-modal__overlay {
+    background: rgba(15, 23, 42, 0.58);
+    backdrop-filter: blur(3px);
+}
+
+#abaterModal .ff-modal__card {
+    width: min(100%, 560px);
+    max-height: calc(100dvh - 36px);
+    overflow-x: hidden;
+    border: 1px solid rgba(139, 90, 31, 0.16);
+    border-radius: 8px;
+    background: #fffaf2;
+    box-shadow: 0 24px 70px rgba(31, 26, 23, 0.28);
+}
+
+#abaterModal .ff-modal__card *,
+#abaterModal .ff-modal__card *::before,
+#abaterModal .ff-modal__card *::after {
+    box-sizing: border-box;
+}
+
+#abaterModal .ff-modal__header {
+    padding: 18px 20px 16px;
+    border-bottom: 1px solid rgba(139, 90, 31, 0.14);
+    background: linear-gradient(180deg, #ffffff, #fff7ed) !important;
+}
+
+#abaterModal .ff-modal__header h2 {
+    margin: 0;
+    color: #1f2937 !important;
+    font-size: 1.18rem;
+    font-weight: 900;
+    line-height: 1.2;
+}
+
+#abaterModal .ff-modal__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    border: 1px solid rgba(139, 90, 31, 0.16);
+    border-radius: 8px;
+    background: #ffffff !important;
+    color: #92400e !important;
+    font-size: 1.35rem;
+    line-height: 1;
+    transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+#abaterModal .ff-modal__close:hover,
+#abaterModal .ff-modal__close:focus-visible {
+    border-color: rgba(180, 83, 9, 0.32);
+    background: #fff4df !important;
+    transform: translateY(-1px);
+}
+
+#abaterModal .ff-modal__hint {
+    margin: 0;
+    padding: 16px 20px 0;
+    color: #64748b;
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+#abaterModal .abater-total-card {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+    gap: 14px;
+    margin: 16px 20px 14px;
+    padding: 14px;
+    border: 1px solid rgba(180, 83, 9, 0.18) !important;
+    border-radius: 8px;
+    background: #ffffff !important;
+    box-shadow: 0 10px 24px rgba(47, 38, 34, 0.06);
+}
+
+#abaterModal .abater-total {
+    display: grid;
+    align-content: center;
+    gap: 6px;
+    min-width: 0;
+    padding: 12px;
+    border-radius: 8px;
+    background: #fff7ed;
+}
+
+#abaterModal .abater-total span,
+#abaterModal .abater-value-field label {
+    color: #92400e;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+#abaterModal .abater-total strong {
+    color: #1d4ed8;
+    font-size: 1.55rem;
+    font-weight: 950;
+    line-height: 1;
+}
+
+#abaterModal .abater-value-field {
+    display: grid;
+    align-content: center;
+    gap: 7px;
+    min-width: 0;
+}
+
+#abaterModal .abater-value-field .form-control {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid rgba(100, 116, 139, 0.24);
+    border-radius: 8px;
+    background: #ffffff;
+    color: #111827;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+#abaterModal .abater-value-field .form-control:focus {
+    border-color: #b45309;
+    box-shadow: 0 0 0 4px rgba(180, 83, 9, 0.12);
+}
+
+#abaterModal .abater-payment-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0;
+    padding: 0 20px;
+}
+
+#abaterModal .ff-choice__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid rgba(139, 90, 31, 0.16);
+    border-radius: 8px;
+    background: #ffffff;
+    cursor: pointer;
+    transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+#abaterModal .ff-choice__item:hover {
+    border-color: rgba(180, 83, 9, 0.32);
+    background: #fff7ed;
+}
+
+#abaterModal .ff-choice__item:has(input[type="radio"]:checked) {
+    border-color: rgba(29, 78, 216, 0.45);
+    background: #eff6ff;
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.10);
+}
+
+#abaterModal .ff-choice__item input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    margin: 3px 0 0;
+    accent-color: #1d4ed8;
+}
+
+#abaterModal .ff-choice__item span {
+    min-width: 0;
+}
+
+#abaterModal .ff-choice__item strong {
+    color: #111827;
+    font-size: 0.94rem;
+    font-weight: 900;
+    line-height: 1.2;
+}
+
+#abaterModal .ff-choice__item small {
+    margin-top: 3px;
+    color: #64748b;
+    font-size: 0.8rem;
+    font-weight: 650;
+}
+
+#abaterModal .ff-modal__error {
+    min-height: 20px;
+    margin: 10px 20px 0;
+    color: #b91c1c;
+    font-size: 0.9rem;
+    font-weight: 850;
+}
+
+#abaterModal .ff-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 16px 20px 20px;
+    border-top: 1px solid rgba(139, 90, 31, 0.12);
+    background: rgba(255, 255, 255, 0.7);
+}
+
+#abaterModal .ff-modal__footer--stack .btn {
+    flex: 0 1 auto;
+    min-width: 150px;
+    min-height: 44px;
+    border-radius: 8px !important;
+    font-weight: 900;
+}
+
+#abaterModal #btnConfirmarAbater {
+    border: 0;
+    background: linear-gradient(135deg, #b45309, #92400e);
+    color: #ffffff;
+    box-shadow: 0 12px 26px rgba(146, 64, 14, 0.22);
+}
+
+#abaterModal #btnConfirmarAbater:hover,
+#abaterModal #btnConfirmarAbater:focus-visible {
+    background: linear-gradient(135deg, #92400e, #78350f);
+    box-shadow: 0 16px 32px rgba(146, 64, 14, 0.28);
+}
+
+#abaterModal .ff-modal__footer .btn-secondary {
+    border: 1px solid rgba(139, 90, 31, 0.16);
+    background: #ffffff;
+    color: #1f2937;
+}
+
+#abaterModal .ff-modal__footer .btn-secondary:hover,
+#abaterModal .ff-modal__footer .btn-secondary:focus-visible {
+    border-color: rgba(180, 83, 9, 0.32);
+    background: #fff4df;
+    color: #92400e;
+}
+
+@media (max-width: 620px) {
+    #abaterModal {
+        padding: 10px;
+    }
+
+    #abaterModal .ff-modal__card {
+        max-height: calc(100dvh - 20px);
+    }
+
+    #abaterModal .abater-total-card,
+    #abaterModal .abater-payment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #abaterModal .ff-modal__footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    #abaterModal .ff-modal__footer--stack .btn {
+        width: 100%;
     }
 }

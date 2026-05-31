@@ -5,14 +5,16 @@ namespace App\Repositoryimpl;
 use App\Enum\StatusPedidos;
 use App\Models\FormaPagamentoModel;
 use App\Models\ItemPedidoModel;
+use App\Models\MesaFechamentoModel;
 use App\Models\MesaModel;
 use App\Models\PedidoModel;
 use App\Models\ProdutoModel;
 use Illuminate\Support\Collection;
+use App\Repository\MesasRepository;
 
-class MesasRepositoryimpl
+class MesasRepositoryimpl implements MesasRepository
 {
-    private function queryItensDaMesa(int $mesaId)
+    public function queryItensDaMesa(int $mesaId)
     {
         return ItemPedidoModel::query()->whereHas('pedido', function ($query) use ($mesaId) {
             $query->where('mesa_id', $mesaId);
@@ -42,6 +44,14 @@ class MesasRepositoryimpl
     public function listarMesas()
     {
         return MesaModel::all();
+    }
+
+    public function listarHistoricoFechamentos(int $porPagina = 12)
+    {
+        return MesaFechamentoModel::query()
+            ->orderByDesc('fechado_em')
+            ->orderByDesc('id')
+            ->paginate($porPagina);
     }
 
     public function listarFormasPagamento()
@@ -170,6 +180,18 @@ class MesasRepositoryimpl
                 ->whereIn('id', $pedidoIds)
                 ->update(['mesa_id' => null]);
         }
+    }
+
+    public function pegarItensPagosParaFechamento(int $mesaId): Collection
+    {
+        return $this->queryItensDaMesa($mesaId)
+            ->where('status_da_comanda', 'pago')
+            ->get();
+    }
+
+    public function registrarFechamentoMesa(array $dados): MesaFechamentoModel
+    {
+        return MesaFechamentoModel::create($dados);
     }
 
     public function existeNumeroMesa(int $numeroMesa, ?int $ignorarId = null): bool

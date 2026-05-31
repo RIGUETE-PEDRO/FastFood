@@ -3,14 +3,14 @@
 namespace App\Services;
 
 use App\Repositoryimpl\GerenciaProdutosRepositoryimpl;
-
+use App\Repository\GerenciaProdutosRepository;
 
 class GerenciaProdutosService
 {
     protected GenericBase $genericBase;
-    protected GerenciaProdutosRepositoryimpl $repository;
+    protected GerenciaProdutosRepository $repository;
 
-    public function __construct(GenericBase $genericBase, GerenciaProdutosRepositoryimpl $repository)
+    public function __construct(GenericBase $genericBase, GerenciaProdutosRepository $repository)
     {
         $this->genericBase = $genericBase;
         $this->repository = $repository;
@@ -56,7 +56,7 @@ class GerenciaProdutosService
     public function removerProduto($id)
     {
         $usuarioLogado =  $this->genericBase->hasLogado();
-      
+
         if (($usuarioLogado->tipo ?? null) === 'Administrador') {
 
             $produto = $this->repository->buscarProdutoPorId((int) $id);

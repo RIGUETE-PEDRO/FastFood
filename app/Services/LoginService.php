@@ -13,13 +13,13 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-
+use App\Repository\LoginRepository;
 class LoginService
 {
     protected GenericBase $genericBase;
     protected SecureKeyService $SecureKeyService;
-    protected LoginRepositoryimpl $loginRepository;
-    public function __construct(GenericBase $genericBase, SecureKeyService $SecureKeyService, LoginRepositoryimpl $loginRepository)
+    protected LoginRepository $loginRepository;
+    public function __construct(GenericBase $genericBase, SecureKeyService $SecureKeyService, LoginRepository $loginRepository)
     {
         $this->genericBase = $genericBase;
         $this->SecureKeyService = $SecureKeyService;

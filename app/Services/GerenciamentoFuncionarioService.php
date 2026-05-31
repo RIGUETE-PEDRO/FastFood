@@ -3,15 +3,15 @@
 namespace App\Services;
 
 use App\Mensagens\ErroMensagens;
-use App\Repositoryimpl\GerenciamentoFuncionarioRepositoryimpl;
+use App\Repository\GerenciamentoFuncionarioRepository;
 use Illuminate\Support\Facades\Hash;
 
 class GerenciamentoFuncionarioService{
 
         protected GenericBase $genericBase;
-        protected GerenciamentoFuncionarioRepositoryimpl $repository;
+        protected GerenciamentoFuncionarioRepository $repository;
 
-        public function __construct(GenericBase $genericBase, GerenciamentoFuncionarioRepositoryimpl $repository)
+        public function __construct(GenericBase $genericBase, GerenciamentoFuncionarioRepository $repository)
         {
             $this->genericBase = $genericBase;
             $this->repository = $repository;

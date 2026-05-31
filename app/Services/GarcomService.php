@@ -8,6 +8,7 @@ class GarcomService
 {
     public function __construct(private GarcomRepository $repository)
     {
+        $this->repository = $repository;
     }
 
     public function adicionarAoPedido($request){

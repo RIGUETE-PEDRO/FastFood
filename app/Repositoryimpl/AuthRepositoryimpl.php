@@ -5,7 +5,10 @@ namespace App\Repositoryimpl;
 use App\Models\FuncionarioModel;
 use App\Models\UsuarioModel;
 
-class AuthRepositoryimpl
+
+use App\Repository\AuthRepository;
+
+class AuthRepositoryimpl implements AuthRepository
 {
     public function criarUsuario(array $dados): UsuarioModel
     {

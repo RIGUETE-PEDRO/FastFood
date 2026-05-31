@@ -85,7 +85,7 @@
                             {{ $pedido->endereco->logradouro }}, {{ $pedido->endereco->numero ?? 's/n' }} - {{ $pedido->endereco->bairro ?? '' }}<br>
                             {{ optional(optional($pedido->endereco)->cidade)->nome ?? '' }}
                         @else
-                            Retirada no local
+                            Mesa
                             @if(optional($pedido->mesa)->numero_da_mesa)
                                 <br>Mesa {{ $pedido->mesa->numero_da_mesa }}
                             @endif
