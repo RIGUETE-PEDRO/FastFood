@@ -652,10 +652,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    background: #ffffff;
 }
 
 .mini-titulo {
-    color: white;
+    color: #15120f;
     font-size: 14px;
     font-weight: 600;
     white-space: nowrap;

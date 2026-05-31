@@ -1377,7 +1377,9 @@ body {
 
 .mesa-history-summary span,
 .mesa-history-card__eyebrow,
-.mesa-history-breakdown span {
+.mesa-history-breakdown span,
+.mesa-history-section-title,
+.mesa-history-partials__list span {
     color: #64748b;
     font-size: 0.74rem;
     font-weight: 900;
@@ -1486,6 +1488,35 @@ body {
     color: #1f2937;
     font-weight: 900;
     text-align: right;
+}
+
+.mesa-history-partials {
+    display: grid;
+    gap: 9px;
+}
+
+.mesa-history-partials__list {
+    display: grid;
+    gap: 8px;
+}
+
+.mesa-history-partials__list div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+    padding: 9px 11px;
+    border: 1px solid rgba(29, 78, 216, 0.12);
+    border-radius: 8px;
+    background: #eff6ff;
+}
+
+.mesa-history-partials__list strong {
+    color: #1d4ed8;
+    font-weight: 950;
+    text-align: right;
+    white-space: nowrap;
 }
 
 .mesa-history-pagination {

@@ -3,6 +3,8 @@
 namespace App\Repository;
 use Illuminate\Support\Collection;
 use App\Models\ItemPedidoModel;
+use App\Models\MesaFechamentoModel;
+use App\Models\MesaPagamentoModel;
 
 interface MesasRepository
 {
@@ -42,7 +44,14 @@ interface MesasRepository
 
     public function pegarItensPagosParaFechamento(int $mesaId);
 
-    public function registrarFechamentoMesa(array $dados);
+    public function listarPagamentosAbertosMesa(int $mesaId);
+
+    public function registrarPagamentoMesa(array $dados): MesaPagamentoModel;
+
+    public function registrarFechamentoMesa(array $dados): MesaFechamentoModel;
+
+    public function vincularPagamentosAoFechamento(int $mesaId, int $fechamentoId): void;
+
     public function existeNumeroMesa(int $numeroMesa, ?int $ignorarId = null);
 
     public function criarMesa(array $dados);

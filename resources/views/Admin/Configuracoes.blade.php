@@ -7,8 +7,8 @@
     @include('partials.favicon')
     <title>Configurações | Admin</title>
     @vite(['resources/js/app.js'])
-    <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/Admin/Configuracoes.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}?v={{ filemtime(public_path('css/Admin/Principal.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Configuracoes.css') }}?v={{ filemtime(public_path('css/Admin/Configuracoes.css')) }}">
 </head>
 
 <body>

@@ -29,10 +29,7 @@ class MesasService extends GenericBase
             return null;
         }
 
-        return match ($metodo) {
-            'cartao_credito', 'cartao_debito', 'cartao' => 'cartao',
-            default => $metodo,
-        };
+        return $metodo;
     }
 
     private function combinarMetodosPagamento(?string $existente, ?string $novo): ?string
@@ -137,7 +134,7 @@ class MesasService extends GenericBase
 
         $formasPagamento = [];
         $pagamentosResumo = [];
-        $totalPago = 0.0;
+        $totalPagoItens = 0.0;
         $totalItens = 0;
 
         foreach ($itensPagos as $item) {
@@ -147,31 +144,59 @@ class MesasService extends GenericBase
                 ? $valorPago
                 : ((float) $item->preco_unitario) * $quantidade;
 
-            $totalPago += $valorItem;
+            $totalPagoItens += $valorItem;
             $totalItens += $quantidade;
-
-            $metodos = collect(preg_split('/\s*\+\s*/', (string) $item->pagamento_metodo) ?: [])
-                ->map(fn ($metodo) => $this->normalizarMetodoPagamento($metodo))
-                ->filter(fn ($metodo) => !empty($metodo))
-                ->values()
-                ->all();
-
-            if (empty($metodos)) {
-                $metodos = ['nao_informado'];
-            }
-
-            foreach ($metodos as $metodo) {
-                $formasPagamento[$metodo] = true;
-            }
-
-            $metodoResumo = implode(' + ', $metodos);
-            $pagamentosResumo[$metodoResumo] = ($pagamentosResumo[$metodoResumo] ?? 0) + $valorItem;
         }
 
-        $this->mesasRepository->registrarFechamentoMesa([
+        $pagamentosRegistrados = $this->mesasRepository->listarPagamentosAbertosMesa($mesaId);
+
+        if ($pagamentosRegistrados->isNotEmpty()) {
+            foreach ($pagamentosRegistrados as $pagamento) {
+                $metodo = $this->normalizarMetodoPagamento($pagamento->pagamento_metodo) ?? 'nao_informado';
+                $valor = (float) $pagamento->valor;
+
+                $formasPagamento[$metodo] = true;
+                $pagamentosResumo[$metodo] = ($pagamentosResumo[$metodo] ?? 0) + $valor;
+            }
+
+            $totalRegistrado = (float) array_sum($pagamentosResumo);
+            $diferenca = round($totalPagoItens - $totalRegistrado, 2);
+
+            if ($diferenca > 0.00) {
+                $formasPagamento['nao_informado'] = true;
+                $pagamentosResumo['nao_informado'] = ($pagamentosResumo['nao_informado'] ?? 0) + $diferenca;
+            }
+        } else {
+            foreach ($itensPagos as $item) {
+                $quantidade = max(1, (int) $item->quantidade);
+                $valorPago = (float) ($item->valor_pago ?? 0);
+                $valorItem = $valorPago > 0
+                    ? $valorPago
+                    : ((float) $item->preco_unitario) * $quantidade;
+
+                $metodos = collect(preg_split('/\s*\+\s*/', (string) $item->pagamento_metodo) ?: [])
+                    ->map(fn ($metodo) => $this->normalizarMetodoPagamento($metodo))
+                    ->filter(fn ($metodo) => !empty($metodo))
+                    ->values()
+                    ->all();
+
+                if (empty($metodos)) {
+                    $metodos = ['nao_informado'];
+                }
+
+                foreach ($metodos as $metodo) {
+                    $formasPagamento[$metodo] = true;
+                }
+
+                $metodoResumo = implode(' + ', $metodos);
+                $pagamentosResumo[$metodoResumo] = ($pagamentosResumo[$metodoResumo] ?? 0) + $valorItem;
+            }
+        }
+
+        $fechamento = $this->mesasRepository->registrarFechamentoMesa([
             'mesa_id' => $mesa->id,
             'numero_da_mesa' => $mesa->numero_da_mesa,
-            'total_pago' => round($totalPago, 2),
+            'total_pago' => round($totalPagoItens, 2),
             'total_itens' => $totalItens,
             'formas_pagamento' => array_keys($formasPagamento),
             'pagamentos_resumo' => collect($pagamentosResumo)
@@ -183,6 +208,8 @@ class MesasService extends GenericBase
                 ->all(),
             'fechado_em' => $fechadoEm,
         ]);
+
+        $this->mesasRepository->vincularPagamentosAoFechamento($mesaId, (int) $fechamento->id);
     }
 
     public function atualizarPrecoMesa($mesaId): void
@@ -430,6 +457,13 @@ class MesasService extends GenericBase
             if ($abatidoCents <= 0) {
                 return 'O valor informado não cobre nenhum item nas quantidades selecionadas. Aumente o valor ou ajuste as quantidades.';
             }
+
+            $this->mesasRepository->registrarPagamentoMesa([
+                'mesa_id' => (int) $mesaId,
+                'pagamento_metodo' => $this->normalizarMetodoPagamento($pagamentoMetodo) ?? 'nao_informado',
+                'valor' => round($abatidoCents / 100, 2),
+                'pago_em' => $agora,
+            ]);
 
             $this->atualizarPrecoMesa($mesaId);
 

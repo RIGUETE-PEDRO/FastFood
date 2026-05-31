@@ -22,6 +22,13 @@
     box-shadow: 0 18px 44px rgba(47, 38, 34, 0.12);
 }
 
+.ff-main .config-hero.painel {
+    background:
+        linear-gradient(135deg, rgba(47, 38, 34, 0.98), rgba(66, 45, 30, 0.94)),
+        var(--ff-brand-mid, #2f2622) !important;
+    color: #fff !important;
+}
+
 .config-hero__tag {
     display: inline-flex;
     align-items: center;
@@ -135,6 +142,15 @@
     color: var(--ff-muted, #6b7280);
     font-size: 0.82rem;
     text-align: right;
+}
+
+.ff-main .config-card h2 {
+    color: var(--ff-text, #101828) !important;
+}
+
+.config-card p,
+.config-card__hint {
+    color: var(--ff-muted, #6b7280);
 }
 
 @media (max-width: 768px) {

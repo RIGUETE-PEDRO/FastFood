@@ -8,8 +8,8 @@
     @include('partials.favicon')
     <title>Historico de Mesas</title>
     @vite(['resources/js/app.js'])
-    <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/Admin/Mesa.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}?v={{ filemtime(public_path('css/Admin/Principal.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Mesa.css') }}?v={{ filemtime(public_path('css/Admin/Mesa.css')) }}">
 </head>
 
 <body>
@@ -70,6 +70,7 @@
                                 @php
                                     $formas = $fechamento->formas_pagamento ?? [];
                                     $resumos = $fechamento->pagamentos_resumo ?? [];
+                                    $pagamentosParciais = $fechamento->pagamentos ?? collect();
                                 @endphp
 
                                 <article class="mesa-history-card">
@@ -107,6 +108,26 @@
                                                 <strong>Nao informado</strong>
                                             </div>
                                         @endforelse
+                                    </div>
+
+                                    <div class="mesa-history-partials">
+                                        <span class="mesa-history-section-title">Pagamentos parciais registrados</span>
+                                        <div class="mesa-history-partials__list">
+                                            @forelse($pagamentosParciais as $pagamento)
+                                                <div>
+                                                    <span>
+                                                        {{ optional($pagamento->pago_em)->format('d/m H:i') ?? 'Sem data' }}
+                                                        - {{ $formaLabel($pagamento->pagamento_metodo ?? null) }}
+                                                    </span>
+                                                    <strong>R$ {{ number_format((float) $pagamento->valor, 2, ',', '.') }}</strong>
+                                                </div>
+                                            @empty
+                                                <div>
+                                                    <span>Sem registros parciais detalhados</span>
+                                                    <strong>Resumo acima</strong>
+                                                </div>
+                                            @endforelse
+                                        </div>
                                     </div>
                                 </article>
                             @endforeach

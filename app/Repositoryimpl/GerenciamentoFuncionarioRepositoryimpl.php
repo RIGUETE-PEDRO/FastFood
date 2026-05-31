@@ -3,8 +3,9 @@
 namespace App\Repositoryimpl;
 
 use App\Models\FuncionarioModel;
+use App\Repository\GerenciamentoFuncionarioRepository;
 
-class GerenciamentoFuncionarioRepositoryimpl
+class GerenciamentoFuncionarioRepositoryimpl implements GerenciamentoFuncionarioRepository
 {
     public function buscarFuncionarioPorUsuarioId(int $usuarioId): ?FuncionarioModel
     {

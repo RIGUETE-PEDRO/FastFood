@@ -7,6 +7,7 @@ use App\Models\FormaPagamentoModel;
 use App\Models\ItemPedidoModel;
 use App\Models\MesaFechamentoModel;
 use App\Models\MesaModel;
+use App\Models\MesaPagamentoModel;
 use App\Models\PedidoModel;
 use App\Models\ProdutoModel;
 use Illuminate\Support\Collection;
@@ -49,6 +50,7 @@ class MesasRepositoryimpl implements MesasRepository
     public function listarHistoricoFechamentos(int $porPagina = 12)
     {
         return MesaFechamentoModel::query()
+            ->with(['pagamentos' => fn ($query) => $query->orderBy('pago_em')->orderBy('id')])
             ->orderByDesc('fechado_em')
             ->orderByDesc('id')
             ->paginate($porPagina);
@@ -189,9 +191,32 @@ class MesasRepositoryimpl implements MesasRepository
             ->get();
     }
 
+    public function listarPagamentosAbertosMesa(int $mesaId): Collection
+    {
+        return MesaPagamentoModel::query()
+            ->where('mesa_id', $mesaId)
+            ->whereNull('mesa_fechamento_id')
+            ->orderBy('pago_em')
+            ->orderBy('id')
+            ->get();
+    }
+
+    public function registrarPagamentoMesa(array $dados): MesaPagamentoModel
+    {
+        return MesaPagamentoModel::create($dados);
+    }
+
     public function registrarFechamentoMesa(array $dados): MesaFechamentoModel
     {
         return MesaFechamentoModel::create($dados);
+    }
+
+    public function vincularPagamentosAoFechamento(int $mesaId, int $fechamentoId): void
+    {
+        MesaPagamentoModel::query()
+            ->where('mesa_id', $mesaId)
+            ->whereNull('mesa_fechamento_id')
+            ->update(['mesa_fechamento_id' => $fechamentoId]);
     }
 
     public function existeNumeroMesa(int $numeroMesa, ?int $ignorarId = null): bool

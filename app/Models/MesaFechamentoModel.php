@@ -28,4 +28,9 @@ class MesaFechamentoModel extends Model
     {
         return $this->belongsTo(MesaModel::class, 'mesa_id');
     }
+
+    public function pagamentos()
+    {
+        return $this->hasMany(MesaPagamentoModel::class, 'mesa_fechamento_id');
+    }
 }
