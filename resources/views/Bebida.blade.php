@@ -25,6 +25,16 @@
     <main>
 
 
+        <section class="home-products" aria-labelledby="bebidas-title">
+            <div class="home-products__header">
+                <div>
+                    <span class="home-products__eyebrow">Cardapio</span>
+                    <h1 id="bebidas-title">Bebidas</h1>
+                    <p>Bebidas disponiveis para completar seu pedido.</p>
+                </div>
+                <span class="home-products__count">{{ $bebidas->count() }} itens</span>
+            </div>
+
         <div class="container-produtos mt-4">
             @foreach ($bebidas as $bebida)
 
@@ -34,23 +44,26 @@
                     <img src="{{ asset('img/produtos/' . $bebida->imagem_url) }}" alt="{{ $bebida->nome }}" loading="lazy">
                     <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $bebida->preco, 2, ',', '.') }}</span>
                 </div>
-                <div class="preco-conteiner">
-                    <label class="lanche">{{ $bebida->nome }}</label>
-                </div>
+                <div class="produto-body">
+                    <div class="preco-conteiner">
+                        <h2 class="lanche">{{ $bebida->nome }}</h2>
+                    </div>
                 @if(!empty($bebida->descricao))
                 <div class="ingredientes-wrap">
-                    <span class="ingredientes">ingredientes:</span>
+                    <span class="ingredientes">Ingredientes</span>
                     <div class="ingredientes-lista">{{ $bebida->descricao }}</div>
                 </div>
                 @else
-                <br>
+                <p class="produto-empty-description">Descricao nao informada.</p>
                 @endif
-                <div>
+                <div class="produto-action">
                     <button type="button" class="button-adicionar">Adicionar ao carrinho</button>
+                </div>
                 </div>
             </div>
             @endforeach
         </div>
+        </section>
 
         <!-- Modal: Adicionar ao carrinho -->
         <div class="modal fade " id="addToCartModal" tabindex="-1" aria-hidden="true">
@@ -93,6 +106,7 @@
     </main>
         </div>
     </div>
+    @include('components.flash-toast')
 
 </body>
 

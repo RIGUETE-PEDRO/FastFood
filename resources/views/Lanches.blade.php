@@ -25,6 +25,16 @@
     <main>
 
 
+        <section class="home-products" aria-labelledby="lanches-title">
+            <div class="home-products__header">
+                <div>
+                    <span class="home-products__eyebrow">Cardapio</span>
+                    <h1 id="lanches-title">Lanches</h1>
+                    <p>Escolha seu lanche favorito e adicione ao carrinho.</p>
+                </div>
+                <span class="home-products__count">{{ $lanches->count() }} itens</span>
+            </div>
+
         <div class="container-produtos mt-4">
             @foreach ($lanches as $lanche)
 
@@ -33,24 +43,26 @@
                     <img src="{{ asset('img/produtos/' . $lanche->imagem_url) }}" alt="{{ $lanche->nome }}" loading="lazy">
                     <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $lanche->preco, 2, ',', '.') }}</span>
                 </div>
-                <div class="preco-conteiner">
-                    <label class="lanche">{{ $lanche->nome }}</label>
-                </div>
+                <div class="produto-body">
+                    <div class="preco-conteiner">
+                        <h2 class="lanche">{{ $lanche->nome }}</h2>
+                    </div>
                 @if(!empty($lanche->descricao))
                 <div class="ingredientes-wrap">
-                    <span class="ingredientes">ingredientes:</span>
+                    <span class="ingredientes">Ingredientes</span>
                     <div class="ingredientes-lista">{{ $lanche->descricao }}</div>
                 </div>
                 @else
-                <br>
-                <br>
+                <p class="produto-empty-description">Descricao nao informada.</p>
                 @endif
-                <div>
+                <div class="produto-action">
                     <button type="button" class="button-adicionar">Adicionar ao carrinho</button>
+                </div>
                 </div>
             </div>
             @endforeach
         </div>
+        </section>
 
         <!-- Modal: Adicionar ao carrinho -->
         <div class="modal fade " id="addToCartModal" tabindex="-1" aria-hidden="true">

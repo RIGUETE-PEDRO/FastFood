@@ -181,17 +181,17 @@
     @endif
 
     <div class="mt-auto ff-sidebar__footer">
-        @if(isset($usuario) && $usuario)
+        @if($usuarioAtual)
             <div class="dropdown w-100">
                 <button class="btn ff-sidebar__user-btn w-100 d-flex align-items-center justify-content-between" type="button" aria-haspopup="true" aria-expanded="false">
                     <div class="d-flex align-items-center me-2">
                         <div class="circulo_maior me-2">
                             <img class="profile-image" id="preview-image"
-                                src="{{ isset($usuario['url_imagem_perfil']) && $usuario['url_imagem_perfil'] ? asset('img/perfil/' . $usuario['url_imagem_perfil']) : (isset($usuario->url_imagem_perfil) && $usuario->url_imagem_perfil ? asset('img/perfil/' . $usuario->url_imagem_perfil) : asset('img/perfil/personPadrao.svg')) }}"
+                                src="{{ is_array($usuarioAtual) && !empty($usuarioAtual['url_imagem_perfil']) ? asset('img/perfil/' . $usuarioAtual['url_imagem_perfil']) : (!is_array($usuarioAtual) && !empty($usuarioAtual->url_imagem_perfil) ? asset('img/perfil/' . $usuarioAtual->url_imagem_perfil) : asset('img/perfil/personPadrao.svg')) }}"
                                 alt="Foto do usuario">
                         </div>
                         <span class="text text-truncate ff-sidebar__user-name">
-                            {{ is_array($usuario) ? ($usuario['nome'] ?? '') : ($usuario->primeiro_nome ?? ($usuario->nome ?? '')) }}
+                            {{ is_array($usuarioAtual) ? ($usuarioAtual['nome'] ?? '') : ($usuarioAtual->primeiro_nome ?? ($usuarioAtual->nome ?? '')) }}
                         </span>
                     </div>
                     <span class="ff-sidebar__user-caret" aria-hidden="true">v</span>
@@ -208,7 +208,9 @@
                 </ul>
             </div>
         @else
-            <a class="btn btn-light w-100" href="{{ route('login.form', [], false) }}">Entrar</a>
+            <a class="btn ff-sidebar__login-btn w-100" href="{{ route('login.form', [], false) }}">
+                Entrar
+            </a>
         @endif
     </div>
 </nav>

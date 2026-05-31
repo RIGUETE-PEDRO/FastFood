@@ -25,6 +25,16 @@
     <main>
 
 
+        <section class="home-products" aria-labelledby="porcoes-title">
+            <div class="home-products__header">
+                <div>
+                    <span class="home-products__eyebrow">Cardapio</span>
+                    <h1 id="porcoes-title">Porcoes</h1>
+                    <p>Porcoes para compartilhar ou acompanhar seu pedido.</p>
+                </div>
+                <span class="home-products__count">{{ $porcao->count() }} itens</span>
+            </div>
+
         <div class="container-produtos mt-4">
             @forelse ($porcao as $porcaos)
 
@@ -34,20 +44,21 @@
                     <img src="{{ asset('img/produtos/' . $porcaos->imagem_url) }}" alt="{{ $porcaos->nome }}" loading="lazy">
                     <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $porcaos->preco, 2, ',', '.') }}</span>
                 </div>
-                <div class="preco-conteiner">
-                    <label class="lanche">{{ $porcaos->nome }}</label>
-                </div>
+                <div class="produto-body">
+                    <div class="preco-conteiner">
+                        <h2 class="lanche">{{ $porcaos->nome }}</h2>
+                    </div>
                  @if(!empty($porcaos->descricao))
                 <div class="ingredientes-wrap">
-                    <span class="ingredientes">ingredientes:</span>
+                    <span class="ingredientes">Ingredientes</span>
                     <div class="ingredientes-lista">{{ $porcaos->descricao }}</div>
                 </div>
                 @else
-                <br>
-                <br>
+                <p class="produto-empty-description">Descricao nao informada.</p>
                 @endif
-                <div>
+                <div class="produto-action">
                     <button type="button" class="button-adicionar">Adicionar ao carrinho</button>
+                </div>
                 </div>
             </div>
             @empty
@@ -56,6 +67,7 @@
                 </div>
             @endforelse
         </div>
+        </section>
 
         <!-- Modal: Adicionar ao carrinho -->
            <div class="modal fade " id="addToCartModal" tabindex="-1" aria-hidden="true">

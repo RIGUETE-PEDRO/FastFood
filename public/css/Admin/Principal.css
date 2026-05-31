@@ -1351,12 +1351,14 @@ body:has(.ff-modal.is-open) .ff-sidebar-toggle {
 .ff-sidebar {
     padding: 14px 12px;
     border-right: 1px solid rgba(255, 255, 255, 0.12);
+    overflow: hidden;
     background:
         radial-gradient(circle at 30% 0%, rgba(249, 115, 22, 0.22), transparent 15rem),
         linear-gradient(180deg, #40352e 0%, #2f2925 48%, #211d1a 100%) !important;
 }
 
 .ff-sidebar__brand {
+    flex: 0 0 auto;
     min-height: 64px;
     margin-bottom: 16px !important;
     padding: 6px 4px 14px !important;
@@ -1415,7 +1417,11 @@ body:has(.ff-modal.is-open) .ff-sidebar-toggle {
 
 .ff-sidebar__nav {
     display: grid;
+    flex: 1 1 auto;
+    min-height: 0;
     gap: 6px;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 2px 0 8px !important;
 }
 
@@ -1508,9 +1514,36 @@ body:has(.ff-modal.is-open) .ff-sidebar-toggle {
 }
 
 .ff-sidebar__footer {
+    flex: 0 0 auto;
     margin-top: 14px !important;
+    margin-left: -4px;
+    margin-right: -4px;
     padding: 10px 0 0 !important;
     border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.ff-sidebar__login-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 100% !important;
+    min-height: 58px;
+    padding: 12px 22px !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-radius: 8px !important;
+    background: #fff7ed !important;
+    color: #211d1a !important;
+    font-family: inherit !important;
+    font-size: 1.05rem !important;
+    font-weight: 900 !important;
+    text-decoration: none !important;
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.18);
+}
+
+.ff-sidebar__login-btn:hover,
+.ff-sidebar__login-btn:focus-visible {
+    background: #ffffff !important;
+    color: #c2410c !important;
 }
 
 .ff-sidebar__user-btn {
