@@ -94,6 +94,125 @@
     padding: 18px;
 }
 
+.pedidos-grupo {
+    padding: 18px;
+}
+
+.pedidos-grupo__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.pedidos-grupo__header h2 {
+    margin: 3px 0 0;
+    color: var(--orders-brand-dark);
+    font-size: 1.16rem;
+    font-weight: 850;
+    line-height: 1.2;
+}
+
+.pedidos-grupo__etiqueta {
+    color: var(--orders-accent);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.pedidos-grupo__contador,
+.pedidos-finalizados__contador {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    min-height: 30px;
+    padding: 0 10px;
+    border-radius: var(--orders-radius-pill);
+    background: var(--orders-accent-soft);
+    color: var(--orders-accent);
+    font-size: 0.86rem;
+    font-weight: 850;
+}
+
+.pedidos-lista-vazia {
+    margin: 0;
+    padding: 16px;
+    border: 1px solid var(--orders-border);
+    border-radius: var(--orders-radius);
+    background: rgba(255, 255, 255, 0.74);
+}
+
+.lista-pedidos--ativos,
+.lista-pedidos--finalizados {
+    padding: 0;
+}
+
+.pedidos-finalizados {
+    overflow: hidden;
+    margin: 0 18px 18px;
+    border: 1px solid var(--orders-border);
+    border-radius: var(--orders-radius);
+    background: rgba(255, 255, 255, 0.82);
+}
+
+.pedidos-finalizados__summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 12px;
+    min-height: 58px;
+    padding: 0 18px;
+    color: var(--orders-brand-dark);
+    cursor: pointer;
+    font-weight: 850;
+    list-style: none;
+}
+
+.pedidos-finalizados__summary::-webkit-details-marker {
+    display: none;
+}
+
+.pedidos-finalizados__summary:focus-visible {
+    outline: 3px solid rgba(180, 83, 9, 0.25);
+    outline-offset: -3px;
+}
+
+.pedidos-finalizados__icone {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    color: var(--orders-accent);
+}
+
+.pedidos-finalizados__icone::before,
+.pedidos-finalizados__icone::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+}
+
+.pedidos-finalizados__icone::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.pedidos-finalizados[open] .pedidos-finalizados__icone::after {
+    transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.pedidos-finalizados[open] .lista-pedidos--finalizados {
+    padding: 0 16px 16px;
+}
+
 /* ==========================================================================
    Card
    ========================================================================== */
@@ -207,6 +326,12 @@
     border-color: rgba(29, 78, 216, 0.18);
     background: rgba(59, 130, 246, 0.12);
     color: var(--orders-info);
+}
+
+.badge-status--expedicao {
+    border-color: rgba(124, 58, 237, 0.18);
+    background: rgba(124, 58, 237, 0.12);
+    color: #6d28d9;
 }
 
 .badge-status--entregue {
@@ -335,6 +460,20 @@
 
     .lista-pedidos {
         padding: 14px;
+    }
+
+    .pedidos-grupo {
+        padding: 14px;
+    }
+
+    .pedidos-grupo__header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .pedidos-finalizados {
+        margin: 0 14px 14px;
     }
 
     .pedido-card:hover {

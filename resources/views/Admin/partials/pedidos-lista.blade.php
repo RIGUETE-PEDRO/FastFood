@@ -16,7 +16,7 @@
                 'statusLabels' => $statusLabels,
                 'desabilitarAcoes' => false,
                 'colapsavel' => true,
-                'iniciarRecolhido' => true,
+                'iniciarRecolhido' => false,
             ])
         @empty
             <p class="pedidos-lista-vazia texto-suave">Nenhum pedido em preparo ou a caminho agora.</p>
