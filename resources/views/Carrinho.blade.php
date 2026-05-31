@@ -98,7 +98,7 @@ $temItensSelecionados = $itensSelecionados->count() > 0;
                                         @csrf
                                         @method('PUT')
                                         <button type="submit" name="acao" value="menos" class="button negativo">-</button>
-                                        <input class="input-quantidade" type="number" name="quantidade" min="1" value="{{ $item->quantidade }}" />
+                                        <input class="input-quantidade" type="number" name="quantidade" min="1" step="1" inputmode="numeric" value="{{ $item->quantidade }}" />
                                         <button type="submit" name="acao" value="mais" class="button positivo">+</button>
                                     </form>
                                 </td>

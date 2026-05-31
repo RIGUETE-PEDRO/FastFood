@@ -8,9 +8,9 @@
     @include('partials.favicon')
     <title>Painel do Garçom</title>
     @vite(['resources/js/app.js'])
-    <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/Admin/GerenciamentoProduto.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/Admin/Garcom.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}?v={{ filemtime(public_path('css/Admin/Principal.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/GerenciamentoProduto.css') }}?v={{ filemtime(public_path('css/Admin/GerenciamentoProduto.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Garcom.css') }}?v={{ filemtime(public_path('css/Admin/Garcom.css')) }}">
 </head>
 
 <body>
@@ -24,18 +24,42 @@
             <main>
                 <section class="dashboard-header">
                     <h1>Painel do Garçom</h1>
-                    <p>Área de atendimento em construção.</p>
+                    <p>Monte o pedido, selecione a mesa e envie tudo para a comanda.</p>
                 </section>
 
-                <section class="dashboard-header">
-                    <h5 class="page-title">Mesa</h5>
-                    <label class="form-label" for="mesa_id">Selecione uma mesa</label>
-                    <select name="mesa_id" id="mesa_id" class="form-select" required>
-                        <option value=""> Selecione </option>
-                        @foreach ($mesas as $mesa)
-                        <option value="{{ $mesa->id }}">Mesa {{ $mesa->numero_da_mesa }}</option>
-                        @endforeach
-                    </select>
+                <section class="dashboard-header garcom-order-panel">
+                    <div class="garcom-order-head">
+                        <div>
+                            <h5 class="page-title">Pedido da mesa</h5>
+                            <label class="form-label" for="mesa_id">Mesa</label>
+                            <select name="mesa_id" id="mesa_id" class="form-select" required>
+                                <option value="">Selecione</option>
+                                @foreach ($mesas as $mesa)
+                                <option value="{{ $mesa->id }}">Mesa {{ $mesa->numero_da_mesa }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="garcom-order-total">
+                            <span>Total</span>
+                            <strong id="garcomOrderTotal">R$ 0,00</strong>
+                            <small id="garcomOrderCount">0 itens</small>
+                        </div>
+                    </div>
+
+                    <div class="garcom-order-list" id="garcomOrderList" aria-live="polite"></div>
+                    <div class="garcom-order-empty" id="garcomOrderEmpty">Nenhum produto adicionado.</div>
+
+                    <form action="{{ route('garcom.adicionar-produto') }}" method="POST" id="garcomOrderForm" class="garcom-order-form">
+                        @csrf
+                        <input type="hidden" name="mesa_id" id="garcomOrderMesaId">
+                        <div id="garcomOrderInputs"></div>
+
+                        <div class="garcom-order-actions">
+                            <button type="button" class="garcom-order-clear" id="garcomLimparPedido" disabled>Limpar lista</button>
+                            <button type="submit" class="btn-add" id="garcomEnviarPedido" disabled>Adicionar lista a mesa</button>
+                        </div>
+                    </form>
                 </section>
 
                 <div class="gerenciamento-container">
@@ -83,7 +107,10 @@
                                 </thead>
                                 <tbody id="tableBody">
                                     @foreach($produtos as $produto)
-                                    <tr>
+                                    <tr
+                                        data-produto-id="{{ $produto->id }}"
+                                        data-produto-nome="{{ $produto->nome }}"
+                                        data-produto-preco="{{ (float) $produto->preco }}">
                                         <td>
                                             @if(!empty($produto->imagem_url))
                                             <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="Produto {{ $produto->nome }}" style="width:48px; height:48px; object-fit:cover; border-radius:8px;">
@@ -98,30 +125,26 @@
                                         <td>{{ $produto->categoria->nome ?? '-' }}</td>
                                         <td>
                                             <div class="action-buttons">
-                                                <form action="{{ route('garcom.adicionar-produto') }}" method="POST" class="add-produto-form">
-                                                    @csrf
-                                                    <input type="hidden" name="produto_id" value="{{ $produto->id }}">
-                                                    <input type="hidden" name="mesa_id" class="mesa-id-hidden">
-
+                                                <div class="add-produto-form">
                                                     <div class="qtd-wrapper">
                                                         <label for="qtd_{{ $produto->id }}" class="qtd-label">Quantidade</label>
                                                         <input
                                                             id="qtd_{{ $produto->id }}"
                                                             type="number"
-                                                            name="quantidade"
                                                             class="qtd-input"
+                                                            data-garcom-qtd
                                                             min="1"
                                                             value="1"
                                                             required>
                                                     </div>
 
-                                                    <button type="submit" class="btn-add">
+                                                    <button type="button" class="btn-add garcom-add-list-btn" data-garcom-add>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                                                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
                                                         </svg>
                                                         Adicionar
                                                     </button>
-                                                </form>
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
@@ -133,7 +156,7 @@
                 </div>
             </main>
         </div>
-            <script src="{{ asset('js/garcom.js') }}"></script>
+            <script src="{{ asset('js/garcom.js') }}?v={{ filemtime(public_path('js/garcom.js')) }}"></script>
 </body>
 
 </html>

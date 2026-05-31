@@ -30,6 +30,19 @@ class GarcomController extends Controller
 
     public function adicionarProduto(Request $request)
     {
+        if ($request->has('itens')) {
+            $request->validate([
+                'mesa_id' => 'required|integer|exists:mesas,id',
+                'itens' => 'required|array|min:1',
+                'itens.*.produto_id' => 'required|integer|exists:produtos,id',
+                'itens.*.quantidade' => 'required|integer|min:1',
+            ]);
+
+            $this->garcomService->adicionarAoPedido($request);
+
+            return back()->with('success', 'Lista adicionada a mesa com sucesso.');
+        }
+
         $request->validate([
             'produto_id' => 'required|integer|exists:produtos,id',
             'mesa_id' => 'required|integer|exists:mesas,id',

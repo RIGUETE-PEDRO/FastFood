@@ -17,6 +17,14 @@ class GarcomService
         $quantidade = $request->input('quantidade', 1);
         $usuarioLogado = $request->user();
 
+        if ($request->has('itens')) {
+            return $this->repository->adicionarProdutosAoPedido(
+                (array) $request->input('itens', []),
+                (int) $mesaId,
+                $usuarioLogado
+            );
+        }
+
         return $this->repository->adicionarProdutoAoPedido($produtoId, $mesaId, $quantidade, $usuarioLogado);
     }
 

@@ -207,7 +207,8 @@ Route::get('/porcao', [PorcaoController::class, 'porcao'])->name('Porcao');
 
 Route::middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GARCOM])->group(function () {
     Route::get('/garcom', [GarcomController::class, 'index'])->name('garcom');
-
+    Route::post('/garcom/adicionar-produto', [GarcomController::class, 'adicionarProduto'])
+        ->name('garcom.adicionar-produto');
 });
 ///////////////////////////////////////////////////////
 /* GERENCIAMENTO DE CARRINHO */
@@ -263,10 +264,6 @@ Route::middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::MESAS])->g
     Route::post('/mesas/{id}/conta/item/{itemId}/atualizar', [MesaController::class, 'atualizarItemContaMesa'])->name('mesas.conta.item.atualizar');
     Route::post('/mesas/{id}/conta/item/{itemId}/remover', [MesaController::class, 'removerItemContaMesa'])->name('mesas.conta.item.remover');
 });
-
-
-Route::post('/garcom/adicionar-produto', [GarcomController::class, 'adicionarProduto'])
-    ->name('garcom.adicionar-produto');
 
 ///////////////////////////////////////////////////////
 /* ACESSO NEGADO */

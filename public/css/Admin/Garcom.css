@@ -80,6 +80,156 @@
     border-radius: 8px;
 }
 
+.garcom-order-panel {
+    display: grid;
+    gap: 14px;
+}
+
+.garcom-order-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 16px;
+}
+
+.garcom-order-head .form-select {
+    max-width: 360px;
+}
+
+.garcom-order-total {
+    display: grid;
+    justify-items: end;
+    gap: 4px;
+    min-width: 160px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 123, 0, 0.18);
+    border-radius: 8px;
+    background: #fff7ed;
+}
+
+.garcom-order-total span,
+.garcom-order-total small,
+.garcom-order-empty,
+.garcom-order-item small {
+    color: #6b7280;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.garcom-order-total strong {
+    color: #9a3412;
+    font-size: 1.25rem;
+    font-weight: 900;
+}
+
+.garcom-order-list {
+    display: grid;
+    gap: 8px;
+}
+
+.garcom-order-empty {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border: 1px dashed rgba(124, 45, 18, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.garcom-order-empty[hidden] {
+    display: none;
+}
+
+.garcom-order-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid rgba(124, 45, 18, 0.14);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.garcom-order-item__info {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.garcom-order-item__info strong {
+    color: #111827;
+    font-weight: 850;
+    overflow-wrap: anywhere;
+}
+
+.garcom-order-item__controls,
+.garcom-order-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.garcom-order-icon-btn {
+    width: 38px;
+    height: 38px;
+    border: 1px solid rgba(124, 45, 18, 0.16);
+    border-radius: 8px;
+    background: #fff7ed;
+    color: #9a3412;
+    cursor: pointer;
+    font-size: 1.15rem;
+    font-weight: 900;
+}
+
+.garcom-order-qtd {
+    width: 62px;
+    min-height: 38px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 800;
+}
+
+.garcom-order-remove,
+.garcom-order-clear {
+    min-height: 38px;
+    border: 1px solid rgba(220, 38, 38, 0.18);
+    border-radius: 8px;
+    background: #fef2f2;
+    color: #991b1b;
+    cursor: pointer;
+    font-weight: 800;
+    padding: 0 12px;
+}
+
+.garcom-order-form {
+    display: grid;
+    gap: 12px;
+}
+
+.garcom-order-actions {
+    padding-top: 4px;
+}
+
+.garcom-order-actions .btn-add {
+    min-height: 42px;
+    border: none;
+    border-radius: 8px;
+    padding: 0 16px;
+    cursor: pointer;
+    font-weight: 850;
+}
+
+.garcom-order-actions button:disabled {
+    cursor: not-allowed;
+    filter: grayscale(0.4);
+    opacity: 0.58;
+}
+
 .garcom-filter-wrap {
     padding: 0 24px 16px;
 }
@@ -160,17 +310,43 @@
 
     .add-produto-form,
     .qtd-wrapper,
-    .garcom-filter-actions {
+    .garcom-filter-actions,
+    .garcom-order-head,
+    .garcom-order-item,
+    .garcom-order-actions {
         width: 100%;
+    }
+
+    .garcom-order-head,
+    .garcom-order-item {
+        grid-template-columns: 1fr;
+    }
+
+    .garcom-order-total,
+    .garcom-order-head .form-select {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .garcom-order-total {
+        justify-items: start;
+    }
+
+    .garcom-order-item__controls,
+    .garcom-order-actions {
+        justify-content: stretch;
     }
 
     .add-produto-form {
         flex-wrap: wrap;
     }
 
-    .add-produto-form .btn,
+    .add-produto-form .btn-add,
     .garcom-filter-btn,
-    .garcom-filter-clear {
+    .garcom-filter-clear,
+    .garcom-order-remove,
+    .garcom-order-clear,
+    .garcom-order-actions .btn-add {
         width: 100%;
         min-height: 48px;
     }
