@@ -1368,8 +1368,23 @@ body {
    ========================================================================== */
 
 @media (max-width: 768px) {
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
     .pedidos-admin {
-        padding-inline: 12px !important;
+        box-sizing: border-box;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-inline: 10px !important;
+        overflow-x: hidden;
+    }
+
+    .pedidos-admin *,
+    .pedidos-admin *::before,
+    .pedidos-admin *::after {
+        box-sizing: border-box;
     }
 
     .cabecalho-pedidos {
@@ -1378,11 +1393,36 @@ body {
     }
 
     .cabecalho-pedidos__dados {
-        justify-content: flex-start;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .badge-total,
+    .badge-perfil {
+        width: 100%;
+        white-space: normal;
+        text-align: center;
+    }
+
+    .resumo-pedidos,
+    .lista-pedidos-admin,
+    .acordeao-pedidos,
+    .acordeao-pedidos__conteudo.is-open {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
     }
 
     .resumo-pedidos {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card-resumo,
+    .pedido-card,
+    .pedidos-finalizados-filtro {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
     }
 
     .pedido-card:hover {
@@ -1395,7 +1435,13 @@ body {
     }
 
     .pedido-card__header-right {
-        justify-content: flex-start;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .badge-status {
+        white-space: normal;
+        overflow-wrap: anywhere;
     }
 
     .pedido-dados {
@@ -1450,31 +1496,88 @@ body {
     .btn-geraCupom,
     .btn-avancar-status {
         width: 100%;
+        max-width: 100%;
+        min-width: 0;
         min-height: 46px;
+        white-space: normal;
+    }
+
+    .pedido-card__secao--acoes > .d-flex,
+    .pedido-card__secao--acoes form:first-child,
+    .pedido-avancar-form,
+    .pedido-card__secao--acoes form.m-0 {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .btn-avancar-status__text,
+    .btn-avancar-status__loading,
+    .btn-avancar-status__icon {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .pedidos-finalizados-filtro,
+    .pedidos-finalizados-filtro__campos {
+        grid-template-columns: 1fr;
+    }
+
+    .acordeao-pedidos__conteudo.is-open {
+        grid-template-columns: 1fr;
+        padding: 12px;
     }
 
     .pedido-alerta {
         align-items: flex-start;
+        width: 100%;
+        max-width: 100%;
     }
 }
 
 @media (max-width: 480px) {
     .pedidos-admin {
-        padding-inline: 10px !important;
+        padding-inline: 8px !important;
     }
 
     .resumo-pedidos {
         grid-template-columns: 1fr;
     }
 
+    .cabecalho-pedidos,
+    .card-resumo,
+    .pedido-card,
+    .acordeao-pedidos,
+    .pedidos-finalizados-filtro {
+        border-radius: 8px;
+    }
+
+    .cabecalho-pedidos {
+        padding: 14px;
+        text-align: center;
+    }
+
     .pedido-card__header,
     .pedido-card__body,
     .pedido-collapse__content {
-        padding-inline: 16px;
+        padding-inline: 14px;
+    }
+
+    .pedido-card__header {
+        padding-top: 14px;
+        padding-bottom: 12px;
+    }
+
+    .pedido-itens__linha strong {
+        justify-self: start;
+        text-align: left;
+        white-space: normal;
     }
 
     .acordeao-pedidos__gatilho {
         grid-template-columns: minmax(0, 1fr) auto;
+        padding-inline: 12px;
     }
 
     .acordeao-pedidos__icone {

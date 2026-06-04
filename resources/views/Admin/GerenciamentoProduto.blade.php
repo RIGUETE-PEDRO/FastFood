@@ -45,7 +45,7 @@
                                 <th>Preço</th>
                                 <th>Categoria</th>
                                 <th>Status</th>
-                                <th>Carrousel</th>
+                                <th>Destaque</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>

@@ -1147,7 +1147,30 @@ body {
 @media (max-width: 720px) {
     .mesas-header {
         flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        margin-inline: auto;
+    }
+
+    .mesas-header > div {
+        width: 100%;
+    }
+
+    .mesas-header .header-actions {
+        justify-content: center;
         align-items: stretch;
+        width: min(100%, 360px);
+        margin-inline: auto;
+    }
+
+    .mesas-header .header-actions .btn.topo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 46px;
+        margin-inline: auto;
     }
 
     .sala {
@@ -1660,6 +1683,54 @@ body {
 }
 
 @media (max-width: 720px) {
+    .ff-main--mesa-history main,
+    .ff-main main:has(.mesas-history-page) {
+        display: flex;
+        justify-content: center;
+        padding-inline: 0;
+    }
+
+    .mesas-history-page {
+        box-sizing: border-box;
+        display: grid;
+        justify-items: center;
+        width: min(100%, 430px) !important;
+        max-width: calc(100vw - 28px) !important;
+        margin-inline: auto !important;
+    }
+
+    .mesas-history-page > * {
+        box-sizing: border-box;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-inline: auto !important;
+    }
+
+    .mesas-history-header,
+    .mesa-history-summary article,
+    .mesa-history-card {
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .mesa-history-summary,
+    .mesa-history-list,
+    .mesa-history-breakdown,
+    .mesa-history-products__list,
+    .mesa-history-partials__list {
+        justify-items: center;
+        width: 100% !important;
+    }
+
+    .mesa-history-summary article,
+    .mesa-history-card,
+    .mesa-history-breakdown div,
+    .mesa-history-products__list div,
+    .mesa-history-partials__list div {
+        width: 100%;
+        max-width: 100%;
+    }
+
     .header-actions .btn.topo {
         width: 100%;
     }
@@ -1667,12 +1738,25 @@ body {
     .mesa-history-card__main,
     .mesa-history-card__meta,
     .mesa-history-filter {
-        align-items: flex-start;
+        align-items: center;
         flex-direction: column;
     }
 
     .mesa-history-filter {
         display: flex;
+    }
+
+    .mesa-history-card__main,
+    .mesa-history-card__meta,
+    .mesa-history-filter {
+        width: 100%;
+    }
+
+    .mesa-history-filter__actions,
+    .mesa-history-payments,
+    .mesa-history-products__list div,
+    .mesa-history-partials__list div {
+        align-items: center;
     }
 
     .mesa-history-filter__field,
@@ -1682,7 +1766,14 @@ body {
     }
 
     .mesa-history-payments {
-        justify-content: flex-start;
+        justify-content: center;
+    }
+
+    .mesa-history-card__total,
+    .mesa-history-breakdown strong,
+    .mesa-history-products__list strong,
+    .mesa-history-partials__list strong {
+        text-align: center;
     }
 
     .mesa-card__footer {

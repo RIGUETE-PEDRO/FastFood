@@ -263,6 +263,9 @@
 }
 
 .garcom-order-actions .btn-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     min-height: 42px;
     border: none;
     border-radius: 8px;
