@@ -28,7 +28,7 @@
         <section class="home-products" aria-labelledby="lanches-title">
             <div class="home-products__header">
                 <div>
-                    <span class="home-products__eyebrow">Cardapio</span>
+                    <span class="home-products__eyebrow">Produtos</span>
                     <h1 id="lanches-title">Lanches</h1>
                     <p>Escolha seu lanche favorito e adicione ao carrinho.</p>
                 </div>

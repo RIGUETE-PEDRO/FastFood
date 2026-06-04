@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearForm();
         document.getElementById('overlay-badge').textContent = 'Novo produto';
         document.getElementById('overlay-title').textContent = 'Cadastrar produto';
-        document.getElementById('overlay-subtitle').textContent = 'Preencha os dados para adicionar um produto ao cardapio.';
+        document.getElementById('overlay-subtitle').textContent = 'Preencha os dados para adicionar um produto a lista.';
         openOverlay();
     });
 

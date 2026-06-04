@@ -195,11 +195,11 @@
                             </div>
 
                             <div class="mesa-card__footer">
-                                <a href="{{ route('mesas.detalhes', $mesa->id) }}" class="mesa-btn mesa-btn--edit">
+                                <a href="{{ route('mesas.detalhes', ['id' => $mesa->id, 'modo' => 'editar']) }}" class="mesa-btn mesa-btn--edit">
                                     <span>Editar</span>
                                     <small>Itens da comanda</small>
                                 </a>
-                                <a href="{{ route('mesas.detalhes', $mesa->id) }}" class="mesa-btn mesa-btn--checkout">
+                                <a href="{{ route('mesas.detalhes', ['id' => $mesa->id, 'modo' => 'baixa']) }}" class="mesa-btn mesa-btn--checkout">
                                     <span>Dar baixa</span>
                                     <small>Pagamento parcial</small>
                                 </a>

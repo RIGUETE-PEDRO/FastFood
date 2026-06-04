@@ -16,7 +16,7 @@ interface MesasRepository
     public function finalizarPedidosPorIds(Collection $pedidoIds);
 
     public function listarMesas();
-    public function listarHistoricoFechamentos(int $porPagina = 12);
+    public function listarHistoricoFechamentos(int $porPagina = 12, array $filtros = []);
 
     public function listarFormasPagamento();
 

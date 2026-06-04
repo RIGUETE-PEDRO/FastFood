@@ -47,6 +47,40 @@
     min-height: 36px;
 }
 
+.table-responsive {
+    overflow-x: auto;
+}
+
+.garcom-produtos-table {
+    table-layout: auto;
+}
+
+.garcom-produtos-table th:nth-child(1),
+.garcom-produtos-table td:nth-child(1) {
+    width: 76px;
+}
+
+.garcom-produtos-table th:nth-child(3),
+.garcom-produtos-table td:nth-child(3) {
+    width: 110px;
+}
+
+.garcom-produtos-table th:nth-child(4),
+.garcom-produtos-table td:nth-child(4) {
+    width: 150px;
+}
+
+.garcom-produtos-table th:nth-child(5),
+.garcom-produtos-table td:nth-child(5) {
+    width: 280px;
+    min-width: 280px;
+    text-align: left;
+}
+
+.garcom-produtos-table .action-buttons {
+    justify-content: flex-start;
+}
+
 @media (max-width: 768px) {
     .dashboard-header {
         border-radius: 14px;
@@ -78,6 +112,19 @@
     padding: 6px 8px;
     border: 1px solid #dcdcdc;
     border-radius: 8px;
+}
+
+.garcom-add-list-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    white-space: nowrap;
+}
+
+.garcom-add-list-btn svg {
+    flex: 0 0 auto;
 }
 
 .garcom-order-panel {
@@ -300,6 +347,12 @@
 }
 
 @media (max-width: 768px) {
+    .garcom-produtos-table th:nth-child(5),
+    .garcom-produtos-table td:nth-child(5) {
+        min-width: 0;
+        width: 100% !important;
+    }
+
     .garcom-filter-wrap {
         padding: 0 14px 14px;
     }
@@ -357,4 +410,10 @@
         min-height: 44px;
         font-size: 16px;
     }
+
+    .produtos-table td:nth-child(1)::before { content: 'Imagem'; }
+    .produtos-table td:nth-child(2)::before { content: 'Nome'; }
+    .produtos-table td:nth-child(3)::before { content: 'Preco'; }
+    .produtos-table td:nth-child(4)::before { content: 'Categoria'; }
+    .produtos-table td:nth-child(5)::before { content: 'Acoes'; }
 }

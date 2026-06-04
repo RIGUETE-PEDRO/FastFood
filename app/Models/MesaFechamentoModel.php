@@ -15,12 +15,14 @@ class MesaFechamentoModel extends Model
         'total_itens',
         'formas_pagamento',
         'pagamentos_resumo',
+        'produtos_resumo',
         'fechado_em',
     ];
 
     protected $casts = [
         'formas_pagamento' => 'array',
         'pagamentos_resumo' => 'array',
+        'produtos_resumo' => 'array',
         'fechado_em' => 'datetime',
     ];
 

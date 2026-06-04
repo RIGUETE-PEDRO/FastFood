@@ -59,6 +59,35 @@
                         </article>
                     </section>
 
+                    <form method="GET" action="{{ route('mesas.historico') }}" class="mesa-history-filter" aria-label="Filtrar historico de mesas">
+                        <div class="mesa-history-filter__field">
+                            <label for="mesa_id">Mesa</label>
+                            <select name="mesa_id" id="mesa_id">
+                                <option value="">Todas as mesas</option>
+                                @foreach(($mesas ?? []) as $mesaOpcao)
+                                    <option value="{{ $mesaOpcao->id }}" {{ (string) ($filtros['mesa_id'] ?? '') === (string) $mesaOpcao->id ? 'selected' : '' }}>
+                                        Mesa {{ $mesaOpcao->numero_da_mesa }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mesa-history-filter__field">
+                            <label for="data_inicio">Data inicial</label>
+                            <input type="date" name="data_inicio" id="data_inicio" value="{{ $filtros['data_inicio'] ?? '' }}">
+                        </div>
+
+                        <div class="mesa-history-filter__field">
+                            <label for="data_fim">Data final</label>
+                            <input type="date" name="data_fim" id="data_fim" value="{{ $filtros['data_fim'] ?? '' }}">
+                        </div>
+
+                        <div class="mesa-history-filter__actions">
+                            <button type="submit" class="btn btn-primary">Filtrar</button>
+                            <a href="{{ route('mesas.historico') }}" class="btn btn-secondary">Limpar</a>
+                        </div>
+                    </form>
+
                     @if($fechamentos->isEmpty())
                         <div class="mesa-empty-state">
                             <strong>Nenhuma mesa fechada ainda</strong>
@@ -108,6 +137,28 @@
                                                 <strong>Nao informado</strong>
                                             </div>
                                         @endforelse
+                                    </div>
+
+                                    <div class="mesa-history-products">
+                                        <span class="mesa-history-section-title">Produtos comprados</span>
+                                        <div class="mesa-history-products__list">
+                                            @forelse(($fechamento->produtos_resumo ?? []) as $produto)
+                                                <div>
+                                                    <span>
+                                                        {{ (int) ($produto['quantidade'] ?? 0) }}x
+                                                        {{ $produto['nome'] ?? 'Produto' }}
+                                                    </span>
+                                                    <strong>
+                                                        R$ {{ number_format((float) ($produto['subtotal'] ?? 0), 2, ',', '.') }}
+                                                    </strong>
+                                                </div>
+                                            @empty
+                                                <div>
+                                                    <span>Produtos nao detalhados neste fechamento</span>
+                                                    <strong>-</strong>
+                                                </div>
+                                            @endforelse
+                                        </div>
                                     </div>
 
                                     <div class="mesa-history-partials">

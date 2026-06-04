@@ -28,7 +28,7 @@
         <section class="home-products" aria-labelledby="bebidas-title">
             <div class="home-products__header">
                 <div>
-                    <span class="home-products__eyebrow">Cardapio</span>
+                    <span class="home-products__eyebrow">Produtos</span>
                     <h1 id="bebidas-title">Bebidas</h1>
                     <p>Bebidas disponiveis para completar seu pedido.</p>
                 </div>

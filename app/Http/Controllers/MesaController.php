@@ -33,14 +33,18 @@ class MesaController extends Controller
         return view('Admin.Mesa', ['usuario' => $usuarioLogado, 'mesas' => $mesas]);
     }
 
-    public function historicoMesas()
+    public function historicoMesas(Request $request)
     {
         $usuarioLogado = $this->genericBase->hasLogado();
-        $fechamentos = $this->mesasService->listarHistoricoMesas();
+        $filtros = $request->only(['mesa_id', 'data_inicio', 'data_fim']);
+        $fechamentos = $this->mesasService->listarHistoricoMesas(12, $filtros);
+        $mesas = $this->mesasService->pegarMesas();
 
         return view('Admin.MesasHistorico', [
             'usuario' => $usuarioLogado,
             'fechamentos' => $fechamentos,
+            'mesas' => $mesas,
+            'filtros' => $filtros,
         ]);
     }
 
@@ -70,7 +74,10 @@ class MesaController extends Controller
             return redirect()->back()->with('error', ErroMensagens::SEM_ID_MESA);
         }
 
-        $this->mesasService->removerMesa($id);
+        $response = $this->mesasService->removerMesa($id);
+        if ($response) {
+            return $response;
+        }
 
         return redirect()->route('mesas.index')->with('success', PassMensagens::MESA_REMOVIDA_SUCESSO);
     }

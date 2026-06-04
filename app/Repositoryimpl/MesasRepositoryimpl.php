@@ -47,13 +47,28 @@ class MesasRepositoryimpl implements MesasRepository
         return MesaModel::all();
     }
 
-    public function listarHistoricoFechamentos(int $porPagina = 12)
+    public function listarHistoricoFechamentos(int $porPagina = 12, array $filtros = [])
     {
-        return MesaFechamentoModel::query()
-            ->with(['pagamentos' => fn ($query) => $query->orderBy('pago_em')->orderBy('id')])
+        $query = MesaFechamentoModel::query()
+            ->with(['pagamentos' => fn ($query) => $query->orderBy('pago_em')->orderBy('id')]);
+
+        if (!empty($filtros['mesa_id'])) {
+            $query->where('mesa_id', (int) $filtros['mesa_id']);
+        }
+
+        if (!empty($filtros['data_inicio'])) {
+            $query->whereDate('fechado_em', '>=', $filtros['data_inicio']);
+        }
+
+        if (!empty($filtros['data_fim'])) {
+            $query->whereDate('fechado_em', '<=', $filtros['data_fim']);
+        }
+
+        return $query
             ->orderByDesc('fechado_em')
             ->orderByDesc('id')
-            ->paginate($porPagina);
+            ->paginate($porPagina)
+            ->appends($filtros);
     }
 
     public function listarFormasPagamento()
@@ -188,6 +203,7 @@ class MesasRepositoryimpl implements MesasRepository
     {
         return $this->queryItensDaMesa($mesaId)
             ->where('status_da_comanda', 'pago')
+            ->with('produto')
             ->get();
     }
 

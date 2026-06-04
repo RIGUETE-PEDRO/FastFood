@@ -68,9 +68,9 @@ class MesasService extends GenericBase
         return $this->mesasRepository->listarMesas();
     }
 
-    public function listarHistoricoMesas(int $porPagina = 12)
+    public function listarHistoricoMesas(int $porPagina = 12, array $filtros = [])
     {
-        return $this->mesasRepository->listarHistoricoFechamentos($porPagina);
+        return $this->mesasRepository->listarHistoricoFechamentos($porPagina, $filtros);
     }
 
     public function pegarDetalhesMesa($id)
@@ -148,6 +148,24 @@ class MesasService extends GenericBase
             $totalItens += $quantidade;
         }
 
+        $produtosResumo = $itensPagos
+            ->groupBy(fn ($item) => (int) ($item->produto_id ?? 0) . '|' . (float) $item->preco_unitario)
+            ->map(function ($itensProduto) {
+                $primeiro = $itensProduto->first();
+                $quantidade = (int) $itensProduto->sum(fn ($item) => max(1, (int) $item->quantidade));
+                $unitario = (float) $primeiro->preco_unitario;
+
+                return [
+                    'produto_id' => (int) ($primeiro->produto_id ?? 0),
+                    'nome' => optional($primeiro->produto)->nome ?? 'Produto removido',
+                    'quantidade' => $quantidade,
+                    'preco_unitario' => round($unitario, 2),
+                    'subtotal' => round($unitario * $quantidade, 2),
+                ];
+            })
+            ->values()
+            ->all();
+
         $pagamentosRegistrados = $this->mesasRepository->listarPagamentosAbertosMesa($mesaId);
 
         if ($pagamentosRegistrados->isNotEmpty()) {
@@ -206,6 +224,7 @@ class MesasService extends GenericBase
                 ])
                 ->values()
                 ->all(),
+            'produtos_resumo' => $produtosResumo,
             'fechado_em' => $fechadoEm,
         ]);
 
@@ -547,9 +566,25 @@ class MesasService extends GenericBase
     }
 
 
-    public function removerMesa($id)
+    public function removerMesa($id): ?RedirectResponse
     {
-        $this->mesasRepository->removerMesa((int) $id);
+        $mesaId = (int) $id;
+        $mesa = $this->mesasRepository->pegarMesaPorId($mesaId);
+
+        if (!$mesa) {
+            return redirect()->back()->with('error', ErroMensagens::SEM_ID_MESA);
+        }
+
+        $this->atualizarPrecoMesa($mesaId);
+        $mesa->refresh();
+
+        if ((float) $mesa->preco > 0 || $this->mesasRepository->existemItensAbertosMesa($mesaId)) {
+            return redirect()->back()->with('error', ErroMensagens::MESA_COM_SALDO_ABERTO);
+        }
+
+        $this->mesasRepository->removerMesa($mesaId);
+
+        return null;
     }
 
 

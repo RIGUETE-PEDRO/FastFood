@@ -28,7 +28,7 @@
         <section class="home-products" aria-labelledby="pizzas-title">
             <div class="home-products__header">
                 <div>
-                    <span class="home-products__eyebrow">Cardapio</span>
+                    <span class="home-products__eyebrow">Produtos</span>
                     <h1 id="pizzas-title">Pizzas</h1>
                     <p>Sabores de pizza com preco, descricao e pedido rapido.</p>
                 </div>

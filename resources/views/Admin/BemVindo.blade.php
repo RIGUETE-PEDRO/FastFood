@@ -57,7 +57,7 @@
                     <a class="bemvindo-action" href="{{ route('gerenciamento_Produtos', [], false) }}">
                         <span class="bemvindo-action__icon">03</span>
                         <strong>Produtos</strong>
-                        <small>Atualize cardapio, precos e disponibilidade.</small>
+                        <small>Atualize produtos, precos e disponibilidade.</small>
                     </a>
                     @endrole
 
@@ -75,7 +75,7 @@
                         <h2>Dicas rápidas</h2>
                         <ul class="bemvindo-tips">
                             <li>Revise os pedidos pendentes para evitar atrasos.</li>
-                            <li>Mantenha o cardápio atualizado antes do horário de pico.</li>
+                            <li>Mantenha os produtos atualizados antes do horario de pico.</li>
                             <li>Confira as entregas em andamento e reatribua quando necessário.</li>
                         </ul>
                     </article>

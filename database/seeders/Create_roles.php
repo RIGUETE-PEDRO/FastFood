@@ -39,10 +39,6 @@ class Create_roles extends Seeder
                     'created_at' => now()
                 ],
                 [
-                    'nome' => 'cardapio',
-                    'created_at' => now()
-                ],
-                [
                     'nome' => 'entregas',
                     'created_at' => now()
                 ],
@@ -60,6 +56,5 @@ class Create_roles extends Seeder
         );
     }
 }
-
 
 

@@ -121,7 +121,7 @@
                     <div>
                         <p class="overlay-badge" id="overlay-badge">Novo produto</p>
                         <h3 id="overlay-title">Cadastrar produto</h3>
-                        <p class="overlay-subtitle" id="overlay-subtitle">Preencha os dados para adicionar um produto ao cardápio.</p>
+                        <p class="overlay-subtitle" id="overlay-subtitle">Preencha os dados para adicionar um produto a lista.</p>
                     </div>
                     <button type="button" class="overlay-close" id="closeCreateProduct" aria-label="Fechar">✕</button>
                 </div>

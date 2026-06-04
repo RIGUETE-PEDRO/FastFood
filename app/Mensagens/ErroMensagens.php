@@ -31,6 +31,7 @@ class ErroMensagens{
     public const QUANTIDADE_MINIMA = 'A quantidade mínima é 1, não é permitido 0.';
     public const NUMERO_MESA_INVALIDO = 'O número da mesa deve ser maior que zero.';
     public const SEM_ID_MESA = 'Nenhuma mesa selecionada para remoção.';
+    public const MESA_COM_SALDO_ABERTO = 'Não é possível remover mesa com saldo em aberto. Dê baixa em todos os itens antes de remover.';
     public const NUMERO_JA_EXISTENTE = 'Já existe uma mesa com esse número. Por favor, escolha outro número.';
     public const VALOR_PAGAMENTO_EXCEDE_TOTAL = 'O valor digitado não pode ser maior que o total selecionado.';
     public const ERRO_ABATER_ITENS = 'Ocorreu um erro ao abater os itens. Por favor, tente novamente.';

@@ -68,7 +68,7 @@
         <section class="home-products" aria-labelledby="home-products-title">
             <div class="home-products__header">
                 <div>
-                    <span class="home-products__eyebrow">Cardapio</span>
+                    <span class="home-products__eyebrow">Produtos</span>
                     <h1 id="home-products-title">Escolha seu pedido</h1>
                     <p>Produtos em destaque com preco, ingredientes e acao rapida para adicionar ao carrinho.</p>
                 </div>

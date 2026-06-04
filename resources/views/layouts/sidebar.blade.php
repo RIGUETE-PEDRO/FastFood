@@ -25,7 +25,6 @@
             'users' => '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
             'orders' => '<path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/>',
             'products' => '<path d="m21 16-9 5-9-5V8l9-5 9 5v8Z"/><path d="m3.3 7.3 8.7 4.9 8.7-4.9"/><path d="M12 22V12"/>',
-            'cardapio' => '<path d="M4 19.5V5a2 2 0 0 1 2-2h11a3 3 0 0 1 3 3v13.5"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M8 7h7"/><path d="M8 11h8"/>',
             'delivery' => '<path d="M3 7h11v10H3z"/><path d="M14 10h4l3 3v4h-7"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>',
             'tables' => '<path d="M4 4h16v7H4z"/><path d="M8 11v9"/><path d="M16 11v9"/><path d="M6 20h4"/><path d="M14 20h4"/>',
             'garcom' => '<circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/><path d="m16 11 2 2 4-4"/>',
@@ -93,15 +92,6 @@
                         {!! $ffIcon('products') !!}
                         <span>Produtos</span>
                     </a>
-                </li>
-            @endrole
-
-            @role('CARDAPIO')
-                <li class="nav-item">
-                    <span class="nav-link disabled">
-                        {!! $ffIcon('cardapio') !!}
-                        <span>Cardapio</span>
-                    </span>
                 </li>
             @endrole
 

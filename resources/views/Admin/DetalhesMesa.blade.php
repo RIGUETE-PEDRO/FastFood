@@ -13,6 +13,11 @@
 </head>
 
 <body>
+    @php
+        $modoComanda = request('modo') === 'baixa' ? 'baixa' : 'editar';
+        $permiteBaixa = $modoComanda === 'baixa';
+    @endphp
+
     <div class="ff-shell">
         @include('layouts.sidebar')
 
@@ -27,7 +32,9 @@
                         <div>
                             <span class="mesa-detail-header__eyebrow">Comanda da lanchonete</span>
                             <h1 class="mesas-title">Mesa {{ $mesa->numero_da_mesa }}</h1>
-                            <p class="mesas-subtitle">Gerencie os itens em aberto, ajuste quantidades e registre pagamentos parciais.</p>
+                            <p class="mesas-subtitle">
+                                {{ $permiteBaixa ? 'Selecione os itens pagos agora e registre pagamentos parciais.' : 'Edite os itens da comanda sem registrar baixa de pagamento.' }}
+                            </p>
                         </div>
                         <a href="{{ route('mesas.index') }}" class="mesa-back-button">Voltar para mesas</a>
                     </header>
@@ -62,9 +69,11 @@
                                 <span>Quando houver pedidos nesta mesa, eles aparecem aqui.</span>
                             </div>
                         @else
-                            <form id="abaterForm" action="{{ route('mesas.conta.abater', $mesa->id) }}" method="POST" hidden>
-                                @csrf
-                            </form>
+                            @if($permiteBaixa)
+                                <form id="abaterForm" action="{{ route('mesas.conta.abater', $mesa->id) }}" method="POST" hidden>
+                                    @csrf
+                                </form>
+                            @endif
 
                             <div class="mesa-order-list">
                                 @foreach ($itensAbertos as $item)
@@ -78,23 +87,25 @@
                                         $maxParaAbater = $valorPago > 0 ? 1 : (int) $item->quantidade;
                                     @endphp
 
-                                    <article class="mesa-order-row">
-                                        <div class="mesa-order-row__select">
-                                            <label class="mesa-check" aria-label="Selecionar {{ $nome }} para baixa">
-                                                <input
-                                                    class="form-check-input"
-                                                    type="checkbox"
-                                                    name="item_ids[]"
-                                                    value="{{ $item->id }}"
-                                                    form="abaterForm"
-                                                    data-unit="{{ number_format($unit, 2, '.', '') }}"
-                                                    data-pago="{{ number_format($valorPago, 2, '.', '') }}"
-                                                    data-max="{{ (int) $item->quantidade }}"
-                                                    {{ $preselectId === (int) $item->id ? 'checked' : '' }}
-                                                >
-                                                <span></span>
-                                            </label>
-                                        </div>
+                                    <article class="mesa-order-row {{ $permiteBaixa ? '' : 'mesa-order-row--edit-only' }}">
+                                        @if($permiteBaixa)
+                                            <div class="mesa-order-row__select">
+                                                <label class="mesa-check" aria-label="Selecionar {{ $nome }} para baixa">
+                                                    <input
+                                                        class="form-check-input"
+                                                        type="checkbox"
+                                                        name="item_ids[]"
+                                                        value="{{ $item->id }}"
+                                                        form="abaterForm"
+                                                        data-unit="{{ number_format($unit, 2, '.', '') }}"
+                                                        data-pago="{{ number_format($valorPago, 2, '.', '') }}"
+                                                        data-max="{{ (int) $item->quantidade }}"
+                                                        {{ $preselectId === (int) $item->id ? 'checked' : '' }}
+                                                    >
+                                                    <span></span>
+                                                </label>
+                                            </div>
+                                        @endif
 
                                         <div class="mesa-order-row__main">
                                             <div class="mesa-item-name">
@@ -124,26 +135,28 @@
                                         </div>
 
                                         <div class="mesa-order-row__controls">
-                                            <div class="mesa-order-block">
-                                                <span>Dar baixa agora</span>
-                                                <div class="mesa-qty-control">
-                                                    <span class="mesa-qty-open">{{ (int) $item->quantidade }}x</span>
-                                                    <button type="button" class="btn btn-secondary btn-sm" data-qtd-dec data-item-id="{{ $item->id }}">-</button>
-                                                    <input
-                                                        type="number"
-                                                        class="form-control form-control-sm mesa-qty-input"
-                                                        min="0"
-                                                        max="{{ $maxParaAbater }}"
-                                                        step="1"
-                                                        name="quantidades[{{ $item->id }}]"
-                                                        form="abaterForm"
-                                                        value="{{ $preselectId === (int) $item->id ? $maxParaAbater : 0 }}"
-                                                        data-qtd-input
-                                                        data-item-id="{{ $item->id }}"
-                                                    >
-                                                    <button type="button" class="btn btn-secondary btn-sm" data-qtd-inc data-item-id="{{ $item->id }}">+</button>
+                                            @if($permiteBaixa)
+                                                <div class="mesa-order-block">
+                                                    <span>Dar baixa agora</span>
+                                                    <div class="mesa-qty-control">
+                                                        <span class="mesa-qty-open">{{ (int) $item->quantidade }}x</span>
+                                                        <button type="button" class="btn btn-secondary btn-sm" data-qtd-dec data-item-id="{{ $item->id }}">-</button>
+                                                        <input
+                                                            type="number"
+                                                            class="form-control form-control-sm mesa-qty-input"
+                                                            min="0"
+                                                            max="{{ $maxParaAbater }}"
+                                                            step="1"
+                                                            name="quantidades[{{ $item->id }}]"
+                                                            form="abaterForm"
+                                                            value="{{ $preselectId === (int) $item->id ? $maxParaAbater : 0 }}"
+                                                            data-qtd-input
+                                                            data-item-id="{{ $item->id }}"
+                                                        >
+                                                        <button type="button" class="btn btn-secondary btn-sm" data-qtd-inc data-item-id="{{ $item->id }}">+</button>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            @endif
 
                                             <div class="mesa-order-block mesa-order-block--edit">
                                                 <span>Editar pedido</span>
@@ -174,28 +187,29 @@
                                 @endforeach
                             </div>
 
-                            <div class="mesa-checkout-bar">
-                                <div>
-                                    <strong>Dar baixa parcial ou total</strong>
-                                    <span id="mesaCheckoutHint">Selecione os itens pagos agora.</span>
-                                </div>
-                                <div class="mesa-checkout-bar__actions">
-                                    <strong class="mesa-checkout-total" id="mesaCheckoutTotalTexto">R$ 0,00</strong>
-                                    <button class="btn btn-primary" type="button" id="btnAbrirAbaterModal" disabled>Dar baixa selecionados</button>
-                                </div>
-                            </div>
-
-                            <div id="abaterModal" class="ff-modal" aria-hidden="true">
-                                <div class="ff-modal__overlay" aria-hidden="true"></div>
-                                <div class="ff-modal__card" role="dialog" aria-modal="true" aria-labelledby="abaterModalTitle">
-                                    <div class="ff-modal__header">
-                                        <h2 id="abaterModalTitle">Dar baixa nos itens</h2>
-                                        <button type="button" class="ff-modal__close" data-abater-modal-close aria-label="Fechar">&times;</button>
+                            @if($permiteBaixa)
+                                <div class="mesa-checkout-bar">
+                                    <div>
+                                        <strong>Dar baixa parcial ou total</strong>
+                                        <span id="mesaCheckoutHint">Selecione os itens pagos agora.</span>
                                     </div>
+                                    <div class="mesa-checkout-bar__actions">
+                                        <strong class="mesa-checkout-total" id="mesaCheckoutTotalTexto">R$ 0,00</strong>
+                                        <button class="btn btn-primary" type="button" id="btnAbrirAbaterModal" disabled>Dar baixa selecionados</button>
+                                    </div>
+                                </div>
 
-                                    <p class="ff-modal__hint">Selecione a forma de pagamento e informe o valor recebido agora.</p>
+                                <div id="abaterModal" class="ff-modal" aria-hidden="true">
+                                    <div class="ff-modal__overlay" aria-hidden="true"></div>
+                                    <div class="ff-modal__card" role="dialog" aria-modal="true" aria-labelledby="abaterModalTitle">
+                                        <div class="ff-modal__header">
+                                            <h2 id="abaterModalTitle">Dar baixa nos itens</h2>
+                                            <button type="button" class="ff-modal__close" data-abater-modal-close aria-label="Fechar">&times;</button>
+                                        </div>
 
-                                    <div class="abater-total-card">
+                                        <p class="ff-modal__hint">Selecione a forma de pagamento e informe o valor recebido agora.</p>
+
+                                        <div class="abater-total-card">
                                         <div class="abater-total">
                                             <span>Total selecionado</span>
                                             <strong id="abaterTotalTexto">R$ 0,00</strong>
@@ -213,9 +227,9 @@
                                                 placeholder="Ex: 19,99"
                                             >
                                         </div>
-                                    </div>
+                                        </div>
 
-                                    <div class="ff-choice abater-payment-grid">
+                                        <div class="ff-choice abater-payment-grid">
                                         @php
                                             $metodoSelecionado = old('pagamento_metodo', 'pix');
                                             $metodos = [
@@ -227,7 +241,7 @@
                                         @endphp
 
                                         @foreach ($metodos as $valor => $label)
-                                            <label class="ff-choice__item">
+                                            <label class="ff-choice__item {{ $valor === 'dinheiro' ? 'ff-choice__item--dinheiro' : '' }}">
                                                 <input type="radio" name="pagamento_metodo" value="{{ $valor }}" form="abaterForm" {{ $metodoSelecionado === $valor ? 'checked' : '' }}>
                                                 <span>
                                                     <strong>{{ $label }}</strong>
@@ -235,16 +249,17 @@
                                                 </span>
                                             </label>
                                         @endforeach
-                                    </div>
+                                        </div>
 
-                                    <div id="abaterModalErro" class="ff-modal__error" aria-live="polite"></div>
+                                        <div id="abaterModalErro" class="ff-modal__error" aria-live="polite"></div>
 
-                                    <div class="ff-modal__footer ff-modal__footer--stack">
-                                        <button type="button" class="btn btn-secondary" data-abater-modal-close>Cancelar</button>
-                                        <button type="button" class="btn btn-primary" id="btnConfirmarAbater">Confirmar abatimento</button>
+                                        <div class="ff-modal__footer ff-modal__footer--stack">
+                                            <button type="button" class="btn btn-secondary" data-abater-modal-close>Cancelar</button>
+                                            <button type="button" class="btn btn-primary" id="btnConfirmarAbater">Confirmar abatimento</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
                         @endif
                     </section>
 

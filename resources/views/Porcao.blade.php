@@ -28,7 +28,7 @@
         <section class="home-products" aria-labelledby="porcoes-title">
             <div class="home-products__header">
                 <div>
-                    <span class="home-products__eyebrow">Cardapio</span>
+                    <span class="home-products__eyebrow">Produtos</span>
                     <h1 id="porcoes-title">Porcoes</h1>
                     <p>Porcoes para compartilhar ou acompanhar seu pedido.</p>
                 </div>
