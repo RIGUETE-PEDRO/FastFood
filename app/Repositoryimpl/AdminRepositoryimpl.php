@@ -4,6 +4,7 @@ namespace App\Repositoryimpl;
 
 
 use App\Enum\StatusPedidos;
+use App\Models\Dados_empresa;
 use App\Models\PedidoModel;
 use App\Models\FuncionarioModel;
 use App\Repository\AdminRepository;
@@ -24,6 +25,20 @@ class AdminRepositoryimpl implements AdminRepository
         }
 
         return $query->get();
+    }
+
+    public function listarDadosEmpresa(): Collection
+    {
+        return Dados_empresa::query()
+            ->orderBy('id')
+            ->get();
+    }
+
+    public function atualizarDadoEmpresa(string $informacao, ?string $valor): void
+    {
+        Dados_empresa::query()
+            ->where('Informacao', $informacao)
+            ->update(['Valor' => $valor]);
     }
 
     public function totalVendasNoPeriodo(Carbon $inicioPeriodo, Carbon $fimPeriodo): float

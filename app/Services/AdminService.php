@@ -83,6 +83,59 @@ class AdminService
         return session('perfil_return_url', $fallbackUrl);
     }
 
+    public function camposDadosEmpresa(): array
+    {
+        return $this->adminRepository
+            ->listarDadosEmpresa()
+            ->map(function ($dado) {
+                return [
+                    'informacao' => $dado->Informacao,
+                    'label' => $this->formatarLabelDadoEmpresa($dado->Informacao),
+                    'type' => $this->resolverTipoCampoDadoEmpresa($dado->Informacao),
+                    'value' => $dado->Valor ?? '',
+                ];
+            })
+            ->all();
+    }
+
+    public function atualizarDadosEmpresa(array $dados): void
+    {
+        $informacoesExistentes = $this->adminRepository
+            ->listarDadosEmpresa()
+            ->pluck('Informacao')
+            ->all();
+
+        foreach ($dados as $informacao => $valor) {
+            if (!in_array($informacao, $informacoesExistentes, true)) {
+                continue;
+            }
+
+            $valor = $dados[$informacao] ?? null;
+            $valor = is_string($valor) ? trim($valor) : null;
+
+            $this->adminRepository->atualizarDadoEmpresa($informacao, $valor);
+        }
+    }
+
+    private function formatarLabelDadoEmpresa(string $informacao): string
+    {
+        if ($informacao === 'Msg_comanda') {
+            return 'Msg da comanda';
+        }
+
+        return str_replace('_', ' ', $informacao);
+    }
+
+    private function resolverTipoCampoDadoEmpresa(string $informacao): string
+    {
+        return match ($informacao) {
+            'Email' => 'email',
+            'Telefone' => 'tel',
+            'Msg_comanda' => 'textarea',
+            default => 'text',
+        };
+    }
+
     public function buscarFuncionarios($searchTerm)
     {
         return $this->adminRepository->buscarFuncionarios($searchTerm);

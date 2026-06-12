@@ -9,6 +9,10 @@ interface AdminRepository
 {
     public function buscarFuncionarios($searchTerm);
 
+    public function listarDadosEmpresa(): Collection;
+
+    public function atualizarDadoEmpresa(string $informacao, ?string $valor): void;
+
     public function totalVendasNoPeriodo(Carbon $inicioPeriodo, Carbon $fimPeriodo): float;
 
     public function totalPedidosNoPeriodo(Carbon $inicioPeriodo, Carbon $fimPeriodo): int;

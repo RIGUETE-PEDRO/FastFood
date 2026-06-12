@@ -50,9 +50,45 @@
                         </div>
                     </article>
                 </section>
+                <section class="config-grid">
+                    <form class="empresa-form" action="{{ route('admin.configuracoes.atualizar') }}" method="POST">
+                        @csrf
+
+                        <article class="config-card config-card--form painel">
+                            <div class="empresa-form__header">
+                                <div>
+                                    <h2 class="titulo">Dados da empresa</h2>
+                                    <p class="titulo">Informacoes usadas na identificacao da empresa, endereco e impressao da comanda.</p>
+                                </div>
+                            </div>
+
+                            <div class="empresa-form__grid">
+                                @foreach ($camposEmpresa as $campo)
+                                    <label class="empresa-field {{ $campo['type'] === 'textarea' ? 'empresa-field--full' : '' }}">
+                                        <span>{{ $campo['label'] }}</span>
+                                        @if ($campo['type'] === 'textarea')
+                                            <textarea name="dados_empresa[{{ $campo['informacao'] }}]" rows="3">{{ old('dados_empresa.' . $campo['informacao'], $campo['value']) }}</textarea>
+                                        @else
+                                            <input
+                                                type="{{ $campo['type'] }}"
+                                                name="dados_empresa[{{ $campo['informacao'] }}]"
+                                                value="{{ old('dados_empresa.' . $campo['informacao'], $campo['value']) }}"
+                                            >
+                                        @endif
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            <div class="empresa-form__actions">
+                                <button type="submit" class="btn-config-save">Salvar configuracoes</button>
+                            </div>
+                        </article>
+                    </form>
+                </section>
             </main>
         </div>
     </div>
+    @include('components.flash-toast')
 </body>
 
 </html>

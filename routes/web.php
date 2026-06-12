@@ -119,6 +119,10 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
         ->middleware('admin.access:3')
         ->name('admin.configuracoes');
 
+    Route::post('/admin/configuracoes', [AdminController::class, 'atualizarConfiguracoes'])
+        ->middleware('admin.access:3')
+        ->name('admin.configuracoes.atualizar');
+
     Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])
         ->middleware('SecureKey.role:' . Roles::DASHBORD)
         ->name('Administrativo');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\GenericBase;
 use App\Services\AdminService;
 use App\Http\Middleware\UsuarioAutenticado;
+use App\Mensagens\PassMensagens;
 use Illuminate\Http\Request;
 use App\Enum\TipoUsuario as EnumsTipoUsuario;
 use Illuminate\Support\Facades\Auth;
@@ -81,7 +82,22 @@ class AdminController extends Controller
             'usuario' => $usuarioLogado,
             'nomeUsuario' => $primeiroNome,
             'tipoUsuario' => $this->mapearTipoUsuario($usuarioLogado->tipo_usuario_id ?? null),
+            'camposEmpresa' => $this->adminService->camposDadosEmpresa(),
         ]);
+    }
+
+    public function atualizarConfiguracoes(Request $request)
+    {
+        $dados = $request->validate([
+            'dados_empresa' => ['required', 'array'],
+            'dados_empresa.*' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $this->adminService->atualizarDadosEmpresa($dados['dados_empresa']);
+
+        return redirect()
+            ->route('admin.configuracoes')
+            ->with('sucesso', 'Dados da empresa ' . PassMensagens::ATUALIZADO_SUCESSO);
     }
 
     public function alterarDados(Request $request)

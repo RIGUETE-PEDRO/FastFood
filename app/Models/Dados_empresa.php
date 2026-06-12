@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Dados_empresa extends Model
 {
     protected $table = 'dados_empresa';
+
     protected $fillable = [
+        'Informacao',
         'Valor',
-        'informacoes',
     ];
 
 }

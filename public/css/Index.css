@@ -819,6 +819,11 @@ body {
     box-shadow: 0 10px 24px rgba(38, 31, 24, 0.08);
 }
 
+.home-products .container-produtos > .produto:only-child {
+    width: min(100%, 320px);
+    justify-self: start;
+}
+
 .home-products .produto--interactive {
     transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
@@ -985,6 +990,10 @@ body {
     .home-products .container-produtos {
         grid-template-columns: 1fr;
         gap: 14px;
+    }
+
+    .home-products .container-produtos > .produto:only-child {
+        width: 100%;
     }
 
     .home-products .container-img {
