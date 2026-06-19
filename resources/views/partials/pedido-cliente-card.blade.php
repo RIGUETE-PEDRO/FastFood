@@ -11,17 +11,22 @@
         default => 'badge-status badge-status--padrao',
     };
     $temEnderecoEntrega = filled(optional($pedido->endereco)->logradouro);
+    $pedidoAberto = $pedidoAberto ?? false;
 @endphp
 
-<article class="pedido-card">
-    <header class="pedido-card__header">
+<details class="pedido-card" @if($pedidoAberto) open @endif>
+    <summary class="pedido-card__header">
         <div>
             <h2 class="pedido-card__titulo">Pedido #{{ $pedido->id }}</h2>
             <span class="pedido-card__subtitulo">Realizado em {{ optional($pedido->created_at)->format('d/m/Y \a\s H:i') ?? 'N/D' }}</span>
         </div>
-        <span class="{{ $statusClasse }}">{{ $statusLabel }}</span>
-    </header>
+        <div class="pedido-card__status">
+            <span class="{{ $statusClasse }}">{{ $statusLabel }}</span>
+            <span class="pedido-card__icone" aria-hidden="true"></span>
+        </div>
+    </summary>
 
+    <div class="pedido-card__conteudo">
     <section class="pedido-card__secao">
         <h3 class="pedido-card__secao-titulo">Resumo</h3>
         <dl class="pedido-dados">
@@ -84,4 +89,5 @@
             </ul>
         </section>
     @endif
-</article>
+    </div>
+</details>

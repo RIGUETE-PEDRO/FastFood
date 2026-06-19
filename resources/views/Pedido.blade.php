@@ -33,8 +33,12 @@
                     @else
                         @php
                             $statusFinalizados = [4, 5];
+                            $ultimoPedidoId = optional($pedidos->first())->id;
                             $pedidosEmAndamento = $pedidos->filter(fn ($pedido) => !in_array((int) $pedido->status, $statusFinalizados, true))->values();
                             $pedidosFinalizados = $pedidos->filter(fn ($pedido) => in_array((int) $pedido->status, $statusFinalizados, true))->values();
+                            $ultimoPedidoFinalizado = $pedidosFinalizados->contains(
+                                fn ($pedido) => (int) $pedido->id === (int) $ultimoPedidoId
+                            );
                         @endphp
 
                         <section class="pedidos-grupo pedidos-grupo--ativos">
@@ -51,14 +55,17 @@
                             @else
                                 <div class="lista-pedidos lista-pedidos--ativos">
                                     @foreach($pedidosEmAndamento as $pedido)
-                                        @include('partials.pedido-cliente-card', ['pedido' => $pedido])
+                                        @include('partials.pedido-cliente-card', [
+                                            'pedido' => $pedido,
+                                            'pedidoAberto' => (int) $pedido->id === (int) $ultimoPedidoId,
+                                        ])
                                     @endforeach
                                 </div>
                             @endif
                         </section>
 
                         @if($pedidosFinalizados->isNotEmpty())
-                            <details class="pedidos-finalizados">
+                            <details class="pedidos-finalizados" @if($ultimoPedidoFinalizado) open @endif>
                                 <summary class="pedidos-finalizados__summary">
                                     <span>Pedidos finalizados</span>
                                     <span class="pedidos-finalizados__contador">{{ $pedidosFinalizados->count() }}</span>
@@ -66,7 +73,10 @@
                                 </summary>
                                 <div class="lista-pedidos lista-pedidos--finalizados">
                                     @foreach($pedidosFinalizados as $pedido)
-                                        @include('partials.pedido-cliente-card', ['pedido' => $pedido])
+                                        @include('partials.pedido-cliente-card', [
+                                            'pedido' => $pedido,
+                                            'pedidoAberto' => (int) $pedido->id === (int) $ultimoPedidoId,
+                                        ])
                                     @endforeach
                                 </div>
                             </details>

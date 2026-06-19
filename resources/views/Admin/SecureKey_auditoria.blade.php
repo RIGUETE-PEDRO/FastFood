@@ -7,9 +7,9 @@
 
     @include('partials.favicon')
     <title>Auditoria SecureKey</title>
-    @vite(['resources/js/app.js'])
-    <link rel="stylesheet" href="{{ asset('css/Admin/SecureKey.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/Admin/Auditoria.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('css/Admin/SecureKey.css') }}?v={{ filemtime(public_path('css/Admin/SecureKey.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Auditoria.css') }}?v={{ filemtime(public_path('css/Admin/Auditoria.css')) }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -89,24 +89,29 @@
             </section>
 
             <section class="card auditoria-table">
-                <div id="auditoria-config" data-url="{{ route('SecureKey.auditoria') }}" hidden></div>
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header auditoria-table-header">
                     <h5><i class="fas fa-shield-alt" aria-hidden="true"></i> Registros de auditoria</h5>
-                    <span class="badge bg-light text-dark" id="auditoria-total-badge">{{ $auditorias->total() }} registros</span>
+                    <div class="auditoria-table-actions">
+                        <span class="badge bg-light text-dark">{{ $auditorias->total() }} registros</span>
+                        <a href="{{ request()->fullUrl() }}" class="btn btn-sm btn-outline-info auditoria-refresh-btn" aria-label="Atualizar registros de auditoria">
+                            <i class="fas fa-rotate-right" aria-hidden="true"></i>
+                            <span>Atualizar</span>
+                        </a>
+                    </div>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                <div class="table-responsive auditoria-table-scroll">
+                    <table class="table table-hover mb-0 auditoria-records-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Usuario</th>
-                                <th>Acao</th>
-                                <th>Recurso</th>
-                                <th>IP</th>
-                                <th>User Agent</th>
-                                <th>Data/Hora</th>
-                                <th>Detalhes</th>
+                                <th class="col-id">ID</th>
+                                <th class="col-user">Usuario</th>
+                                <th class="col-action">Acao</th>
+                                <th class="col-resource">Recurso</th>
+                                <th class="col-ip">IP</th>
+                                <th class="col-agent">User Agent</th>
+                                <th class="col-date">Data/Hora</th>
+                                <th class="col-details">Detalhes</th>
                             </tr>
                         </thead>
                         <tbody id="auditoria-table-body">
@@ -122,7 +127,7 @@
                 @endif
             </section>
 
-            <div class="row auditoria-stats mt-4" id="auditoria-stats-container">
+            <div class="row auditoria-stats mt-4">
                 @include('Admin.partials.SecureKey_auditoria_stats', [
                     'auditorias' => $auditorias,
                     'estatisticas' => $estatisticas,
@@ -133,66 +138,24 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        (function () {
-            const cfg = document.getElementById('auditoria-config');
-            const auditoriaUrl = cfg?.dataset?.url || '';
-            const tbody = document.getElementById('auditoria-table-body');
-            const stats = document.getElementById('auditoria-stats-container');
-            const badge = document.getElementById('auditoria-total-badge');
+        document.addEventListener('click', async function (event) {
+            const button = event.target.closest('.auditoria-copy-json');
+            if (!button) return;
 
-            if (!auditoriaUrl || !tbody || !stats || !badge) {
-                return;
+            const target = document.getElementById(button.dataset.copyTarget);
+            if (!target) return;
+
+            try {
+                await navigator.clipboard.writeText(target.textContent.trim());
+                const original = button.innerHTML;
+                button.textContent = 'JSON copiado';
+                window.setTimeout(() => {
+                    button.innerHTML = original;
+                }, 1600);
+            } catch (_) {
+                button.textContent = 'Não foi possível copiar';
             }
-
-            const form = document.querySelector(`form[action="${auditoriaUrl}"]`);
-
-            const montarQuery = () => {
-                const params = new URLSearchParams(window.location.search);
-                params.set('polling', '1');
-
-                if (form) {
-                    const formData = new FormData(form);
-                    for (const [key, value] of formData.entries()) {
-                        if (value !== null && String(value).trim() !== '') {
-                            params.set(key, String(value));
-                        } else {
-                            params.delete(key);
-                        }
-                    }
-                }
-
-                return params.toString();
-            };
-
-            const atualizarTabela = async () => {
-                try {
-                    const query = montarQuery();
-                    const response = await fetch(`${auditoriaUrl}?${query}`, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        }
-                    });
-
-                    if (!response.ok) {
-                        return;
-                    }
-
-                    const data = await response.json();
-                    if (!data || !data.rowsHtml) {
-                        return;
-                    }
-
-                    tbody.innerHTML = data.rowsHtml;
-                    stats.innerHTML = data.statsHtml;
-                    badge.textContent = `${data.total} registros`;
-                } catch (e) {
-                    console.warn('Falha ao atualizar auditoria em tempo real.', e);
-                }
-            };
-
-            setInterval(atualizarTabela, 5000);
-        })();
+        });
     </script>
 </body>
 

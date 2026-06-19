@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AuditoriaRepositoryimpl implements AuditoriaRepository
 {
+    public function registrar(array $dados): SecureKeyAuditoriaModel
+    {
+        return SecureKeyAuditoriaModel::create($dados);
+    }
+
     public function buscar(array $filtros = [], int $porPagina = 20): LengthAwarePaginator
     {
         $query = SecureKeyAuditoriaModel::with('usuario');

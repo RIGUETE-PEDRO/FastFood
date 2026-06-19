@@ -20,8 +20,13 @@ class IndexController extends Controller
     {
         $usuarioLogado =  $this->genericBase->hasLogado();
         $produtos = $this->indexService->pegarProdutosIndex();
+        $produtosDestaque = $this->indexService->pegarProdutosDestaque();
         
-        return view('Index', ['usuario' => $usuarioLogado, 'produtos' => $produtos]);
+        return view('Index', [
+            'usuario' => $usuarioLogado,
+            'produtos' => $produtos,
+            'produtosDestaque' => $produtosDestaque,
+        ]);
 
     }
 }

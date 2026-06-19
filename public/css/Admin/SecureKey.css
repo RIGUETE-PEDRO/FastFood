@@ -81,6 +81,12 @@ body {
     flex-direction: column;
     gap: 8px;
     overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.kc-nav::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
 .kc-link {

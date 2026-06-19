@@ -34,23 +34,6 @@
                 </section>
 
                 <section class="config-grid">
-                    <article class="config-card painel">
-                        <div>
-                            <h2>Notificações de pedidos</h2>
-                            <p>Receba um aviso do navegador quando chegar pedido pendente para aceitar.</p>
-                        </div>
-
-                        <div class="config-card__actions">
-                            <button type="button" class="btn-config-notification" id="pedidos-enable-notifications">
-                                Ativar notificações
-                            </button>
-                            <span class="config-card__hint" id="notification-settings-status">
-                                As notificações dependem da permissão do navegador.
-                            </span>
-                        </div>
-                    </article>
-                </section>
-                <section class="config-grid">
                     <form class="empresa-form" action="{{ route('admin.configuracoes.atualizar') }}" method="POST">
                         @csrf
 

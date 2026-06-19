@@ -13,10 +13,17 @@
 
     $usuarioAtual = auth()->user() ?? ($usuario ?? null);
     $canSeeConfiguracoes = false;
+    $canSeePedidos = false;
+    $pedidosMonitorSnapshot = null;
 
     if ($usuarioAtual instanceof \App\Models\UsuarioModel) {
-        $canSeeConfiguracoes = app(\App\Services\SecureKeyService::class)
-            ->hasRole($usuarioAtual, \App\Roles\Roles::ADMIN);
+        $secureKeyService = app(\App\Services\SecureKeyService::class);
+        $canSeeConfiguracoes = $secureKeyService->hasRole($usuarioAtual, \App\Roles\Roles::ADMIN);
+        $canSeePedidos = $secureKeyService->hasRole($usuarioAtual, \App\Roles\Roles::PEDIDOS);
+
+        if ($canSeePedidos) {
+            $pedidosMonitorSnapshot = app(\App\Services\PedidoService::class)->checksumBasico();
+        }
     }
 
     $ffIcon = function (string $name) {
@@ -203,6 +210,21 @@
         @endif
     </div>
 </nav>
+
+@if($canSeePedidos)
+    <div
+        id="pedidos-global-notifier"
+        data-polling-url="{{ route('Pedidos.Poll', [], false) }}"
+        data-sound-url="{{ route('Pedidos.Som', [], false) }}"
+        data-user-id="{{ $usuarioAtual->getKey() }}"
+        data-last-pending-id="{{ $pedidosMonitorSnapshot['ultimoPendenteId'] ?? '' }}"
+        hidden
+    ></div>
+    <script
+        defer
+        src="{{ asset('js/admin-pedidos-realtime.js') }}?v={{ filemtime(public_path('js/admin-pedidos-realtime.js')) }}"
+    ></script>
+@endif
 
 <button type="button" class="ff-sidebar-overlay" data-sidebar-toggle aria-label="Fechar menu" tabindex="-1"></button>
 

@@ -18,7 +18,10 @@ class PedidosFeitosRepositoryimpl implements PedidosFeitosRepository
             'formaPagamento',
             'usuario',
             'motoboy',
-        ])->orderByDesc('created_at')->get();
+        ])
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->get();
     }
 
     public function salvarStatus(PedidoModel $pedido, int $status): PedidoModel

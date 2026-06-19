@@ -110,41 +110,6 @@
     color: var(--ff-muted, #6b7280);
 }
 
-.config-card__actions {
-    display: grid;
-    justify-items: end;
-    gap: 8px;
-}
-
-.btn-config-notification {
-    min-height: 42px;
-    padding: 0 16px;
-    border: 1px solid var(--ff-action, #b45309);
-    border-radius: 8px;
-    background: linear-gradient(135deg, var(--ff-action, #b45309), var(--ff-action-dark, #92400e));
-    color: #fff;
-    cursor: pointer;
-    font-weight: 850;
-    transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
-}
-
-.btn-config-notification:hover,
-.btn-config-notification:focus {
-    transform: translateY(-1px);
-    box-shadow: 0 12px 22px rgba(180, 83, 9, 0.18);
-}
-
-.btn-config-notification.is-active {
-    border-color: #16803c;
-    background: linear-gradient(135deg, #16803c, #0f6a2f);
-}
-
-.config-card__hint {
-    color: var(--ff-muted, #6b7280);
-    font-size: 0.82rem;
-    text-align: right;
-}
-
 .ff-main .config-card h2 {
     color: var(--ff-text, #101828) !important;
 }
@@ -279,18 +244,8 @@
         grid-template-columns: 1fr;
     }
 
-    .config-hero__badge,
-    .config-card__actions,
-    .btn-config-notification {
+    .config-hero__badge {
         width: 100%;
-    }
-
-    .config-card__actions {
-        justify-items: stretch;
-    }
-
-    .config-card__hint {
-        text-align: left;
     }
 
     .empresa-form__grid {

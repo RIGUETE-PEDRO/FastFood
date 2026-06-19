@@ -30,7 +30,8 @@ class PedidoRepositoryimpl implements PedidoRepository
     {
         return PedidoModel::query()
             ->select(['id', 'status', 'updated_at'])
-            ->orderByDesc('updated_at')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->get();
     }
 

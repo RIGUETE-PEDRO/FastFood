@@ -18,4 +18,9 @@ class IndexService
         return $this->produtoRepository->pegarProdutosIndex();
 
     }
+
+    public function pegarProdutosDestaque()
+    {
+        return $this->produtoRepository->pegarProdutosDestaque();
+    }
 }

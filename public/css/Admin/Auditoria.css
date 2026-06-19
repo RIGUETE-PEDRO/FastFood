@@ -1,7 +1,10 @@
 /* SecureKey auditoria: complemento visual alinhado ao design system */
 
 .auditoria-container {
+    width: 100%;
+    max-width: 1640px;
     min-height: 100vh;
+    margin-inline: auto;
     background: transparent;
 }
 
@@ -130,13 +133,89 @@
     font-weight: 850;
 }
 
+.auditoria-table-header {
+    flex-wrap: wrap;
+}
+
+.auditoria-table-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.auditoria-refresh-btn {
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-color: rgba(20, 184, 166, 0.28);
+    color: #0f766e;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.auditoria-refresh-btn:hover {
+    background: rgba(20, 184, 166, 0.12);
+    border-color: rgba(20, 184, 166, 0.34);
+    color: #0f766e;
+}
+
+.auditoria-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    background:
+        linear-gradient(90deg, #fff 30%, rgba(255, 255, 255, 0)),
+        linear-gradient(270deg, #fff 30%, rgba(255, 255, 255, 0)) 100% 0,
+        linear-gradient(90deg, rgba(15, 23, 42, 0.10), rgba(15, 23, 42, 0)),
+        linear-gradient(270deg, rgba(15, 23, 42, 0.10), rgba(15, 23, 42, 0)) 100% 0;
+    background-attachment: local, local, scroll, scroll;
+    background-repeat: no-repeat;
+    background-size: 36px 100%, 36px 100%, 14px 100%, 14px 100%;
+}
+
 .auditoria-table .table {
+    min-width: 1420px;
     margin-bottom: 0;
     color: var(--ff-text);
+    table-layout: fixed;
+}
+
+.auditoria-records-table .col-id {
+    width: 78px;
+}
+
+.auditoria-records-table .col-user {
+    width: 280px;
+}
+
+.auditoria-records-table .col-action {
+    width: 175px;
+}
+
+.auditoria-records-table .col-resource {
+    width: 245px;
+}
+
+.auditoria-records-table .col-ip {
+    width: 145px;
+}
+
+.auditoria-records-table .col-agent {
+    width: 300px;
+}
+
+.auditoria-records-table .col-date {
+    width: 145px;
+}
+
+.auditoria-records-table .col-details {
+    width: 125px;
+    text-align: center;
 }
 
 .auditoria-table .table thead th {
-    padding: 12px 10px;
+    padding: 13px 12px;
     border-color: var(--ff-border);
     background: var(--ff-surface-soft);
     color: var(--ff-muted);
@@ -147,7 +226,7 @@
 }
 
 .auditoria-table .table tbody td {
-    padding: 12px 10px;
+    padding: 14px 12px;
     border-color: var(--ff-border);
     color: var(--ff-text);
     vertical-align: middle;
@@ -158,16 +237,106 @@
 }
 
 .auditoria-table .table code {
+    max-width: 100%;
+    display: inline-block;
     padding: 4px 7px;
+    overflow: hidden;
     border-radius: var(--ff-radius-sm);
     background: var(--ff-surface-soft);
     color: var(--ff-primary-dark);
     font-size: 0.86rem;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.auditoria-id,
+.auditoria-ip,
+.auditoria-agent,
+.auditoria-date {
+    color: var(--ff-muted);
+    font-size: 0.84rem;
+}
+
+.auditoria-id {
+    font-weight: 850;
+}
+
+.auditoria-user {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.auditoria-user__avatar {
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(249, 115, 22, 0.20);
+    border-radius: var(--ff-radius-sm);
+    background: #fff7ed;
+    color: var(--ff-primary-dark);
+    font-size: 0.9rem;
+    font-weight: 850;
+}
+
+.auditoria-user__text {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.auditoria-user__text strong,
+.auditoria-user__text small,
+.auditoria-agent {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.auditoria-user__text strong {
+    color: var(--ff-text);
+    font-size: 0.92rem;
+    line-height: 1.25;
+}
+
+.auditoria-user__text small {
+    color: var(--ff-muted);
+    font-size: 0.8rem;
+}
+
+.auditoria-agent {
+    display: block;
+    max-width: 100%;
+}
+
+.auditoria-date {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    color: var(--ff-text);
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.auditoria-date small {
+    color: var(--ff-muted);
+    font-size: 0.78rem;
+    font-weight: 750;
 }
 
 .auditoria-table .badge-info {
     background: rgba(20, 184, 166, 0.12) !important;
     color: #0f766e !important;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .auditoria-table .badge-warning {
@@ -177,6 +346,10 @@
 
 .auditoria-table .btn-sm {
     min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     padding: 6px 10px;
     border-radius: var(--ff-radius-sm);
     font-size: 0.84rem;
@@ -302,10 +475,17 @@
 }
 
 .auditoria-modal .modal-content {
+    min-height: min(760px, calc(100vh - 48px));
     overflow: hidden;
     border: 1px solid var(--ff-border);
     border-radius: var(--ff-radius);
     box-shadow: var(--ff-shadow);
+}
+
+.auditoria-modal .modal-dialog {
+    width: min(1420px, calc(100vw - 48px));
+    max-width: none;
+    margin-inline: auto;
 }
 
 .auditoria-modal .modal-header {
@@ -324,17 +504,105 @@
 }
 
 .auditoria-modal .modal-body {
-    padding: 16px;
+    padding: 22px;
 }
 
-.auditoria-modal .modal-body pre {
-    max-height: 420px;
-    margin-bottom: 0;
-    padding: 14px;
-    overflow-y: auto;
+.auditoria-detail-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.auditoria-detail-card {
+    padding: 18px;
+    border: 1px solid var(--ff-border);
+    border-radius: var(--ff-radius);
+    background: #fff;
+}
+
+.auditoria-detail-card h6,
+.auditoria-json h6 {
+    margin: 0;
+    color: var(--ff-text);
+    font-size: 0.96rem;
+    font-weight: 850;
+}
+
+.auditoria-detail-card dl {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 14px 0 0;
+}
+
+.auditoria-detail-card dl > div {
+    min-width: 0;
+}
+
+.auditoria-detail-card__full {
+    grid-column: 1 / -1;
+}
+
+.auditoria-detail-card dt {
+    margin-bottom: 4px;
+    color: var(--ff-muted);
+    font-size: 0.72rem;
+    font-weight: 850;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.auditoria-detail-card dd {
+    margin: 0;
+    color: var(--ff-text);
+    font-size: 0.88rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.auditoria-json {
+    overflow: hidden;
     border: 1px solid var(--ff-border);
     border-radius: var(--ff-radius);
     background: var(--ff-surface-soft);
+}
+
+.auditoria-json__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--ff-border);
+    background: #fff;
+}
+
+.auditoria-json__header span {
+    display: block;
+    margin-top: 3px;
+    color: var(--ff-muted);
+    font-size: 0.8rem;
+}
+
+.auditoria-copy-json {
+    flex: 0 0 auto;
+    font-weight: 800;
+}
+
+.auditoria-modal .modal-body pre {
+    min-height: 520px;
+    max-height: calc(100vh - 230px);
+    margin-bottom: 0;
+    padding: 20px;
+    overflow: auto;
+    border: 0;
+    border-radius: 0;
+    background: var(--ff-surface-soft);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 .auditoria-modal .modal-footer {
@@ -378,7 +646,54 @@
         flex-direction: column;
     }
 
+    .auditoria-table-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
     .auditoria-table .table {
-        min-width: 920px;
+        min-width: 1180px;
+    }
+
+    .auditoria-table .btn-sm span {
+        display: none;
+    }
+
+    .auditoria-modal .modal-dialog {
+        width: calc(100vw - 20px);
+        margin: 10px auto;
+    }
+
+    .auditoria-modal .modal-content {
+        min-height: calc(100vh - 20px);
+    }
+
+    .auditoria-modal .modal-body {
+        padding: 14px;
+    }
+
+    .auditoria-detail-summary,
+    .auditoria-detail-card dl {
+        grid-template-columns: 1fr;
+    }
+
+    .auditoria-detail-card__full {
+        grid-column: auto;
+    }
+
+    .auditoria-json__header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .auditoria-copy-json {
+        width: 100%;
+    }
+
+    .auditoria-modal .modal-body pre {
+        min-height: calc(100vh - 190px);
+        max-height: calc(100vh - 190px);
+        padding: 14px;
+        font-size: 0.82rem;
     }
 }

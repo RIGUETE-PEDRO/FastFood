@@ -41,14 +41,6 @@
             </div>
         </header>
 
-        <div class="pedido-alerta" id="pedido-alerta-novo" role="status" aria-live="polite" hidden>
-            <div>
-                <strong>Novo pedido para aceitar</strong>
-                <span>Confira a lista de pedidos pendentes.</span>
-            </div>
-            <button type="button" class="pedido-alerta__fechar" data-close-order-alert aria-label="Fechar aviso">×</button>
-        </div>
-
         <div id="pedidos-resumo-wrapper">
             @include('Admin.partials.pedidos-resumo-cards', ['dashboardCards' => $dashboardCards])
         </div>

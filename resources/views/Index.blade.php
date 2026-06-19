@@ -25,10 +25,11 @@
             </button>
     <main>
 
-        <!-- CARROSSEL -->
+        <!-- CARROSSEL: somente produtos marcados como destaque -->
+        @if ($produtosDestaque->isNotEmpty())
         <div class="carousel-produtos">
             <div class="carousel-track">
-                @foreach ($produtos as $produto)
+                @foreach ($produtosDestaque as $produto)
                 <div class="produto-card-mini" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
                     <div class="mini-img">
                         <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}">
@@ -44,7 +45,7 @@
                 @endforeach
 
 
-                @foreach ($produtos as $produto)
+                @foreach ($produtosDestaque as $produto)
                 <div class="produto-card-mini" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
                     <div class="mini-img">
                         <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}">
@@ -61,6 +62,7 @@
 
             </div>
         </div>
+        @endif
 
 
 
@@ -70,7 +72,7 @@
                 <div>
                     <span class="home-products__eyebrow">Produtos</span>
                     <h1 id="home-products-title">Escolha seu pedido</h1>
-                    <p>Produtos em destaque com preco, ingredientes e acao rapida para adicionar ao carrinho.</p>
+                    <p>Todos os produtos disponíveis, com preço, ingredientes e ação rápida para adicionar ao carrinho.</p>
                 </div>
                 <span class="home-products__count">{{ $produtos->count() }} itens</span>
             </div>

@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 
 class PedidosFeitosController extends Controller
@@ -108,5 +109,16 @@ class PedidosFeitosController extends Controller
                 'statusLabels' => $dados['statusLabels'],
             ])->render(),
         ]);
+    }
+
+    public function somNovoPedido(): BinaryFileResponse
+    {
+        return response()->file(
+            app_path('sons/jekyll85-60s-telephone-bells-196165_sd1qeg9h.mp3'),
+            [
+                'Content-Type' => 'audio/mpeg',
+                'Cache-Control' => 'private, max-age=86400',
+            ]
+        );
     }
 }

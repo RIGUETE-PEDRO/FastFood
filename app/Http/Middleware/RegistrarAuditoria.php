@@ -2,9 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\AuditoriaRegistroService;
 use Closure;
 use Illuminate\Http\Request;
-use App\Services\AuditoriaRegistroService;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -14,29 +15,19 @@ class RegistrarAuditoria
     {
     }
 
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
-     */
     public function handle(Request $request, Closure $next)
     {
+        $inicio = microtime(true);
         $response = $next($request);
 
-        // Registra apenas para usuários autenticados
         if (Auth::check()) {
-            $this->registrarRequisicao($request);
+            $this->registrarRequisicao($request, $response, $inicio);
         }
 
         return $response;
     }
 
-    /**
-     * Registra a requisição se for uma ação importante
-     */
-    private function registrarRequisicao(Request $request): void
+    private function registrarRequisicao(Request $request, $response, float $inicio): void
     {
         $metodo = $request->method();
         $rota = $request->route()?->getName() ?? $request->path();
@@ -45,20 +36,15 @@ class RegistrarAuditoria
             return;
         }
 
-        // Registra todos os movimentos do usuário autenticado
-        $this->registrarOperacao($request, $rota, $metodo);
+        $this->registrarOperacao($request, $rota, $metodo, $response, $inicio);
     }
 
-    /**
-     * Ignora apenas rotas técnicas para reduzir ruído
-     */
     private function deveIgnorarRota(Request $request, string $rota, string $metodo): bool
     {
         if ($metodo === 'HEAD') {
             return true;
         }
 
-        // Não auditar chamadas assíncronas de atualização (polling/AJAX)
         if ($request->ajax() || $request->expectsJson() || $request->boolean('polling')) {
             return true;
         }
@@ -70,6 +56,11 @@ class RegistrarAuditoria
             'livewire',
             'sanctum/csrf-cookie',
             'favicon.ico',
+            'SecureKey.auditoria',
+            'admin.configuracoes.atualizar',
+            'login',
+            'logout',
+            'cypress-login-admin',
         ];
 
         foreach ($ignorados as $item) {
@@ -81,41 +72,82 @@ class RegistrarAuditoria
         return false;
     }
 
-    /**
-     * Registra a operação na auditoria
-     */
-    private function registrarOperacao(Request $request, string $rota, string $metodo): void
-    {
-        $acao = $this->mapearAcao($metodo);
+    private function registrarOperacao(
+        Request $request,
+        string $rota,
+        string $metodo,
+        $response,
+        float $inicio
+    ): void {
+        $acao = $this->mapearAcao($metodo, $rota);
         $recurso = $this->extrairRecurso($rota);
+        $route = $request->route();
+        $statusHttp = method_exists($response, 'getStatusCode')
+            ? $response->getStatusCode()
+            : null;
 
-        // Dados a registrar na auditoria
         $detalhes = [
-            'rota' => $rota,
-            'metodo_http' => $metodo,
-            'ip' => $request->ip(),
-            'path' => $request->path(),
+            'requisicao' => [
+                'metodo' => $metodo,
+                'url' => $request->fullUrl(),
+                'path' => $request->path(),
+                'rota' => $rota,
+                'controlador' => $route?->getActionName(),
+                'parametros_rota' => $this->sanitizarDados($route?->parameters() ?? []),
+                'query' => $this->sanitizarDados($request->query()),
+                'corpo' => $this->sanitizarDados($request->except(array_keys($request->query()))),
+                'ip' => $request->ip(),
+                'ips_encaminhados' => $request->ips(),
+                'ajax' => $request->ajax(),
+                'conteudo_tipo' => $request->header('content-type'),
+                'idioma' => $request->getPreferredLanguage(),
+                'cabecalhos' => $this->cabecalhosSeguros($request),
+            ],
+            'resposta' => [
+                'status' => $statusHttp,
+                'sucesso' => $statusHttp !== null && $statusHttp >= 200 && $statusHttp < 400,
+                'conteudo_tipo' => isset($response->headers)
+                    ? $response->headers->get('content-type')
+                    : null,
+                'redirecionamento' => method_exists($response, 'isRedirection') && $response->isRedirection()
+                    ? $response->headers->get('location')
+                    : null,
+            ],
+            'execucao' => [
+                'duracao_ms' => round((microtime(true) - $inicio) * 1000, 2),
+                'memoria_mb' => round(memory_get_peak_usage(true) / 1024 / 1024, 2),
+                'registrado_em' => now()->toIso8601String(),
+            ],
         ];
-
-        // Adiciona parâmetros relevantes (sem dados sensíveis)
-        if (in_array($metodo, ['POST', 'PUT', 'PATCH'])) {
-            $detalhes['parametros'] = $this->sanitizarDados($request->all());
-        }
 
         try {
             $this->auditoriaRegistroService->registrar($acao, $recurso, $detalhes);
         } catch (\Exception $e) {
-            // Log silencioso de erros em auditoria para não quebrar a aplicação
             Log::error('Erro ao registrar auditoria: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Mapeia o método HTTP para uma ação
-     */
-    private function mapearAcao(string $metodo): string
+    private function mapearAcao(string $metodo, string $rota): string
     {
-        return match($metodo) {
+        $rotaLower = strtolower($rota);
+
+        if (str_contains($rotaLower, 'deletar') || str_contains($rotaLower, 'destroy') || str_contains($rotaLower, 'remover')) {
+            return 'excluir';
+        }
+
+        if (str_contains($rotaLower, 'atualizar') || str_contains($rotaLower, 'update') || str_contains($rotaLower, 'alterar')) {
+            return 'atualizar';
+        }
+
+        if (str_contains($rotaLower, 'login')) {
+            return 'login';
+        }
+
+        if (str_contains($rotaLower, 'logout')) {
+            return 'logout';
+        }
+
+        return match ($metodo) {
             'POST' => 'criar',
             'PUT', 'PATCH' => 'atualizar',
             'DELETE' => 'excluir',
@@ -124,37 +156,38 @@ class RegistrarAuditoria
         };
     }
 
-    /**
-     * Extrai o recurso do nome da rota
-     */
     private function extrairRecurso(string $rota): string
     {
-        // Converte "produtos.store" para "produto"
         $partes = explode('.', $rota);
         $recurso = $partes[0] ?? 'desconhecido';
 
-        // Remove plurais comuns
-        $recurso = rtrim($recurso, 's');
-
-        return ucfirst($recurso);
+        return ucfirst(rtrim($recurso, 's'));
     }
 
-    /**
-     * Remove dados sensíveis antes de registrar
-     */
     private function sanitizarDados(array $dados): array
     {
         $chavesSensiveis = [
-            'senha', 'password', 'token', 'secret', 'api_key',
-            'numero_cartao', 'cvv', 'pin', 'senha_antiga',
+            'senha',
+            'password',
+            'token',
+            'secret',
+            'api_key',
+            'numero_cartao',
+            'cvv',
+            'pin',
+            'senha_antiga',
+            '_token',
+            'csrf',
+            'authorization',
+            'cookie',
         ];
 
         $dadosSanitizados = [];
-        foreach ($dados as $chave => $valor) {
-            $chaveLower = strtolower($chave);
 
-            // Verifica se a chave é sensível
+        foreach ($dados as $chave => $valor) {
+            $chaveLower = strtolower((string) $chave);
             $ehSensivel = false;
+
             foreach ($chavesSensiveis as $sensivel) {
                 if (str_contains($chaveLower, $sensivel)) {
                     $ehSensivel = true;
@@ -164,8 +197,18 @@ class RegistrarAuditoria
 
             if ($ehSensivel) {
                 $dadosSanitizados[$chave] = '[REDACTED]';
+            } elseif ($valor instanceof UploadedFile) {
+                $dadosSanitizados[$chave] = [
+                    'arquivo' => $valor->getClientOriginalName(),
+                    'tipo' => $valor->getClientMimeType(),
+                    'tamanho_bytes' => $valor->getSize(),
+                ];
             } elseif (is_array($valor)) {
                 $dadosSanitizados[$chave] = $this->sanitizarDados($valor);
+            } elseif (is_object($valor)) {
+                $dadosSanitizados[$chave] = method_exists($valor, 'getKey')
+                    ? ['tipo' => $valor::class, 'id' => $valor->getKey()]
+                    : ['tipo' => $valor::class];
             } else {
                 $dadosSanitizados[$chave] = $valor;
             }
@@ -173,5 +216,30 @@ class RegistrarAuditoria
 
         return $dadosSanitizados;
     }
-}
 
+    private function cabecalhosSeguros(Request $request): array
+    {
+        $permitidos = [
+            'accept',
+            'accept-language',
+            'content-type',
+            'origin',
+            'referer',
+            'x-requested-with',
+            'x-forwarded-for',
+            'x-forwarded-proto',
+        ];
+
+        $cabecalhos = [];
+
+        foreach ($permitidos as $cabecalho) {
+            $valor = $request->header($cabecalho);
+
+            if ($valor !== null && $valor !== '') {
+                $cabecalhos[$cabecalho] = $valor;
+            }
+        }
+
+        return $cabecalhos;
+    }
+}

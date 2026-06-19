@@ -56,13 +56,7 @@ class Relating_roles_to_user extends Seeder
                 'created_at' => now(),
                 'tipo_usuario_id' => 3,
                 'role_id' => 10
-            ],
-            [
-                'created_at' => now(),
-                'tipo_usuario_id' => 3,
-                'role_id' => 11
             ]
-
             ]);
     }
 }

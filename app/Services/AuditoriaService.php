@@ -3,9 +3,6 @@
 namespace App\Services;
 
 use App\Models\SecureKeyAuditoriaModel;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Request as RequestFacade;
 
 class AuditoriaService
 {
@@ -24,16 +21,7 @@ class AuditoriaService
         array $detalhes = [],
         ?int $usuarioId = null
     ): SecureKeyAuditoriaModel {
-        $usuarioId = $usuarioId ?? Auth::id();
-
-        return SecureKeyAuditoriaModel::create([
-            'usuario_id' => $usuarioId,
-            'acao' => $acao,
-            'recurso' => $recurso,
-            'ip' => self::obterIP(),
-            'user_agent' => RequestFacade::userAgent(),
-            'detalhes' => $detalhes,
-        ]);
+        return app(AuditoriaRegistroService::class)->registrar($acao, $recurso, $detalhes, $usuarioId);
     }
 
     /**
@@ -67,9 +55,7 @@ class AuditoriaService
             [
                 'dados_antigos' => $dadosAntigos,
                 'dados_novos' => $dadosNovos,
-                'campos_alterados' => array_keys(
-                    array_diff_assoc($dadosNovos, $dadosAntigos)
-                )
+                'campos_alterados' => self::camposAlterados($dadosAntigos, $dadosNovos),
             ],
             $usuarioId
         );
@@ -308,18 +294,19 @@ class AuditoriaService
         );
     }
 
-    /**
-     * Obtém o IP do cliente
-     */
-    private static function obterIP(): string
+    private static function camposAlterados(array $dadosAntigos, array $dadosNovos): array
     {
-        if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-            return $_SERVER['HTTP_CF_CONNECTING_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            return $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } elseif (!empty($_SERVER['REMOTE_ADDR'])) {
-            return $_SERVER['REMOTE_ADDR'];
+        $campos = [];
+
+        foreach ($dadosNovos as $campo => $valorNovo) {
+            $valorAntigo = $dadosAntigos[$campo] ?? null;
+
+            if (json_encode($valorAntigo) !== json_encode($valorNovo)) {
+                $campos[] = $campo;
+            }
         }
-        return '0.0.0.0';
+
+        return $campos;
     }
+
 }

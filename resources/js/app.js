@@ -7,7 +7,6 @@ import './carrinho-modal';
 import './carrinho-quantidade';
 import './sidebar';
 
-import './admin-pedidos-realtime';
 import './admin-dashboard';
 import './flash-toast';
 import './profile-image-preview';
