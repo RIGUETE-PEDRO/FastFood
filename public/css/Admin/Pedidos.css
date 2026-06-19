@@ -356,6 +356,21 @@ body {
     gap: 12px;
 }
 
+.pedidos-andamento-filtro {
+    margin-bottom: 2px;
+    border-color: rgba(180, 83, 9, 0.18);
+    background: linear-gradient(135deg, #ffffff, #fff7ed);
+}
+
+.pedidos-andamento-filtro__campos {
+    grid-template-columns: minmax(260px, 1fr);
+}
+
+.pedidos-andamento-filtro .pedidos-finalizados-filtro__input:focus {
+    border-color: var(--orders-accent);
+    box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.12);
+}
+
 .pedidos-finalizados-filtro label {
     display: grid;
     gap: 6px;
@@ -422,6 +437,73 @@ body {
     border-color: var(--orders-border-strong);
     box-shadow: var(--orders-shadow);
     transform: translateY(-2px);
+}
+
+.pedido-card.is-new-order {
+    position: relative;
+    z-index: 2;
+    border: 3px solid #f59e0b;
+    animation: pedidoNovoPiscar 0.75s ease-in-out 8;
+}
+
+.pedido-card.is-new-order::after {
+    content: "Novo pedido";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 5;
+    padding: 6px 10px;
+    border-radius: var(--orders-pill);
+    background: #dc2626;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.28);
+}
+
+@keyframes pedidoNovoPiscar {
+    0%,
+    100% {
+        border-color: #f59e0b;
+        box-shadow:
+            0 0 0 2px rgba(245, 158, 11, 0.18),
+            var(--orders-shadow-soft);
+        filter: brightness(1);
+    }
+
+    50% {
+        border-color: #dc2626;
+        box-shadow:
+            0 0 0 8px rgba(220, 38, 38, 0.24),
+            0 22px 46px rgba(180, 83, 9, 0.34);
+        filter: brightness(1.08);
+    }
+}
+
+.pedido-card.is-new-order .pedido-card__header {
+    animation: pedidoNovoCabecalho 0.75s ease-in-out 8;
+}
+
+@keyframes pedidoNovoCabecalho {
+    0%,
+    100% {
+        background: #fff7d6;
+    }
+
+    50% {
+        background: #fee2e2;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pedido-card.is-new-order {
+        animation: none;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.2);
+        background: #fff7d6;
+    }
 }
 
 .pedido-card::before {

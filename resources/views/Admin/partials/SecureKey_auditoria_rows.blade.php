@@ -100,7 +100,16 @@
                                             Copiar JSON
                                         </button>
                                     </div>
-                                    <pre id="auditoria-json-{{ $auditoria->id }}"><code>{{ $jsonDetalhes ?: '{}' }}</code></pre>
+                                    <div class="auditoria-json-tree">
+                                        @if(count($detalhes))
+                                            @include('Admin.partials.auditoria-json-tree', ['dados' => $detalhes])
+                                        @else
+                                            <div class="auditoria-json-tree__row">
+                                                <span class="auditoria-json-tree__empty">{}</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <pre id="auditoria-json-{{ $auditoria->id }}" class="auditoria-json__copy-source" aria-hidden="true">{{ $jsonDetalhes ?: '{}' }}</pre>
                                 </section>
                             </div>
                             <div class="modal-footer">

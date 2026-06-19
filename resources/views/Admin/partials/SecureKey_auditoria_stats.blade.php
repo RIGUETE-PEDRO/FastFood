@@ -1,7 +1,6 @@
 @php
     $estatisticas = $estatisticas ?? [
         'total' => $auditorias->total(),
-        'usuarios_ativos' => $auditorias->getCollection()->whereNotNull('usuario_id')->pluck('usuario_id')->unique()->count(),
         'tipos_acao' => $auditorias->getCollection()->whereNotNull('acao')->pluck('acao')->unique()->count(),
         'ultima_acao' => $auditorias->first(),
     ];
@@ -33,14 +32,6 @@
             @else
                 <p class="text-secondary mb-0">Nenhum registro</p>
             @endif
-        </div>
-    </div>
-</div>
-<div class="col-md-3">
-    <div class="card">
-        <div class="card-body">
-            <h6 class="card-title text-muted">Usuarios ativos</h6>
-            <h3 class="text-info">{{ $estatisticas['usuarios_ativos'] }}</h3>
         </div>
     </div>
 </div>

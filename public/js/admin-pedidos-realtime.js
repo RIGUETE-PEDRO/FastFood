@@ -17,13 +17,18 @@
     const totalBadge = document.getElementById('pedidos-total-badge');
     const resumoWrapper = document.getElementById('pedidos-resumo-wrapper');
     const listaWrapper = document.getElementById('pedidos-lista-wrapper');
+    const soundUnlockButton = document.getElementById('pedidos-sound-unlock');
     const notifierUserId = notifier?.dataset.userId || '';
     const lastSeenStorageKey = notifierUserId
       ? `flashfood.pedidos.ultimoVisto.${notifierUserId}`
       : '';
+    const pendingHighlightStorageKey = notifierUserId
+      ? `flashfood.pedidos.destacar.${notifierUserId}`
+      : '';
     const alertAudio = notifier?.dataset.soundUrl
       ? new Audio(notifier.dataset.soundUrl)
       : null;
+    let audioUnlocked = false;
 
     if (alertAudio) {
       alertAudio.preload = 'auto';
@@ -31,18 +36,36 @@
 
       const unlockAudio = async () => {
         try {
-          alertAudio.muted = true;
+          alertAudio.volume = 0.01;
+          alertAudio.muted = false;
           await alertAudio.play();
           alertAudio.pause();
           alertAudio.currentTime = 0;
-          alertAudio.muted = false;
+          alertAudio.volume = 1;
+          audioUnlocked = true;
+          if (soundUnlockButton) soundUnlockButton.hidden = true;
         } catch (_) {
-          alertAudio.muted = false;
+          alertAudio.volume = 1;
+          audioUnlocked = false;
+          if (soundUnlockButton) soundUnlockButton.hidden = false;
         }
       };
 
-      document.addEventListener('pointerdown', unlockAudio, { once: true, capture: true });
-      document.addEventListener('keydown', unlockAudio, { once: true, capture: true });
+      soundUnlockButton?.addEventListener('click', unlockAudio);
+
+      document.addEventListener('pointerdown', async () => {
+        if (!audioUnlocked) await unlockAudio();
+      }, { once: true, capture: true });
+
+      document.addEventListener('keydown', async () => {
+        if (!audioUnlocked) await unlockAudio();
+      }, { once: true, capture: true });
+
+      window.setTimeout(() => {
+        if (!audioUnlocked && soundUnlockButton) {
+          soundUnlockButton.hidden = false;
+        }
+      }, 1200);
     }
 
     function normalizeNumber(value, fallback = 0) {
@@ -71,6 +94,51 @@
         window.localStorage.setItem(lastSeenStorageKey, String(id));
       } catch (_) {
         // Continua monitorando na aba atual se o armazenamento estiver bloqueado.
+      }
+    }
+
+    function savePendingHighlight(id) {
+      if (!pendingHighlightStorageKey || !Number.isFinite(id) || id <= 0) return;
+
+      try {
+        window.localStorage.setItem(pendingHighlightStorageKey, JSON.stringify({
+          id,
+          createdAt: Date.now(),
+        }));
+      } catch (_) {
+        // O destaque imediato continua funcionando na tela de pedidos.
+      }
+    }
+
+    function readPendingHighlight() {
+      if (!pendingHighlightStorageKey) return null;
+
+      try {
+        const stored = window.localStorage.getItem(pendingHighlightStorageKey);
+        if (!stored) return null;
+
+        const highlight = JSON.parse(stored);
+        const id = normalizeNumber(highlight?.id, 0);
+        const createdAt = normalizeNumber(highlight?.createdAt, 0);
+
+        if (id <= 0 || createdAt <= 0 || Date.now() - createdAt > 10 * 60 * 1000) {
+          window.localStorage.removeItem(pendingHighlightStorageKey);
+          return null;
+        }
+
+        return { id, createdAt };
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function clearPendingHighlight() {
+      if (!pendingHighlightStorageKey) return;
+
+      try {
+        window.localStorage.removeItem(pendingHighlightStorageKey);
+      } catch (_) {
+        // Sem ação adicional.
       }
     }
 
@@ -103,6 +171,8 @@
 
         return true;
       } catch (_) {
+        audioUnlocked = false;
+        if (soundUnlockButton) soundUnlockButton.hidden = false;
         return false;
       } finally {
         isAlertPlaying = false;
@@ -122,6 +192,7 @@
       }
 
       if (newestPendingId > storedLastSeenId) {
+        savePendingHighlight(newestPendingId);
         saveLastSeenId(newestPendingId);
         const played = await playNewOrderSound();
         if (!played) {
@@ -144,6 +215,37 @@
     }
 
     function initInteractions() {
+      document.querySelectorAll('[data-filtro-clientes-andamento]').forEach((input) => {
+        if (input.dataset.enhanced === '1') return;
+        input.dataset.enhanced = '1';
+
+        const filterOpenOrders = () => {
+          const container = input.closest('.lista-pedidos-admin');
+          if (!container) return;
+
+          const term = input.value.trim().toLocaleLowerCase('pt-BR');
+          let visibleOrders = 0;
+
+          container.querySelectorAll('.pedido-card').forEach((card) => {
+            const client = card.dataset.cliente?.toLocaleLowerCase('pt-BR')
+              || card.querySelector('.pedido-card__cliente')?.textContent.toLocaleLowerCase('pt-BR')
+              || '';
+            const matchesClient = term === '' || client.includes(term);
+
+            card.classList.toggle('is-filter-hidden', !matchesClient);
+            if (matchesClient) visibleOrders += 1;
+          });
+
+          const emptyMessage = container.querySelector('[data-filtro-andamento-vazio]');
+          if (emptyMessage) {
+            emptyMessage.hidden = term === '' || visibleOrders > 0;
+          }
+        };
+
+        input.addEventListener('input', filterOpenOrders);
+        filterOpenOrders();
+      });
+
       document.querySelectorAll('[data-filtro-clientes-entregues]').forEach((input) => {
         if (input.dataset.enhanced === '1') return;
         input.dataset.enhanced = '1';
@@ -238,7 +340,35 @@
       });
     }
 
-    async function updateContent() {
+    function highlightNewOrder(pedidoId) {
+      if (!root || !pedidoId) return false;
+
+      const card = root.querySelector(`.pedido-card[data-pedido-id="${pedidoId}"]`);
+      if (!card) return false;
+
+      const details = card.querySelector('.pedido-collapse');
+      if (details) {
+        details.open = true;
+      }
+
+      card.classList.remove('is-new-order');
+      void card.offsetWidth;
+      card.classList.add('is-new-order');
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      window.setTimeout(() => {
+        card.classList.remove('is-new-order');
+      }, 7000);
+
+      clearPendingHighlight();
+      return true;
+    }
+
+    async function updateContent(newPendingId = 0) {
+      const openOrdersFilter = document.querySelector('[data-filtro-clientes-andamento]')?.value || '';
+      const deliveredOrdersFilter = document.querySelector('[data-filtro-clientes-entregues]')?.value || '';
+      const deliveredDateFilter = document.querySelector('[data-filtro-dia-entregues]')?.value || '';
+
       const response = await fetch(`${pollingUrl}?full=1&t=${Date.now()}`, {
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
@@ -268,6 +398,27 @@
       syncPending(data);
       currentChecksum = data.checksum;
       initInteractions();
+
+      const refreshedOpenFilter = document.querySelector('[data-filtro-clientes-andamento]');
+      const refreshedDeliveredFilter = document.querySelector('[data-filtro-clientes-entregues]');
+      const refreshedDeliveredDate = document.querySelector('[data-filtro-dia-entregues]');
+
+      if (refreshedOpenFilter && openOrdersFilter) {
+        refreshedOpenFilter.value = openOrdersFilter;
+        refreshedOpenFilter.dispatchEvent(new Event('input'));
+      }
+
+      if (refreshedDeliveredFilter && deliveredOrdersFilter) {
+        refreshedDeliveredFilter.value = deliveredOrdersFilter;
+        refreshedDeliveredFilter.dispatchEvent(new Event('input'));
+      }
+
+      if (refreshedDeliveredDate && deliveredDateFilter) {
+        refreshedDeliveredDate.value = deliveredDateFilter;
+        refreshedDeliveredDate.dispatchEvent(new Event('input'));
+      }
+
+      highlightNewOrder(newPendingId);
     }
 
     async function checkChanges() {
@@ -290,8 +441,16 @@
         if (!data?.checksum) return;
 
         if (root && currentChecksum && data.checksum !== currentChecksum) {
+          const previousPendingId = normalizeNumber(lastPendingId, 0);
+          const newestPendingId = normalizeNumber(data.ultimoPendenteId, 0);
+          const newPendingId = newestPendingId > previousPendingId ? newestPendingId : 0;
+
+          if (newPendingId > 0) {
+            savePendingHighlight(newPendingId);
+          }
+
           isUpdating = true;
-          await updateContent();
+          await updateContent(newPendingId);
           isUpdating = false;
         } else {
           syncPending(data);
@@ -309,6 +468,13 @@
     const initialPendingId = normalizeNumber(notifier?.dataset.lastPendingId, 0);
     if (notifier && readLastSeenId() === null && initialPendingId > 0) {
       saveLastSeenId(initialPendingId);
+    }
+
+    const pendingHighlight = readPendingHighlight();
+    if (root && pendingHighlight) {
+      window.setTimeout(() => {
+        highlightNewOrder(pendingHighlight.id);
+      }, 120);
     }
 
     void checkChanges();

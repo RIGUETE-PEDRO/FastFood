@@ -17,6 +17,7 @@
 
 <article
     class="pedido-card shadow-sm"
+    data-pedido-id="{{ $pedido->id }}"
     data-status="{{ $statusAtualValor }}"
     data-cliente="{{ Str::lower(optional($pedido->usuario)->nome ?? 'desconhecido') }}"
     data-pedido-data="{{ optional($pedido->created_at)->format('Y-m-d') }}"

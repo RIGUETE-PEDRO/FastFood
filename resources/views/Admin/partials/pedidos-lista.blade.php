@@ -8,6 +8,31 @@
 @else
     <section class="lista-pedidos-admin">
         <h2 class="secao-titulo">Pedidos em andamento</h2>
+        @if(($pedidosPorStatus['abertos'] ?? collect())->isNotEmpty())
+            <div class="pedidos-finalizados-filtro pedidos-andamento-filtro">
+                <div class="pedidos-finalizados-filtro__header">
+                    <span>Filtrar pedidos em andamento</span>
+                    <small>Busque rapidamente pelo nome do cliente</small>
+                </div>
+                <div class="pedidos-finalizados-filtro__campos pedidos-andamento-filtro__campos">
+                    <label for="filtroClienteAndamento">
+                        <span>Cliente</span>
+                        <input
+                            type="search"
+                            id="filtroClienteAndamento"
+                            class="pedidos-finalizados-filtro__input"
+                            placeholder="Nome do cliente"
+                            autocomplete="off"
+                            data-filtro-clientes-andamento
+                        >
+                    </label>
+                </div>
+            </div>
+            <p class="pedidos-lista-vazia texto-suave" data-filtro-andamento-vazio hidden>
+                Nenhum pedido em andamento encontrado para esse cliente.
+            </p>
+        @endif
+
         @forelse(($pedidosPorStatus['abertos'] ?? collect()) as $pedido)
             @include('Admin.partials.pedido-card', [
                 'pedido' => $pedido,

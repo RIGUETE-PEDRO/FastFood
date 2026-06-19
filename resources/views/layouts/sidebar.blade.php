@@ -220,6 +220,10 @@
         data-last-pending-id="{{ $pedidosMonitorSnapshot['ultimoPendenteId'] ?? '' }}"
         hidden
     ></div>
+    <button type="button" class="pedidos-sound-unlock" id="pedidos-sound-unlock" hidden>
+        <span aria-hidden="true">&#128276;</span>
+        Ativar som de pedidos
+    </button>
     <script
         defer
         src="{{ asset('js/admin-pedidos-realtime.js') }}?v={{ filemtime(public_path('js/admin-pedidos-realtime.js')) }}"

@@ -41,10 +41,6 @@ class AuditoriaRepositoryimpl implements AuditoriaRepository
 
         return [
             'total' => (clone $query)->count(),
-            'usuarios_ativos' => (clone $query)
-                ->whereNotNull('usuario_id')
-                ->distinct('usuario_id')
-                ->count('usuario_id'),
             'tipos_acao' => (clone $query)
                 ->whereNotNull('acao')
                 ->distinct('acao')
