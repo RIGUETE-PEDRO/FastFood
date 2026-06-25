@@ -24,7 +24,6 @@
     <main
         class="container py-4 pedidos-admin"
         id="pedidos-admin-root"
-        data-polling-url="{{ route('Pedidos.Poll') }}"
         data-realtime-channel="pedidos.admin"
         data-checksum="{{ $realtimeChecksum ?? '' }}"
         data-pending-count="{{ $pedidosPendentes ?? 0 }}"

@@ -4,16 +4,12 @@
     const notifier = document.getElementById('pedidos-global-notifier');
     if (!root && !notifier) return;
 
-    const pollingUrl = notifier?.dataset.pollingUrl || root?.dataset.pollingUrl;
     const realtimeChannel = notifier?.dataset.realtimeChannel || root?.dataset.realtimeChannel || 'pedidos.admin';
 
     let currentChecksum = root?.dataset.checksum || '';
     let currentPending = normalizeNumber(root?.dataset.pendingCount || '0');
     let lastPendingId = root?.dataset.lastPendingId || '';
-    let isUpdating = false;
-    let isChecking = false;
     let isAlertPlaying = false;
-    let fallbackTimer = null;
 
     const totalBadge = document.getElementById('pedidos-total-badge');
     const resumoWrapper = document.getElementById('pedidos-resumo-wrapper');
@@ -385,17 +381,24 @@
       }
     }
 
+    function usarTokenCsrfDaAba(html) {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+      return csrfToken
+        ? html.split('__FLASHFOOD_CSRF_TOKEN__').join(csrfToken)
+        : html;
+    }
+
     function applyRealtimeData(data, newPendingId = 0) {
       if (!data?.checksum) return;
 
       const filters = readFilters();
 
       if (typeof data.resumoHtml === 'string' && resumoWrapper) {
-        resumoWrapper.innerHTML = data.resumoHtml;
+        resumoWrapper.innerHTML = usarTokenCsrfDaAba(data.resumoHtml);
       }
 
       if (typeof data.listaHtml === 'string' && listaWrapper) {
-        listaWrapper.innerHTML = data.listaHtml;
+        listaWrapper.innerHTML = usarTokenCsrfDaAba(data.listaHtml);
       }
 
       if (totalBadge && data.totalLabel) {
@@ -409,24 +412,6 @@
       highlightNewOrder(newPendingId);
 
       return true;
-    }
-
-    async function fetchContent(newPendingId = 0) {
-      if (!pollingUrl) return false;
-
-      const response = await fetch(`${pollingUrl}?full=1&t=${Date.now()}`, {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          Accept: 'application/json',
-        },
-        credentials: 'same-origin',
-        cache: 'no-store',
-      });
-
-      if (!response.ok) return false;
-
-      const data = await response.json();
-      return applyRealtimeData(data, newPendingId);
     }
 
     function getNewPendingId(data) {
@@ -447,17 +432,6 @@
       if (data.checksum === currentChecksum) {
         syncPending(data);
         currentChecksum = data.checksum;
-        return;
-      }
-
-      const hasHtmlPayload = typeof data.resumoHtml === 'string' && typeof data.listaHtml === 'string';
-      if (root && !hasHtmlPayload) {
-        try {
-          isUpdating = true;
-          await fetchContent(newPendingId);
-        } finally {
-          isUpdating = false;
-        }
         return;
       }
 
@@ -484,55 +458,6 @@
       }
     }
 
-    async function checkChanges() {
-      if (!pollingUrl || isUpdating || isChecking) return;
-      isChecking = true;
-
-      try {
-        const response = await fetch(`${pollingUrl}?t=${Date.now()}`, {
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            Accept: 'application/json',
-          },
-          credentials: 'same-origin',
-          cache: 'no-store',
-        });
-
-        if (!response.ok) return;
-
-        const data = await response.json();
-        if (!data?.checksum) return;
-
-        if (root && currentChecksum && data.checksum !== currentChecksum) {
-          const previousPendingId = normalizeNumber(lastPendingId, 0);
-          const newestPendingId = normalizeNumber(data.ultimoPendenteId, 0);
-          const newPendingId = newestPendingId > previousPendingId ? newestPendingId : 0;
-
-          if (newPendingId > 0) {
-            savePendingHighlight(newPendingId);
-          }
-
-          isUpdating = true;
-          await fetchContent(newPendingId);
-          isUpdating = false;
-        } else {
-          syncPending(data);
-          currentChecksum = data.checksum;
-        }
-      } catch (_) {
-        isUpdating = false;
-      } finally {
-        isChecking = false;
-      }
-    }
-
-    function startPollingFallback() {
-      if (!pollingUrl || fallbackTimer) return;
-
-      void checkChanges();
-      fallbackTimer = window.setInterval(checkChanges, 5000);
-    }
-
     function startRealtime(attempt = 0) {
       if (subscribeRealtime()) return;
 
@@ -540,8 +465,6 @@
         window.setTimeout(() => startRealtime(attempt + 1), 250);
         return;
       }
-
-      startPollingFallback();
     }
 
     initInteractions();

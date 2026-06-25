@@ -214,7 +214,6 @@
 @if($canSeePedidos)
     <div
         id="pedidos-global-notifier"
-        data-polling-url="{{ route('Pedidos.Poll', [], false) }}"
         data-realtime-channel="pedidos.admin"
         data-sound-url="{{ route('Pedidos.Som', [], false) }}"
         data-user-id="{{ $usuarioAtual->getKey() }}"

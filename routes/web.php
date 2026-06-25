@@ -154,10 +154,6 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
         ->middleware('SecureKey.role:' . Roles::PEDIDOS)
         ->name('Pedidos.StatusAvancar');
 
-    Route::get('/Pedidos.Administrativo/poll', [PedidosFeitosController::class, 'pollResumo'])
-        ->middleware('SecureKey.role:' . Roles::PEDIDOS)
-        ->name('Pedidos.Poll');
-
     Route::get('/Pedidos.Administrativo/som', [PedidosFeitosController::class, 'somNovoPedido'])
         ->middleware('SecureKey.role:' . Roles::PEDIDOS)
         ->name('Pedidos.Som');

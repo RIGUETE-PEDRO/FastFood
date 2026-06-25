@@ -82,35 +82,6 @@ class PedidosFeitosController extends Controller
 
 
 
-    public function pollResumo(Request $request): JsonResponse
-    {
-        if (!$request->boolean('full')) {
-            return response()->json(
-                $this->pedidosService->checksumBasico()
-            );
-        }
-
-        $dados = $this->pedidosService->dadosResumo();
-
-        return response()->json([
-            'checksum' => $dados['checksum'],
-            'total' => $dados['total'],
-            'pendentes' => $dados['pendentes'],
-            'ultimoPendenteId' => $dados['ultimoPendenteId'],
-            'totalLabel' => $dados['total'] . ' pedidos ativos',
-            'resumoHtml' => view('Admin.partials.pedidos-resumo-cards', [
-                'dashboardCards' => $dados['dashboardCards'],
-            ])->render(),
-            'listaHtml' => view('Admin.partials.pedidos-lista', [
-                'pedidos' => $dados['pedidos'],
-                'pedidosPorStatus' => $dados['pedidosPorStatus'],
-                'statusOptions' => $dados['statusOptions'],
-                'statusTimeline' => $dados['statusTimeline'],
-                'statusLabels' => $dados['statusLabels'],
-            ])->render(),
-        ]);
-    }
-
     public function somNovoPedido(): BinaryFileResponse
     {
         return response()->file(
