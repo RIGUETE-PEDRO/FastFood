@@ -9,7 +9,11 @@
 /.idea
 /.nova
 /.phpunit.cache
-/.vscode
+/.vscode/*
+!/.vscode/
+!/.vscode/extensions.json
+!/.vscode/launch.json
+!/.vscode/tasks.json
 /.zed
 /auth.json
 /node_modules

@@ -1,0 +1,162 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Laravel: serve local with Xdebug",
+      "type": "process",
+      "command": "php",
+      "args": [
+        "-dxdebug.mode=debug",
+        "-dxdebug.start_with_request=yes",
+        "-dxdebug.client_host=127.0.0.1",
+        "-dxdebug.client_port=9003",
+        "-dxdebug.idekey=VSCODE",
+        "-dxdebug.log=storage/logs/xdebug.log",
+        "-dxdebug.log_level=7",
+        "artisan",
+        "serve",
+        "--host=127.0.0.1",
+        "--port=8000"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "APP_ENV": "local",
+          "APP_DEBUG": "true",
+          "APP_URL": "http://127.0.0.1:8000",
+          "DB_CONNECTION": "mysql",
+          "DB_HOST": "127.0.0.1",
+          "DB_PORT": "3307",
+          "CACHE_STORE": "file",
+          "SESSION_DRIVER": "file",
+          "QUEUE_CONNECTION": "sync",
+          "REDIS_HOST": "127.0.0.1",
+          "XDEBUG_MODE": "debug",
+          "XDEBUG_CONFIG": "client_host=127.0.0.1 client_port=9003",
+          "XDEBUG_SESSION": "VSCODE"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "laravel",
+        "pattern": [
+          {
+            "regexp": "^(.*)$",
+            "message": 1
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": ".*Server running on.*"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    },
+    {
+      "label": "Docker: Vite dev",
+      "type": "process",
+      "command": "docker",
+      "args": [
+        "compose",
+        "up",
+        "node"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": [
+          {
+            "regexp": "^(.*)$",
+            "message": 1
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": ".*Local:.*"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    },
+    {
+      "label": "Laravel: full local debug stack",
+      "dependsOn": [
+        "Laravel: serve local with Xdebug"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker: compose up debug",
+      "type": "process",
+      "command": "docker",
+      "args": [
+        "compose",
+        "up",
+        "--build"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "docker",
+        "pattern": [
+          {
+            "regexp": "^(.*)$",
+            "message": 1
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": ".*Server running on.*"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    },
+    {
+      "label": "Docker: app + vite debug stack",
+      "dependsOn": [
+        "Docker: compose up debug"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    },
+    {
+      "label": "Laravel: clear cached config",
+      "type": "process",
+      "command": "php",
+      "args": [
+        "-dxdebug.mode=off",
+        "artisan",
+        "optimize:clear"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    }
+  ]
+}

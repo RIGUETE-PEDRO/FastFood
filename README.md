@@ -114,6 +114,43 @@ Tambem e possivel subir Laravel, Reverb, fila, logs e Vite juntos com:
 composer dev
 ```
 
+### Debugando no VS Code
+
+O projeto ja possui configuracoes em `.vscode/` para Xdebug. Instale a extensao recomendada `PHP Debug` quando o VS Code sugerir.
+
+Para debug com Docker:
+
+1. No painel Run and Debug, selecione `Listen for Xdebug` e clique em iniciar.
+2. No VS Code, execute a task `Docker: compose up debug`.
+
+Tambem e possivel iniciar pelo terminal:
+
+```bash
+docker compose up --build
+```
+
+3. Acesse `http://localhost:8000`.
+
+O Node usado pelo Vite fica no container `node_FlashFood`. Para subir somente o Vite via Docker, execute a task `Docker: Vite dev`.
+
+Se alterar `.vscode/launch.json`, pare o listener de debug no botao vermelho do VS Code e inicie `Listen for Xdebug` novamente. O VS Code so recarrega o mapeamento `/app -> workspace` quando a sessao de debug reinicia.
+
+Para debug local no Windows, sem Docker:
+
+1. Deixe MySQL disponivel em `127.0.0.1:3307`.
+2. Instale Node.js 22 ou superior no Windows.
+3. No VS Code, execute a task `Laravel: full local debug stack`.
+4. No painel Run and Debug, selecione `Listen for Xdebug` e clique em iniciar.
+5. Acesse `http://127.0.0.1:8000` e use breakpoints normalmente.
+
+Se o breakpoint nao parar no Docker, confira se o listener `Listen for Xdebug` foi iniciado antes de abrir a pagina. O perfil `Debug Xdebug smoke test` testa apenas o Xdebug local do Windows; ele nao testa o Xdebug dentro do container.
+
+O script `composer dev` continua otimizado e desliga o Xdebug. Para iniciar o ambiente local com Xdebug pelo terminal, use:
+
+```bash
+composer debug
+```
+
 ### Executando o Cypress
 
 Para abrir os testes end-to-end:
