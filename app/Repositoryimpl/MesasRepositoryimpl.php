@@ -39,7 +39,11 @@ class MesasRepositoryimpl implements MesasRepository
                 StatusPedidos::ENTREGUE->value,
                 StatusPedidos::CANCELADO->value,
             ])
-            ->update(['status' => StatusPedidos::ENTREGUE->value]);
+            ->get()
+            ->each(function (PedidoModel $pedido) {
+                $pedido->status = StatusPedidos::ENTREGUE->value;
+                $pedido->save();
+            });
     }
 
     public function listarMesas()
@@ -195,7 +199,11 @@ class MesasRepositoryimpl implements MesasRepository
         if ($pedidoIds->isNotEmpty()) {
             PedidoModel::query()
                 ->whereIn('id', $pedidoIds)
-                ->update(['mesa_id' => null]);
+                ->get()
+                ->each(function (PedidoModel $pedido) {
+                    $pedido->mesa_id = null;
+                    $pedido->save();
+                });
         }
     }
 

@@ -5,7 +5,7 @@
     if (!root && !notifier) return;
 
     const pollingUrl = notifier?.dataset.pollingUrl || root?.dataset.pollingUrl;
-    if (!pollingUrl) return;
+    const realtimeChannel = notifier?.dataset.realtimeChannel || root?.dataset.realtimeChannel || 'pedidos.admin';
 
     let currentChecksum = root?.dataset.checksum || '';
     let currentPending = normalizeNumber(root?.dataset.pendingCount || '0');
@@ -13,11 +13,11 @@
     let isUpdating = false;
     let isChecking = false;
     let isAlertPlaying = false;
+    let fallbackTimer = null;
 
     const totalBadge = document.getElementById('pedidos-total-badge');
     const resumoWrapper = document.getElementById('pedidos-resumo-wrapper');
     const listaWrapper = document.getElementById('pedidos-lista-wrapper');
-    const soundUnlockButton = document.getElementById('pedidos-sound-unlock');
     const notifierUserId = notifier?.dataset.userId || '';
     const lastSeenStorageKey = notifierUserId
       ? `flashfood.pedidos.ultimoVisto.${notifierUserId}`
@@ -43,15 +43,12 @@
           alertAudio.currentTime = 0;
           alertAudio.volume = 1;
           audioUnlocked = true;
-          if (soundUnlockButton) soundUnlockButton.hidden = true;
+          void monitorNewOrder({ ultimoPendenteId: lastPendingId });
         } catch (_) {
           alertAudio.volume = 1;
           audioUnlocked = false;
-          if (soundUnlockButton) soundUnlockButton.hidden = false;
         }
       };
-
-      soundUnlockButton?.addEventListener('click', unlockAudio);
 
       document.addEventListener('pointerdown', async () => {
         if (!audioUnlocked) await unlockAudio();
@@ -61,11 +58,7 @@
         if (!audioUnlocked) await unlockAudio();
       }, { once: true, capture: true });
 
-      window.setTimeout(() => {
-        if (!audioUnlocked && soundUnlockButton) {
-          soundUnlockButton.hidden = false;
-        }
-      }, 1200);
+      void unlockAudio();
     }
 
     function normalizeNumber(value, fallback = 0) {
@@ -172,7 +165,6 @@
         return true;
       } catch (_) {
         audioUnlocked = false;
-        if (soundUnlockButton) soundUnlockButton.hidden = false;
         return false;
       } finally {
         isAlertPlaying = false;
@@ -364,24 +356,39 @@
       return true;
     }
 
-    async function updateContent(newPendingId = 0) {
-      const openOrdersFilter = document.querySelector('[data-filtro-clientes-andamento]')?.value || '';
-      const deliveredOrdersFilter = document.querySelector('[data-filtro-clientes-entregues]')?.value || '';
-      const deliveredDateFilter = document.querySelector('[data-filtro-dia-entregues]')?.value || '';
+    function readFilters() {
+      return {
+        openOrders: document.querySelector('[data-filtro-clientes-andamento]')?.value || '',
+        deliveredOrders: document.querySelector('[data-filtro-clientes-entregues]')?.value || '',
+        deliveredDate: document.querySelector('[data-filtro-dia-entregues]')?.value || '',
+      };
+    }
 
-      const response = await fetch(`${pollingUrl}?full=1&t=${Date.now()}`, {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          Accept: 'application/json',
-        },
-        credentials: 'same-origin',
-        cache: 'no-store',
-      });
+    function restoreFilters(filters) {
+      const refreshedOpenFilter = document.querySelector('[data-filtro-clientes-andamento]');
+      const refreshedDeliveredFilter = document.querySelector('[data-filtro-clientes-entregues]');
+      const refreshedDeliveredDate = document.querySelector('[data-filtro-dia-entregues]');
 
-      if (!response.ok) return;
+      if (refreshedOpenFilter && filters.openOrders) {
+        refreshedOpenFilter.value = filters.openOrders;
+        refreshedOpenFilter.dispatchEvent(new Event('input'));
+      }
 
-      const data = await response.json();
+      if (refreshedDeliveredFilter && filters.deliveredOrders) {
+        refreshedDeliveredFilter.value = filters.deliveredOrders;
+        refreshedDeliveredFilter.dispatchEvent(new Event('input'));
+      }
+
+      if (refreshedDeliveredDate && filters.deliveredDate) {
+        refreshedDeliveredDate.value = filters.deliveredDate;
+        refreshedDeliveredDate.dispatchEvent(new Event('input'));
+      }
+    }
+
+    function applyRealtimeData(data, newPendingId = 0) {
       if (!data?.checksum) return;
+
+      const filters = readFilters();
 
       if (typeof data.resumoHtml === 'string' && resumoWrapper) {
         resumoWrapper.innerHTML = data.resumoHtml;
@@ -398,31 +405,87 @@
       syncPending(data);
       currentChecksum = data.checksum;
       initInteractions();
-
-      const refreshedOpenFilter = document.querySelector('[data-filtro-clientes-andamento]');
-      const refreshedDeliveredFilter = document.querySelector('[data-filtro-clientes-entregues]');
-      const refreshedDeliveredDate = document.querySelector('[data-filtro-dia-entregues]');
-
-      if (refreshedOpenFilter && openOrdersFilter) {
-        refreshedOpenFilter.value = openOrdersFilter;
-        refreshedOpenFilter.dispatchEvent(new Event('input'));
-      }
-
-      if (refreshedDeliveredFilter && deliveredOrdersFilter) {
-        refreshedDeliveredFilter.value = deliveredOrdersFilter;
-        refreshedDeliveredFilter.dispatchEvent(new Event('input'));
-      }
-
-      if (refreshedDeliveredDate && deliveredDateFilter) {
-        refreshedDeliveredDate.value = deliveredDateFilter;
-        refreshedDeliveredDate.dispatchEvent(new Event('input'));
-      }
-
+      restoreFilters(filters);
       highlightNewOrder(newPendingId);
+
+      return true;
+    }
+
+    async function fetchContent(newPendingId = 0) {
+      if (!pollingUrl) return false;
+
+      const response = await fetch(`${pollingUrl}?full=1&t=${Date.now()}`, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          Accept: 'application/json',
+        },
+        credentials: 'same-origin',
+        cache: 'no-store',
+      });
+
+      if (!response.ok) return false;
+
+      const data = await response.json();
+      return applyRealtimeData(data, newPendingId);
+    }
+
+    function getNewPendingId(data) {
+      const previousPendingId = normalizeNumber(lastPendingId, 0);
+      const newestPendingId = normalizeNumber(data?.ultimoPendenteId, 0);
+
+      return newestPendingId > previousPendingId ? newestPendingId : 0;
+    }
+
+    async function handleRealtimePayload(data) {
+      if (!data?.checksum) return;
+
+      const newPendingId = getNewPendingId(data);
+      if (newPendingId > 0) {
+        savePendingHighlight(newPendingId);
+      }
+
+      if (data.checksum === currentChecksum) {
+        syncPending(data);
+        currentChecksum = data.checksum;
+        return;
+      }
+
+      const hasHtmlPayload = typeof data.resumoHtml === 'string' && typeof data.listaHtml === 'string';
+      if (root && !hasHtmlPayload) {
+        try {
+          isUpdating = true;
+          await fetchContent(newPendingId);
+        } finally {
+          isUpdating = false;
+        }
+        return;
+      }
+
+      applyRealtimeData(data, newPendingId);
+    }
+
+    function subscribeRealtime() {
+      if (!window.Echo?.private) return false;
+
+      try {
+        window.Echo
+          .private(realtimeChannel)
+          .listen('.pedidos.atualizados', (data) => {
+            void handleRealtimePayload(data);
+          });
+
+        window.addEventListener('beforeunload', () => {
+          window.Echo?.leave?.(realtimeChannel);
+        }, { once: true });
+
+        return true;
+      } catch (_) {
+        return false;
+      }
     }
 
     async function checkChanges() {
-      if (isUpdating || isChecking) return;
+      if (!pollingUrl || isUpdating || isChecking) return;
       isChecking = true;
 
       try {
@@ -450,7 +513,7 @@
           }
 
           isUpdating = true;
-          await updateContent(newPendingId);
+          await fetchContent(newPendingId);
           isUpdating = false;
         } else {
           syncPending(data);
@@ -461,6 +524,24 @@
       } finally {
         isChecking = false;
       }
+    }
+
+    function startPollingFallback() {
+      if (!pollingUrl || fallbackTimer) return;
+
+      void checkChanges();
+      fallbackTimer = window.setInterval(checkChanges, 5000);
+    }
+
+    function startRealtime(attempt = 0) {
+      if (subscribeRealtime()) return;
+
+      if (attempt < 20) {
+        window.setTimeout(() => startRealtime(attempt + 1), 250);
+        return;
+      }
+
+      startPollingFallback();
     }
 
     initInteractions();
@@ -477,8 +558,7 @@
       }, 120);
     }
 
-    void checkChanges();
-    window.setInterval(checkChanges, 1000);
+    startRealtime();
   }
 
   if (document.readyState === 'loading') {

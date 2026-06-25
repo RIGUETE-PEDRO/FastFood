@@ -7,11 +7,13 @@ use App\Repository\PedidosFeitosRepository;
 use App\Repositoryimpl\IndexProdutoRepositoryimpl;
 use App\Repositoryimpl\PedidosFeitosRepositoryimpl;
 use Carbon\Carbon;
+use App\Models\PedidoModel;
 use App\Repository\AdminRepository;
 use App\Repository\AuditoriaRepository;
 use App\Repository\CarrinhoRepository;
 use App\Repository\GarcomRepository;
 use App\Repository\SecureKeyRepository;
+use App\Observers\PedidoObserver;
 use App\Roles\Roles;
 use App\Services\SecureKeyService;
 use App\Models\UsuarioModel;
@@ -71,6 +73,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Carbon::setLocale('pt_BR');
+        PedidoModel::observe(PedidoObserver::class);
 
         $resolverRole = function (string $roleName): string {
             $roleName = trim($roleName);

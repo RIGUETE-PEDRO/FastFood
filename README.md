@@ -11,6 +11,7 @@ Para executar o projeto FlashFood, recomenda-se utilizar Docker, pois todas as p
 - Docker Compose
 - Portas disponíveis:
   - `8000` para a aplicação Laravel
+  - `8080` para o WebSocket/Reverb
   - `5173` para o Vite
   - `3307` para o MySQL no computador host
 
@@ -86,6 +87,12 @@ O Vite ficará disponível na porta:
 http://localhost:5173
 ```
 
+O WebSocket/Reverb ficara disponivel na porta:
+
+```bash
+ws://localhost:8080
+```
+
 ### Executando sem Docker
 
 Na raiz do projeto, execute:
@@ -98,6 +105,13 @@ php artisan key:generate
 php artisan migrate
 npm run dev
 php artisan serve
+php artisan reverb:start --host=0.0.0.0 --port=8080
+```
+
+Tambem e possivel subir Laravel, Reverb, fila, logs e Vite juntos com:
+
+```bash
+composer dev
 ```
 
 ### Executando o Cypress

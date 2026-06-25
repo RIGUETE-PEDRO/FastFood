@@ -1711,30 +1711,3 @@ body:has(.ff-modal.is-open) .ff-sidebar-toggle {
     border-bottom-color: rgba(249, 115, 22, 0.12) !important;
     background: rgba(255, 255, 255, 0.58) !important;
 }
-.pedidos-sound-unlock {
-    position: fixed;
-    right: 18px;
-    bottom: 18px;
-    z-index: 2100;
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    border: 1px solid rgba(180, 83, 9, 0.3);
-    border-radius: 999px;
-    background: #b45309;
-    color: #fff;
-    cursor: pointer;
-    font-weight: 850;
-    box-shadow: 0 14px 34px rgba(180, 83, 9, 0.3);
-}
-
-.pedidos-sound-unlock[hidden] {
-    display: none !important;
-}
-
-.pedidos-sound-unlock:hover,
-.pedidos-sound-unlock:focus-visible {
-    background: #92400e;
-}

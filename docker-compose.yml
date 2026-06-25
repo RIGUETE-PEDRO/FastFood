@@ -9,9 +9,10 @@ services:
       - vendor_data:/app/vendor
     ports:
       - "8000:8000"
+      - "8080:8080"
     depends_on:
       - db
-    command: sh -c "test -f vendor/autoload.php || composer install && php artisan serve --host=0.0.0.0 --port=8000"
+    command: sh -c "set -e; test -f vendor/autoload.php || composer install; php artisan reverb:start --host=0.0.0.0 --port=8080 & exec php artisan serve --host=0.0.0.0 --port=8000"
 
   db:
     image: mysql:8.0
@@ -41,6 +42,14 @@ services:
       - "5173:5173"
 
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
 
 volumes:
   db_data:
