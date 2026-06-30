@@ -9,7 +9,6 @@ use App\Repositoryimpl\PedidosFeitosRepositoryimpl;
 use Carbon\Carbon;
 use App\Models\PedidoModel;
 use App\Repository\AdminRepository;
-use App\Repository\AuditoriaRepository;
 use App\Repository\CarrinhoRepository;
 use App\Repository\GarcomRepository;
 use App\Repository\SecureKeyRepository;
@@ -19,7 +18,6 @@ use App\Services\SecureKeyService;
 use App\Models\UsuarioModel;
 use App\Repository\GenericBaseRepository;
 use App\Repositoryimpl\AdminRepositoryimpl;
-use App\Repositoryimpl\AuditoriaRepositoryimpl;
 use App\Repositoryimpl\CarrinhoRepositoryimpl;
 use App\Repositoryimpl\GarcomRepositoryimpl;
 use App\Repositoryimpl\SecureKeyRepositoryimpl;
@@ -49,7 +47,6 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(AdminRepository::class, AdminRepositoryimpl::class);
-        $this->app->bind(AuditoriaRepository::class, AuditoriaRepositoryimpl::class);
         $this->app->bind(CarrinhoRepository::class, CarrinhoRepositoryimpl::class);
         $this->app->bind(GarcomRepository::class, GarcomRepositoryimpl::class);
         $this->app->bind(SecureKeyRepository::class, SecureKeyRepositoryimpl::class);
@@ -62,7 +59,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(MesasRepository::class, MesasRepositoryimpl::class);
         $this->app->bind(PedidosFeitosRepository::class, PedidosFeitosRepositoryimpl::class);
         $this->app->bind(GerenciaProdutosRepository::class, GerenciaProdutosRepositoryimpl::class);
-        $this->app->bind(AuditoriaRepository::class, AuditoriaRepositoryimpl::class);
         $this->app->bind(AuthRepository::class, AuthRepositoryimpl::class);
     }
 

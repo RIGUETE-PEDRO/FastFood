@@ -142,8 +142,7 @@ body {
     padding: 30px;
 }
 
-.kc-header,
-.auditoria-header {
+.kc-header {
     margin-bottom: 20px;
 }
 
@@ -160,8 +159,7 @@ body {
     font-weight: 850;
 }
 
-.kc-header h1,
-.auditoria-header h1 {
+.kc-header h1 {
     margin: 10px 0 6px;
     color: var(--ff-text);
     font-size: 2rem;
@@ -170,8 +168,7 @@ body {
     letter-spacing: 0;
 }
 
-.kc-header p,
-.auditoria-header p {
+.kc-header p {
     max-width: 720px;
     color: var(--ff-muted);
     font-size: 1rem;
@@ -557,8 +554,7 @@ textarea:focus-visible {
         padding: 14px 10px 24px;
     }
 
-    .kc-header h1,
-    .auditoria-header h1 {
+    .kc-header h1 {
         font-size: 1.55rem;
     }
 

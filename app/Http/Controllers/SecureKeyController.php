@@ -5,23 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\GenericBase;
 use App\Services\SecureKeyService;
-use App\Services\AuditoriaConsultaService;
 
 class SecureKeyController
 {
     protected GenericBase $genericBase;
     protected SecureKeyService $SecureKeyService;
-    protected AuditoriaConsultaService $auditoriaConsultaService;
 
     public function __construct(
         GenericBase              $genericBase,
-        SecureKeyService         $SecureKeyService,
-        AuditoriaConsultaService $auditoriaConsultaService
+        SecureKeyService         $SecureKeyService
     )
     {
         $this->genericBase = $genericBase;
         $this->SecureKeyService = $SecureKeyService;
-        $this->auditoriaConsultaService = $auditoriaConsultaService;
     }
 
     public function index()
@@ -45,38 +41,6 @@ class SecureKeyController
             $this->SecureKeyService->createRole($roleName);
         }
         return view('Admin.SecureKey_permissoes');
-    }
-
-    public function auditoria(Request $request)
-    {
-        $filtros = $this->auditoriaConsultaService->normalizarFiltros(
-            $request->only(['filtro', 'valor', 'ordem_data', 'data_inicio', 'data_fim'])
-        );
-        $auditorias = $this->auditoriaConsultaService->listar($filtros, 20);
-        $estatisticas = $this->auditoriaConsultaService->estatisticas($filtros);
-
-        if ($request->ajax()) {
-            return response()->json([
-                'total' => $estatisticas['total'],
-                'rowsHtml' => view('Admin.partials.SecureKey_auditoria_rows', [
-                    'auditorias' => $auditorias,
-                ])->render(),
-                'statsHtml' => view('Admin.partials.SecureKey_auditoria_stats', [
-                    'auditorias' => $auditorias,
-                    'estatisticas' => $estatisticas,
-                ])->render(),
-            ]);
-        }
-
-        return view('Admin.SecureKey_auditoria', [
-            'auditorias' => $auditorias,
-            'estatisticas' => $estatisticas,
-            'filtro' => $filtros['filtro'] ?? null,
-            'valor' => $filtros['valor'] ?? null,
-            'ordem_data' => $filtros['ordem_data'] ?? 'desc',
-            'data_inicio' => $filtros['data_inicio'] ?? null,
-            'data_fim' => $filtros['data_fim'] ?? null,
-        ]);
     }
 
     public function adicionarRoleGrupo(Request $request, int $grupo)

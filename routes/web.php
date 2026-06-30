@@ -30,7 +30,6 @@ Route::middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::SecureKey]
         Route::get('/', [SecureKeyController::class, 'index'])->name('SecureKey.index');
         Route::get('/grupo', [SecureKeyController::class, 'grupo'])->name('SecureKey.grupo');
         Route::get('/permissoes', [SecureKeyController::class, 'permissoes'])->name('SecureKey.permissoes');
-        Route::get('/auditoria', [SecureKeyController::class, 'auditoria'])->name('SecureKey.auditoria');
     });
 });
 

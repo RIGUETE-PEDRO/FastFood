@@ -16,19 +16,16 @@ class AdminService
     protected GenericBase $genericBase;
     protected AdminRepository $adminRepository;
     protected SecureKeyService $SecureKeyService;
-    protected AuditoriaRegistroService $auditoriaRegistroService;
 
     public function __construct(
         GenericBase $genericBase,
         AdminRepository $adminRepository,
-        SecureKeyService $SecureKeyService,
-        AuditoriaRegistroService $auditoriaRegistroService
+        SecureKeyService $SecureKeyService
     )
     {
         $this->genericBase = $genericBase;
         $this->adminRepository = $adminRepository;
         $this->SecureKeyService = $SecureKeyService;
-        $this->auditoriaRegistroService = $auditoriaRegistroService;
     }
 
     public function inserirImagemPerfil(array $data, $file = null): array
@@ -111,8 +108,6 @@ class AdminService
             ->listarDadosEmpresa()
             ->keyBy('Informacao');
 
-        $alteracoes = [];
-
         foreach ($dados as $informacao => $valor) {
             if (!$dadosExistentes->has($informacao)) {
                 continue;
@@ -126,18 +121,6 @@ class AdminService
             }
 
             $this->adminRepository->atualizarDadoEmpresa($informacao, $valor);
-
-            $alteracoes[$informacao] = [
-                'antes' => $valorAntigo,
-                'depois' => $valor,
-            ];
-        }
-
-        if ($alteracoes !== []) {
-            $this->auditoriaRegistroService->registrar('atualizar', 'dados_empresa', [
-                'campos_alterados' => array_keys($alteracoes),
-                'alteracoes' => $alteracoes,
-            ]);
         }
     }
 
