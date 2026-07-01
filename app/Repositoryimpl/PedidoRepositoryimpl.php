@@ -6,6 +6,7 @@ use App\Models\Dados_empresa;
 use App\Models\PedidoModel;
 use App\Repository\PedidoRepository;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class PedidoRepositoryimpl implements PedidoRepository
 {
@@ -50,8 +51,10 @@ class PedidoRepositoryimpl implements PedidoRepository
 
     public function buscarDadosEmpresa() :Collection 
     {
-        return Dados_empresa::all()
-            ->pluck('Valor', 'Informacao');
+         return Cache::remember('dados_empresa', now()->addDays(30), function () {
+            return Dados_empresa::all()
+                ->pluck('Valor', 'Informacao');
+         });
     }
 
 }

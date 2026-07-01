@@ -21,8 +21,7 @@ class AdminService
         GenericBase $genericBase,
         AdminRepository $adminRepository,
         SecureKeyService $SecureKeyService
-    )
-    {
+    ) {
         $this->genericBase = $genericBase;
         $this->adminRepository = $adminRepository;
         $this->SecureKeyService = $SecureKeyService;
@@ -159,7 +158,8 @@ class AdminService
     }
 
     public function listarFuncionarios()
-    {
+    {  
+        
         return $this->genericBase->findFuncionarios();
     }
 

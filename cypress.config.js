@@ -14,6 +14,10 @@ async function getConnection() {
   })
 }
 
+function usuarioTable() {
+  return process.env.DB_TABLE_USUARIO || "usuarios"
+}
+
 export default defineConfig({
   e2e: {
     baseUrl: process.env.CYPRESS_BASE_URL || "http://localhost:8000",
@@ -26,7 +30,7 @@ export default defineConfig({
                 const conn = await getConnection()
 
                 await conn.execute(
-                    `DELETE FROM ${process.env.DB_TABLE_USUARIO} WHERE email = ?`,
+                    `DELETE FROM ${usuarioTable()} WHERE email = ?`,
                     [email]
                 )
 
@@ -62,7 +66,7 @@ export default defineConfig({
                 )
 
                 await conn.execute(
-                    `DELETE FROM ${process.env.DB_TABLE_USUARIO} WHERE email = ?`,
+                    `DELETE FROM ${usuarioTable()} WHERE email = ?`,
                     [email]
                 )
 

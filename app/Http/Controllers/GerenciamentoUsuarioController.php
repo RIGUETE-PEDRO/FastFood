@@ -99,7 +99,6 @@ class GerenciamentoUsuarioController extends Controller
     public function atualizarFuncionario(Request $request, $id)
     {
         $this->gerenciamentoFuncionarioService->atualizarFuncionario($request, $id);
-        
         return redirect()->route('gerenciamento_funcionarios')->with('sucesso', PassMensagens::ATUALIZAR_FUNCIONARIO_SUCESSO);
     }
 }

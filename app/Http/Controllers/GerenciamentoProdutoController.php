@@ -2,12 +2,10 @@
 namespace App\Http\Controllers;
 
 use App\Mensagens\PassMensagens;
-use App\Models\ProdutoModel;
-use App\Models\Categoria;
 use App\Services\GerenciaProdutosService;
 use App\Services\GenericBase;
 use App\Services\AuthService;
-
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 
@@ -62,17 +60,14 @@ class GerenciamentoProdutoController extends Controller
     public function toggleCarrousel(Request $request, $id)
     {
         try {
-            $produto = ProdutoModel::findOrFail($id);
-
-            // Validar o request
             $validated = $request->validate([
                 'no_carrousel' => 'required|boolean'
             ]);
 
-            // Atualizar o campo no_carrousel
-            $produto->update([
-                'no_carrousel' => $validated['no_carrousel']
-            ]);
+            $produto = $this->gerenciaProdutosService->atualizarCarrousel(
+                $id,
+                (bool) $validated['no_carrousel']
+            );
 
             $status = $validated['no_carrousel'] ? 'adicionado ao' : 'removido do';
 
@@ -86,7 +81,7 @@ class GerenciamentoProdutoController extends Controller
                 ]
             ], 200);
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Produto não encontrado'

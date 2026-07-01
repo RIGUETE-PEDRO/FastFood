@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Repositoryimpl\GerenciaProdutosRepositoryimpl;
 use App\Repository\GerenciaProdutosRepository;
 
 class GerenciaProdutosService
@@ -49,58 +48,28 @@ class GerenciaProdutosService
             $produto->imagem_url = 'sem_imagem.jpg';
         }
 
-        $produto->save();
-        return $produto;
+        return $this->repository->salvarProduto($produto);
     }
 
-    public function removerProduto($id)
+    public function removerProduto($id): bool
     {
         $usuarioLogado =  $this->genericBase->hasLogado();
 
         if (($usuarioLogado->tipo ?? null) === 'Administrador') {
-
-            $produto = $this->repository->buscarProdutoPorId((int) $id);
-
-            if ($produto) {
-
-                if($produto->imagem_url && $produto->imagem_url !== 'sem_imagem.jpg' && file_exists(public_path('img/produtos/' . $produto->imagem_url))){
-
-                        unlink(public_path('img/produtos/' . $produto->imagem_url));
-
-                }
-
-                $produto->delete();
-            }
+            return $this->repository->deletarProduto((int) $id);
         }
+
+        return false;
+    }
+
+    public function atualizarCarrousel($id, bool $noCarrousel)
+    {
+        return $this->repository->atualizarCarrousel((int) $id, $noCarrousel);
     }
 
     public function atualizarProduto($id, $data)
     {
-        $produto = $this->repository->buscarProdutoPorId((int) $id);
-        if ($produto) {
-            $produto->nome = $data['nome'];
-            $produto->preco = str_replace(',', '.', $data['preco']);
-            $produto->descricao = $data['descricao'];
-            $produto->disponivel = $data['ativo'];
-            $produto->categoria_id = $data['categoria_id'];
-
-            // Se uma nova imagem foi enviada
-            if (isset($data['imagem']) && $data['imagem']->isValid()) {
-                // Apagar imagem antiga
-                if($produto->imagem_url && $produto->imagem_url !== 'sem_imagem.jpg'){
-                    if ($produto->imagem_url && file_exists(public_path('img/produtos/' . $produto->imagem_url))) {
-                        unlink(public_path('img/produtos/' . $produto->imagem_url));
-                    }
-                }
-
-                $file = $data['imagem'];
-                $filename = uniqid('produto_') . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('img/produtos'), $filename);
-                $produto->imagem_url = $filename;
-            }
-
-            $produto->save();
-        }
+        return $this->repository->atualizarProduto((int) $id, $data);
     }
 
 }

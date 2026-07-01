@@ -51,6 +51,28 @@ services:
 
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
 
+  cypress:
+    image: cypress/included:15.14.2
+    container_name: cypress_FlashFood
+    working_dir: /app
+    depends_on:
+      - app
+      - db
+      - node
+    environment:
+      CYPRESS_BASE_URL: http://app:8000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: FlashFood
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    volumes:
+      - .:/app
+      - /app/node_modules
+    entrypoint: ["/bin/sh", "-lc"]
+    command:
+      - "npm ci && npx cypress run"
+
 
   redis:
     image: redis:7-alpine

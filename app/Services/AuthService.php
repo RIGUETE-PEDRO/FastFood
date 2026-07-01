@@ -74,8 +74,4 @@ class AuthService
 
         return redirect('AcessoNegado')->with('erro', ErroMensagens::CREDENCIAIS_INVALIDAS);
     }
-
-
-
-
 }

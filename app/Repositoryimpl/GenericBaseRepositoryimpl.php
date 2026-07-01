@@ -8,6 +8,7 @@ use App\Models\FuncionarioModel;
 use App\Models\ProdutoModel;
 use App\Models\UsuarioModel;
 use App\Repository\GenericBaseRepository;
+use Illuminate\Support\Facades\Cache;
 
 class GenericBaseRepositoryimpl implements  GenericBaseRepository
 {
@@ -49,12 +50,16 @@ class GenericBaseRepositoryimpl implements  GenericBaseRepository
 
     public function findByCidade()
     {
-        return CidadeModel::orderBy('nome')->get();
+        return Cache::rememberForever('lista_cidades', function () {
+            return CidadeModel::orderBy('nome')->get();
+        });
     }
 
     public function findFuncionarios()
     {
-        return FuncionarioModel::with('usuario')->get();
+        return Cache::remember('List_funcionario', now()->addMinutes(60), function () {
+            return FuncionarioModel::with('usuario')->get();
+        });
     }
 
     public function deleteFuncionarioEUsuario(int $usuarioId): bool
@@ -67,7 +72,13 @@ class GenericBaseRepositoryimpl implements  GenericBaseRepository
 
         $usuario = UsuarioModel::find($usuarioId);
         if ($usuario) {
-            return (bool) $usuario->delete();
+            $deletou = (bool) $usuario->delete();
+
+            if ($deletou) {
+                Cache::forget('List_funcionario');
+            }
+
+            return $deletou;
         }
 
         return false;

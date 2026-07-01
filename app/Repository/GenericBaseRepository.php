@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repository;
+
 use App\Models\UsuarioModel;
 
 interface GenericBaseRepository
@@ -25,5 +26,5 @@ interface GenericBaseRepository
 
     public function pegarItensCarrinho(int $usuarioId);
 
-    public function findByProdutosIsUsuario(int $usuarioId, int $produtoId) ;
+    public function findByProdutosIsUsuario(int $usuarioId, int $produtoId);
 }

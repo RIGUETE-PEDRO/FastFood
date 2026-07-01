@@ -9,15 +9,18 @@ use App\Models\PedidoModel;
 use App\Models\FuncionarioModel;
 use App\Repository\AdminRepository;
 use Carbon\Carbon;
+use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class AdminRepositoryimpl implements AdminRepository
 {
+
     public function buscarFuncionarios($searchTerm)
     {
         $query = FuncionarioModel::with('usuario');
-
+    
         if (!empty($searchTerm)) {
             $query->whereHas('usuario', function ($q) use ($searchTerm) {
                 $q->where('nome', 'LIKE', '%' . $searchTerm . '%');
@@ -29,16 +32,22 @@ class AdminRepositoryimpl implements AdminRepository
 
     public function listarDadosEmpresa(): Collection
     {
-        return Dados_empresa::query()
-            ->orderBy('id')
-            ->get();
+        //cache do redis para armazenar os dados da empresa por 60 minutos
+        return Cache::remember('dados_empresa', now()->addMinutes(60), function () {
+            return Dados_empresa::query()
+                ->orderBy('id')
+                ->get();
+        });
     }
 
+    //pegar o valor de uma informação da empresa e dropar o cache do listar dados empresa
     public function atualizarDadoEmpresa(string $informacao, ?string $valor): void
     {
         Dados_empresa::query()
             ->where('Informacao', $informacao)
             ->update(['Valor' => $valor]);
+        
+        Cache::forget('dados_empresa');
     }
 
     public function totalVendasNoPeriodo(Carbon $inicioPeriodo, Carbon $fimPeriodo): float
@@ -71,6 +80,7 @@ class AdminRepositoryimpl implements AdminRepository
             ->pluck('total', 'status');
     }
 
+    //pegar o produto mais vendido no periodo e retornar o nome do produto e a quantidade vendida
     public function produtoMaisVendidoNoPeriodo(Carbon $inicioPeriodo, Carbon $fimPeriodo): ?object
     {
         return DB::table('item_pedido as ip')
@@ -84,6 +94,7 @@ class AdminRepositoryimpl implements AdminRepository
             ->first();
     }
 
+    //pegar os top produtos mais vendidos no periodo e retornar o nome do produto e a quantidade vendida
     public function topProdutosNoPeriodo(Carbon $inicioPeriodo, Carbon $fimPeriodo, int $limite = 5): Collection
     {
         return DB::table('item_pedido as ip')
