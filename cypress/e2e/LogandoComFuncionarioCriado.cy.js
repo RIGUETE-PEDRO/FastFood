@@ -1,61 +1,28 @@
-describe('admin', () => {
-    const baseUrl = Cypress.config('baseUrl') || 'http://localhost:8000'
-    const nome = 'Fernando Teste Automatizado Ferrari'
-    const senha = Cypress.env('SENHA_NOVO_USUARIO')
-    const email = Cypress.env('EMAIL_NOVO_USUARIO')
-    beforeEach(() => {
-        const senha = Cypress.env('SENHA_ADMINISTRADOR')
-        const email = Cypress.env('USUARIO_ADMINISTRADOR')
+describe('login de funcionario criado', () => {
+  const nome = 'Fernando Teste Automatizado Ferrari'
+  const email = Cypress.env('EMAIL_NOVO_USUARIO')
+  const senha = Cypress.env('SENHA_NOVO_USUARIO')
 
-
-
-        cy.request('GET', `${baseUrl}/login`).then((resp) => {
-            const match = resp.body.match(/name="_token" value="([^"]+)"/)
-            const token = match ? match[1] : null
-
-            expect(token, 'csrf token').to.not.be.null
-
-            cy.request({
-                method: 'POST',
-                url: `${baseUrl}/login`,
-                form: true,
-                body: {
-                    _token: token,
-                    email,
-                    senha,
-                },
-                failOnStatusCode: false,
-            }).then((loginResp) => {
-                expect([200, 302]).to.include(loginResp.status)
-            })
-        })
-    })
-    it('Criar Funcionário', () => {
-        cy.visit('/gerenciamento_Funcionario')
-        cy.get('#openCreateUser').click()
-        cy.get('#nome').type(nome)
-        cy.get('#email').type(email)
-        cy.get('#telefone').type('123456789')
-        cy.get('#tipo_usuario_id').select('Entregador')
-        cy.get('#btnAtivoFuncionario').click()
-        cy.get('#salario').type('2000')
-        cy.get('#senha').type(senha)
-        cy.get('#senha_confirmation').type(senha)
-        cy.contains('button.btn-primary', 'Salvar').click()
-    })
-
-    it('Logar com funcionário criado', () => {
-        cy.visit('http://localhost:8000/login')
-
-        cy.get('#email').type(email)
-        cy.get('#senha').type(senha)
-        cy.get('#entrar').click()
-
-        cy.url().should('include', '/admin/bem-vindo')
-    })
-
-     after(() => {
+  before(() => {
     cy.task('deleteUserFuncionario', email)
   })
 
+  after(() => {
+    cy.task('deleteUserFuncionario', email)
+  })
+
+  it('cria um funcionario pelo painel administrativo', () => {
+    cy.loginAdmin()
+    cy.criarFuncionarioUi({ nome, email, senha })
+  })
+
+  it('permite login com o funcionario criado', () => {
+    cy.visit('/login')
+
+    cy.get('#email').type(email)
+    cy.get('#senha').type(senha)
+    cy.get('#entrar').click()
+
+    cy.location('pathname', { timeout: 10000 }).should('eq', '/admin/bem-vindo')
+  })
 })

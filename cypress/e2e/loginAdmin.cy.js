@@ -1,15 +1,11 @@
-describe('template spec', () => {
-  it('passes', () => {
-    cy.visit('http://localhost:8000/login')
+describe('login administrador', () => {
+  it('autentica e redireciona para o painel', () => {
+    cy.visit('/login')
 
-          cy.env(['USUARIO_ADMINISTRADOR', 'SENHA_ADMINISTRADOR']).then((env) => {
-          cy.get('#email')
-            .type(env.USUARIO_ADMINISTRADOR)
+    cy.get('#email').type(Cypress.env('USUARIO_ADMINISTRADOR'))
+    cy.get('#senha').type(Cypress.env('SENHA_ADMINISTRADOR'))
+    cy.get('#entrar').click()
 
-          cy.get('#senha')
-            .type(env.SENHA_ADMINISTRADOR)
-
-          cy.get('#entrar').click()
-          })
+    cy.location('pathname', { timeout: 10000 }).should('eq', '/admin/bem-vindo')
   })
 })
