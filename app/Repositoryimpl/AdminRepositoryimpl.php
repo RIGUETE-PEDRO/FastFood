@@ -108,4 +108,11 @@ class AdminRepositoryimpl implements AdminRepository
             ->limit($limite)
             ->get();
     }
+
+    public function dataUltimoPedido(): ?Carbon
+    {
+        $data = PedidoModel::query()->max('created_at');
+
+        return $data ? Carbon::parse($data) : null;
+    }
 }

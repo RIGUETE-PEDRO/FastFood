@@ -220,12 +220,15 @@ class AdminService
 
     private function resolverPeriodoDashboard(?string $dataInicioSelecionada, ?string $dataFimSelecionada): array
     {
-        $agora = Carbon::now();
+        $temFiltroManual = filled($dataInicioSelecionada) || filled($dataFimSelecionada);
+        $basePeriodo = $temFiltroManual
+            ? Carbon::now()
+            : ($this->adminRepository->dataUltimoPedido() ?? Carbon::now());
 
         $inicio = $this->normalizarDataDashboard($dataInicioSelecionada)
-            ?? $agora->copy()->startOfMonth();
+            ?? $basePeriodo->copy()->startOfMonth();
         $fim = $this->normalizarDataDashboard($dataFimSelecionada)
-            ?? $agora->copy()->endOfMonth();
+            ?? $basePeriodo->copy()->endOfMonth();
 
         if ($inicio->greaterThan($fim)) {
             [$inicio, $fim] = [$fim, $inicio];

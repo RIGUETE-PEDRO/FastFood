@@ -30,6 +30,7 @@ class GerenciaProdutosRepositoryimpl implements GerenciaProdutosRepository
         Cache::forget('lista_produtos');
         Cache::forget('lista_produtos_destaque');
         Cache::forget('todos_produtos');
+        Cache::forget('produtos_categorias');
 
         return $produto;
     }
@@ -40,7 +41,8 @@ class GerenciaProdutosRepositoryimpl implements GerenciaProdutosRepository
         Cache::forget('lista_produtos');
         Cache::forget('lista_produtos_destaque');
         Cache::forget('todos_produtos');
-         
+        Cache::forget('produtos_categorias');
+
 
         return $produto;
     }
@@ -75,6 +77,7 @@ class GerenciaProdutosRepositoryimpl implements GerenciaProdutosRepository
         Cache::forget('lista_produtos');
         Cache::forget('lista_produtos_destaque');
         Cache::forget('todos_produtos');
+        Cache::forget('produtos_categorias');
 
         return $this->salvarProduto($produto);
     }
@@ -95,6 +98,7 @@ class GerenciaProdutosRepositoryimpl implements GerenciaProdutosRepository
             Cache::forget('lista_produtos');
             Cache::forget('lista_produtos_destaque');
             Cache::forget('todos_produtos');
+            Cache::forget('produtos_categorias');
         }
 
         return $deletou;
@@ -110,7 +114,7 @@ class GerenciaProdutosRepositoryimpl implements GerenciaProdutosRepository
 
         Cache::forget('lista_produtos');
         Cache::forget('lista_produtos_destaque');
-        
+        Cache::forget('produtos_categorias');
 
         return $produto;
     }

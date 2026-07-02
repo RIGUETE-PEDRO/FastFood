@@ -24,6 +24,18 @@ function submitLogin(email, senha) {
   })
 }
 
+function csrfToken(path) {
+  return cy.request(path).then((resp) => {
+    const match = resp.body.match(/name="_token" value="([^"]+)"/)
+      || resp.body.match(/<meta name="csrf-token" content="([^"]+)"/)
+    const token = match ? match[1] : null
+
+    expect(token, `csrf token em ${path}`).to.not.be.null
+
+    return token
+  })
+}
+
 Cypress.Commands.add('loginAdmin', () => {
   submitLogin(
     Cypress.env('USUARIO_ADMINISTRADOR'),
@@ -33,6 +45,57 @@ Cypress.Commands.add('loginAdmin', () => {
 
 Cypress.Commands.add('loginAs', (email, senha) => {
   submitLogin(email, senha)
+})
+
+Cypress.Commands.add('csrfToken', csrfToken)
+
+Cypress.Commands.add('registrarCliente', ({
+  nome,
+  email,
+  senha,
+  telefone = '11999999999',
+}) => {
+  csrfToken('/registro').then((token) => {
+    cy.request({
+      method: 'POST',
+      url: '/registro',
+      form: true,
+      body: {
+        _token: token,
+        nome,
+        telefone,
+        email,
+        senha,
+        senha_confirmation: senha,
+      },
+      failOnStatusCode: false,
+    }).then((resp) => {
+      expect([200, 302]).to.include(resp.status)
+    })
+  })
+})
+
+Cypress.Commands.add('adicionarProdutoAoCarrinho', ({
+  produtoId,
+  quantidade = 1,
+  observacao = '',
+}) => {
+  csrfToken('/carrinho').then((token) => {
+    cy.request({
+      method: 'POST',
+      url: '/carrinho/adicionar',
+      form: true,
+      body: {
+        _token: token,
+        produto_id: produtoId,
+        quantidade,
+        observacao,
+      },
+      failOnStatusCode: false,
+    }).then((resp) => {
+      expect([200, 302]).to.include(resp.status)
+    })
+  })
 })
 
 Cypress.Commands.add('produtoRow', (nome) => {

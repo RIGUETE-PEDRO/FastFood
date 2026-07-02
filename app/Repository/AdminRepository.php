@@ -22,4 +22,6 @@ interface AdminRepository
     public function produtoMaisVendidoNoPeriodo(Carbon $inicioPeriodo, Carbon $fimPeriodo): ?object;
 
     public function topProdutosNoPeriodo(Carbon $inicioPeriodo, Carbon $fimPeriodo, int $limite = 5): Collection;
+
+    public function dataUltimoPedido(): ?Carbon;
 }

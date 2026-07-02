@@ -29,13 +29,15 @@ class GenericBaseRepositoryimpl implements  GenericBaseRepository
 
     public function findByProdutos(array $categorias)
     {
-        return ProdutoModel::query()
-            ->where('disponivel', true)
-            ->whereHas('categoria', function ($query) use ($categorias) {
-                $query->whereIn('nome', $categorias)
-                    ->where('deleted', false);
-            })
-            ->get();
+        Cache::remember('produtos_categorias', now()->addMinutes(60), function () use ($categorias) {
+            return ProdutoModel::query()
+                ->where('disponivel', true)
+                ->whereHas('categoria', function ($query) use ($categorias) {
+                    $query->whereIn('nome', $categorias)
+                        ->where('deleted', false);
+                })
+                ->get();
+        });
     }
 
     public function pegarProdutos()
