@@ -14,11 +14,12 @@ use Illuminate\Support\Facades\DB;
 
 class GarcomRepositoryimpl implements GarcomRepository
 {
-    public function adicionarProdutoAoPedido($produtoId, $mesaId, $quantidade, $usuarioLogado)
+    public function adicionarProdutoAoPedido($produtoId, $mesaId, $quantidade, $usuarioLogado, $observacao = null)
     {
         return $this->adicionarProdutosAoPedido([[
             'produto_id' => $produtoId,
             'quantidade' => $quantidade,
+            'observacao' => $observacao,
         ]], (int) $mesaId, $usuarioLogado);
     }
 
@@ -60,12 +61,14 @@ class GarcomRepositoryimpl implements GarcomRepository
                 ->map(fn ($item) => [
                     'produto_id' => (int) ($item['produto_id'] ?? 0),
                     'quantidade' => max(1, (int) ($item['quantidade'] ?? 1)),
+                    'observacao' => trim((string) ($item['observacao'] ?? '')) ?: null,
                 ])
                 ->filter(fn ($item) => $item['produto_id'] > 0)
-                ->groupBy('produto_id')
-                ->map(fn ($grupo, $produtoId) => [
-                    'produto_id' => (int) $produtoId,
+                ->groupBy(fn ($item) => $item['produto_id'].'|'.($item['observacao'] ?? ''))
+                ->map(fn ($grupo) => [
+                    'produto_id' => (int) $grupo->first()['produto_id'],
                     'quantidade' => (int) $grupo->sum('quantidade'),
+                    'observacao' => $grupo->first()['observacao'],
                 ])
                 ->values();
 
@@ -92,6 +95,11 @@ class GarcomRepositoryimpl implements GarcomRepository
                 $itemPedido = ItemPedidoModel::query()
                     ->where('pedido_id', $pedido->id)
                     ->where('produto_id', $produto->id)
+                    ->where(function ($query) use ($item) {
+                        $item['observacao'] === null
+                            ? $query->whereNull('observacao')->orWhere('observacao', '')
+                            : $query->where('observacao', $item['observacao']);
+                    })
                     ->where('status_da_comanda', 'em_aberto')
                     ->where(function ($query) {
                         $query->whereNull('valor_pago')
@@ -109,6 +117,7 @@ class GarcomRepositoryimpl implements GarcomRepository
                         'quantidade' => $quantidade,
                         'preco_unitario' => $precoUnitario,
                         'status_da_comanda' => 'em_aberto',
+                        'observacao' => $item['observacao'],
                     ]);
                 }
 

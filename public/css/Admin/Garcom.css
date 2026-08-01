@@ -211,6 +211,42 @@
     overflow-wrap: anywhere;
 }
 
+.garcom-order-item__observacao {
+    color: #9a3412 !important;
+    font-weight: 700 !important;
+}
+
+.garcom-observacao-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    width: min(92vw, 520px);
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 0;
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .3);
+}
+
+.garcom-observacao-modal::backdrop { background: rgba(17, 24, 39, .58); }
+.garcom-observacao-modal__content { display: grid; gap: 12px; padding: 22px; }
+.garcom-observacao-modal__content h2 { margin: 0; color: #7c2d12; }
+.garcom-observacao-modal__content p { margin: 0; font-weight: 800; }
+.garcom-observacao-modal__content label { font-weight: 700; }
+.garcom-observacao-modal__content textarea {
+    width: 100%;
+    resize: vertical;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font: inherit;
+}
+.garcom-observacao-modal__actions { display: flex; justify-content: flex-end; gap: 8px; }
+.garcom-observacao-modal__actions .btn-add { border: 0; border-radius: 8px; padding: 10px 16px; cursor: pointer; }
+
 .garcom-order-item__controls,
 .garcom-order-actions {
     display: flex;

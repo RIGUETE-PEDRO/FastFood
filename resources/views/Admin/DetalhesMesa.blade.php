@@ -111,6 +111,9 @@
                                             <div class="mesa-item-name">
                                                 <strong>{{ $nome }}</strong>
                                                 <small>Item #{{ $item->id }}</small>
+                                                @if(filled($item->observacao))
+                                                    <small><strong>Obs.:</strong> {{ $item->observacao }}</small>
+                                                @endif
                                             </div>
                                             @if($valorPago > 0)
                                                 <span class="mesa-paid-chip">Parcialmente pago</span>
@@ -283,6 +286,9 @@
                                             <div>
                                                 <strong>{{ $nome }}</strong>
                                                 <span>{{ $item->quantidade }}x - R$ {{ number_format($sub, 2, ',', '.') }}</span>
+                                                @if(filled($item->observacao))
+                                                    <span>Obs.: {{ $item->observacao }}</span>
+                                                @endif
                                             </div>
                                             <small>
                                                 {{ $item->pagamento_metodo ? strtoupper(str_replace('_', ' ', $item->pagamento_metodo)) : 'PAGO' }}

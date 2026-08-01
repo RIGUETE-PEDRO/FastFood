@@ -36,6 +36,7 @@ class GarcomController extends Controller
                 'itens' => 'required|array|min:1',
                 'itens.*.produto_id' => 'required|integer|exists:produtos,id',
                 'itens.*.quantidade' => 'required|integer|min:1',
+                'itens.*.observacao' => 'nullable|string|max:500',
             ]);
 
             $this->garcomService->adicionarAoPedido($request);
@@ -47,6 +48,7 @@ class GarcomController extends Controller
             'produto_id' => 'required|integer|exists:produtos,id',
             'mesa_id' => 'required|integer|exists:mesas,id',
             'quantidade' => 'required|integer|min:1',
+            'observacao' => 'nullable|string|max:500',
         ]);
 
         $this->garcomService->adicionarAoPedido($request);

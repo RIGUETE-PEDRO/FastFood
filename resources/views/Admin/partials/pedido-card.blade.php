@@ -105,6 +105,9 @@
                             <div>
                                 <span class="pedido-itens__titulo">{{ optional($item->produto)->nome ?? 'Produto removido' }}</span>
                                 <span class="pedido-itens__detalhe">{{ $item->quantidade }} x R$ {{ number_format((float) $item->preco_unitario, 2, ',', '.') }}</span>
+                                @if(filled($item->observacao))
+                                    <span class="pedido-itens__detalhe"><strong>Observação:</strong> {{ $item->observacao }}</span>
+                                @endif
                             </div>
                             <strong>R$ {{ number_format((float) $item->quantidade * (float) $item->preco_unitario, 2, ',', '.') }}</strong>
                         </li>

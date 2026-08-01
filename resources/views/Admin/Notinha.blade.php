@@ -105,6 +105,9 @@
                         <div class="receipt-item">
                             <div class="receipt-item__line">
                                 <strong>{{ $item->quantidade }}x {{ optional($item->produto)->nome ?? 'Produto removido' }}</strong>
+                                @if(filled($item->observacao))
+                                    <small>Obs.: {{ $item->observacao }}</small>
+                                @endif
                             </div>
                             <div class="receipt-row receipt-row--small">
                                 <span>Unit. R$ {{ number_format((float) $item->preco_unitario, 2, ',', '.') }}</span>

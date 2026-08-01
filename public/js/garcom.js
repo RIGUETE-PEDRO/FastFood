@@ -15,7 +15,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const orderCount = document.getElementById('garcomOrderCount');
     const enviarPedidoBtn = document.getElementById('garcomEnviarPedido');
     const limparPedidoBtn = document.getElementById('garcomLimparPedido');
+    const observacaoModal = document.getElementById('garcomObservacaoModal');
+    const observacaoProduto = document.getElementById('garcomObservacaoProduto');
+    const observacaoInput = document.getElementById('garcomObservacaoInput');
+    const observacaoSemBtn = document.getElementById('garcomObservacaoSem');
     const pedido = new Map();
+    let itemPendente = null;
 
     function garantirEstiloPopup() {
         if (document.getElementById('garcom-popup-style')) return;
@@ -167,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const row = document.createElement('div');
             row.className = 'garcom-order-item';
-            row.dataset.produtoId = item.id;
+            row.dataset.produtoId = item.chave;
 
             const info = document.createElement('div');
             info.className = 'garcom-order-item__info';
@@ -179,20 +184,26 @@ document.addEventListener('DOMContentLoaded', function () {
             detalhe.textContent = `${formatarMoeda(item.preco)} cada`;
 
             info.append(nome, detalhe);
+            if (item.observacao) {
+                const observacao = document.createElement('small');
+                observacao.className = 'garcom-order-item__observacao';
+                observacao.textContent = `Obs.: ${item.observacao}`;
+                info.appendChild(observacao);
+            }
 
             const controls = document.createElement('div');
             controls.className = 'garcom-order-item__controls';
 
-            const decBtn = criarBotao('garcom-order-icon-btn', '-', 'decrement', item.id);
+            const decBtn = criarBotao('garcom-order-icon-btn', '-', 'decrement', item.chave);
             const qtdInput = document.createElement('input');
             qtdInput.type = 'number';
             qtdInput.min = '1';
             qtdInput.value = String(item.quantidade);
             qtdInput.className = 'garcom-order-qtd';
-            qtdInput.dataset.orderQtd = item.id;
+            qtdInput.dataset.orderQtd = item.chave;
 
-            const incBtn = criarBotao('garcom-order-icon-btn', '+', 'increment', item.id);
-            const removeBtn = criarBotao('garcom-order-remove', 'Remover', 'remove', item.id);
+            const incBtn = criarBotao('garcom-order-icon-btn', '+', 'increment', item.chave);
+            const removeBtn = criarBotao('garcom-order-remove', 'Remover', 'remove', item.chave);
 
             controls.append(decBtn, qtdInput, incBtn, removeBtn);
             row.append(info, controls);
@@ -200,6 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             adicionarInputOculto(`itens[${index}][produto_id]`, item.id);
             adicionarInputOculto(`itens[${index}][quantidade]`, item.quantidade);
+            adicionarInputOculto(`itens[${index}][observacao]`, item.observacao || '');
             index += 1;
         });
 
@@ -226,6 +238,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function adicionarItemPendente(observacao) {
+        if (!itemPendente) return;
+
+        const observacaoNormalizada = String(observacao || '').trim();
+        const chave = `${itemPendente.id}|${observacaoNormalizada}`;
+        const itemAtual = pedido.get(chave);
+        if (itemAtual) {
+            itemAtual.quantidade += itemPendente.quantidade;
+        } else {
+            pedido.set(chave, { ...itemPendente, chave, observacao: observacaoNormalizada });
+        }
+
+        itemPendente = null;
+        if (observacaoInput) observacaoInput.value = '';
+        observacaoModal?.close();
+        renderizarPedido();
+        mostrarPopup('Produto adicionado a lista.');
+    }
+
     addButtons.forEach(function (button) {
         button.addEventListener('click', function () {
             const row = button.closest('tr');
@@ -241,21 +272,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 qtdInput.value = String(quantidade);
             }
 
-            const itemAtual = pedido.get(produtoId);
-            if (itemAtual) {
-                itemAtual.quantidade += quantidade;
-            } else {
-                pedido.set(produtoId, {
-                    id: produtoId,
-                    nome,
-                    preco,
-                    quantidade,
-                });
-            }
+            itemPendente = { id: produtoId, nome, preco, quantidade };
+            if (observacaoProduto) observacaoProduto.textContent = `${quantidade}x ${nome}`;
+            if (observacaoInput) observacaoInput.value = '';
 
-            renderizarPedido();
-            mostrarPopup('Produto adicionado a lista.');
+            if (observacaoModal?.showModal) {
+                observacaoModal.showModal();
+                setTimeout(() => observacaoInput?.focus(), 0);
+            } else {
+                adicionarItemPendente(window.prompt('Alguma observação? (opcional)') || '');
+            }
         });
+    });
+
+    observacaoModal?.querySelector('form')?.addEventListener('submit', function (event) {
+        event.preventDefault();
+        adicionarItemPendente(observacaoInput?.value || '');
+    });
+
+    observacaoSemBtn?.addEventListener('click', function () {
+        adicionarItemPendente('');
+    });
+
+    observacaoModal?.addEventListener('cancel', function () {
+        itemPendente = null;
     });
 
     orderList?.addEventListener('click', function (event) {
@@ -272,12 +312,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (target.dataset.orderAction === 'decrement') {
             item.quantidade -= 1;
             if (item.quantidade < 1) {
-                pedido.delete(item.id);
+                pedido.delete(item.chave);
             }
         }
 
         if (target.dataset.orderAction === 'remove') {
-            pedido.delete(item.id);
+            pedido.delete(item.chave);
         }
 
         renderizarPedido();

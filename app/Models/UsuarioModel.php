@@ -90,4 +90,10 @@ class UsuarioModel extends Authenticatable
     {
         return $this->hasMany(PedidoModel::class, 'motoboy_id');
     }
+
+    public function Carrinho() {
+
+        return $this->hasMany(CarrinhoModel::class, 'usuario_id');
+
+    }
 }

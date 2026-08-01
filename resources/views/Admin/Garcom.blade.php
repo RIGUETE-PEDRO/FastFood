@@ -160,6 +160,24 @@
                 </div>
             </main>
         </div>
+
+        <dialog class="garcom-observacao-modal" id="garcomObservacaoModal" aria-labelledby="garcomObservacaoTitulo">
+            <form method="dialog" class="garcom-observacao-modal__content">
+                <h2 id="garcomObservacaoTitulo">Alguma observação?</h2>
+                <p id="garcomObservacaoProduto"></p>
+                <label for="garcomObservacaoInput">Informe retiradas ou acréscimos (opcional)</label>
+                <textarea
+                    id="garcomObservacaoInput"
+                    maxlength="500"
+                    rows="4"
+                    placeholder="Ex.: sem cebola, acrescentar queijo..."
+                ></textarea>
+                <div class="garcom-observacao-modal__actions">
+                    <button type="button" class="garcom-order-clear" id="garcomObservacaoSem">Sem observação</button>
+                    <button type="submit" class="btn-add" id="garcomObservacaoConfirmar">Adicionar ao pedido</button>
+                </div>
+            </form>
+        </dialog>
             <script src="{{ asset('js/garcom.js') }}?v={{ filemtime(public_path('js/garcom.js')) }}"></script>
 </body>
 

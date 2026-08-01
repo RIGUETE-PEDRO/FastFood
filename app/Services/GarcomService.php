@@ -25,7 +25,13 @@ class GarcomService
             );
         }
 
-        return $this->repository->adicionarProdutoAoPedido($produtoId, $mesaId, $quantidade, $usuarioLogado);
+        return $this->repository->adicionarProdutoAoPedido(
+            $produtoId,
+            $mesaId,
+            $quantidade,
+            $usuarioLogado,
+            $request->input('observacao')
+        );
     }
 
 }

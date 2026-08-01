@@ -15,6 +15,7 @@ class ItemPedidoModel extends Model
         'pagamento_metodo',
         'produto_id',
         'pedido_id',
+        'observacao',
     ];
 
     protected $guarded = [
