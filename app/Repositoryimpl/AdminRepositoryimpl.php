@@ -32,12 +32,9 @@ class AdminRepositoryimpl implements AdminRepository
 
     public function listarDadosEmpresa(): Collection
     {
-        //cache do redis para armazenar os dados da empresa por 60 minutos
-        return Cache::remember('dados_empresa', now()->addMinutes(60), function () {
-            return Dados_empresa::query()
-                ->orderBy('id')
-                ->get();
-        });
+        return Dados_empresa::query()
+            ->orderBy('id')
+            ->get();
     }
 
     //pegar o valor de uma informação da empresa e dropar o cache do listar dados empresa
