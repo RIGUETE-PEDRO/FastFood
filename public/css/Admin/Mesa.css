@@ -766,7 +766,7 @@
 
 body {
     background:
-        
+
         repeating-linear-gradient(
             90deg,
             rgba(0, 0, 0, 0.03) 0,
@@ -2020,7 +2020,7 @@ body {
 }
 
 .mesa-action-modal .modal-body::before {
-    content: "Operacao de salao";
+    content: "Operação de salão ";
     display: inline-flex;
     margin-bottom: 14px;
     padding: 6px 10px;
@@ -2034,7 +2034,7 @@ body {
 }
 
 .remover-mesa-modal + form .modal-body::before {
-    content: "Acao sensivel";
+    content: "Ação sensível";
     background: rgba(185, 28, 28, 0.1);
     color: #991b1b;
 }
