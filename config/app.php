@@ -52,6 +52,8 @@ return [
     |
     */
 
+    // Em Docker/Cloudflare Tunnel, a URL pública é dinâmica. Sem APP_URL
+    // fixo, o Laravel gera os links a partir do host recebido na requisição.
     'url' => env('APP_URL', 'http://localhost'),
 
     /*

@@ -20,9 +20,21 @@ services:
       - "8000:8000"
       - "8080:8080"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
+      node:
+        condition: service_completed_successfully
     command: sh -c "set -e; test -f vendor/autoload.php || composer install; php artisan reverb:start --host=0.0.0.0 --port=8080 & exec php artisan serve --host=0.0.0.0 --port=8000"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared_flashfood
+    depends_on:
+      - app
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --url http://app:8000
 
   db:
     image: mysql:8.0
@@ -53,7 +65,9 @@ services:
     ports:
       - "5173:5173"
 
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    # O Vite em modo dev aponta os assets para localhost:5173, que não existe
+    # para visitantes externos. Gere os assets estáticos antes de subir o Laravel.
+    command: sh -c "npm ci --ignore-scripts && rm -f public/hot && npm run build"
 
   cypress:
     image: cypress/included:15.14.2

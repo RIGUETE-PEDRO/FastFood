@@ -23,6 +23,7 @@ use App\Repositoryimpl\GarcomRepositoryimpl;
 use App\Repositoryimpl\SecureKeyRepositoryimpl;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use App\Repository\PedidoRepository;
@@ -68,6 +69,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // O Quick Tunnel recebe uma URL trycloudflare.com diferente a cada
+        // inicialização. Nas requisições web, gere URLs de assets com o host
+        // que chegou pelo túnel, sem afetar comandos Artisan.
+        if (! $this->app->runningInConsole()) {
+            $request = $this->app['request'];
+
+            URL::forceRootUrl($request->getSchemeAndHttpHost());
+            URL::forceScheme($request->header('X-Forwarded-Proto', $request->getScheme()));
+        }
+
         Carbon::setLocale('pt_BR');
         PedidoModel::observe(PedidoObserver::class);
 
