@@ -41,7 +41,7 @@
 
             <div class="produto produto--interactive" data-produto-id="{{ $pizza->id }}" data-produto-nome="{{ $pizza->nome }}" data-produto-preco="{{ $pizza->preco }}">
                 <div class="container-img">
-                    <img src="{{ asset('img/produtos/' . $pizza->imagem_url) }}" alt="{{ $pizza->nome }}" loading="lazy">
+                    <img src="{{ asset('img/produtos/' . $pizza->imagem_url) }}" alt="{{ $pizza->nome }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif decoding="async">
                     <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $pizza->preco, 2, ',', '.') }}</span>
                 </div>
                 <div class="produto-body">

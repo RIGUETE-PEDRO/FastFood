@@ -5,7 +5,6 @@ namespace App\Repositoryimpl;
 use App\Models\CategoriaProdutoModel;
 use App\Models\ProdutoModel;
 use App\Repository\GerenciaProdutosRepository;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 
 class GerenciaProdutosRepositoryimpl implements GerenciaProdutosRepository
@@ -66,13 +65,9 @@ class GerenciaProdutosRepositoryimpl implements GerenciaProdutosRepository
         $produto->disponivel = $data['ativo'];
         $produto->categoria_id = $data['categoria_id'];
 
-        if (($data['imagem'] ?? null) instanceof UploadedFile && $data['imagem']->isValid()) {
+        if (!empty($data['imagem_url'])) {
             $this->removerImagemProduto($produto);
-
-            $file = $data['imagem'];
-            $filename = uniqid('produto_') . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('img/produtos'), $filename);
-            $produto->imagem_url = $filename;
+            $produto->imagem_url = $data['imagem_url'];
         }
         Cache::forget('lista_produtos');
         Cache::forget('lista_produtos_destaque');

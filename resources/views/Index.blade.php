@@ -32,7 +32,7 @@
                 @foreach ($produtosDestaque as $produto)
                 <div class="produto-card-mini" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
                     <div class="mini-img">
-                        <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}">
+                        <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" decoding="async" fetchpriority="high">
                     </div>
 
                     <div class="mini-info">
@@ -48,7 +48,7 @@
                 @foreach ($produtosDestaque as $produto)
                 <div class="produto-card-mini" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
                     <div class="mini-img">
-                        <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}">
+                        <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" loading="lazy" decoding="async">
                     </div>
 
                     <div class="mini-info">
@@ -82,7 +82,7 @@
 
             <div class="produto produto--interactive" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
                 <div class="container-img">
-                    <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" loading="lazy">
+                    <img class="produto-imagem" src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif decoding="async">
                     <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $produto->preco, 2, ',', '.') }}</span>
                 </div>
                 <div class="produto-body">
@@ -151,6 +151,13 @@
     </div>
 @include('components.flash-toast')
 <script src="{{ asset('js/carousel.js') }}"></script>
+<script>
+    document.querySelectorAll('.produto-imagem').forEach((imagem) => {
+        const concluirCarregamento = () => imagem.classList.add('is-loaded');
+        if (imagem.complete) concluirCarregamento();
+        else imagem.addEventListener('load', concluirCarregamento, { once: true });
+    });
+</script>
 </body>
 
 </html>

@@ -846,6 +846,17 @@ body {
     border-radius: 0;
 }
 
+/* A área da foto já nasce ocupada: evita o "pulo" do card e mostra um
+   placeholder discreto enquanto a imagem ainda está sendo baixada. */
+.home-products .produto-imagem {
+    opacity: 0;
+    transition: opacity .22s ease;
+}
+
+.home-products .produto-imagem.is-loaded {
+    opacity: 1;
+}
+
 .home-products .produto-badge {
     left: auto;
     right: 10px;

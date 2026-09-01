@@ -37,6 +37,9 @@ class GerenciamentoProdutoController extends Controller
 
     public function cadastrarProduto(Request $request)
     {
+        $request->validate([
+            'imagem' => 'nullable|image|mimes:jpeg,png,webp|max:10240',
+        ]);
         $this->gerenciaProdutosService->criarProduto($request);
         return redirect()->route('ListaProdutos')->with('success', PassMensagens::CADASTRAR_PRODUTO_SUCESSO);
     }
@@ -49,6 +52,9 @@ class GerenciamentoProdutoController extends Controller
 
     public function atualizarProduto(Request $request, $id)
     {
+        $request->validate([
+            'imagem' => 'nullable|image|mimes:jpeg,png,webp|max:10240',
+        ]);
         $this->gerenciaProdutosService->atualizarProduto($id, $request->all());
         return redirect()->route('gerenciamento_Produtos')->with('success', PassMensagens::ATUALIZADO_SUCESSO);
     }

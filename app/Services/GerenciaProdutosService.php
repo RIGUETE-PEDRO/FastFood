@@ -9,7 +9,11 @@ class GerenciaProdutosService
     protected GenericBase $genericBase;
     protected GerenciaProdutosRepository $repository;
 
-    public function __construct(GenericBase $genericBase, GerenciaProdutosRepository $repository)
+    public function __construct(
+        GenericBase $genericBase,
+        GerenciaProdutosRepository $repository,
+        private OtimizadorImagemProduto $otimizadorImagemProduto,
+    )
     {
         $this->genericBase = $genericBase;
         $this->repository = $repository;
@@ -33,22 +37,15 @@ class GerenciaProdutosService
                 'nome' => $request->input('nome'),
                 'preco' => $preco,
                 'descricao' => $request->input('descricao'),
-                'imagem_url' => $request->input('imagem'),
+                'imagem_url' => $request->hasFile('imagem')
+                    ? $this->otimizadorImagemProduto->salvar($request->file('imagem'))
+                    : 'sem_imagem.jpg',
                 'disponivel' => $request->input('ativo'),
                 'categoria_id' => $request->input('categoria_id'),
             ]
         );
 
-        if ($request->hasFile('imagem')) {
-            $file = $request->file('imagem');
-            $filename = uniqid('produto_') . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('img/produtos'), $filename);
-            $produto->imagem_url = $filename;
-        }else{
-            $produto->imagem_url = 'sem_imagem.jpg';
-        }
-
-        return $this->repository->salvarProduto($produto);
+        return $produto;
     }
 
     public function removerProduto($id): bool
@@ -69,6 +66,10 @@ class GerenciaProdutosService
 
     public function atualizarProduto($id, $data)
     {
+        if (($data['imagem'] ?? null) instanceof \Illuminate\Http\UploadedFile) {
+            $data['imagem_url'] = $this->otimizadorImagemProduto->salvar($data['imagem']);
+        }
+
         return $this->repository->atualizarProduto((int) $id, $data);
     }
 
