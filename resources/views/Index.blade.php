@@ -14,7 +14,11 @@
     <link rel="stylesheet" href="{{ asset('css/Index.css') }}?v={{ filemtime(public_path('css/Index.css')) }}">
 </head>
 
-<body>
+<body class="page-loading">
+    <div class="page-loader" role="status" aria-live="polite" aria-label="Carregando imagens">
+        <span class="page-loader__spinner" aria-hidden="true"></span>
+        <span>Carregando cardápio...</span>
+    </div>
 
     <div class="ff-shell">
         @include('layouts.sidebar')
@@ -82,7 +86,7 @@
 
             <div class="produto produto--interactive" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
                 <div class="container-img">
-                    <img class="produto-imagem" src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif decoding="async">
+                    <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif decoding="async">
                     <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $produto->preco, 2, ',', '.') }}</span>
                 </div>
                 <div class="produto-body">
@@ -152,11 +156,26 @@
 @include('components.flash-toast')
 <script src="{{ asset('js/carousel.js') }}"></script>
 <script>
-    document.querySelectorAll('.produto-imagem').forEach((imagem) => {
-        const concluirCarregamento = () => imagem.classList.add('is-loaded');
-        if (imagem.complete) concluirCarregamento();
-        else imagem.addEventListener('load', concluirCarregamento, { once: true });
-    });
+    (() => {
+        const imagensPrioritarias = [...document.querySelectorAll('.carousel-produtos img, .home-products img')]
+            .filter((imagem) => imagem.loading !== 'lazy');
+
+        const aguardarImagem = (imagem) => {
+            if (imagem.complete) return Promise.resolve();
+
+            return new Promise((concluir) => {
+                imagem.addEventListener('load', concluir, { once: true });
+                imagem.addEventListener('error', concluir, { once: true });
+            });
+        };
+
+        Promise.all(imagensPrioritarias.map(aguardarImagem)).finally(() => {
+            document.body.classList.remove('page-loading');
+        });
+
+        // Mantém a página acessível caso a conexão fique indisponível.
+        window.setTimeout(() => document.body.classList.remove('page-loading'), 8000);
+    })();
 </script>
 </body>
 
