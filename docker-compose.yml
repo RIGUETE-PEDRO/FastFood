@@ -1,6 +1,9 @@
 services:
 
   app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: ${FLASHFOOD_IMAGE:?Defina FLASHFOOD_IMAGE no arquivo .env}
     container_name: laravel_flashfood
     working_dir: /app

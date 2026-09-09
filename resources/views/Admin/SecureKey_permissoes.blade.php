@@ -22,7 +22,7 @@
                 <a href="{{ route('SecureKey.index') }}" class="kc-link"><span aria-hidden="true">&#8962;</span>Visao geral</a>
                 <a href="{{ route('SecureKey.grupo') }}" class="kc-link"><span aria-hidden="true">&#128101;</span>Grupos</a>
                 <a href="{{ route('SecureKey.permissoes') }}" class="kc-link active"><span aria-hidden="true">&#128273;</span>Criar roles</a>
-                <a href="{{ route('login') }}" class="kc-link kc-link-login"><span aria-hidden="true">&#8592;</span>Voltar ao sistema</a>
+                <a href="{{ route('logout') }}" class="kc-link kc-link-login"><span aria-hidden="true">&#8592;</span>Voltar ao sistema</a>
             </nav>
         </aside>
 

@@ -117,7 +117,7 @@ class GenericBase
         session()->forget('usuario_logado');
         session()->invalidate();
         session()->regenerateToken();
-        return redirect()->route('home');
+        return redirect()->route('login.form');
     }
 
 
