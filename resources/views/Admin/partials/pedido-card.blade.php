@@ -28,7 +28,7 @@
                 <header class="pedido-card__header">
                     <div>
                         <h2 class="pedido-card__titulo">Pedido #{{ $pedido->id }}</h2>
-                        <p class="pedido-card__subtitulo mb-0">{{ optional($pedido->created_at)->format('d/m/Y \a\s H:i') ?? 'Data nao informada' }}</p>
+                        <p class="pedido-card__subtitulo mb-0">{{ optional($pedido->created_at)->format('d/m/Y \a\s H:i') ?? 'Data não informada' }}</p>
                         <p class="pedido-card__cliente mb-0">Cliente: {{ optional($pedido->usuario)->nome ?? 'Desconhecido' }}</p>
                     </div>
                     <div class="pedido-card__header-right">
@@ -43,7 +43,7 @@
         <header class="pedido-card__header">
             <div>
                 <h2 class="pedido-card__titulo">Pedido #{{ $pedido->id }}</h2>
-                <p class="pedido-card__subtitulo mb-0">{{ optional($pedido->created_at)->format('d/m/Y \a\s H:i') ?? 'Data nao informada' }}</p>
+                <p class="pedido-card__subtitulo mb-0">{{ optional($pedido->created_at)->format('d/m/Y \a\s H:i') ?? 'Data não informada' }}</p>
                 <p class="pedido-card__cliente mb-0">Cliente: {{ optional($pedido->usuario)->nome ?? 'Desconhecido' }}</p>
             </div>
             <div class="pedido-card__header-right">
@@ -73,7 +73,7 @@
             <dl class="pedido-dados">
                 <div>
                     <dt>Pagamento</dt>
-                    <dd>{{ optional($pedido->formaPagamento)->tipo_pagamento ?? 'Nao informado' }}</dd>
+                    <dd>{{ optional($pedido->formaPagamento)->tipo_pagamento ?? 'Não informado' }}</dd>
                 </div>
                 <div>
                     <dt>Total</dt>
@@ -86,9 +86,10 @@
                             {{ $pedido->endereco->logradouro }}, {{ $pedido->endereco->numero ?? 's/n' }} - {{ $pedido->endereco->bairro ?? '' }}<br>
                             {{ optional(optional($pedido->endereco)->cidade)->nome ?? '' }}
                         @else
-                            Mesa
                             @if(optional($pedido->mesa)->numero_da_mesa)
-                                <br>Mesa {{ $pedido->mesa->numero_da_mesa }}
+                                Mesa {{ $pedido->mesa->numero_da_mesa }}
+                            @else
+                                Mesa
                             @endif
                         @endif
                     </dd>
@@ -101,10 +102,19 @@
                 <h3 class="pedido-card__secao-titulo">Itens</h3>
                 <ul class="pedido-itens">
                     @foreach($pedido->itens as $item)
+                        @php
+                            $configuracaoItem = $item->personalizacao ?? [];
+                            $tituloItem = ($configuracaoItem['tipo'] ?? null) === 'pizza'
+                                ? 'Pizza' . (filled($configuracaoItem['tamanho'] ?? null) ? ' ' . $configuracaoItem['tamanho'] : '')
+                                : (optional($item->produto)->nome ?? 'Produto removido');
+                        @endphp
                         <li class="pedido-itens__linha">
                             <div>
-                                <span class="pedido-itens__titulo">{{ optional($item->produto)->nome ?? 'Produto removido' }}</span>
+                                <span class="pedido-itens__titulo">{{ $tituloItem }}</span>
                                 <span class="pedido-itens__detalhe">{{ $item->quantidade }} x R$ {{ number_format((float) $item->preco_unitario, 2, ',', '.') }}</span>
+                                <span class="pedido-itens__detalhe item-personalizacao">
+                                    @include('partials.detalhes-personalizacao-item', ['personalizacao' => $item->personalizacao])
+                                </span>
                                 @if(filled($item->observacao))
                                     <span class="pedido-itens__detalhe"><strong>Observação:</strong> {{ $item->observacao }}</span>
                                 @endif
@@ -134,11 +144,11 @@
                     </form>
 
                     @if($nextStatus)
-                        <form class="pedido-avancar-form" method="POST" action="{{ route('Pedidos.StatusAvancar', $pedido) }}" data-disable-on-submit>
+                        <form class="pedido-avancar-form" method="POST" action="{{ route('Pedidos.StatusAvancar', $pedido) }}" data-disable-on-submit @if($statusAtualValor === 1 && ($configuracoesImpressao['autoPrintOnAccept'] ?? false)) target="_blank" @endif>
                             @csrf
                             <button type="submit" class="btn btn-outline-success btn-avancar-status" data-avancar-button aria-label="Avancar status do pedido #{{ $pedido->id }}">
                                 <span class="btn-avancar-status__text">
-                                    Avancar para {{ $statusLabels[$nextStatus->value] ?? 'proximo status' }}
+                                    Avancar para {{ $statusLabels[$nextStatus->value] ?? 'próximo status' }}
                                 </span>
                                 <span class="btn-avancar-status__loading" aria-hidden="true">Avancando...</span>
                                 <span class="btn-avancar-status__icon" aria-hidden="true">-&gt;</span>

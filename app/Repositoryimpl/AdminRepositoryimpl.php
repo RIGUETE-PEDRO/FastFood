@@ -106,6 +106,23 @@ class AdminRepositoryimpl implements AdminRepository
             ->get();
     }
 
+    public function pedidosPorMotoboyNoPeriodo(Carbon $inicioPeriodo, Carbon $fimPeriodo): Collection
+    {
+        return PedidoModel::query()
+            ->join('usuarios as u', 'u.id', '=', 'pedidos.motoboy_id')
+            ->whereBetween('pedidos.created_at', [$inicioPeriodo, $fimPeriodo])
+            ->whereNotNull('pedidos.motoboy_id')
+            ->whereIn('pedidos.status', [
+                StatusPedidos::A_CAMINHO->value,
+                StatusPedidos::ENTREGUE->value,
+            ])
+            ->select('u.id', 'u.nome as motoboy_nome', DB::raw('COUNT(pedidos.id) as total_pedidos'))
+            ->groupBy('u.id', 'u.nome')
+            ->orderByDesc('total_pedidos')
+            ->orderBy('u.nome')
+            ->get();
+    }
+
     public function dataUltimoPedido(): ?Carbon
     {
         $data = PedidoModel::query()->max('created_at');

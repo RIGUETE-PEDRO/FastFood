@@ -236,6 +236,18 @@
 .garcom-observacao-modal__content h2 { margin: 0; color: #7c2d12; }
 .garcom-observacao-modal__content p { margin: 0; font-weight: 800; }
 .garcom-observacao-modal__content label { font-weight: 700; }
+.garcom-observacao-modal__content select {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 8px 10px;
+    background: #fff;
+    font: inherit;
+}
+.garcom-observacao-modal__content small { color: #6b7280; }
+#garcomPizzaSizeUnavailable { color: #b91c1c; font-weight: 700; }
+.garcom-observacao-modal__actions button:disabled { cursor: not-allowed; opacity: .55; }
 .garcom-observacao-modal__content textarea {
     width: 100%;
     resize: vertical;
@@ -454,5 +466,5 @@
     .produtos-table td:nth-child(2)::before { content: 'Nome'; }
     .produtos-table td:nth-child(3)::before { content: 'Preco'; }
     .produtos-table td:nth-child(4)::before { content: 'Categoria'; }
-    .produtos-table td:nth-child(5)::before { content: 'Acoes'; }
+    .produtos-table td:nth-child(5)::before { content: 'Ações'; }
 }

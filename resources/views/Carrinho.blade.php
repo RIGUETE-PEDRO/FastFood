@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Index.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Carrinho.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/PersonalizacaoProduto.css') }}">
 </head>
 
 @php
@@ -69,7 +70,7 @@ $temItensSelecionados = $itensSelecionados->count() > 0;
                                 <th>Imagem</th>
                                 <th>Produto</th>
                                 <th>Preço unitário</th>
-                                <th>Preço total</th>
+                                <th>Subtotal</th>
                                 <th>Quantidade</th>
                                 <th>Ação</th>
                             </tr>
@@ -90,15 +91,24 @@ $temItensSelecionados = $itensSelecionados->count() > 0;
                                 <td data-label="Imagem">
                                     <img src="{{ asset('img/produtos/' . $item->produto->imagem_url) }}" style="width:48px; height:48px; object-fit:cover; border-radius:8px;" alt="{{ $item->produto->nome }}">
                                 </td>
-                                <td data-label="Produto" class="cart-product-name">{{ $item->produto->nome }}</td>
-                                <td data-label="Preço unitário">R$ {{ number_format((float) $item->produto->preco, 2, ',', '.') }}</td>
-                                <td data-label="Preço total" class="cart-line-total">R$ {{ number_format((float) $item->preco_total, 2, ',', '.') }}</td>
+                                <td data-label="Produto" class="cart-product-name">
+                                    @if(($item->personalizacao['tipo'] ?? null) === 'pizza')
+                                        <strong>Pizza{{ filled($item->personalizacao['tamanho'] ?? null) ? ' ' . $item->personalizacao['tamanho'] : '' }}</strong>
+                                    @else
+                                        <strong>{{ $item->produto->nome }}</strong>
+                                    @endif
+                                    <div class="item-personalizacao">
+                                        @include('partials.detalhes-personalizacao-item', ['personalizacao' => $item->personalizacao])
+                                    </div>
+                                </td>
+                                <td data-label="Preço unitário">R$ {{ number_format((float) $item->preco_total / max((int) $item->quantidade, 1), 2, ',', '.') }}</td>
+                                <td data-label="Subtotal" class="cart-line-total">R$ {{ number_format((float) $item->preco_total, 2, ',', '.') }}</td>
                                 <td data-label="Quantidade">
                                     <form data-qty-form action="{{ route('carrinho.atualizarQuantidade', $item->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')
                                         <button type="submit" name="acao" value="menos" class="button negativo">-</button>
-                                        <input class="input-quantidade" type="number" name="quantidade" min="1" step="1" inputmode="numeric" value="{{ $item->quantidade }}" />
+                                        <input class="input-quantidade" type="number" name="quantidade" min="1" max="99" step="1" inputmode="numeric" value="{{ $item->quantidade }}" />
                                         <button type="submit" name="acao" value="mais" class="button positivo">+</button>
                                     </form>
                                 </td>

@@ -6,6 +6,7 @@ use App\Enum\StatusPedidos as EnumsStatusPedidos;
 use App\Mensagens\PassMensagens;
 use App\Models\Pedido;
 use App\Models\PedidoModel;
+use App\Models\ConfiguracaoImpressao;
 use App\Services\GenericBase;
 use App\Services\PedidoService;
 use App\Services\PedidosFeitosService;
@@ -31,7 +32,9 @@ class PedidosFeitosController extends Controller
 
     public function verPedidosAdmin()
     {
-        return view('Admin.Pedidos', $this->pedidosService->montarDadosPainel());
+        return view('Admin.Pedidos', array_merge($this->pedidosService->montarDadosPainel(), [
+            'configuracoesImpressao' => ConfiguracaoImpressao::atuais(),
+        ]));
     }
 
     public function atualizarStatus(Request $request, PedidoModel $pedido): JsonResponse|RedirectResponse
@@ -66,6 +69,19 @@ class PedidosFeitosController extends Controller
 
         $this->pedidosFeitosService->atualizarStatus($pedido, $proximo);
 
+        if ($statusAtual === EnumsStatusPedidos::PENDENTE
+            && $proximo === EnumsStatusPedidos::EM_PREPARO
+            && (ConfiguracaoImpressao::atuais()['autoPrintOnAccept'] ?? false)) {
+            $cupom = $this->pedidosFeitosService->gerarCumpom($pedido->id);
+            return view('Admin.Notinha', [
+                'cupom' => $cupom,
+                'dadosEmpresa' => $this->pedidosFeitosService->PegarDadosEmpresa(),
+                'pedido' => $pedido->fresh(),
+                'configuracoesImpressao' => ConfiguracaoImpressao::atuais(),
+                'imprimirAutomaticamente' => true,
+            ]);
+        }
+
         return redirect()->back()->with('sucesso', PassMensagens::STATUS_AVANCADO . ' ' . $this->pedidosFeitosService->rotulo($proximo) . '.');
     }
 
@@ -76,7 +92,8 @@ class PedidosFeitosController extends Controller
         return view('Admin.Notinha', [
             'cupom' => $cupom,
             'dadosEmpresa' => $dadosEmpresa,
-            'pedido' => $pedido
+            'pedido' => $pedido,
+            'configuracoesImpressao' => ConfiguracaoImpressao::atuais(),
         ]);
     }
 

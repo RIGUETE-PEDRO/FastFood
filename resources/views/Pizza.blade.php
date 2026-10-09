@@ -11,6 +11,7 @@
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}?v={{ filemtime(public_path('css/Admin/Principal.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/Index.css') }}?v={{ filemtime(public_path('css/Index.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/PersonalizacaoProduto.css') }}">
 </head>
 
 <body>
@@ -30,7 +31,10 @@
                 <div>
                     <span class="home-products__eyebrow">Produtos</span>
                     <h1 id="pizzas-title">Pizzas</h1>
-                    <p>Sabores de pizza com preco, descricao e pedido rapido.</p>
+                    <p>Sabores, ingredientes e pedido rápido.</p>
+                    <button type="button" class="pizza-prices-trigger" data-pizza-prices-open>
+                        Ver tamanhos e preços
+                    </button>
                 </div>
                 <span class="home-products__count">{{ $pizzas->count() }} itens</span>
             </div>
@@ -39,10 +43,13 @@
             @foreach ($pizzas as $pizza)
 
 
-            <div class="produto produto--interactive" data-produto-id="{{ $pizza->id }}" data-produto-nome="{{ $pizza->nome }}" data-produto-preco="{{ $pizza->preco }}">
+            <div class="produto produto--interactive" data-produto-id="{{ $pizza->id }}" data-produto-nome="{{ $pizza->nome }}" data-produto-preco="{{ $pizza->preco }}" data-produto-tipo="pizza" data-precos='{{ json_encode($pizza->precos_por_tamanho ?: \App\Services\PersonalizacaoProdutoService::PRECOS_PADRAO) }}' data-bordas='{{ json_encode($pizza->bordas->where("ativa", true)->map(fn ($borda) => ["id" => $borda->id, "nome" => $borda->nome, "adicionais_por_tamanho" => $borda->adicionais_por_tamanho ?: []])->values()) }}'>
                 <div class="container-img">
-                    <img src="{{ asset('img/produtos/' . $pizza->imagem_url) }}" alt="{{ $pizza->nome }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif decoding="async">
-                    <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $pizza->preco, 2, ',', '.') }}</span>
+                    @if(filled($pizza->imagem_url))
+                        <img src="{{ asset('img/produtos/' . $pizza->imagem_url) }}" alt="{{ $pizza->nome }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif decoding="async">
+                    @else
+                        <div class="produto-imagem-placeholder" role="img" aria-label="Imagem indisponível para {{ $pizza->nome }}">Imagem indisponível</div>
+                    @endif
                 </div>
                 <div class="produto-body">
                     <div class="preco-conteiner">
@@ -54,7 +61,7 @@
                     <div class="ingredientes-lista">{{ $pizza->descricao }}</div>
                 </div>
                 @else
-                <p class="produto-empty-description">Descricao nao informada.</p>
+                <p class="produto-empty-description">Descrição não informada.</p>
                 @endif
                 <div class="produto-action">
                     <button type="button" class="button-adicionar">Adicionar ao carrinho</button>
@@ -65,43 +72,8 @@
         </div>
         </section>
 
-        <!-- Modal: Adicionar ao carrinho -->
-           <div class="modal fade " id="addToCartModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content conteiner-info">
-                    <form method="POST" action="{{ route('carrinho.adicionar') }}">
-                        @csrf
-                        <div class="modal-header">
-                            <h5 class="modal-title text_modal">Adicionar ao carrinho</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                        </div>
-                        <div class="modal-body">
-                            <input type="hidden" id="cart_produto_id" name="produto_id" value="">
-                            <input type="hidden" id="cart_preco" name="preco" value="">
-
-                            <div class="mb-3">
-                                <label class="form-label text_modal">Produto</label>
-                                <input type="text" class="form-control" id="cart_produto_nome" value="" readonly disabled>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label text_modal" for="cart_quantidade">Quantidade</label>
-                                <input type="number" class="form-control" id="cart_quantidade" name="quantidade" min="1" value="1" required>
-                            </div>
-
-                            <div class="mb-0 ">
-                                <label class="form-label text_modal" for="cart_observacao">Observação (opcional)</label>
-                                <textarea class="form-control" id="cart_observacao" name="observacao" rows="3" placeholder="Ex: sem cebola, bem passado..."></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-cancelar " data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-confirmar">Confirmar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        @include('partials.modal-precos-pizza')
+        @include('partials.modal-carrinho-personalizacao', ['pizzas' => $pizzas])
     </main>
         </div>
     </div>

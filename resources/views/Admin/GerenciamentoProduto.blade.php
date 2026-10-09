@@ -10,7 +10,8 @@
     @include('partials.favicon')
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/Admin/GerenciamentoProduto.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/GerenciamentoProduto.css') }}?v={{ filemtime(public_path('css/Admin/GerenciamentoProduto.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/PersonalizacaoProduto.css') }}">
 </head>
 
 <body>
@@ -28,6 +29,7 @@
                 <button id="openCreateProduct" class="btn-add"> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
                 </svg>Adicionar Produto</button>
+                <a class="btn-add" href="{{ route('gerenciamento_bordas') }}">Cadastrar bordas</a>
             </div>
             <div class="table-card">
                 <div class="table-header">
@@ -54,7 +56,7 @@
                             <tr>
                                 <td>
                                     @if(!empty($produto->imagem_url))
-                                    <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="Imagem do produto" style="width:48px; height:48px; object-fit:cover; border-radius:8px;">
+                                    <img class="produto-thumbnail" src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="Imagem do produto" loading="lazy" decoding="async">
                                     @else
                                     <span style="color:#aaa;">Sem imagem</span>
                                     @endif
@@ -87,6 +89,10 @@
                                             data-categoria-id="{{ $produto->categoria_id }}"
                                             data-ativo="{{ $produto->disponivel ? 1 : 0 }}"
                                             data-imagem-url="{{ $produto->imagem_url }}"
+                                            data-precos-por-tamanho="{{ json_encode($produto->precos_por_tamanho ?? []) }}"
+                                            data-aceita-meia-por="{{ $produto->aceita_meia_por ? 1 : 0 }}"
+                                            data-preco-meia-por="{{ $produto->preco_meia_por }}"
+                                            data-borda-ids="{{ json_encode($produto->bordas->pluck('id')->all()) }}"
                                             data-action="{{ route('produtos.atualizar', $produto->id) }}"
 
                                             >
@@ -170,6 +176,39 @@
                                 @endforeach
                             </select>
                         </div>
+                        <fieldset class="form-group product-options" id="pizzaSizePrices" hidden>
+                            <legend>Preços por tamanho da pizza</legend>
+                            <small>Preencha somente os tamanhos vendidos. O preço cadastrado acima continua sendo usado para pizzas sem opções de tamanho.</small>
+                            <div class="product-options__sizes">
+                                @foreach(['P', 'M', 'G', 'GG', 'XG'] as $tamanho)
+                                    <label for="pizza-preco-{{ $tamanho }}">{{ $tamanho }}</label>
+                                    <input type="number" min="0.01" step="0.01" inputmode="decimal" name="precos_por_tamanho[{{ $tamanho }}]" id="pizza-preco-{{ $tamanho }}" class="form-control" placeholder="R$">
+                                @endforeach
+                            </div>
+                        </fieldset>
+                        <fieldset class="form-group product-options" id="pizzaBorders" hidden>
+                            <legend>Bordas disponíveis nesta pizza</legend>
+                            <small>Marque as bordas que o cliente poderá escolher. Os adicionais são configurados no cadastro de bordas.</small>
+                            <div class="product-options__checks">
+                                @forelse($bordas as $borda)
+                                    <label class="product-options__check" for="produto-borda-{{ $borda->id }}">
+                                        <input type="checkbox" name="borda_ids[]" id="produto-borda-{{ $borda->id }}" value="{{ $borda->id }}">
+                                        {{ $borda->nome }}
+                                    </label>
+                                @empty
+                                    <p>Nenhuma borda ativa. <a href="{{ route('gerenciamento_bordas') }}">Cadastre uma borda</a>.</p>
+                                @endforelse
+                            </div>
+                        </fieldset>
+                        <fieldset class="form-group product-options" id="portionHalfPrice" hidden>
+                            <legend>Meia porção</legend>
+                            <label class="product-options__check" for="produto-aceita-meia">
+                                <input type="checkbox" name="aceita_meia_por" id="produto-aceita-meia" value="1">
+                                Este produto permite meia porção
+                            </label>
+                            <label for="produto-preco-meia">Preço da meia porção</label>
+                            <input type="number" min="0.01" step="0.01" inputmode="decimal" name="preco_meia_por" id="produto-preco-meia" class="form-control" placeholder="R$">
+                        </fieldset>
                     </div>
                     <div class="overlay-actions">
                         <button type="button" class="btn-secondary" id="cancelCreateProduct">Cancelar</button>

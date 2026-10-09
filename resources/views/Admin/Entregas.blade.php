@@ -82,15 +82,16 @@
                             $motoboyPedidoId = (int) (optional($pedido)->motoboy_id ?? 0);
                             $statusPedido = (int) (optional($pedido)->status ?? 0);
                             $etapaEntrega = $statusPedido === 3;
+                            $podeAceitar = in_array($statusPedido, [1, 2, 3], true);
                             @endphp
 
-                            @if ($motoboyPedidoId === 0 && $etapaEntrega)
+                            @if ($motoboyPedidoId === 0 && $podeAceitar)
                             <form action="{{ route('entregas.aceitar', $pedido->id) }}" method="POST">
                                 @csrf
                                 <button type="submit" class="btn-add">Aceitar entrega</button>
                             </form>
-                            @elseif ($motoboyPedidoId === 0 && !$etapaEntrega)
-                            <p class="mb-0"><strong>Apenas visualização.</strong> Aguarde o pedido entrar na etapa de entrega.</p>
+                            @elseif ($motoboyPedidoId === 0)
+                            <p class="mb-0"><strong>Apenas visualização.</strong> Este pedido não está disponível para aceite.</p>
                             @elseif ($motoboyPedidoId === $motoboyAtualId)
                             <p class="mb-2"><strong>Vinculado a você.</strong></p>
                             @if ($etapaEntrega)
@@ -166,12 +167,22 @@
                 </section>
 
                 <section class="acordeao-pedidos">
-                    <button class="acordeao-pedidos__gatilho" type="button" data-target="#entregasFinalizadas" aria-controls="entregasFinalizadas" aria-expanded="false">
+                    <button class="acordeao-pedidos__gatilho" type="button" data-target="#entregasFinalizadas" aria-controls="entregasFinalizadas" aria-expanded="{{ !empty($buscaFinalizados) ? 'true' : 'false' }}">
                         <span>Entregas finalizadas</span>
                         <span class="acordeao-pedidos__contador">{{ count($pedidosFinalizados ?? []) }}</span>
                         <span class="acordeao-pedidos__icone" aria-hidden="true"></span>
                     </button>
-                    <div class="acordeao-pedidos__conteudo" id="entregasFinalizadas" hidden>
+                    <div class="acordeao-pedidos__conteudo" id="entregasFinalizadas" {{ !empty($buscaFinalizados) ? '' : 'hidden' }}>
+                        <form method="GET" action="{{ route('entregas') }}" class="entregas-busca col-12" role="search">
+                            <label for="busca_finalizados">Buscar pedido finalizado</label>
+                            <div class="entregas-busca__campos">
+                                <input type="search" id="busca_finalizados" name="busca_finalizados" value="{{ $buscaFinalizados ?? '' }}" placeholder="Nome do cliente ou motoboy">
+                                <button type="submit" class="btn-add">Buscar</button>
+                                @if(!empty($buscaFinalizados))
+                                    <a href="{{ route('entregas') }}" class="btn btn-secondary">Limpar</a>
+                                @endif
+                            </div>
+                        </form>
                         @forelse(($pedidosFinalizados ?? collect()) as $pedido)
                         <article class="pedido-card" data-status="{{ (int) ($pedido->status ?? 0) }}">
                             <header class="pedido-card__header">
@@ -188,7 +199,7 @@
                         @empty
                         <div class="card shadow-sm">
                             <div class="card-body text-center py-4">
-                                <p class="texto-suave mb-0">Nenhuma entrega finalizada ainda.</p>
+                                <p class="texto-suave mb-0">Nenhuma entrega finalizada encontrada.</p>
                             </div>
                         </div>
                         @endforelse

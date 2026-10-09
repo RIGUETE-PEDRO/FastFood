@@ -37,7 +37,7 @@
 
             <section class="kc-card">
                 <h2>Atribuicao de role por grupo</h2>
-                <p>As roles salvas aqui sao aplicadas ao tipo de usuario do grupo.</p>
+                <p>As permissões salvas aqui são aplicadas ao tipo de usuário do grupo.</p>
             </section>
 
             <section class="kc-users-list">

@@ -5,7 +5,7 @@ namespace App\Mensagens;
 class PassMensagens{
     public const SELECIONADO_SUCESSO = 'selecionada com sucesso.';
     public const CADASTRADO_SUCESSO = 'cadastrado com sucesso.';
-    public const DELETE_SUCESSO = 'excluido com sucesso.';
+    public const DELETE_SUCESSO = 'excluído com sucesso.';
     public const CADASTRO_REALIZADO = 'Cadastro realizado com sucesso!';
     public const ATUALIZADO_SUCESSO = 'atualizado com sucesso.';
     public const ATUALIZADO_STATUS = 'Pedido atualizado com sucesso.';

@@ -41,7 +41,7 @@
                             <div class="empresa-form__header">
                                 <div>
                                     <h2 class="titulo">Dados da empresa</h2>
-                                    <p class="titulo">Informacoes usadas na identificacao da empresa, endereco e impressao da comanda.</p>
+                                    <p class="titulo">Informações usadas na identificação da empresa, endereço e impressão da comanda.</p>
                                 </div>
                             </div>
 
@@ -63,7 +63,7 @@
                             </div>
 
                             <div class="empresa-form__actions">
-                                <button type="submit" class="btn-config-save">Salvar configuracoes</button>
+                                <button type="submit" class="btn-config-save">Salvar configurações</button>
                             </div>
                         </article>
                     </form>

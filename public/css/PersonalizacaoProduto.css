@@ -1,0 +1,572 @@
+.item-personalizacao {
+    display: block;
+    margin-top: 0.25rem;
+    color: #596477;
+    font-size: 0.92em;
+    font-weight: 400;
+}
+
+.item-personalizacao__linha {
+    display: block;
+}
+
+.product-options {
+    grid-column: 1 / -1;
+    min-width: 0;
+    margin: 0;
+    padding: 1rem;
+    border: 1px solid #dbe2ea;
+    border-radius: 0.75rem;
+}
+
+.product-options legend {
+    float: none;
+    width: auto;
+    margin: 0;
+    padding: 0 0.4rem;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.product-options__sizes {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.75rem;
+}
+
+.product-options__checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: 12px;
+}
+
+.bordas-admin { max-width: 1180px; margin: 0 auto; padding: 24px; }
+.bordas-admin .header-section { align-items: center; gap: 16px; }
+.bordas-admin .header-section p { margin: 5px 0 0; color: #64748b; }
+.bordas-admin .table-card { margin-bottom: 20px; padding: 22px; }
+.bordas-admin .table-card h2 { margin: 0 0 16px; }
+.borda-form { display: grid; gap: 16px; }
+.borda-form__name, .borda-form__prices label { display: grid; gap: 6px; color: #7c2d12; font-weight: 700; }
+.borda-form input:not([type=checkbox]) { width: 100%; min-height: 42px; border: 1px solid #d6d3d1; border-radius: 9px; padding: 8px 11px; }
+.borda-form__prices { display: grid; grid-template-columns: repeat(5, minmax(90px, 1fr)); gap: 12px; }
+.borda-form__active { display: flex; align-items: center; gap: 8px; color: #334155; }
+.borda-form .btn-add { justify-self: start; }
+.borda-list { display: grid; gap: 16px; }
+.borda-form--edit { padding: 18px 0; border-bottom: 1px solid #e7e5e4; }
+.borda-form__hint { color: #64748b; }
+@media (max-width: 700px) {
+    .bordas-admin { padding: 16px; }
+    .bordas-admin .header-section { align-items: stretch; flex-direction: column; }
+    .borda-form__prices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Gerenciamento de bordas */
+.ff-main .bordas-admin {
+    display: grid;
+    justify-items: stretch;
+    gap: 20px;
+    width: min(1180px, 100%);
+    max-width: 1180px;
+    padding: clamp(18px, 3.5vw, 38px) clamp(12px, 3vw, 28px);
+    color: #292524;
+}
+
+.bordas-admin .header-section {
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    padding: clamp(20px, 3vw, 30px);
+    border: 1px solid #f1dfd0;
+    border-radius: 22px;
+    background: linear-gradient(130deg, #fffaf5 0%, #fff 58%, #fff1e5 100%);
+    box-shadow: 0 14px 35px rgba(71, 48, 29, 0.07);
+    text-align: left;
+}
+
+.bordas-admin__intro {
+    min-width: 0;
+}
+
+.bordas-admin__eyebrow {
+    display: inline-block;
+    margin-bottom: 7px;
+    color: #b45309;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.bordas-admin .page-title {
+    color: #7c2d12;
+    font-size: clamp(1.65rem, 4vw, 2.25rem);
+    line-height: 1.1;
+}
+
+.bordas-admin__intro p {
+    max-width: 640px;
+    margin: 8px 0 0;
+    color: #6b6258;
+    font-size: 0.98rem;
+    line-height: 1.5;
+}
+
+.bordas-admin .header-section > .btn-add {
+    flex: 0 0 auto;
+    border: 1px solid #f2c9a7;
+    background: #fff;
+    color: #9a3412;
+    box-shadow: none;
+    text-decoration: none;
+}
+
+.bordas-admin .header-section > .btn-add:hover {
+    background: #fff7ed;
+    box-shadow: 0 8px 18px rgba(154, 52, 18, 0.1);
+}
+
+.ff-main .bordas-admin .table-card {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: clamp(18px, 3vw, 28px);
+    overflow: visible;
+    border: 1px solid #eee3d8 !important;
+    border-radius: 20px !important;
+    background: #fff !important;
+    box-shadow: 0 12px 30px rgba(71, 48, 29, 0.07) !important;
+}
+
+.bordas-admin .table-card h2 {
+    margin: 0;
+    color: #292524;
+    font-size: 1.3rem;
+    font-weight: 850;
+}
+
+.bordas-admin__section-heading,
+.bordas-admin__list-header,
+.borda-form__edit-heading,
+.borda-form__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.bordas-admin__section-heading {
+    justify-content: flex-start;
+    margin-bottom: 22px;
+}
+
+.bordas-admin__section-heading h2,
+.bordas-admin__section-heading h3,
+.borda-form__prices-heading h3,
+.borda-form__edit-heading h3 {
+    margin: 0;
+    color: #292524;
+    font-size: 1.12rem;
+    font-weight: 850;
+}
+
+.bordas-admin__section-heading p,
+.borda-form__prices-heading p,
+.borda-form__edit-heading p,
+.bordas-admin__list-header p {
+    margin: 4px 0 0;
+    color: #78716c;
+    font-size: 0.88rem;
+    line-height: 1.4;
+}
+
+.bordas-admin__icon {
+    display: grid;
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+    place-items: center;
+    border-radius: 15px;
+    background: #fff1e5;
+    color: #b45309;
+    font-size: 1.65rem;
+    font-weight: 700;
+}
+
+.bordas-admin__icon--money {
+    font-size: 0.88rem;
+    font-weight: 900;
+}
+
+.borda-form {
+    display: grid;
+    gap: 20px;
+}
+
+.borda-form__name {
+    display: grid;
+    gap: 8px;
+    color: #44403c;
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.borda-form__name label {
+    color: #44403c;
+}
+
+.borda-form__name label small {
+    color: #a16207;
+    font-size: 0.77rem;
+    font-weight: 700;
+}
+
+.borda-form__name input {
+    min-height: 48px !important;
+    padding: 10px 13px !important;
+    border: 1px solid #e7ddd4 !important;
+    border-radius: 12px !important;
+    background: #fffdfa;
+    color: #292524;
+    font: inherit;
+    font-weight: 500;
+}
+
+.borda-form__name input:focus,
+.borda-price-field__input:focus-within {
+    outline: none;
+    border-color: #ea8a3a !important;
+    box-shadow: 0 0 0 3px rgba(234, 138, 58, 0.15);
+}
+
+.borda-form__prices-section {
+    display: grid;
+    gap: 12px;
+}
+
+.borda-form__prices-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.borda-form__prices-heading h3 {
+    margin: 0;
+    color: #44403c;
+    font-size: 0.98rem;
+    font-weight: 850;
+}
+
+.borda-form__prices-heading p {
+    margin: 0;
+    color: #78716c;
+    font-size: 0.8rem;
+    text-align: right;
+}
+
+.borda-form__prices {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.bordas-admin .borda-price-field {
+    display: grid;
+    gap: 9px;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #eee5dc;
+    border-radius: 14px;
+    background: #fffaf5;
+    color: #44403c;
+    font-weight: 700;
+}
+
+.borda-price-field__title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.borda-price-field__title strong {
+    color: #7c2d12;
+    font-size: 1rem;
+}
+
+.borda-price-field__title small {
+    color: #78716c;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.borda-price-field__input {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    min-height: 42px;
+    padding: 0 9px;
+    border: 1px solid #e7ddd4;
+    border-radius: 10px;
+    background: #fff;
+    color: #9a3412;
+    font-size: 0.83rem;
+    font-weight: 850;
+}
+
+.borda-form .borda-price-field__input input {
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    padding: 5px 0;
+    border: 0;
+    border-radius: 0;
+    outline: 0;
+    background: transparent;
+    color: #292524;
+    font: inherit;
+    font-size: 0.92rem;
+    font-weight: 800;
+    box-shadow: none;
+}
+
+.borda-form__footer {
+    padding-top: 16px;
+    border-top: 1px solid #f0e7de;
+}
+
+.bordas-admin .borda-form__active {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0;
+    color: #44403c;
+    cursor: pointer;
+}
+
+.borda-form__active input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: #b45309;
+}
+
+.borda-form__active span {
+    display: grid;
+    gap: 3px;
+}
+
+.borda-form__active strong {
+    font-size: 0.88rem;
+}
+
+.borda-form__active small {
+    color: #78716c;
+    font-size: 0.78rem;
+    font-weight: 500;
+}
+
+.bordas-admin .borda-form .btn-add {
+    min-width: 180px;
+    justify-self: end;
+    padding: 11px 20px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #c65d0b, #9a3412);
+    box-shadow: 0 8px 18px rgba(154, 52, 18, 0.18);
+}
+
+.bordas-admin__list-header {
+    padding: 0 0 18px;
+    border-bottom: 1px solid #f0e7de;
+}
+
+.bordas-admin__count {
+    flex: 0 0 auto;
+    padding: 7px 12px;
+    border: 1px solid #f1dfd0;
+    border-radius: 999px;
+    background: #fff7ed;
+    color: #9a3412;
+    font-size: 0.82rem;
+    font-weight: 850;
+}
+
+.borda-list {
+    display: grid;
+    gap: 14px;
+    padding-top: 18px;
+}
+
+.borda-form--edit {
+    padding: 20px;
+    border: 1px solid #eee5dc;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #fff, #fffaf5);
+    box-shadow: 0 6px 18px rgba(71, 48, 29, 0.045);
+}
+
+.borda-form__edit-heading {
+    margin-bottom: 2px;
+}
+
+.borda-form__edit-heading .bordas-admin__section-heading {
+    margin: 0;
+}
+
+.borda-status {
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 850;
+}
+
+.borda-status--active {
+    background: #eaf7ef;
+    color: #187344;
+}
+
+.borda-status--inactive {
+    background: #f3f0ed;
+    color: #78716c;
+}
+
+.borda-empty {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    padding: 34px 18px;
+    color: #57534e;
+    text-align: center;
+}
+
+.borda-empty > span {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    border-radius: 15px;
+    background: #fff1e5;
+    color: #b45309;
+    font-size: 1.6rem;
+}
+
+.borda-empty p {
+    margin: 0;
+    color: #78716c;
+}
+
+.borda-form__hint {
+    margin: 0;
+    padding: 14px 16px;
+    border: 1px solid #f1dfd0;
+    border-radius: 14px;
+    background: #fffaf5;
+    color: #6b6258;
+    font-size: 0.88rem;
+}
+
+.borda-form__hint strong {
+    color: #9a3412;
+}
+
+@media (max-width: 900px) {
+    .borda-form__prices {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .ff-main .bordas-admin {
+        justify-items: stretch;
+        padding: 18px 12px;
+    }
+
+    .bordas-admin .header-section {
+        align-items: stretch;
+        width: 100%;
+        padding: 20px;
+        text-align: left;
+    }
+
+    .bordas-admin .header-section > .btn-add {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .borda-form__prices {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .borda-form__prices-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .borda-form__prices-heading p {
+        text-align: left;
+    }
+
+    .borda-form__footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .bordas-admin .borda-form .btn-add {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .bordas-admin__list-header {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 380px) {
+    .bordas-admin .table-card {
+        padding: 16px;
+    }
+
+    .borda-form--edit {
+        padding: 14px;
+    }
+
+    .bordas-admin__section-heading {
+        gap: 11px;
+    }
+
+    .bordas-admin__icon {
+        flex-basis: 40px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .borda-price-field {
+        padding: 9px;
+    }
+
+    .borda-price-field__title {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
+    }
+}
+
+.product-options__check {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin: 0.5rem 0 0.75rem;
+}
+
+@media (max-width: 640px) {
+    .product-options__sizes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

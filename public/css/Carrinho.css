@@ -319,6 +319,10 @@ button.btn.btn-danger:hover {
    ========================================================================== */
 
 .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     margin: 22px 24px;
     padding: 38px 18px;
     border: 1px dashed var(--cart-border-strong);
@@ -329,6 +333,9 @@ button.btn.btn-danger:hover {
 }
 
 .empty-state svg {
+    display: block;
+    flex: 0 0 auto;
+    margin: 0 auto 10px;
     color: var(--cart-accent);
 }
 
@@ -616,7 +623,7 @@ button.btn.btn-danger:hover {
 }
 
 #tipoEntregaForm input[name="tipo_entrega"][value="retirar"] + span::after {
-    content: "Voce retira o pedido no balcao da lanchonete.";
+    content: "Você retira o pedido no balcão da lanchonete.";
     display: block;
     max-width: 42ch;
     color: var(--cart-muted);

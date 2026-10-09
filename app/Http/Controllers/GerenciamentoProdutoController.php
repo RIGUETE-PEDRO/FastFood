@@ -5,8 +5,11 @@ use App\Mensagens\PassMensagens;
 use App\Services\GerenciaProdutosService;
 use App\Services\GenericBase;
 use App\Services\AuthService;
+use App\Models\BordaModel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 
 
 class GerenciamentoProdutoController extends Controller
@@ -29,6 +32,7 @@ class GerenciamentoProdutoController extends Controller
         return view('Admin.GerenciamentoProduto', [
             'produtos' => $dados['produtos'] ?? [],
             'categorias' => $dados['categorias'] ?? [],
+            'bordas' => $dados['bordas'] ?? [],
             'usuario' => $dados['usuarioLogado'] ?? null,
             'nomeUsuario' => $dados['nomeUsuario'] ?? 'Usuário',
         ]);
@@ -37,10 +41,21 @@ class GerenciamentoProdutoController extends Controller
 
     public function cadastrarProduto(Request $request)
     {
-        $request->validate([
+        $dados = $request->validate([
+            'nome' => 'required|string|max:120',
+            'preco' => ['required', 'regex:/^(?=.*[1-9])\d{1,8}([.,]\d{1,2})?$/'],
+            'descricao' => 'nullable|string|max:2000',
+            'ativo' => 'required|boolean',
+            'categoria_id' => 'required|integer|exists:categoria_produto,id',
             'imagem' => 'nullable|image|mimes:jpeg,png,webp|max:10240',
+            'precos_por_tamanho' => 'nullable|array:P,M,G,GG,XG',
+            'precos_por_tamanho.*' => 'nullable|numeric|min:0.01',
+            'aceita_meia_por' => 'nullable|boolean',
+            'preco_meia_por' => 'nullable|required_if:aceita_meia_por,1|numeric|min:0.01',
+            'borda_ids' => 'nullable|array',
+            'borda_ids.*' => 'integer|exists:bordas,id',
         ]);
-        $this->gerenciaProdutosService->criarProduto($request);
+        $this->gerenciaProdutosService->criarProduto($request, $dados);
         return redirect()->route('ListaProdutos')->with('success', PassMensagens::CADASTRAR_PRODUTO_SUCESSO);
     }
 
@@ -52,10 +67,21 @@ class GerenciamentoProdutoController extends Controller
 
     public function atualizarProduto(Request $request, $id)
     {
-        $request->validate([
+        $dados = $request->validate([
+            'nome' => 'required|string|max:120',
+            'preco' => ['required', 'regex:/^(?=.*[1-9])\d{1,8}([.,]\d{1,2})?$/'],
+            'descricao' => 'nullable|string|max:2000',
+            'ativo' => 'required|boolean',
+            'categoria_id' => 'required|integer|exists:categoria_produto,id',
             'imagem' => 'nullable|image|mimes:jpeg,png,webp|max:10240',
+            'precos_por_tamanho' => 'nullable|array:P,M,G,GG,XG',
+            'precos_por_tamanho.*' => 'nullable|numeric|min:0.01',
+            'aceita_meia_por' => 'nullable|boolean',
+            'preco_meia_por' => 'nullable|required_if:aceita_meia_por,1|numeric|min:0.01',
+            'borda_ids' => 'nullable|array',
+            'borda_ids.*' => 'integer|exists:bordas,id',
         ]);
-        $this->gerenciaProdutosService->atualizarProduto($id, $request->all());
+        $this->gerenciaProdutosService->atualizarProduto($id, array_merge($dados, ['imagem' => $request->file('imagem')]));
         return redirect()->route('gerenciamento_Produtos')->with('success', PassMensagens::ATUALIZADO_SUCESSO);
     }
 
@@ -97,6 +123,66 @@ class GerenciamentoProdutoController extends Controller
                 'success' => false,
                 'message' => 'Erro ao atualizar carrousel: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function gerenciamentoBordas()
+    {
+        return view('Admin.GerenciamentoBordas', [
+            'bordas' => BordaModel::query()->orderBy('nome')->get(),
+            'usuario' => $this->genericBase->hasLogado(),
+        ]);
+    }
+
+    public function cadastrarBorda(Request $request)
+    {
+        $dados = $request->validate($this->regrasBorda());
+        $dados['adicionais_por_tamanho'] = $this->normalizarAdicionais($dados['adicionais_por_tamanho'] ?? []);
+        $dados['ativa'] = $request->boolean('ativa');
+        BordaModel::create($dados);
+        $this->limparCacheProdutos();
+
+        return redirect()->route('gerenciamento_bordas')->with('success', 'Borda cadastrada com sucesso.');
+    }
+
+    public function atualizarBorda(Request $request, int $id)
+    {
+        $dados = $request->validate($this->regrasBorda($id));
+        $dados['adicionais_por_tamanho'] = $this->normalizarAdicionais($dados['adicionais_por_tamanho'] ?? []);
+        $dados['ativa'] = $request->boolean('ativa');
+        BordaModel::query()->findOrFail($id)->update($dados);
+        $this->limparCacheProdutos();
+
+        return redirect()->route('gerenciamento_bordas')->with('success', 'Borda atualizada com sucesso.');
+    }
+
+    private function regrasBorda(?int $id = null): array
+    {
+        return [
+            'nome' => ['required', 'string', 'max:100', Rule::unique('bordas', 'nome')->ignore($id)],
+            'adicionais_por_tamanho' => 'nullable|array:P,M,G,GG,XG',
+            'adicionais_por_tamanho.*' => 'nullable|numeric|min:0|max:99999',
+            'ativa' => 'nullable|boolean',
+        ];
+    }
+
+    private function normalizarAdicionais(array $adicionais): array
+    {
+        $resultado = [];
+        foreach (['P', 'M', 'G', 'GG', 'XG'] as $tamanho) {
+            $valor = $adicionais[$tamanho] ?? null;
+            if ($valor !== null && $valor !== '') {
+                $resultado[$tamanho] = number_format((float) str_replace(',', '.', (string) $valor), 2, '.', '');
+            }
+        }
+
+        return $resultado;
+    }
+
+    private function limparCacheProdutos(): void
+    {
+        foreach (['lista_produtos', 'lista_produtos_destaque', 'todos_produtos', 'produtos_categorias'] as $chave) {
+            Cache::forget($chave);
         }
     }
 }

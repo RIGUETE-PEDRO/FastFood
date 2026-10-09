@@ -32,7 +32,7 @@
         <dl class="pedido-dados">
             <div>
                 <dt>Metodo de pagamento</dt>
-                <dd>{{ optional($pedido->formaPagamento)->tipo_pagamento ?? 'Nao informado' }}</dd>
+                <dd>{{ optional($pedido->formaPagamento)->tipo_pagamento ?? 'Não informado' }}</dd>
             </div>
             <div>
                 <dt>Valor total</dt>
@@ -47,19 +47,20 @@
 
     @if($temEnderecoEntrega)
         <section class="pedido-card__secao">
-            <h3 class="pedido-card__secao-titulo">Endereco de entrega</h3>
-            <dl class="pedido-endereco">
+            <details class="pedido-endereco-detalhes">
+                <summary class="pedido-card__secao-titulo">Endereço de entrega</summary>
+                <dl class="pedido-endereco">
                 <div>
                     <dt>Logradouro</dt>
-                    <dd>{{ optional($pedido->endereco)->logradouro ?? 'Nao informado' }}</dd>
+                    <dd>{{ optional($pedido->endereco)->logradouro ?? 'Não informado' }}</dd>
                 </div>
                 <div>
-                    <dt>Numero</dt>
+                    <dt>Número</dt>
                     <dd>{{ optional($pedido->endereco)->numero ?? 's/n' }}</dd>
                 </div>
                 <div>
                     <dt>Bairro</dt>
-                    <dd>{{ optional($pedido->endereco)->bairro ?? 'Nao informado' }}</dd>
+                    <dd>{{ optional($pedido->endereco)->bairro ?? 'Não informado' }}</dd>
                 </div>
                 <div>
                     <dt>Complemento</dt>
@@ -67,9 +68,10 @@
                 </div>
                 <div>
                     <dt>Cidade</dt>
-                    <dd>{{ optional(optional($pedido->endereco)->cidade)->nome ?? 'Nao informado' }}</dd>
+                    <dd>{{ optional(optional($pedido->endereco)->cidade)->nome ?? 'Não informado' }}</dd>
                 </div>
-            </dl>
+                </dl>
+            </details>
         </section>
     @endif
 
@@ -77,11 +79,20 @@
         <section class="pedido-card__secao">
             <h3 class="pedido-card__secao-titulo">Itens do pedido</h3>
             <ul class="pedido-itens">
-                @foreach($pedido->itens as $item)
-                    <li class="pedido-itens__linha">
-                        <div>
-                            <span class="pedido-itens__titulo">{{ optional($item->produto)->nome ?? 'Produto removido' }}</span>
+                    @foreach($pedido->itens as $item)
+                        @php
+                            $configuracaoItem = $item->personalizacao ?? [];
+                            $tituloItem = ($configuracaoItem['tipo'] ?? null) === 'pizza'
+                                ? 'Pizza' . (filled($configuracaoItem['tamanho'] ?? null) ? ' ' . $configuracaoItem['tamanho'] : '')
+                                : (optional($item->produto)->nome ?? 'Produto removido');
+                        @endphp
+                        <li class="pedido-itens__linha">
+                            <div>
+                            <span class="pedido-itens__titulo">{{ $tituloItem }}</span>
                             <span class="pedido-itens__detalhe">{{ $item->quantidade }} x R$ {{ number_format((float) $item->preco_unitario, 2, ',', '.') }}</span>
+                            <span class="pedido-itens__detalhe item-personalizacao">
+                                @include('partials.detalhes-personalizacao-item', ['personalizacao' => $item->personalizacao])
+                            </span>
                         </div>
                         <strong>R$ {{ number_format((float) $item->quantidade * (float) $item->preco_unitario, 2, ',', '.') }}</strong>
                     </li>

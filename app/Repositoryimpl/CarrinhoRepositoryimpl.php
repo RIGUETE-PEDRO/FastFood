@@ -2,7 +2,7 @@
 
 namespace App\Repositoryimpl;
 
-
+use App\Enum\StatusPedidos;
 use App\Models\CarrinhoModel;
 use App\Models\CidadeModel;
 use App\Models\EnderecoModel;
@@ -41,11 +41,15 @@ class CarrinhoRepositoryimpl implements CarrinhoRepository
         return ProdutoModel::find($produtoId);
     }
 
-    public function buscarItemCarrinhoPorUsuarioEProduto(int $usuarioId, int $produtoId): ?CarrinhoModel
+    public function buscarItemCarrinhoPorUsuarioEProduto(int $usuarioId, int $produtoId, ?array $personalizacao = null, string $observacao = ''): ?CarrinhoModel
     {
         return CarrinhoModel::where('usuario_id', $usuarioId)
             ->where('produto_id', $produtoId)
-            ->first();
+            ->get()
+            ->first(function (CarrinhoModel $item) use ($personalizacao, $observacao) {
+                return $item->personalizacao === $personalizacao
+                    && (string) $item->observacao === $observacao;
+            });
     }
 
     public function criarItemCarrinho(array $dados): CarrinhoModel
@@ -97,7 +101,8 @@ class CarrinhoRepositoryimpl implements CarrinhoRepository
 
     public function listarItensSelecionadosCarrinho(int $usuarioId): Collection
     {
-        return CarrinhoModel::where('selecionado', true)
+        return CarrinhoModel::with('produto.categoria')
+            ->where('selecionado', true)
             ->where('usuario_id', $usuarioId)
             ->get();
     }
@@ -111,7 +116,12 @@ class CarrinhoRepositoryimpl implements CarrinhoRepository
     {
         return (float) ItemPedidoModel::query()
             ->whereHas('pedido', function ($q) use ($mesaId) {
-                $q->where('mesa_id', $mesaId);
+                $q->where('mesa_id', $mesaId)
+                    ->whereIn('status', [
+                        StatusPedidos::EM_PREPARO->value,
+                        StatusPedidos::A_CAMINHO->value,
+                        StatusPedidos::ENTREGUE->value,
+                    ]);
             })
             ->where('status_da_comanda', 'em_aberto')
             ->get()

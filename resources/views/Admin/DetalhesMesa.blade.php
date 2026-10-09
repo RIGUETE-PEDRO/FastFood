@@ -10,6 +10,7 @@
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Admin/Mesa.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/PersonalizacaoProduto.css') }}">
 </head>
 
 <body>
@@ -78,7 +79,10 @@
                             <div class="mesa-order-list">
                                 @foreach ($itensAbertos as $item)
                                     @php
-                                        $nome = optional($item->produto)->nome ?? 'Produto';
+                                        $configuracaoItem = $item->personalizacao ?? [];
+                                        $nome = ($configuracaoItem['tipo'] ?? null) === 'pizza'
+                                            ? 'Pizza' . (filled($configuracaoItem['tamanho'] ?? null) ? ' ' . $configuracaoItem['tamanho'] : '')
+                                            : (optional($item->produto)->nome ?? 'Produto');
                                         $unit = (float) $item->preco_unitario;
                                         $sub = $unit * (int) $item->quantidade;
                                         $valorPago = (float) ($item->valor_pago ?? 0);
@@ -111,6 +115,7 @@
                                             <div class="mesa-item-name">
                                                 <strong>{{ $nome }}</strong>
                                                 <small>Item #{{ $item->id }}</small>
+                                                @include('partials.detalhes-personalizacao-item', ['personalizacao' => $item->personalizacao])
                                                 @if(filled($item->observacao))
                                                     <small><strong>Obs.:</strong> {{ $item->observacao }}</small>
                                                 @endif
@@ -236,8 +241,8 @@
                                         @php
                                             $metodoSelecionado = old('pagamento_metodo', 'pix');
                                             $metodos = [
-                                                'cartao_credito' => 'Cartao de credito',
-                                                'cartao_debito' => 'Cartao de debito',
+                                                'cartao_credito' => 'Cartão de crédito',
+                                                'cartao_debito' => 'Cartão de débito',
                                                 'pix' => 'Pix',
                                                 'dinheiro' => 'Dinheiro',
                                             ];
@@ -278,7 +283,10 @@
                                 <div class="mesa-paid-list">
                                     @foreach ($itensPagos as $item)
                                         @php
-                                            $nome = optional($item->produto)->nome ?? 'Produto';
+                                            $configuracaoItem = $item->personalizacao ?? [];
+                                            $nome = ($configuracaoItem['tipo'] ?? null) === 'pizza'
+                                                ? 'Pizza' . (filled($configuracaoItem['tamanho'] ?? null) ? ' ' . $configuracaoItem['tamanho'] : '')
+                                                : (optional($item->produto)->nome ?? 'Produto');
                                             $unit = (float) $item->preco_unitario;
                                             $sub = $unit * (int) $item->quantidade;
                                         @endphp
@@ -286,6 +294,7 @@
                                             <div>
                                                 <strong>{{ $nome }}</strong>
                                                 <span>{{ $item->quantidade }}x - R$ {{ number_format($sub, 2, ',', '.') }}</span>
+                                                @include('partials.detalhes-personalizacao-item', ['personalizacao' => $item->personalizacao])
                                                 @if(filled($item->observacao))
                                                     <span>Obs.: {{ $item->observacao }}</span>
                                                 @endif

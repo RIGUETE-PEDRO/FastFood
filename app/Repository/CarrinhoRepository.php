@@ -10,7 +10,7 @@ interface CarrinhoRepository
 
     public function buscarProdutoPorId(int $produtoId);
 
-    public function buscarItemCarrinhoPorUsuarioEProduto(int $usuarioId, int $produtoId);
+    public function buscarItemCarrinhoPorUsuarioEProduto(int $usuarioId, int $produtoId, ?array $personalizacao = null, string $observacao = '');
 
     public function criarItemCarrinho(array $dados);
 

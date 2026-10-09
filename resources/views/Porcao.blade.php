@@ -11,6 +11,7 @@
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}?v={{ filemtime(public_path('css/Admin/Principal.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/Index.css') }}?v={{ filemtime(public_path('css/Index.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/PersonalizacaoProduto.css') }}">
 </head>
 
 <body>
@@ -25,12 +26,12 @@
     <main>
 
 
-        <section class="home-products" aria-labelledby="porcoes-title">
+        <section class="home-products home-products--porcoes" aria-labelledby="porcoes-title">
             <div class="home-products__header">
                 <div>
                     <span class="home-products__eyebrow">Produtos</span>
-                    <h1 id="porcoes-title">Porcoes</h1>
-                    <p>Porcoes para compartilhar ou acompanhar seu pedido.</p>
+                    <h1 id="porcoes-title">Porções</h1>
+                    <p>Porções para compartilhar ou acompanhar seu pedido.</p>
                 </div>
                 <span class="home-products__count">{{ $porcao->count() }} itens</span>
             </div>
@@ -39,22 +40,26 @@
             @forelse ($porcao as $porcaos)
 
 
-            <div class="produto produto--interactive" data-produto-id="{{ $porcaos->id }}" data-produto-nome="{{ $porcaos->nome }}" data-produto-preco="{{ $porcaos->preco }}">
+            <div class="produto produto--interactive" data-produto-id="{{ $porcaos->id }}" data-produto-nome="{{ $porcaos->nome }}" data-produto-preco="{{ $porcaos->preco }}" data-produto-tipo="porcao" data-aceita-meia="{{ $porcaos->aceita_meia_por ? '1' : '0' }}" data-preco-meia="{{ $porcaos->preco_meia_por }}">
                 <div class="container-img">
-                    <img src="{{ asset('img/produtos/' . $porcaos->imagem_url) }}" alt="{{ $porcaos->nome }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif decoding="async">
-                    <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $porcaos->preco, 2, ',', '.') }}</span>
+                    @if(filled($porcaos->imagem_url))
+                        <img src="{{ asset('img/produtos/' . $porcaos->imagem_url) }}" alt="{{ $porcaos->nome }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif decoding="async">
+                    @else
+                        <div class="produto-imagem-placeholder" role="img" aria-label="Imagem indisponível para {{ $porcaos->nome }}">Imagem indisponível</div>
+                    @endif
                 </div>
                 <div class="produto-body">
                     <div class="preco-conteiner">
                         <h2 class="lanche">{{ $porcaos->nome }}</h2>
                     </div>
+                    <span class="porcao-preco">R$ {{ number_format((float) $porcaos->preco, 2, ',', '.') }}</span>
                  @if(!empty($porcaos->descricao))
                 <div class="ingredientes-wrap">
                     <span class="ingredientes">Ingredientes</span>
                     <div class="ingredientes-lista">{{ $porcaos->descricao }}</div>
                 </div>
                 @else
-                <p class="produto-empty-description">Descricao nao informada.</p>
+                <p class="produto-empty-description">Descrição não informada.</p>
                 @endif
                 <div class="produto-action">
                     <button type="button" class="button-adicionar">Adicionar ao carrinho</button>
@@ -69,43 +74,7 @@
         </div>
         </section>
 
-        <!-- Modal: Adicionar ao carrinho -->
-           <div class="modal fade " id="addToCartModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content conteiner-info">
-                    <form method="POST" action="{{ route('carrinho.adicionar') }}">
-                        @csrf
-                        <div class="modal-header">
-                            <h5 class="modal-title text_modal">Adicionar ao carrinho</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                        </div>
-                        <div class="modal-body">
-                            <input type="hidden" id="cart_produto_id" name="produto_id" value="">
-                            <input type="hidden" id="cart_preco" name="preco" value="">
-
-                            <div class="mb-3">
-                                <label class="form-label text_modal">Produto</label>
-                                <input type="text" class="form-control" id="cart_produto_nome" value="" readonly disabled>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label text_modal" for="cart_quantidade">Quantidade</label>
-                                <input type="number" class="form-control" id="cart_quantidade" name="quantidade" min="1" value="1" required>
-                            </div>
-
-                            <div class="mb-0 ">
-                                <label class="form-label text_modal" for="cart_observacao">Observação (opcional)</label>
-                                <textarea class="form-control" id="cart_observacao" name="observacao" rows="3" placeholder="Ex: sem cebola, bem passado..."></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-cancelar " data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-confirmar">Confirmar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        @include('partials.modal-carrinho-personalizacao', ['pizzas' => $pizzas])
     </main>
         </div>
     </div>

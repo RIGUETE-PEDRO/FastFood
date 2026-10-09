@@ -118,6 +118,36 @@
     color: #c2410c;
 }
 
+.entregas-busca {
+    margin: 0 0 16px;
+    padding: 14px;
+    border: 1px solid rgba(180, 83, 9, 0.18);
+    border-radius: 12px;
+    background: rgba(255, 248, 237, 0.72);
+    width: 100%;
+}
+
+.entregas-busca label {
+    display: block;
+    margin-bottom: 8px;
+    color: #92400e;
+    font-weight: 700;
+}
+
+.entregas-busca__campos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.entregas-busca input {
+    flex: 1 1 100%;
+    min-height: 42px;
+    padding: 8px 11px;
+    border: 1px solid rgba(180, 83, 9, 0.3);
+    border-radius: 8px;
+}
+
 @media (max-width: 768px) {
     .entregas-card .pedido-card__header,
     .acordeao-pedidos__conteudo .pedido-card__header {
@@ -140,5 +170,9 @@
     .entregas-card .btn-add {
         width: 100%;
         min-height: 48px;
+    }
+
+    .entregas-busca__campos > * {
+        width: 100%;
     }
 }

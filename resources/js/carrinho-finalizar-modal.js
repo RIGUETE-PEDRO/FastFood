@@ -242,7 +242,7 @@ function validateNewAddressForm(ctx, event) {
   event.preventDefault();
 
   const labels = missing.map(({ label }) => label).join(' e ');
-  setText(ctx.errors.novoEndereco, `Preencha os campos obrigatorios: ${labels}.`);
+  setText(ctx.errors.novoEndereco, `Preencha os campos obrigatórios: ${labels}.`);
 
   const firstMissingField = ctx.fields.novoEndereco[missing[0]?.key];
   firstMissingField?.focus();
@@ -271,7 +271,7 @@ async function submitAddressWithAjax(ctx, form, submitButton) {
     const payload = await response.json().catch(() => ({}));
 
     if (!response.ok || !payload?.status) {
-      throw new Error(payload?.mensagem || 'Nao foi possivel confirmar o endereco.');
+      throw new Error(payload?.mensagem || 'Não foi possível confirmar o endereço.');
     }
 
     return payload;
@@ -280,7 +280,7 @@ async function submitAddressWithAjax(ctx, form, submitButton) {
   } finally {
     if (submitButton) {
       submitButton.disabled = false;
-      submitButton.textContent = originalText || 'Usar endereco selecionado';
+      submitButton.textContent = originalText || 'Usar endereço selecionado';
     }
   }
 }
@@ -289,7 +289,7 @@ async function syncSavedAddress(ctx, form, selectedAddress) {
   try {
     await submitAddressWithAjax(ctx, form, form.querySelector('button[type="submit"]'));
   } catch (error) {
-    setText(ctx.errors.endereco, error.message || 'Nao foi possivel confirmar o endereco.');
+    setText(ctx.errors.endereco, error.message || 'Não foi possível confirmar o endereço.');
     closeModal(ctx, ctx.modals.pagamento);
     openModal(ctx, ctx.modals.endereco);
     focusFirstAddress(ctx);
@@ -307,9 +307,9 @@ async function syncNewAddress(ctx, form) {
       return;
     }
 
-    throw new Error('Nao foi possivel identificar o endereco cadastrado.');
+    throw new Error('Não foi possível identificar o endereço cadastrado.');
   } catch (error) {
-    setText(ctx.errors.novoEndereco, error.message || 'Nao foi possivel cadastrar o endereco.');
+    setText(ctx.errors.novoEndereco, error.message || 'Não foi possível cadastrar o endereço.');
     closeModal(ctx, ctx.modals.pagamento);
     openModal(ctx, ctx.modals.novoEndereco);
     focusNewAddress(ctx);
@@ -323,7 +323,7 @@ function handleSavedAddressSubmit(ctx, event) {
     event.preventDefault();
 
     if (hasSavedAddresses(ctx)) {
-      setText(ctx.errors.endereco, 'Selecione um endereco para continuar.');
+      setText(ctx.errors.endereco, 'Selecione um endereço para continuar.');
       focusFirstAddress(ctx);
     } else {
       openModal(ctx, ctx.modals.novoEndereco);

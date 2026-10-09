@@ -24,14 +24,33 @@ class CarrinhoController extends Controller
 
     public function adicionarAoCarrinho(Request $request)
     {
-        $produtoId = $request->input('produto_id');
-        $quantidade = $request->input('quantidade', 1);
-        $observacao = $request->input('observacao');
-        $preco = $request->input('preco');
+        $request->validate([
+            'produto_id' => 'required|integer|exists:produtos,id',
+            'quantidade' => 'required|integer|min:1|max:99',
+            'observacao' => 'nullable|string|max:500',
+            'personalizacao' => 'nullable|array',
+            'personalizacao.tipo' => 'nullable|in:pizza,porcao',
+            'personalizacao.modo' => 'nullable|in:inteira,meia_a_meia',
+            'personalizacao.tamanho' => 'nullable|in:P,M,G,GG,XG',
+            'personalizacao.borda' => 'nullable|in:sem_borda,com_borda',
+            'personalizacao.borda_id' => 'nullable|integer|min:0',
+            'personalizacao.sabor_2_id' => 'nullable|integer|min:1',
+            'personalizacao.tipo_porcao' => 'nullable|in:inteira,meia',
+        ]);
 
         $usuarioLogado =  $this->genericBase->hasLogado();
 
-        $this->carrinhoService->adicionarProdutoAoCarrinho($usuarioLogado, $produtoId, $quantidade, $observacao, $preco);
+        try {
+            $this->carrinhoService->adicionarProdutoAoCarrinho(
+                $usuarioLogado,
+                $request->input('produto_id'),
+                $request->input('quantidade'),
+                $request->input('observacao'),
+                $request->input('personalizacao')
+            );
+        } catch (\InvalidArgumentException $e) {
+            return redirect()->back()->withInput()->withErrors(['personalizacao' => $e->getMessage()]);
+        }
 
         return redirect(url()->previous())
             ->with('success', PassMensagens::PRODUTO_ADICIONADO_SUCESSO);
@@ -82,12 +101,20 @@ class CarrinhoController extends Controller
 
     public function atualizarQuantidade(Request $request, $id)
     {
-        $carrinhoService = $this->carrinhoService;
-        $atualizou = $carrinhoService->atualizarQuantidadeProdutoNoCarrinho($request, $id);
+        $request->validate([
+            'acao' => 'nullable|in:mais,menos',
+            'quantidade' => 'sometimes|required|integer|min:1|max:99',
+        ]);
+
+        try {
+            $atualizou = $this->carrinhoService->atualizarQuantidadeProdutoNoCarrinho($request, $id);
+        } catch (\InvalidArgumentException $e) {
+            return redirect()->route('carrinho')->with('error', $e->getMessage());
+        }
 
         if (!$atualizou) {
             return redirect()->route('carrinho')
-                ->with('error', ErroMensagens::QUANTIDADE_MINIMA);
+                ->with('error', 'A quantidade deve ficar entre 1 e 99 e o produto precisa estar disponível.');
         } else {
             return redirect()->route('carrinho')
                 ->with('success', PassMensagens::QUANTIDADE_ATUALIZADA_SUCESSO);

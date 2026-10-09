@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\CategoriaProdutoModel;
+use App\Models\BordaModel;
 use App\Repository\GerenciaProdutosRepository;
+use Illuminate\Support\Str;
 
 class GerenciaProdutosService
 {
@@ -25,25 +28,32 @@ class GerenciaProdutosService
         $nomeUsuario = $usuarioLogado ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
         $produtos = $this->repository->listarProdutosComCategoria();
         $categorias = $this->repository->listarCategorias();
+        $bordas = BordaModel::query()->where('ativa', true)->orderBy('nome')->get();
 
-        return compact('usuarioLogado', 'nomeUsuario', 'produtos', 'categorias');
+        return compact('usuarioLogado', 'nomeUsuario', 'produtos', 'categorias', 'bordas');
     }
 
-    public function criarProduto($request)
+    public function criarProduto($request, ?array $dadosValidados = null)
     {
-        $preco = str_replace(',', '.', $request->preco);
+        $dados = $dadosValidados ?? $request->all();
+        $opcoes = $this->opcoesPersonalizacao($dados);
         $produto = $this->repository->criarProduto(
             [
-                'nome' => $request->input('nome'),
-                'preco' => $preco,
-                'descricao' => $request->input('descricao'),
+                'nome' => $dados['nome'],
+                'preco' => $this->precoDecimal($dados['preco']),
+                'descricao' => $dados['descricao'] ?? null,
                 'imagem_url' => $request->hasFile('imagem')
                     ? $this->otimizadorImagemProduto->salvar($request->file('imagem'))
                     : 'sem_imagem.jpg',
-                'disponivel' => $request->input('ativo'),
-                'categoria_id' => $request->input('categoria_id'),
+                'disponivel' => (bool) $dados['ativo'],
+                'categoria_id' => $dados['categoria_id'],
+                ...$opcoes,
             ]
         );
+
+        if ($this->categoriaEhPizza($dados['categoria_id'] ?? null)) {
+            $produto->bordas()->sync($this->bordasAtivas($dados['borda_ids'] ?? []));
+        }
 
         return $produto;
     }
@@ -70,7 +80,80 @@ class GerenciaProdutosService
             $data['imagem_url'] = $this->otimizadorImagemProduto->salvar($data['imagem']);
         }
 
-        return $this->repository->atualizarProduto((int) $id, $data);
+        $data['preco'] = $this->precoDecimal($data['preco']);
+        $data = array_merge($data, $this->opcoesPersonalizacao($data));
+
+        $produto = $this->repository->atualizarProduto((int) $id, $data);
+        if ($produto) {
+            $bordas = $this->categoriaEhPizza($data['categoria_id'] ?? null)
+                ? $this->bordasAtivas($data['borda_ids'] ?? [])
+                : [];
+            if ($this->categoriaEhPizza($data['categoria_id'] ?? null)) {
+                $inativasAssociadas = $produto->bordas()->where('bordas.ativa', false)->pluck('bordas.id')->all();
+                $bordas = array_values(array_unique([...$bordas, ...$inativasAssociadas]));
+            }
+            $produto->bordas()->sync($bordas);
+        }
+
+        return $produto;
+    }
+
+    private function bordasAtivas(array $ids): array
+    {
+        return BordaModel::query()->where('ativa', true)->whereIn('id', $ids)->pluck('id')->all();
+    }
+
+    private function categoriaEhPizza(mixed $categoriaId): bool
+    {
+        $categoria = CategoriaProdutoModel::find($categoriaId);
+        $nomeCategoria = mb_strtolower(Str::ascii(trim((string) optional($categoria)->nome)));
+
+        return in_array($nomeCategoria, ['pizza', 'pizzas'], true);
+    }
+
+    private function opcoesPersonalizacao(array $dados): array
+    {
+        $categoria = CategoriaProdutoModel::find($dados['categoria_id'] ?? null);
+        $nomeCategoria = mb_strtolower(Str::ascii(trim((string) optional($categoria)->nome)));
+
+        if (in_array($nomeCategoria, ['pizza', 'pizzas'], true)) {
+            $precos = [];
+            foreach (['P', 'M', 'G', 'GG', 'XG'] as $tamanho) {
+                $valor = $dados['precos_por_tamanho'][$tamanho] ?? null;
+                if ($valor !== null && $valor !== '') {
+                    $precos[$tamanho] = $this->precoDecimal($valor);
+                }
+            }
+
+            return [
+                'precos_por_tamanho' => $precos ?: null,
+                'aceita_meia_por' => false,
+                'preco_meia_por' => null,
+            ];
+        }
+
+        if (in_array($nomeCategoria, ['porcao', 'porcoes'], true)) {
+            $aceitaMeia = filter_var($dados['aceita_meia_por'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+            return [
+                'precos_por_tamanho' => null,
+                'aceita_meia_por' => $aceitaMeia,
+                'preco_meia_por' => $aceitaMeia && filled($dados['preco_meia_por'] ?? null)
+                    ? $this->precoDecimal($dados['preco_meia_por'])
+                    : null,
+            ];
+        }
+
+        return [
+            'precos_por_tamanho' => null,
+            'aceita_meia_por' => false,
+            'preco_meia_por' => null,
+        ];
+    }
+
+    private function precoDecimal(mixed $valor): string
+    {
+        return number_format((float) str_replace(',', '.', (string) $valor), 2, '.', '');
     }
 
 }

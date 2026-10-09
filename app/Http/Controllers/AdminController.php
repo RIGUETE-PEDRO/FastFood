@@ -6,6 +6,7 @@ use App\Services\GenericBase;
 use App\Services\AdminService;
 use App\Http\Middleware\UsuarioAutenticado;
 use App\Mensagens\PassMensagens;
+use App\Models\ConfiguracaoImpressao;
 use Illuminate\Http\Request;
 use App\Enum\TipoUsuario as EnumsTipoUsuario;
 use Illuminate\Support\Facades\Auth;
@@ -98,6 +99,64 @@ class AdminController extends Controller
         return redirect()
             ->route('admin.configuracoes')
             ->with('sucesso', 'Dados da empresa ' . PassMensagens::ATUALIZADO_SUCESSO);
+    }
+
+    public function configuracoesImpressao(Request $request)
+    {
+        return view('Admin.Impressao', [
+            'configuracoesImpressao' => ConfiguracaoImpressao::atuais(),
+            'impressaoReturnUrl' => $this->resolverUrlRetornoImpressao($request),
+        ]);
+    }
+
+    public function atualizarConfiguracoesImpressao(Request $request)
+    {
+        $dados = $request->validate([
+            'paperWidth' => ['required', 'in:58,80'],
+            'fontSize' => ['required', 'in:10,12,14'],
+            'receiptFont' => ['required', 'in:monospace,arial,georgia'],
+            'copies' => ['required', 'integer', 'between:1,5'],
+            'padding' => ['required', 'in:compact,normal'],
+            // O formulário pode enviar booleanos como strings ("true"/"false")
+            // ou como 1/0, dependendo do cliente.
+            'autoPrintOnAccept' => ['sometimes', 'in:true,false,1,0'],
+        ]);
+
+        $dados['autoPrintOnAccept'] = filter_var(
+            $request->input('autoPrintOnAccept', false),
+            FILTER_VALIDATE_BOOLEAN
+        );
+
+        ConfiguracaoImpressao::salvar($dados);
+
+        return redirect()
+            ->route('admin.impressao', ['return' => $this->resolverUrlRetornoImpressao($request)])
+            ->with('sucesso', 'Preferências de impressão salvas.');
+    }
+
+    private function resolverUrlRetornoImpressao(Request $request): string
+    {
+        $returnUrl = $request->input('return');
+        if (!is_string($returnUrl) || trim($returnUrl) === '') {
+            return route('admin.configuracoes');
+        }
+
+        $parts = parse_url($returnUrl);
+        if ($parts === false || isset($parts['host']) || isset($parts['scheme'])) {
+            return route('admin.configuracoes');
+        }
+
+        $path = $parts['path'] ?? '';
+        if (!str_starts_with($path, '/') || str_starts_with($path, '//') || str_contains($path, '\\')) {
+            return route('admin.configuracoes');
+        }
+
+        $impressaoPath = parse_url(route('admin.impressao'), PHP_URL_PATH);
+        if (rtrim($path, '/') === rtrim($impressaoPath ?: '/admin/configuracoes/impressao', '/')) {
+            return route('admin.configuracoes');
+        }
+
+        return $path . (isset($parts['query']) ? '?' . $parts['query'] : '');
     }
 
     public function alterarDados(Request $request)

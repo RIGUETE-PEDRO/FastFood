@@ -13,12 +13,12 @@
    <div class="login-container">
 
     <div class="login-image">
-        <img src="{{ asset('img/login-imagem.png') }}" alt="Login Image">
+        <img src="{{ asset('img/login-imagem.webp') }}" alt="Login Image">
     </div>
 
     <div class="container">
         <div class="brand-mini" aria-label="Logo FlashFood">
-            <img src="{{ asset('img/login-imagem.png') }}" alt="Logo FlashFood">
+            <img src="{{ asset('img/login-imagem.webp') }}" alt="Logo FlashFood">
         </div>
         <h1>Cadastro</h1>
 

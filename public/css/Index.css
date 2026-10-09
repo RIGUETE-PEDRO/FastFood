@@ -148,22 +148,39 @@ body:not(.page-loading) .page-loader {
 }
 
 .produto img {
-    /* preencher a caixa e manter todas as imagens visualmente idênticas
-       usa cover para evitar espaços em branco e garantir uniformidade */
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
     display: block;
     border-radius: 6px;
     transition: transform .35s ease;
 }
 
 .produto--interactive:hover img{
-    transform: scale(1.06);
+    transform: none;
 }
 
 .container-img{
     position: relative;
+}
+
+.produto-imagem-placeholder,
+.mini-img-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+    color: #9a3412;
+    background: linear-gradient(135deg, #fff7ed, #f4efe8);
+    font-weight: 700;
+    text-align: center;
+}
+
+.mini-img-placeholder {
+    color: #fed7aa;
+    background: #292524;
 }
 
 .produto-badge{
@@ -671,16 +688,20 @@ body:not(.page-loading) .page-loader {
 }
 
 .mini-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 120px;
     overflow: hidden;
-    background: #0a0a0a;
+    background: #f4efe8;
 }
 
 .mini-img img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center;
     display: block;
 }
 
@@ -838,6 +859,172 @@ body:not(.page-loading) .page-loader {
     box-shadow: 0 8px 20px rgba(38, 31, 24, 0.06);
 }
 
+.pizza-prices-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    margin-top: 12px;
+    padding: 9px 16px;
+    border: 1px solid #b45309;
+    border-radius: 999px;
+    background: #fff7ed;
+    color: #9a3412;
+    font: inherit;
+    font-size: 0.94rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+}
+
+.pizza-prices-trigger:hover {
+    transform: translateY(-1px);
+    background: #9a3412;
+    color: #fff;
+}
+
+.pizza-prices-trigger:focus-visible,
+.pizza-prices-modal__close:focus-visible,
+.pizza-prices-modal__done:focus-visible {
+    outline: 3px solid #fdba74;
+    outline-offset: 3px;
+}
+
+.pizza-prices-modal {
+    width: min(540px, calc(100vw - 24px));
+    max-width: none;
+    max-height: min(88vh, 760px);
+    margin: auto;
+    padding: 0;
+    overflow: auto;
+    border: 0;
+    border-radius: 22px;
+    background: #fff;
+    color: #292524;
+    box-shadow: 0 24px 80px rgba(28, 25, 23, 0.3);
+}
+
+.pizza-prices-modal[open] {
+    display: block;
+}
+
+.pizza-prices-modal::backdrop {
+    background: rgba(28, 25, 23, 0.62);
+    backdrop-filter: blur(3px);
+}
+
+.pizza-prices-modal__content {
+    padding: clamp(18px, 5vw, 28px);
+}
+
+.pizza-prices-modal__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.pizza-prices-modal__eyebrow {
+    color: #b45309;
+    font-size: 0.76rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.pizza-prices-modal__header h2 {
+    margin: 3px 0 6px;
+    color: #9a3412;
+    font-size: clamp(1.35rem, 5vw, 1.8rem);
+    line-height: 1.15;
+}
+
+.pizza-prices-modal__header p,
+.pizza-prices-modal__note {
+    margin: 0;
+    color: #625b53;
+    font-size: 0.92rem;
+    line-height: 1.45;
+}
+
+.pizza-prices-modal__close {
+    display: grid;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border: 0;
+    border-radius: 12px;
+    background: #fff1e7;
+    color: #9a3412;
+    font-size: 1.75rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.pizza-prices-table {
+    display: grid;
+    gap: 8px;
+}
+
+.pizza-prices-table__row {
+    display: grid;
+    grid-template-columns: minmax(58px, 0.8fr) minmax(74px, 1fr) minmax(78px, 1fr);
+    align-items: center;
+    gap: 8px;
+    min-height: 56px;
+    padding: 8px 10px;
+    border: 1px solid #eee7e0;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 0.96rem;
+}
+
+.pizza-prices-table__row--heading {
+    min-height: 38px;
+    border: 0;
+    background: #fff7ed;
+    color: #7c2d12;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.pizza-prices-table__size {
+    display: grid;
+    justify-items: start;
+    line-height: 1.15;
+    text-align: left;
+}
+
+.pizza-prices-table__size strong {
+    color: #292524;
+    font-size: 1.05rem;
+}
+
+.pizza-prices-table__size small {
+    margin-top: 3px;
+    color: #78716c;
+    font-size: 0.75rem;
+}
+
+.pizza-prices-modal__note {
+    margin-top: 16px;
+}
+
+.pizza-prices-modal__done {
+    width: 100%;
+    min-height: 46px;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 999px;
+    background: #b45309;
+    color: #fff;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
 .home-products .container-produtos {
     grid-template-columns: repeat(auto-fit, minmax(238px, 1fr));
     gap: 18px;
@@ -872,14 +1059,19 @@ body:not(.page-loading) .page-loader {
 }
 
 .home-products .container-img {
-    height: auto;
-    aspect-ratio: 4 / 3;
+    height: 320px;
     margin: 0;
     border-radius: 0;
     background: #f4efe8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+     overflow: hidden;
 }
-
 .home-products .produto img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     border-radius: 0;
 }
 
@@ -1004,6 +1196,45 @@ body:not(.page-loading) .page-loader {
     outline-offset: 2px;
 }
 
+/* Catálogo compacto de porções: imagem à esquerda e ação junto aos detalhes. */
+.home-products--porcoes .container-produtos {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 410px), 1fr));
+    gap: 14px;
+}
+
+.home-products--porcoes .produto {
+    display: grid;
+    grid-template-columns: minmax(120px, 36%) minmax(0, 1fr);
+    min-height: 0;
+}
+
+.home-products--porcoes .container-img {
+    height: 100%;
+    min-height: 190px;
+}
+
+.home-products--porcoes .produto-body {
+    gap: 8px;
+    padding: 16px;
+}
+
+.home-products--porcoes .porcao-preco {
+    color: #9a3412;
+    font-size: 0.98rem;
+    font-weight: 850;
+    line-height: 1.2;
+}
+
+.home-products--porcoes .produto-empty-description {
+    font-size: 0.86rem;
+}
+
+.home-products--porcoes .button-adicionar {
+    min-height: 40px;
+    padding: 8px 12px;
+    font-size: 0.88rem;
+}
+
 @media (max-width: 768px) {
     .home-products {
         width: min(100% - 20px, 640px);
@@ -1024,6 +1255,10 @@ body:not(.page-loading) .page-loader {
         min-height: 32px;
     }
 
+    .pizza-prices-trigger {
+        width: min(100%, 360px);
+    }
+
     .home-products .container-produtos {
         grid-template-columns: 1fr;
         gap: 14px;
@@ -1034,6 +1269,16 @@ body:not(.page-loading) .page-loader {
     }
 
     .home-products .container-img {
-        aspect-ratio: 16 / 10;
+        aspect-ratio: auto;
+    }
+
+    .home-products--porcoes .container-img {
+        min-height: 0;
+        height: auto;
+        aspect-ratio: 1 / 0.82;
+    }
+
+    .home-products--porcoes .produto-body {
+        padding: 12px;
     }
 }

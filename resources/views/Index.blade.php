@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}?v={{ filemtime(public_path('css/Admin/Principal.css')) }}">
 
     <link rel="stylesheet" href="{{ asset('css/Index.css') }}?v={{ filemtime(public_path('css/Index.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/PersonalizacaoProduto.css') }}">
 </head>
 
 <body class="page-loading">
@@ -29,37 +30,55 @@
             </button>
     <main>
 
+        @php
+            $produtosPizza = $produtos->filter(fn ($produto) => in_array(mb_strtolower(\Illuminate\Support\Str::ascii(optional($produto->categoria)->nome)), ['pizza', 'pizzas'], true));
+        @endphp
+
         <!-- CARROSSEL: somente produtos marcados como destaque -->
         @if ($produtosDestaque->isNotEmpty())
         <div class="carousel-produtos">
             <div class="carousel-track">
                 @foreach ($produtosDestaque as $produto)
-                <div class="produto-card-mini" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
+                @php $categoriaProduto = mb_strtolower(\Illuminate\Support\Str::ascii(optional($produto->categoria)->nome)); @endphp
+                @php $ehPizza = in_array($categoriaProduto, ['pizza', 'pizzas'], true); @endphp
+                @php $precoLista = $ehPizza ? null : (float) $produto->preco; @endphp
+                <div class="produto-card-mini" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}" data-produto-tipo="{{ in_array($categoriaProduto, ['pizza', 'pizzas'], true) ? 'pizza' : (in_array($categoriaProduto, ['porcao', 'porcoes'], true) ? 'porcao' : '') }}" data-aceita-meia="{{ $produto->aceita_meia_por ? '1' : '0' }}" data-preco-meia="{{ $produto->preco_meia_por }}" data-precos='{{ json_encode(in_array($categoriaProduto, ['pizza', 'pizzas'], true) ? ($produto->precos_por_tamanho ?: \App\Services\PersonalizacaoProdutoService::PRECOS_PADRAO) : []) }}' data-bordas='{{ json_encode($produto->bordas->where("ativa", true)->map(fn ($borda) => ["id" => $borda->id, "nome" => $borda->nome, "adicionais_por_tamanho" => $borda->adicionais_por_tamanho ?: []])->values()) }}'>
                     <div class="mini-img">
-                        <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" decoding="async" fetchpriority="high">
+                        @if(filled($produto->imagem_url))
+                            <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" decoding="async" fetchpriority="high">
+                        @else
+                            <div class="mini-img-placeholder" role="img" aria-label="Imagem indisponível para {{ $produto->nome }}">Sem imagem</div>
+                        @endif
                     </div>
 
                     <div class="mini-info">
                         <span class="mini-titulo">{{ $produto->nome }}</span>
-                        <span class="mini-preco">
-                    R$ {{ number_format((float) $produto->preco, 2, ',', '.') }}
-                </span>
+                        @unless($ehPizza)
+                            <span class="mini-preco">R$ {{ number_format((float) $precoLista, 2, ',', '.') }}</span>
+                        @endunless
                     </div>
                 </div>
                 @endforeach
 
 
                 @foreach ($produtosDestaque as $produto)
-                <div class="produto-card-mini" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
+                @php $categoriaProduto = mb_strtolower(\Illuminate\Support\Str::ascii(optional($produto->categoria)->nome)); @endphp
+                @php $ehPizza = in_array($categoriaProduto, ['pizza', 'pizzas'], true); @endphp
+                @php $precoLista = $ehPizza ? null : (float) $produto->preco; @endphp
+                <div class="produto-card-mini" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}" data-produto-tipo="{{ in_array($categoriaProduto, ['pizza', 'pizzas'], true) ? 'pizza' : (in_array($categoriaProduto, ['porcao', 'porcoes'], true) ? 'porcao' : '') }}" data-aceita-meia="{{ $produto->aceita_meia_por ? '1' : '0' }}" data-preco-meia="{{ $produto->preco_meia_por }}" data-precos='{{ json_encode(in_array($categoriaProduto, ['pizza', 'pizzas'], true) ? ($produto->precos_por_tamanho ?: \App\Services\PersonalizacaoProdutoService::PRECOS_PADRAO) : []) }}' data-bordas='{{ json_encode($produto->bordas->where("ativa", true)->map(fn ($borda) => ["id" => $borda->id, "nome" => $borda->nome, "adicionais_por_tamanho" => $borda->adicionais_por_tamanho ?: []])->values()) }}'>
                     <div class="mini-img">
-                        <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" loading="lazy" decoding="async">
+                        @if(filled($produto->imagem_url))
+                            <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" loading="lazy" decoding="async">
+                        @else
+                            <div class="mini-img-placeholder" role="img" aria-label="Imagem indisponível para {{ $produto->nome }}">Sem imagem</div>
+                        @endif
                     </div>
 
                     <div class="mini-info">
                         <span class="mini-titulo">{{ $produto->nome }}</span>
-                        <span class="mini-preco">
-                    R$ {{ number_format((float) $produto->preco, 2, ',', '.') }}
-                </span>
+                        @unless($ehPizza)
+                            <span class="mini-preco">R$ {{ number_format((float) $precoLista, 2, ',', '.') }}</span>
+                        @endunless
                     </div>
                 </div>
                 @endforeach
@@ -76,7 +95,12 @@
                 <div>
                     <span class="home-products__eyebrow">Produtos</span>
                     <h1 id="home-products-title">Escolha seu pedido</h1>
-                    <p>Todos os produtos disponíveis, com preço, ingredientes e ação rápida para adicionar ao carrinho.</p>
+                    <p>Confira ingredientes, consulte os preços das pizzas e adicione seus produtos ao carrinho.</p>
+                    @if($produtosPizza->isNotEmpty())
+                        <button type="button" class="pizza-prices-trigger" data-pizza-prices-open>
+                            Ver tamanhos e preços das pizzas
+                        </button>
+                    @endif
                 </div>
                 <span class="home-products__count">{{ $produtos->count() }} itens</span>
             </div>
@@ -84,10 +108,19 @@
         <div class="container-produtos mt-4">
             @foreach ($produtos as $produto)
 
-            <div class="produto produto--interactive" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}">
+            @php $categoriaProduto = mb_strtolower(\Illuminate\Support\Str::ascii(optional($produto->categoria)->nome)); @endphp
+            @php $ehPizza = in_array($categoriaProduto, ['pizza', 'pizzas'], true); @endphp
+            @php $precoLista = $ehPizza ? null : (float) $produto->preco; @endphp
+            <div class="produto produto--interactive" data-produto-id="{{ $produto->id }}" data-produto-nome="{{ $produto->nome }}" data-produto-preco="{{ $produto->preco }}" data-produto-tipo="{{ in_array($categoriaProduto, ['pizza', 'pizzas'], true) ? 'pizza' : (in_array($categoriaProduto, ['porcao', 'porcoes'], true) ? 'porcao' : '') }}" data-aceita-meia="{{ $produto->aceita_meia_por ? '1' : '0' }}" data-preco-meia="{{ $produto->preco_meia_por }}" data-precos='{{ json_encode(in_array($categoriaProduto, ['pizza', 'pizzas'], true) ? ($produto->precos_por_tamanho ?: \App\Services\PersonalizacaoProdutoService::PRECOS_PADRAO) : []) }}' data-bordas='{{ json_encode($produto->bordas->where("ativa", true)->map(fn ($borda) => ["id" => $borda->id, "nome" => $borda->nome, "adicionais_por_tamanho" => $borda->adicionais_por_tamanho ?: []])->values()) }}'>
                 <div class="container-img">
-                    <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif decoding="async">
-                    <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $produto->preco, 2, ',', '.') }}</span>
+                    @if(filled($produto->imagem_url))
+                        <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="{{ $produto->nome }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif decoding="async">
+                    @else
+                        <div class="produto-imagem-placeholder" role="img" aria-label="Imagem indisponível para {{ $produto->nome }}">Imagem indisponível</div>
+                    @endif
+                    @unless($ehPizza)
+                        <span class="produto-badge" aria-label="Preço">R$ {{ number_format((float) $precoLista, 2, ',', '.') }}</span>
+                    @endunless
                 </div>
                 <div class="produto-body">
                     <div class="preco-conteiner">
@@ -99,7 +132,7 @@
                     <div class="ingredientes-lista">{{ $produto->descricao }}</div>
                 </div>
                 @else
-                <p class="produto-empty-description">Descricao nao informada.</p>
+                <p class="produto-empty-description">Descrição não informada.</p>
                 @endif
                 <div class="produto-action">
                     <button type="button" class="button-adicionar">Adicionar ao carrinho</button>
@@ -110,45 +143,10 @@
         </div>
         </section>
 
-        <!-- Modal: Adicionar ao carrinho -->
-        <div class="modal fade " id="addToCartModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content conteiner-info">
-                    <form method="POST" action="{{ route('carrinho.adicionar') }}">
-                        @csrf
-                        <div class="modal-header">
-                            <h5 class="modal-title text_modal">Adicionar ao carrinho</h5>
-
-                            <button type="button" class="btn-close btn-close-custom" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                        </div>
-
-                        <div class="modal-body">
-                            <input type="hidden" id="cart_produto_id" name="produto_id" value="">
-                            <input type="hidden" id="cart_preco" name="preco" value="">
-
-                            <div class="mb-3">
-                                <label class="form-label text_modal">Produto</label>
-                                <input type="text" class="form-control" id="cart_produto_nome" value="" readonly disabled>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label text_modal" for="cart_quantidade">Quantidade</label>
-                                <input type="number" class="form-control" id="cart_quantidade" name="quantidade" min="1" value="1" required>
-                            </div>
-
-                            <div class="mb-0 ">
-                                <label class="form-label text_modal" for="cart_observacao">Observação (opcional)</label>
-                                <textarea class="form-control" id="cart_observacao" name="observacao" rows="3" placeholder="Ex: sem cebola, bem passado..."></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-cancelar " data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-confirmar">Confirmar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        @if($produtosPizza->isNotEmpty())
+            @include('partials.modal-precos-pizza')
+        @endif
+        @include('partials.modal-carrinho-personalizacao', ['pizzas' => $produtosPizza])
 
     </main>
         </div>

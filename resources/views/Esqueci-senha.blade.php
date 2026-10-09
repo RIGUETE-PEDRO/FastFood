@@ -13,7 +13,7 @@
    <div class="login-container">
 
     <div class="login-image">
-        <img src="{{ asset('img/login-imagem.png') }}" alt="Recuperar Senha">
+        <img src="{{ asset('img/login-imagem.webp') }}" alt="Recuperar Senha">
     </div>
 
     <div class="container">

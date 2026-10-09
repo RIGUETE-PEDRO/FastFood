@@ -121,6 +121,18 @@
     width: 90px;
 }
 
+.produtos-table .produto-thumbnail {
+    display: block;
+    width: 56px;
+    height: 56px;
+    padding: 3px;
+    box-sizing: border-box;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 8px;
+    background: #f8f5ef;
+}
+
 .produtos-table th {
     white-space: nowrap;
     overflow-wrap: normal;

@@ -156,11 +156,15 @@
 
             closeSidebar();
 
-            if (inputProdutoId) inputProdutoId.value = card.getAttribute('data-produto-id') || '';
-            if (inputProdutoNome) inputProdutoNome.value = card.getAttribute('data-produto-nome') || '';
-            if (inputPreco) inputPreco.value = card.getAttribute('data-produto-preco') || '';
-            if (inputQtd) inputQtd.value = '1';
-            if (inputObs) inputObs.value = '';
+            if (typeof window.ff?.prepareCartProduct === 'function') {
+                window.ff.prepareCartProduct(card);
+            } else {
+                if (inputProdutoId) inputProdutoId.value = card.getAttribute('data-produto-id') || '';
+                if (inputProdutoNome) inputProdutoNome.value = card.getAttribute('data-produto-nome') || '';
+                if (inputPreco) inputPreco.value = card.getAttribute('data-produto-preco') || '';
+                if (inputQtd) inputQtd.value = '1';
+                if (inputObs) inputObs.value = '';
+            }
 
             modal.classList.add('show');
             modal.style.display = 'block';
@@ -531,7 +535,7 @@
             }
 
             if (valorDigitado - total > 0.009) {
-                errorBox.textContent = 'O valor digitado (' + formatBRL(valorDigitado) + ') nao pode ser maior que o total selecionado (' + formatBRL(total) + ').';
+                errorBox.textContent = 'O valor digitado (' + formatBRL(valorDigitado) + ') não pode ser maior que o total selecionado (' + formatBRL(total) + ').';
                 return;
             }
 

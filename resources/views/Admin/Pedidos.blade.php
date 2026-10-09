@@ -10,6 +10,7 @@
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Admin/Pedidos.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/PersonalizacaoProduto.css') }}">
 </head>
 
 <body>

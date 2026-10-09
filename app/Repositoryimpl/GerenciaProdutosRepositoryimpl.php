@@ -6,13 +6,14 @@ use App\Models\CategoriaProdutoModel;
 use App\Models\ProdutoModel;
 use App\Repository\GerenciaProdutosRepository;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class GerenciaProdutosRepositoryimpl implements GerenciaProdutosRepository
 {
     public function listarProdutosComCategoria()
     {
         return Cache::remember('lista_produtos', now()->addMinutes(30), function () {
-            return ProdutoModel::with('categoria')->get();
+            return ProdutoModel::with(['categoria', 'bordas'])->get();
         });
     }
 
@@ -64,6 +65,9 @@ class GerenciaProdutosRepositoryimpl implements GerenciaProdutosRepository
         $produto->descricao = $data['descricao'];
         $produto->disponivel = $data['ativo'];
         $produto->categoria_id = $data['categoria_id'];
+        $produto->precos_por_tamanho = $data['precos_por_tamanho'] ?? null;
+        $produto->aceita_meia_por = $data['aceita_meia_por'] ?? false;
+        $produto->preco_meia_por = $data['preco_meia_por'] ?? null;
 
         if (!empty($data['imagem_url'])) {
             $this->removerImagemProduto($produto);
@@ -77,7 +81,7 @@ class GerenciaProdutosRepositoryimpl implements GerenciaProdutosRepository
         return $this->salvarProduto($produto);
     }
 
-    public function deletarProduto(int $id): bool
+   public function deletarProduto(int $id): bool
     {
         $produto = $this->buscarProdutoPorId($id);
 
@@ -85,11 +89,17 @@ class GerenciaProdutosRepositoryimpl implements GerenciaProdutosRepository
             return false;
         }
 
-        $this->removerImagemProduto($produto);
+        $deletou = DB::transaction(function () use ($produto) {
+            DB::table('item_pedido')
+                ->where('produto_id', $produto->id)
+                ->delete();
 
-        $deletou = (bool) $produto->delete();
+            return (bool) $produto->delete();
+        });
 
         if ($deletou) {
+            $this->removerImagemProduto($produto);
+
             Cache::forget('lista_produtos');
             Cache::forget('lista_produtos_destaque');
             Cache::forget('todos_produtos');

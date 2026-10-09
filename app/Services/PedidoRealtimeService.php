@@ -43,7 +43,7 @@ class PedidoRealtimeService
         try {
             event(new PedidosAtualizados($this->payload($pedidoId)));
         } catch (\Throwable $e) {
-            Log::warning('Nao foi possivel enviar atualizacao de pedidos por WebSocket.', [
+            Log::warning('Não foi possível enviar atualização de pedidos por WebSocket.', [
                 'pedido_id' => $pedidoId,
                 'exception' => $e,
             ]);

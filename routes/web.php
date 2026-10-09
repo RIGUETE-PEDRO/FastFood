@@ -19,6 +19,7 @@ use App\Http\Controllers\MesaController;
 use App\Http\Controllers\SecureKeyController;
 use App\Http\Controllers\GarcomController;
 use App\Http\Controllers\EntregasController;
+use App\Http\Controllers\AdminPedidoWhatsAppController;
 use App\Roles\Roles;
 
 
@@ -122,6 +123,14 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
         ->middleware('admin.access:3')
         ->name('admin.configuracoes.atualizar');
 
+    Route::get('/admin/configuracoes/impressao', [AdminController::class, 'configuracoesImpressao'])
+        ->middleware('admin.access:3')
+        ->name('admin.impressao');
+
+    Route::post('/admin/configuracoes/impressao', [AdminController::class, 'atualizarConfiguracoesImpressao'])
+        ->middleware('admin.access:3')
+        ->name('admin.impressao.atualizar');
+
     Route::get('/Administrativo', [AdminController::class, 'nomeUsuario'])
         ->middleware('SecureKey.role:' . Roles::DASHBORD)
         ->name('Administrativo');
@@ -132,6 +141,12 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
     Route::get('/admin/pedidos', [PedidoController::class, 'pedidosFiltro'])
     ->middleware('SecureKey.role:' . Roles::PEDIDOS)
     ->name('admin.pedidos');
+
+    Route::middleware('SecureKey.role:' . Roles::PEDIDOS)->prefix('/admin/pedidos/whatsapp')->name('admin.pedidos.whatsapp')->group(function () {
+        Route::get('/', [AdminPedidoWhatsAppController::class, 'index'])->name('');
+        Route::get('/cliente', [AdminPedidoWhatsAppController::class, 'buscarCliente'])->name('.cliente');
+        Route::post('/', [AdminPedidoWhatsAppController::class, 'store'])->name('.store');
+    });
 
     Route::get('/entregas', [EntregasController::class, 'index'])
         ->middleware('SecureKey.role:' . Roles::ENTREGAS)
@@ -154,7 +169,7 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
         ->name('Pedidos.StatusAvancar');
 
     Route::get('/Pedidos.Administrativo/som', [PedidosFeitosController::class, 'somNovoPedido'])
-        ->middleware('SecureKey.role:' . Roles::PEDIDOS)
+        ->middleware('SecureKey.role:' . Roles::ADMIN)
         ->name('Pedidos.Som');
 
     Route::get('GerarCupom/{pedido}', [PedidosFeitosController::class,'gerarCumpom' ])
@@ -177,6 +192,18 @@ Route::post('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, '
 
 Route::post('/Cadastrar_Produto', [GerenciamentoProdutoController::class, 'cadastrarProduto'])
     ->name('Cadastrar_Produto')
+    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
+
+Route::get('/gerenciamento_bordas', [GerenciamentoProdutoController::class, 'gerenciamentoBordas'])
+    ->name('gerenciamento_bordas')
+    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
+
+Route::post('/gerenciamento_bordas', [GerenciamentoProdutoController::class, 'cadastrarBorda'])
+    ->name('bordas.cadastrar')
+    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
+
+Route::put('/gerenciamento_bordas/{id}', [GerenciamentoProdutoController::class, 'atualizarBorda'])
+    ->name('bordas.atualizar')
     ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
 
 Route::get('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])

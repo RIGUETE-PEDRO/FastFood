@@ -24,7 +24,7 @@ class MesasRepositoryimpl implements MesasRepository
 
     public function pegarPedidoIdsDaMesa(int $mesaId): Collection
     {
-        return $this->queryItensDaMesa($mesaId)
+        return $this->queryItensAceitosDaMesa($mesaId)
             ->whereNotNull('pedido_id')
             ->pluck('pedido_id')
             ->unique()
@@ -103,6 +103,13 @@ class MesasRepositoryimpl implements MesasRepository
         $status = $pago ? 'pago' : 'em_aberto';
 
         return $this->queryItensDaMesa($mesaId)
+            ->whereHas('pedido', function ($query) {
+                $query->whereIn('status', [
+                    StatusPedidos::EM_PREPARO->value,
+                    StatusPedidos::A_CAMINHO->value,
+                    StatusPedidos::ENTREGUE->value,
+                ]);
+            })
             ->where('status_da_comanda', $status)
             ->with('produto')
             ->orderByDesc('updated_at')
@@ -111,14 +118,14 @@ class MesasRepositoryimpl implements MesasRepository
 
     public function listarItensAbertosMesa(int $mesaId): Collection
     {
-        return $this->queryItensDaMesa($mesaId)
+        return $this->queryItensAceitosDaMesa($mesaId)
             ->where('status_da_comanda', 'em_aberto')
             ->get();
     }
 
     public function pegarItensAbertosSelecionados(int $mesaId, array $itemIds): Collection
     {
-        return $this->queryItensDaMesa($mesaId)
+        return $this->queryItensAceitosDaMesa($mesaId)
             ->where('status_da_comanda', 'em_aberto')
             ->whereIn('id', $itemIds)
             ->get(['id', 'preco_unitario', 'quantidade', 'valor_pago']);
@@ -126,7 +133,7 @@ class MesasRepositoryimpl implements MesasRepository
 
     public function pegarItensParaAbatimento(int $mesaId, array $itemIds): Collection
     {
-        return $this->queryItensDaMesa($mesaId)
+        return $this->queryItensAceitosDaMesa($mesaId)
             ->where('status_da_comanda', 'em_aberto')
             ->whereIn('id', $itemIds)
             ->orderBy('id')
@@ -135,7 +142,7 @@ class MesasRepositoryimpl implements MesasRepository
 
     public function pegarItemAbertoDaMesa(int $mesaId, int $itemId): ?ItemPedidoModel
     {
-        return $this->queryItensDaMesa($mesaId)
+        return $this->queryItensAceitosDaMesa($mesaId)
             ->where('status_da_comanda', 'em_aberto')
             ->where('id', $itemId)
             ->first();
@@ -182,7 +189,7 @@ class MesasRepositoryimpl implements MesasRepository
 
     public function existemItensAbertosMesa(int $mesaId): bool
     {
-        return $this->queryItensDaMesa($mesaId)
+        return $this->queryItensAceitosDaMesa($mesaId)
             ->where('status_da_comanda', 'em_aberto')
             ->exists();
     }
@@ -213,6 +220,18 @@ class MesasRepositoryimpl implements MesasRepository
             ->where('status_da_comanda', 'pago')
             ->with('produto')
             ->get();
+    }
+
+    private function queryItensAceitosDaMesa(int $mesaId)
+    {
+        return $this->queryItensDaMesa($mesaId)
+            ->whereHas('pedido', function ($query) {
+                $query->whereIn('status', [
+                    StatusPedidos::EM_PREPARO->value,
+                    StatusPedidos::A_CAMINHO->value,
+                    StatusPedidos::ENTREGUE->value,
+                ]);
+            });
     }
 
     public function listarPagamentosAbertosMesa(int $mesaId): Collection

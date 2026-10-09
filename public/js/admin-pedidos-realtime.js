@@ -6,9 +6,9 @@
 
     const realtimeChannel = notifier?.dataset.realtimeChannel || root?.dataset.realtimeChannel || 'pedidos.admin';
 
-    let currentChecksum = root?.dataset.checksum || '';
+    let currentChecksum = root?.dataset.checksum || notifier?.dataset.checksum || '';
     let currentPending = normalizeNumber(root?.dataset.pendingCount || '0');
-    let lastPendingId = root?.dataset.lastPendingId || '';
+    let lastPendingId = root?.dataset.lastPendingId || notifier?.dataset.lastPendingId || '';
     let isAlertPlaying = false;
 
     const totalBadge = document.getElementById('pedidos-total-badge');

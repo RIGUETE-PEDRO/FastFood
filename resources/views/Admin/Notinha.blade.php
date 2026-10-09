@@ -7,10 +7,11 @@
     
     @include('partials.favicon')
     <title>Cupom #{{ str_pad($pedido->id, 6, '0', STR_PAD_LEFT) }}</title>
-    <link rel="stylesheet" href="{{ asset('css/Admin/Notinha.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Notinha.css') }}?v={{ filemtime(public_path('css/Admin/Notinha.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/PersonalizacaoProduto.css') }}">
 </head>
 
-<body>
+<body data-print-settings='@json($configuracoesImpressao ?? [])' data-auto-print="{{ !empty($imprimirAutomaticamente) ? '1' : '0' }}">
     @php
         $subtotal = (float) $pedido->itens->sum(fn ($item) => $item->quantidade * $item->preco_unitario);
         $temEnderecoEntrega = filled(optional($pedido->endereco)->logradouro);
@@ -19,7 +20,7 @@
     @endphp
 
     <div class="receipt-page">
-        <div class="receipt-toolbar" aria-label="Acoes do cupom">
+        <div class="receipt-toolbar" aria-label="Ações do cupom">
             <div class="receipt-toolbar__content">
                 <div>
                     <span class="receipt-eyebrow">Cupom do pedido</span>
@@ -28,13 +29,13 @@
 
                 <div class="receipt-actions">
                     <button type="button" class="receipt-button receipt-button--ghost" onclick="history.back()">Voltar</button>
-                    <button type="button" class="receipt-button" onclick="window.print()">Imprimir</button>
+                    <button type="button" class="receipt-button" data-print-receipt>Imprimir</button>
                 </div>
             </div>
         </div>
 
         <main class="cupom-container" aria-label="Cupom do pedido">
-            <span class="receipt-preview-label" aria-hidden="true">Pre-visualizacao de impressao</span>
+            <span class="receipt-preview-label" aria-hidden="true">Pré-visualização de impressão</span>
 
             <section class="cupom">
                 <header class="receipt-header">
@@ -44,9 +45,9 @@
                     @endif
                     <span>{{ $dadosEmpresa['Rua'] ?? '' }}, {{ $dadosEmpresa['Numero'] ?? 's/n' }}</span>
                     <span>{{ $dadosEmpresa['Bairro'] ?? '' }} - {{ $dadosEmpresa['Cidade'] ?? '' }}/{{ $dadosEmpresa['Estado'] ?? '' }}</span>
-                    <span>CEP: {{ $dadosEmpresa['CEP'] ?? 'Nao informado' }}</span>
-                    <span>Tel: {{ $dadosEmpresa['Telefone'] ?? 'Nao informado' }}</span>
-                    <span>CNPJ: {{ $dadosEmpresa['CNPJ'] ?? 'Nao informado' }}</span>
+                    <span>CEP: {{ $dadosEmpresa['CEP'] ?? 'Não informado' }}</span>
+                    <span>Tel: {{ $dadosEmpresa['Telefone'] ?? 'Não informado' }}</span>
+                    <span>CNPJ: {{ $dadosEmpresa['CNPJ'] ?? 'Não informado' }}</span>
                 </header>
 
                 <div class="receipt-separator"></div>
@@ -66,7 +67,7 @@
                     </div>
                     <div class="receipt-row">
                         <span>Cliente</span>
-                        <strong>{{ optional($pedido->usuario)->nome ?? 'Nao informado' }}</strong>
+                        <strong>{{ optional($pedido->usuario)->nome ?? 'Não informado' }}</strong>
                     </div>
                     <div class="receipt-row">
                         <span>Tipo</span>
@@ -75,7 +76,7 @@
                     @unless($temEnderecoEntrega)
                         <div class="receipt-row">
                             <span>Mesa</span>
-                            <span>{{ $numeroMesa ? 'Mesa ' . $numeroMesa : 'Balcao' }}</span>
+                            <span>{{ $numeroMesa ? 'Mesa ' . $numeroMesa : 'Balcão' }}</span>
                         </div>
                     @endunless
                 </section>
@@ -84,13 +85,13 @@
                     <div class="receipt-separator"></div>
 
                     <section class="receipt-block">
-                        <h2 class="receipt-title">Endereco de entrega</h2>
+                        <h2 class="receipt-title">Endereço de entrega</h2>
                         <p>{{ $pedido->endereco->logradouro }}, {{ $pedido->endereco->numero ?? 's/n' }}</p>
-                        <p>{{ $pedido->endereco->bairro ?? 'Bairro nao informado' }}</p>
+                        <p>{{ $pedido->endereco->bairro ?? 'Bairro não informado' }}</p>
                         @if(!empty($pedido->endereco->complemento))
                             <p>Compl.: {{ $pedido->endereco->complemento }}</p>
                         @endif
-                        <p>{{ optional(optional($pedido->endereco)->cidade)->nome ?? 'Cidade nao informada' }}</p>
+                        <p>{{ optional(optional($pedido->endereco)->cidade)->nome ?? 'Cidade não informada' }}</p>
                     </section>
                 @endif
 
@@ -101,10 +102,15 @@
                     @forelse($pedido->itens as $item)
                         @php
                             $totalItem = (float) $item->quantidade * (float) $item->preco_unitario;
+                            $configuracaoItem = $item->personalizacao ?? [];
+                            $tituloItem = ($configuracaoItem['tipo'] ?? null) === 'pizza'
+                                ? 'Pizza' . (filled($configuracaoItem['tamanho'] ?? null) ? ' ' . $configuracaoItem['tamanho'] : '')
+                                : (optional($item->produto)->nome ?? 'Produto removido');
                         @endphp
                         <div class="receipt-item">
                             <div class="receipt-item__line">
-                                <strong>{{ $item->quantidade }}x {{ optional($item->produto)->nome ?? 'Produto removido' }}</strong>
+                                <strong>{{ $item->quantidade }}x {{ $tituloItem }}</strong>
+                                @include('partials.detalhes-personalizacao-item', ['personalizacao' => $item->personalizacao])
                                 @if(filled($item->observacao))
                                     <small>Obs.: {{ $item->observacao }}</small>
                                 @endif
@@ -132,7 +138,7 @@
                     </div>
                     <div class="receipt-row">
                         <span>Pagamento</span>
-                        <span>{{ optional($pedido->formaPagamento)->tipo_pagamento ?? 'Nao informado' }}</span>
+                        <span>{{ optional($pedido->formaPagamento)->tipo_pagamento ?? 'Não informado' }}</span>
                     </div>
                     <div class="receipt-total">
                         <span>Total</span>
@@ -144,7 +150,7 @@
 
                 <footer class="receipt-footer">
                     <strong>Obrigado pela preferencia!</strong>
-                    <span>Este cupom nao tem validade fiscal.</span>
+                    <span>Este cupom não tem validade fiscal.</span>
                     <span>Guarde para eventuais conferencias.</span>
                     @if(!empty($horarioFuncionamento))
                         <span>Atendimento: {{ $horarioFuncionamento }}</span>
@@ -155,6 +161,7 @@
             </section>
         </main>
     </div>
+    <script src="{{ asset('js/admin-print-preferences.js') }}?v={{ filemtime(public_path('js/admin-print-preferences.js')) }}" defer></script>
 </body>
 
 </html>

@@ -1,9 +1,10 @@
 @php
     $isAdmin = request()->routeIs('Administrativo')
         || request()->routeIs('admin.bemvindo')
-        || request()->routeIs('admin.configuracoes')
+        || request()->routeIs('admin.configuracoes*')
         || request()->routeIs('gerenciamento_*')
         || request()->routeIs('Pedidos_Administrativo')
+        || request()->routeIs('admin.pedidos.whatsapp*')
         || request()->routeIs('gerenciamento_Produtos')
         || request()->routeIs('Cadastrar_Produto')
         || request()->routeIs('deletar_produto')
@@ -79,7 +80,7 @@
                 <li class="nav-item">
                     <a href="{{ route('gerenciamento_funcionarios', [], false) }}" class="nav-link {{ request()->routeIs('gerenciamento_funcionarios') ? 'active' : '' }}">
                         {!! $ffIcon('users') !!}
-                        <span>Funcionarios</span>
+                        <span>Funcionários</span>
                     </a>
                 </li>
             @endrole
@@ -91,6 +92,12 @@
                         <span>Pedidos</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.pedidos.whatsapp', [], false) }}" class="nav-link {{ request()->routeIs('admin.pedidos.whatsapp*') ? 'active' : '' }}">
+                        {!! $ffIcon('orders') !!}
+                        <span>Pedido WhatsApp</span>
+                    </a>
+                </li>
             @endrole
 
             @role('GERENCIAMENTO_PRODUTOS')
@@ -98,6 +105,12 @@
                     <a href="{{ route('gerenciamento_produtos', [], false) }}" class="nav-link {{ request()->routeIs('gerenciamento_produtos') || request()->routeIs('gerenciamento_Produtos') ? 'active' : '' }}">
                         {!! $ffIcon('products') !!}
                         <span>Produtos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('gerenciamento_bordas', [], false) }}" class="nav-link {{ request()->routeIs('gerenciamento_bordas') ? 'active' : '' }}">
+                        {!! $ffIcon('products') !!}
+                        <span>Bordas</span>
                     </a>
                 </li>
             @endrole
@@ -152,7 +165,7 @@
             <li class="nav-item">
                 <a href="{{ route('Porcao', [], false) }}" class="nav-link {{ request()->routeIs('Porcao') ? 'active' : '' }}">
                     {!! $ffIcon('porcao') !!}
-                    <span>Porcao</span>
+                    <span>Porções</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -184,7 +197,7 @@
                         <div class="circulo_maior me-2">
                             <img class="profile-image" id="preview-image"
                                 src="{{ is_array($usuarioAtual) && !empty($usuarioAtual['url_imagem_perfil']) ? asset('img/perfil/' . $usuarioAtual['url_imagem_perfil']) : (!is_array($usuarioAtual) && !empty($usuarioAtual->url_imagem_perfil) ? asset('img/perfil/' . $usuarioAtual->url_imagem_perfil) : asset('img/perfil/personPadrao.svg')) }}"
-                                alt="Foto do usuario">
+                                alt="Foto do usuário">
                         </div>
                         <span class="text text-truncate ff-sidebar__user-name">
                             {{ is_array($usuarioAtual) ? ($usuarioAtual['nome'] ?? '') : ($usuarioAtual->primeiro_nome ?? ($usuarioAtual->nome ?? '')) }}
@@ -193,9 +206,10 @@
                     <span class="ff-sidebar__user-caret" aria-hidden="true">v</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end list w-100">
-                    <li><a class="dropdown-item text" href="{{ route('perfil', [], false) }}">Editar perfil</a></li>
+                    <li><a class="dropdown-item text" href="{{ route('perfil', ['return' => request()->getRequestUri()], false) }}">Editar perfil</a></li>
                     @if($canSeeConfiguracoes)
-                        <li><a class="dropdown-item text" href="{{ route('admin.configuracoes', [], false) }}">Configuracoes</a></li>
+                        <li><a class="dropdown-item text" href="{{ route('admin.configuracoes', [], false) }}">Configurações</a></li>
+                        <li><a class="dropdown-item text" href="{{ route('admin.impressao', ['return' => request()->getRequestUri()], false) }}">Impressão</a></li>
                     @endif
                     <li>
                         <hr class="dropdown-divider">
@@ -215,8 +229,11 @@
     <div
         id="pedidos-global-notifier"
         data-realtime-channel="pedidos.admin"
+        @if($canSeeConfiguracoes)
         data-sound-url="{{ route('Pedidos.Som', [], false) }}"
+        @endif
         data-user-id="{{ $usuarioAtual->getKey() }}"
+        data-checksum="{{ $pedidosMonitorSnapshot['checksum'] ?? '' }}"
         data-last-pending-id="{{ $pedidosMonitorSnapshot['ultimoPendenteId'] ?? '' }}"
         hidden
     ></div>

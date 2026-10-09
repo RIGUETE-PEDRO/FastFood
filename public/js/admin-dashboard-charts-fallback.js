@@ -15,7 +15,7 @@
         try {
             return JSON.parse(dataElement.textContent || '{}');
         } catch (error) {
-            console.error('Nao foi possivel ler os dados do dashboard.', error);
+            console.error('Não foi possível ler os dados do dashboard.', error);
             return null;
         }
     }
@@ -180,6 +180,14 @@
                 document.getElementById('topProdutosChart'),
                 data.topProdutosLabels || [],
                 data.topProdutosValores || []
+            );
+        }
+
+        if (!existingCharts.motoboys) {
+            drawHorizontalBars(
+                document.getElementById('motoboysChart'),
+                data.motoboysLabels || [],
+                data.motoboysValores || []
             );
         }
     }

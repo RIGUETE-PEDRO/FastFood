@@ -342,6 +342,17 @@ video {
     height: 280px !important;
 }
 
+.dashboard-motoboys {
+    text-align: left;
+}
+
+.dashboard-motoboys__hint,
+.dashboard-motoboys__empty {
+    color: var(--ff-muted);
+    font-size: 0.9rem;
+    margin: 0 0 12px;
+}
+
 .text_modal {
     font-weight: 900;
     font-family: "Kaisei Opti", serif;
@@ -418,7 +429,7 @@ textarea,
     min-width: 0;
 }
 
-/* Fallback para modais Bootstrap quando o CSS/JS do Vite ainda nao carregou. */
+/* Fallback para modais Bootstrap quando o CSS/JS do Vite ainda não carregou. */
 .modal {
     position: fixed !important;
     inset: 0 !important;
@@ -1426,6 +1437,8 @@ body:has(.ff-modal.is-open) .ff-sidebar-toggle {
     display: grid;
     flex: 1 1 auto;
     min-height: 0;
+    align-content: start;
+    grid-auto-rows: max-content;
     gap: 6px;
     overflow-y: auto;
     overflow-x: hidden;

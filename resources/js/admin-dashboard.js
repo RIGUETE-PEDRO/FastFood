@@ -6,8 +6,9 @@ function initAdminDashboardCharts() {
     const dashboardDataEl = document.getElementById('dashboard-data');
     const statusCtx = document.getElementById('pedidosStatusChart');
     const topProdutosCtx = document.getElementById('topProdutosChart');
+    const motoboysCtx = document.getElementById('motoboysChart');
 
-    if (!dashboardDataEl || (!statusCtx && !topProdutosCtx)) {
+    if (!dashboardDataEl || (!statusCtx && !topProdutosCtx && !motoboysCtx)) {
         return;
     }
 
@@ -16,7 +17,7 @@ function initAdminDashboardCharts() {
     try {
         dashboardData = JSON.parse(dashboardDataEl.textContent || '{}');
     } catch (error) {
-        console.error('Nao foi possivel ler os dados do dashboard.', error);
+        console.error('Não foi possível ler os dados do dashboard.', error);
         return;
     }
 
@@ -24,6 +25,8 @@ function initAdminDashboardCharts() {
     const statusValores = dashboardData.statusValores || [];
     const topProdutosLabels = dashboardData.topProdutosLabels || [];
     const topProdutosValores = dashboardData.topProdutosValores || [];
+    const motoboysLabels = dashboardData.motoboysLabels || [];
+    const motoboysValores = dashboardData.motoboysValores || [];
 
     if (statusCtx) {
         window.flashFoodDashboardCharts?.status?.destroy();
@@ -108,6 +111,47 @@ function initAdminDashboardCharts() {
         });
 
         window.flashFoodDashboardCharts.topProdutos = Chart.getChart(topProdutosCtx);
+    }
+
+    if (motoboysCtx) {
+        window.flashFoodDashboardCharts?.motoboys?.destroy();
+
+        window.flashFoodDashboardCharts = window.flashFoodDashboardCharts || {};
+        new Chart(motoboysCtx, {
+            type: 'bar',
+            data: {
+                labels: motoboysLabels,
+                datasets: [{
+                    label: 'Pedidos',
+                    data: motoboysValores,
+                    backgroundColor: 'rgba(255, 123, 0, 0.85)',
+                    borderColor: 'rgba(214, 40, 40, 1)',
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    maxBarThickness: 42
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+
+        window.flashFoodDashboardCharts.motoboys = Chart.getChart(motoboysCtx);
     }
 }
 

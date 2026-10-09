@@ -31,7 +31,7 @@
                         </div>
                         <div class="header-actions">
                             <a href="{{ route('mesas.historico') }}" class="btn topo btn-Historico">
-                                Historico de mesas
+                                Histórico de mesas
                             </a>
                             <button type="button" class="btn topo btn-Adicionar" data-bs-toggle="modal" data-bs-target="#modalAdicionarMesa">
                                 Adicionar Mesa
@@ -189,7 +189,7 @@
                                     <span class="label">Mesa {{ $mesa->numero_da_mesa }}</span>
 
                                     <span class="preco">
-                                        R$ {{ number_format((float) $mesa->preco, 2, ',', '.') }}
+                                        R$ {{ number_format((float) ($mesa->preco_calculado ?? 0), 2, ',', '.') }}
                                     </span>
                                 </div>
                             </div>

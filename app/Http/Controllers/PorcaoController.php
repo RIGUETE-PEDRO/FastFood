@@ -18,10 +18,12 @@ class PorcaoController extends Controller
 
         $usuarioLogado =  $this->genericBase->hasLogado();
         $porcao = $this->genericBase->findByProdutos('Porções');
+        $pizzas = $this->genericBase->findByProdutos('Pizzas');
 
         return view('Porcao', [
             'usuario' => $usuarioLogado,
             'porcao' => $porcao,
+            'pizzas' => $pizzas,
         ]);
     }
 }

@@ -14,12 +14,14 @@ use Illuminate\Support\Facades\DB;
 
 class GarcomRepositoryimpl implements GarcomRepository
 {
-    public function adicionarProdutoAoPedido($produtoId, $mesaId, $quantidade, $usuarioLogado, $observacao = null)
+    public function adicionarProdutoAoPedido($produtoId, $mesaId, $quantidade, $usuarioLogado, $observacao = null, ?array $personalizacao = null, ?float $precoUnitario = null)
     {
         return $this->adicionarProdutosAoPedido([[
             'produto_id' => $produtoId,
             'quantidade' => $quantidade,
             'observacao' => $observacao,
+            'personalizacao' => $personalizacao,
+            'preco_unitario' => $precoUnitario,
         ]], (int) $mesaId, $usuarioLogado);
     }
 
@@ -62,13 +64,17 @@ class GarcomRepositoryimpl implements GarcomRepository
                     'produto_id' => (int) ($item['produto_id'] ?? 0),
                     'quantidade' => max(1, (int) ($item['quantidade'] ?? 1)),
                     'observacao' => trim((string) ($item['observacao'] ?? '')) ?: null,
+                    'personalizacao' => $item['personalizacao'] ?? null,
+                    'preco_unitario' => (float) ($item['preco_unitario'] ?? 0),
                 ])
                 ->filter(fn ($item) => $item['produto_id'] > 0)
-                ->groupBy(fn ($item) => $item['produto_id'].'|'.($item['observacao'] ?? ''))
+                ->groupBy(fn ($item) => json_encode([$item['produto_id'], $item['observacao'], $item['personalizacao']]))
                 ->map(fn ($grupo) => [
                     'produto_id' => (int) $grupo->first()['produto_id'],
                     'quantidade' => (int) $grupo->sum('quantidade'),
                     'observacao' => $grupo->first()['observacao'],
+                    'personalizacao' => $grupo->first()['personalizacao'],
+                    'preco_unitario' => (float) $grupo->first()['preco_unitario'],
                 ])
                 ->values();
 
@@ -89,7 +95,7 @@ class GarcomRepositoryimpl implements GarcomRepository
                     continue;
                 }
 
-                $precoUnitario = (float) ($produto->preco ?? 0);
+                $precoUnitario = (float) $item['preco_unitario'];
                 $quantidade = (int) $item['quantidade'];
 
                 $itemPedido = ItemPedidoModel::query()
@@ -105,10 +111,15 @@ class GarcomRepositoryimpl implements GarcomRepository
                         $query->whereNull('valor_pago')
                             ->orWhere('valor_pago', '<=', 0);
                     })
-                    ->first();
+                    ->get()
+                    ->first(fn (ItemPedidoModel $candidato) => ($candidato->personalizacao ?? null) === $item['personalizacao']);
+
+                $precoAnterior = 0.0;
 
                 if ($itemPedido) {
+                    $precoAnterior = (float) $itemPedido->preco_unitario;
                     $itemPedido->quantidade += $quantidade;
+                    $itemPedido->preco_unitario = $precoUnitario;
                     $itemPedido->save();
                 } else {
                     ItemPedidoModel::create([
@@ -118,10 +129,12 @@ class GarcomRepositoryimpl implements GarcomRepository
                         'preco_unitario' => $precoUnitario,
                         'status_da_comanda' => 'em_aberto',
                         'observacao' => $item['observacao'],
+                        'personalizacao' => $item['personalizacao'],
                     ]);
                 }
 
-                $totalAdicionado += $precoUnitario * $quantidade;
+                $totalAdicionado += ($precoUnitario * $quantidade)
+                    + ($itemPedido ? ($precoUnitario - $precoAnterior) * ((int) $itemPedido->quantidade - $quantidade) : 0);
             }
 
             $pedido->valor_total = (float) ($pedido->valor_total ?? 0) + $totalAdicionado;
@@ -131,7 +144,12 @@ class GarcomRepositoryimpl implements GarcomRepository
             if ($mesa) {
                 $totalMesa = (float) ItemPedidoModel::query()
                     ->whereHas('pedido', function ($q) use ($mesaId) {
-                        $q->where('mesa_id', $mesaId);
+                        $q->where('mesa_id', $mesaId)
+                            ->whereIn('status', [
+                                StatusPedidos::EM_PREPARO->value,
+                                StatusPedidos::A_CAMINHO->value,
+                                StatusPedidos::ENTREGUE->value,
+                            ]);
                     })
                     ->where('status_da_comanda', 'em_aberto')
                     ->get()
@@ -143,9 +161,7 @@ class GarcomRepositoryimpl implements GarcomRepository
                     });
 
                 $mesa->preco = $totalMesa;
-                if ($totalMesa > 0) {
-                    $mesa->status = 'Ocupada';
-                }
+                $mesa->status = $totalMesa > 0 ? 'Ocupada' : 'Disponível';
                 $mesa->save();
             }
 

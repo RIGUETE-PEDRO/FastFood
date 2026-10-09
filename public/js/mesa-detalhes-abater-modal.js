@@ -291,7 +291,7 @@
             }
 
             if (typedValue - total > 0.009) {
-                errorBox.textContent = 'O valor digitado nao pode ser maior que o total selecionado.';
+                errorBox.textContent = 'O valor digitado não pode ser maior que o total selecionado.';
                 return;
             }
 

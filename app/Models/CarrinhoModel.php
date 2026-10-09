@@ -16,6 +16,7 @@ class CarrinhoModel extends Model
         'quantidade',
         'observacao',
         'preco_total',
+        'personalizacao',
 
     ];
 
@@ -27,6 +28,7 @@ class CarrinhoModel extends Model
         'selecionado' => 'boolean',
         'preco_total' => 'float',
         'quantidade' => 'integer',
+        'personalizacao' => 'array',
     ];
 
 

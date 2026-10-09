@@ -36,7 +36,7 @@
                     </div>
                 </section>
 
-                <section class="bemvindo-actions" aria-label="Acoes rapidas do administrativo">
+                <section class="bemvindo-actions" aria-label="Ações rápidas do administrativo">
                     @role('DASHBORD')
                     <a class="bemvindo-action" href="{{ route('Administrativo', [], false) }}">
                         <span class="bemvindo-action__icon">01</span>

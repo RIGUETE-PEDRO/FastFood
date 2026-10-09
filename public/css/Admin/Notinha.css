@@ -222,10 +222,7 @@ body {
     gap: 3px;
 }
 
-@page {
-    size: 80mm auto;
-    margin: 0;
-}
+@page { size: auto; margin: 0; }
 
 @media print {
     html,
@@ -253,7 +250,6 @@ body {
 
     .cupom {
         padding: 3mm;
-        font-size: 10.5px;
     }
 }
 
@@ -285,4 +281,19 @@ body {
     .receipt-button:hover {
         transform: none;
     }
+}
+
+/* Fonte e tamanho definidos nas configurações do cupom. */
+.cupom {
+    font-size: var(--receipt-font-size, 10.5px);
+    font-family: var(--receipt-font-family, 'Courier New', monospace);
+}
+
+@media print {
+    html, body, .receipt-page, .cupom-container, .cupom { height: auto !important; min-height: 0 !important; }
+    .receipt-page { padding: 0 !important; margin: 0 !important; }
+    .cupom-container { break-after: auto; page-break-after: auto; }
+    .receipt-extra-copy { break-before: auto; page-break-before: auto; }
+    .cupom { padding: var(--receipt-padding, 3mm); margin: 0; }
+    .receipt-footer { margin-bottom: 0; padding-bottom: 0; }
 }

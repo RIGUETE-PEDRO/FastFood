@@ -65,7 +65,13 @@ class MesasService extends GenericBase
 
     public function pegarMesas()
     {
-        return $this->mesasRepository->listarMesas();
+        return $this->mesasRepository->listarMesas()
+            ->each(function (MesaModel $mesa) {
+                // O valor exibido nunca depende do campo salvo anteriormente na mesa.
+                // Ele é recalculado usando somente pedidos já aceitos.
+                $itensAbertos = $this->mesasRepository->listarItensAbertosMesa((int) $mesa->id);
+                $mesa->setAttribute('preco_calculado', $this->calcularTotalItens($itensAbertos));
+            });
     }
 
     public function listarHistoricoMesas(int $porPagina = 12, array $filtros = [])
@@ -149,7 +155,7 @@ class MesasService extends GenericBase
         }
 
         $produtosResumo = $itensPagos
-            ->groupBy(fn ($item) => (int) ($item->produto_id ?? 0) . '|' . (float) $item->preco_unitario)
+            ->groupBy(fn ($item) => (int) ($item->produto_id ?? 0) . '|' . (float) $item->preco_unitario . '|' . json_encode($item->personalizacao ?? null))
             ->map(function ($itensProduto) {
                 $primeiro = $itensProduto->first();
                 $quantidade = (int) $itensProduto->sum(fn ($item) => max(1, (int) $item->quantidade));
@@ -157,10 +163,13 @@ class MesasService extends GenericBase
 
                 return [
                     'produto_id' => (int) ($primeiro->produto_id ?? 0),
-                    'nome' => optional($primeiro->produto)->nome ?? 'Produto removido',
+                    'nome' => ($primeiro->personalizacao['tipo'] ?? null) === 'pizza'
+                        ? 'Pizza' . (filled($primeiro->personalizacao['tamanho'] ?? null) ? ' ' . $primeiro->personalizacao['tamanho'] : '')
+                        : (optional($primeiro->produto)->nome ?? 'Produto removido'),
                     'quantidade' => $quantidade,
                     'preco_unitario' => round($unitario, 2),
                     'subtotal' => round($unitario * $quantidade, 2),
+                    'personalizacao' => $primeiro->personalizacao,
                 ];
             })
             ->values()

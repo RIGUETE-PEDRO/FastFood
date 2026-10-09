@@ -262,3 +262,42 @@
     text-align: center !important;
     font-size: medium;
 }
+
+.config-typography {
+    display: grid;
+    gap: 18px;
+    padding: 24px;
+}
+
+.config-typography > div:first-child p,
+.config-typography__preview {
+    color: var(--ff-muted, #6b7280);
+    margin-top: 8px;
+}
+
+.config-typography__fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.config-typography select {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 12px;
+    border: 1px solid rgba(139, 90, 31, 0.18);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ff-text, #101828);
+}
+
+.config-typography__preview {
+    padding: 14px;
+    border-radius: 8px;
+    background: #f8f5ef;
+}
+
+.config-typography__status {
+    color: var(--ff-action-dark, #92400e);
+    font-size: .9rem;
+}

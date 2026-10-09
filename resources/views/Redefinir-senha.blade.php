@@ -13,7 +13,7 @@
    <div class="login-container">
 
     <div class="login-image">
-        <img src="{{ asset('img/login-imagem.png') }}" alt="Redefinir Senha">
+        <img src="{{ asset('img/login-imagem.webp') }}" alt="Redefinir Senha">
     </div>
 
     <div class="container">

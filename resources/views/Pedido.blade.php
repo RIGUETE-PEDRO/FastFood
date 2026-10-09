@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Index.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Pedido.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/PersonalizacaoProduto.css') }}">
 </head>
 
 <body class="ff-pedidos-page">
@@ -29,7 +30,7 @@
                     <h1>Meus Pedidos</h1>
 
                     @if($pedidos->isEmpty())
-                        <p class="text-muted">Voce nao possui pedidos.</p>
+                        <p class="text-muted">Você não possui pedidos.</p>
                     @else
                         @php
                             $statusFinalizados = [4, 5];

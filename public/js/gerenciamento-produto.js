@@ -22,6 +22,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('formCreateProduct');
     const imageInput = document.getElementById('produto-imagem');
     const imageName = document.getElementById('imagem-nome');
+    const categoryInput = document.getElementById('produto-categoria');
+    const pizzaSizePrices = document.getElementById('pizzaSizePrices');
+    const pizzaBorders = document.getElementById('pizzaBorders');
+    const portionHalfPrice = document.getElementById('portionHalfPrice');
+    const allowHalfPortion = document.getElementById('produto-aceita-meia');
+
+    const normalize = (value) => (value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+
+    function updateCategoryOptions() {
+        const selectedCategory = normalize(categoryInput?.selectedOptions?.[0]?.textContent);
+        const isPizza = ['pizza', 'pizzas'].includes(selectedCategory);
+        const isPortion = ['porcao', 'porcoes'].includes(selectedCategory);
+
+        if (pizzaSizePrices) pizzaSizePrices.hidden = !isPizza;
+        if (pizzaBorders) pizzaBorders.hidden = !isPizza;
+        if (portionHalfPrice) portionHalfPrice.hidden = !isPortion;
+        if (allowHalfPortion) allowHalfPortion.required = false;
+    }
 
     const clearForm = () => {
         if (!form) return;
@@ -30,7 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
         form.action = form.getAttribute('data-cadastro-action') || form.action;
         document.getElementById('produto_id').value = '';
         if (imageName) imageName.textContent = 'Nenhum selecionado';
+        form.querySelectorAll('[name^="precos_por_tamanho["]').forEach((field) => { field.value = ''; });
+        form.querySelectorAll('[name="borda_ids[]"]').forEach((field) => { field.checked = false; });
+        if (allowHalfPortion) allowHalfPortion.checked = false;
+        const halfPrice = document.getElementById('produto-preco-meia');
+        if (halfPrice) halfPrice.value = '';
         setStatus(true);
+        updateCategoryOptions();
     };
 
     const setOverlayBodyState = () => {
@@ -64,6 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === overlay) closeOverlay();
     });
 
+    categoryInput?.addEventListener('change', updateCategoryOptions);
+
     document.querySelectorAll('.btn-edit').forEach((btn) => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -83,6 +109,31 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('produto-categoria').value = btn.getAttribute('data-categoria-id') || '';
             setStatus(btn.getAttribute('data-ativo') === '1');
 
+            let pricesBySize = {};
+            form.querySelectorAll('[name^="precos_por_tamanho["]').forEach((field) => { field.value = ''; });
+            try {
+                pricesBySize = JSON.parse(btn.getAttribute('data-precos-por-tamanho') || '{}') || {};
+            } catch (error) {
+                pricesBySize = {};
+            }
+            Object.entries(pricesBySize).forEach(([size, price]) => {
+                const field = document.getElementById(`pizza-preco-${size}`);
+                if (field) field.value = price;
+            });
+            let borderIds = [];
+            try {
+                borderIds = JSON.parse(btn.getAttribute('data-borda-ids') || '[]') || [];
+            } catch (error) {
+                borderIds = [];
+            }
+            form.querySelectorAll('[name="borda_ids[]"]').forEach((field) => {
+                field.checked = borderIds.map(String).includes(field.value);
+            });
+            if (allowHalfPortion) allowHalfPortion.checked = btn.getAttribute('data-aceita-meia-por') === '1';
+            const halfPrice = document.getElementById('produto-preco-meia');
+            if (halfPrice) halfPrice.value = btn.getAttribute('data-preco-meia-por') || '';
+            updateCategoryOptions();
+
             if (imageName) {
                 imageName.textContent = btn.getAttribute('data-imagem-url') || 'Nenhum selecionado';
             }
@@ -94,6 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!imageName) return;
         imageName.textContent = imageInput.files?.[0]?.name || 'Nenhum selecionado';
     });
+
+    updateCategoryOptions();
 
     const searchInput = document.getElementById('searchInput');
     const tableBody = document.getElementById('tableBody');

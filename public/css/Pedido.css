@@ -347,6 +347,20 @@
     box-shadow: 0 0 0 4px var(--orders-accent-soft);
 }
 
+.pedido-endereco-detalhes > summary {
+    cursor: pointer;
+    list-style: none;
+    margin-bottom: 0;
+}
+
+.pedido-endereco-detalhes > summary::-webkit-details-marker {
+    display: none;
+}
+
+.pedido-endereco-detalhes[open] > summary {
+    margin-bottom: 12px;
+}
+
 /* ==========================================================================
    Status
    ========================================================================== */

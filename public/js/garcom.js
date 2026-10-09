@@ -19,8 +19,195 @@ document.addEventListener('DOMContentLoaded', function () {
     const observacaoProduto = document.getElementById('garcomObservacaoProduto');
     const observacaoInput = document.getElementById('garcomObservacaoInput');
     const observacaoSemBtn = document.getElementById('garcomObservacaoSem');
+    const personalizacaoPizza = document.getElementById('garcomPizzaOptions');
+    const modoPizza = document.getElementById('garcomPizzaModo');
+    const campoSegundoSabor = document.getElementById('garcomPizzaSecondField');
+    const segundoSabor = document.getElementById('garcomPizzaSabor2');
+    const campoTamanhoPizza = document.getElementById('garcomPizzaSizeField');
+    const tamanhoPizza = document.getElementById('garcomPizzaTamanho');
+    const bordaPizza = document.getElementById('garcomPizzaBorda');
+    const tamanhoIndisponivel = document.getElementById('garcomPizzaSizeUnavailable');
+    const personalizacaoPorcao = document.getElementById('garcomPortionOptions');
+    const tipoPorcao = document.getElementById('garcomTipoPorcao');
+    const previewPersonalizacao = document.getElementById('garcomPersonalizationPrice');
+    const confirmarObservacaoBtn = document.getElementById('garcomObservacaoConfirmar');
     const pedido = new Map();
     let itemPendente = null;
+
+    function lerPrecos(valor) {
+        try {
+            return JSON.parse(valor || '{}') || {};
+        } catch {
+            return {};
+        }
+    }
+
+    function lerBordas(valor) {
+        try {
+            const bordas = JSON.parse(valor || '[]');
+            return Array.isArray(bordas) ? bordas : [];
+        } catch {
+            return [];
+        }
+    }
+
+    function opcoesSaborSegundo() {
+        return segundoSabor ? Array.from(segundoSabor.options).filter((option) => option.value) : [];
+    }
+
+    function sincronizarPersonalizacao() {
+        if (!itemPendente) return;
+
+        const isPizza = itemPendente.tipo === 'pizza';
+        const isPorcao = itemPendente.tipo === 'porcao';
+        if (personalizacaoPizza) personalizacaoPizza.hidden = !isPizza;
+        if (personalizacaoPorcao) personalizacaoPorcao.hidden = !isPorcao;
+        if (modoPizza) modoPizza.disabled = !isPizza;
+        if (tipoPorcao) tipoPorcao.disabled = !isPorcao;
+        if (segundoSabor && !isPizza) {
+            segundoSabor.disabled = true;
+            segundoSabor.required = false;
+        }
+        if (tamanhoPizza && !isPizza) {
+            tamanhoPizza.disabled = true;
+            tamanhoPizza.required = false;
+        }
+        if (bordaPizza) {
+            bordaPizza.disabled = !isPizza;
+            bordaPizza.required = isPizza;
+            if (!isPizza) bordaPizza.value = '';
+        }
+        if (confirmarObservacaoBtn) confirmarObservacaoBtn.disabled = false;
+
+        let preco = itemPendente.precoBase;
+        itemPendente.personalizacao = null;
+        itemPendente.detalhePersonalizacao = '';
+        itemPendente.nomeExibicao = itemPendente.nome;
+
+        if (isPizza) {
+            const opcaoMeiaAMeia = modoPizza?.querySelector('option[value="meia_a_meia"]');
+            if (opcaoMeiaAMeia) {
+                opcaoMeiaAMeia.disabled = opcoesSaborSegundo().length < 2;
+                if (opcaoMeiaAMeia.disabled && modoPizza.value === 'meia_a_meia') modoPizza.value = 'inteira';
+            }
+            const modo = modoPizza?.value || 'inteira';
+            const isMeiaAMeia = modo === 'meia_a_meia';
+            if (campoSegundoSabor) campoSegundoSabor.hidden = !isMeiaAMeia;
+            if (segundoSabor) {
+                segundoSabor.required = isMeiaAMeia;
+                segundoSabor.disabled = !isMeiaAMeia;
+                opcoesSaborSegundo().forEach((option) => {
+                    option.disabled = option.value === itemPendente.id;
+                });
+                if (!isMeiaAMeia || segundoSabor.value === itemPendente.id) segundoSabor.value = '';
+            }
+
+            const sabor2 = segundoSabor?.selectedOptions?.[0];
+            const precos1 = itemPendente.precos || {};
+            const precos2 = lerPrecos(sabor2?.dataset.precos);
+            const bordas1 = itemPendente.bordas || [];
+            const bordas2 = lerBordas(sabor2?.dataset.bordas);
+            const bordasDisponiveis = isMeiaAMeia
+                ? bordas1.filter((borda) => bordas2.some((outra) => String(outra.id) === String(borda.id)))
+                : bordas1;
+            const bordaAnterior = bordaPizza?.value || '';
+            if (bordaPizza) {
+                bordaPizza.replaceChildren(new Option('Escolha uma opção', ''), new Option('Sem borda', '0'));
+                bordasDisponiveis.forEach((borda) => bordaPizza.add(new Option(borda.nome, String(borda.id))));
+                if ([...bordaPizza.options].some((option) => option.value === bordaAnterior)) bordaPizza.value = bordaAnterior;
+            }
+            const tamanhos1 = Object.keys(precos1);
+            const tamanhos2 = Object.keys(precos2);
+            const usaTamanho = tamanhos1.length > 0 || (isMeiaAMeia && tamanhos2.length > 0);
+            const tamanhosComuns = ['P', 'M', 'G', 'GG', 'XG'].filter((tamanho) =>
+                tamanhos1.includes(tamanho) && (!isMeiaAMeia || tamanhos2.includes(tamanho))
+            );
+
+            if (tamanhoPizza) {
+                const anterior = tamanhoPizza.value;
+                const bordaSelecionada = bordasDisponiveis.find((borda) => String(borda.id) === String(bordaPizza?.value));
+                tamanhoPizza.replaceChildren(new Option('Selecione', ''));
+                const fatias = { P: 4, M: 6, G: 8, GG: 10, XG: 12 };
+                tamanhosComuns.forEach((tamanho) => {
+                    const primeiroPreco = Number(precos1[tamanho] || 0);
+                    const segundoPreco = isMeiaAMeia ? Number(precos2[tamanho] || 0) : 0;
+                    const precoBase = isMeiaAMeia ? Math.max(primeiroPreco, segundoPreco) : primeiroPreco;
+                    const adicional = Number(bordaSelecionada?.adicionais_por_tamanho?.[tamanho] || 0);
+                    const rotuloBorda = bordaSelecionada ? `com ${bordaSelecionada.nome}` : 'sem borda';
+                    const rotulo = `${tamanho} (${fatias[tamanho]} fatias) — ${formatarMoeda(precoBase + adicional)} ${rotuloBorda}`;
+                    tamanhoPizza.add(new Option(rotulo, tamanho));
+                });
+                tamanhoPizza.disabled = tamanhosComuns.length === 0 || !bordaPizza?.value;
+                tamanhoPizza.required = usaTamanho && tamanhosComuns.length > 0 && !!bordaPizza?.value;
+                if (tamanhosComuns.includes(anterior)) tamanhoPizza.value = anterior;
+            }
+            if (campoTamanhoPizza) campoTamanhoPizza.hidden = tamanhosComuns.length === 0 || !bordaPizza?.value;
+
+            const semTamanhoComum = isMeiaAMeia && !!sabor2?.value && usaTamanho && tamanhosComuns.length === 0;
+            if (tamanhoIndisponivel) tamanhoIndisponivel.hidden = !semTamanhoComum;
+            if (semTamanhoComum && confirmarObservacaoBtn) confirmarObservacaoBtn.disabled = true;
+
+            const tamanho = tamanhoPizza?.value || '';
+            const preco1 = tamanho ? Number(precos1[tamanho] || 0) : itemPendente.precoBase;
+            const preco2 = tamanho ? Number(precos2[tamanho] || 0) : Number(sabor2?.dataset.preco || 0);
+            const borda = bordaPizza?.value || '';
+            if (isMeiaAMeia && !sabor2?.value) {
+                if (previewPersonalizacao) previewPersonalizacao.textContent = 'Escolha o segundo sabor para calcular o preço.';
+                if (confirmarObservacaoBtn) confirmarObservacaoBtn.disabled = true;
+            } else if (!borda) {
+                if (previewPersonalizacao) previewPersonalizacao.textContent = 'Escolha a borda antes do tamanho.';
+                if (confirmarObservacaoBtn) confirmarObservacaoBtn.disabled = true;
+            } else if (isMeiaAMeia && usaTamanho && !tamanho) {
+                if (previewPersonalizacao) previewPersonalizacao.textContent = 'Selecione o tamanho da pizza.';
+                if (confirmarObservacaoBtn) confirmarObservacaoBtn.disabled = true;
+            } else if (!isMeiaAMeia && usaTamanho && !tamanho) {
+                if (previewPersonalizacao) previewPersonalizacao.textContent = 'Selecione o tamanho da pizza.';
+                if (confirmarObservacaoBtn) confirmarObservacaoBtn.disabled = true;
+            } else {
+                const base = isMeiaAMeia ? Math.max(preco1, preco2) : preco1;
+                const bordaSelecionada = bordasDisponiveis.find((opcao) => String(opcao.id) === String(borda));
+                const extraBorda = tamanho ? Number(bordaSelecionada?.adicionais_por_tamanho?.[tamanho] || 0) : 0;
+                preco = base + extraBorda;
+                const descricaoBorda = bordaSelecionada ? `${bordaSelecionada.nome} (+${formatarMoeda(extraBorda)})` : 'Sem borda';
+                const precoTexto = `Preço unitário estimado: ${formatarMoeda(preco)} · ${descricaoBorda}${isMeiaAMeia ? ' (maior preço entre os sabores)' : ''}.`;
+                if (previewPersonalizacao) previewPersonalizacao.textContent = precoTexto;
+            }
+
+            itemPendente.personalizacao = {
+                tipo: 'pizza',
+                modo,
+                ...(tamanho ? { tamanho } : {}),
+                ...(borda ? { borda_id: borda } : {}),
+                ...(isMeiaAMeia && sabor2?.value ? { sabor_2_id: sabor2.value } : {}),
+            };
+            itemPendente.preco = preco;
+            itemPendente.nomeExibicao = tamanho ? `Pizza ${tamanho}` : 'Pizza';
+            itemPendente.detalhePersonalizacao = isMeiaAMeia && sabor2?.value
+                ? `1/2 ${itemPendente.nome} · 1/2 ${sabor2.textContent.trim()}`
+                : `Sabor: ${itemPendente.nome}`;
+            if (borda) itemPendente.detalhePersonalizacao += ` · ${bordasDisponiveis.find((opcao) => String(opcao.id) === String(borda))?.nome || 'Sem borda'}`;
+            return;
+        }
+
+        if (isPorcao) {
+            const meia = tipoPorcao?.value === 'meia';
+            const opcaoMeiaPorcao = tipoPorcao?.querySelector('option[value="meia"]');
+            if (opcaoMeiaPorcao) opcaoMeiaPorcao.disabled = !itemPendente.aceitaMeia;
+            if (meia && !itemPendente.aceitaMeia) {
+                if (confirmarObservacaoBtn) confirmarObservacaoBtn.disabled = true;
+            } else if (meia) {
+                preco = itemPendente.precoMeia;
+            }
+            itemPendente.personalizacao = { tipo: 'porcao', tipo_porcao: meia ? 'meia' : 'inteira' };
+            itemPendente.preco = preco;
+            itemPendente.detalhePersonalizacao = meia ? 'Meia porção' : 'Porção inteira';
+            if (previewPersonalizacao) previewPersonalizacao.textContent = `Preço unitário: ${formatarMoeda(preco)}.`;
+            return;
+        }
+
+        if (previewPersonalizacao) previewPersonalizacao.textContent = '';
+        itemPendente.preco = preco;
+    }
 
     function garantirEstiloPopup() {
         if (document.getElementById('garcom-popup-style')) return;
@@ -117,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function normalizarQuantidade(valor) {
         const quantidade = parseInt(valor, 10);
-        return Number.isFinite(quantidade) && quantidade > 0 ? quantidade : 1;
+        return Number.isFinite(quantidade) && quantidade > 0 ? Math.min(99, quantidade) : 1;
     }
 
     function parsePreco(valor) {
@@ -178,12 +365,17 @@ document.addEventListener('DOMContentLoaded', function () {
             info.className = 'garcom-order-item__info';
 
             const nome = document.createElement('strong');
-            nome.textContent = item.nome;
+            nome.textContent = item.nomeExibicao || item.nome;
 
             const detalhe = document.createElement('small');
             detalhe.textContent = `${formatarMoeda(item.preco)} cada`;
 
             info.append(nome, detalhe);
+            if (item.detalhePersonalizacao) {
+                const personalizacao = document.createElement('small');
+                personalizacao.textContent = item.detalhePersonalizacao;
+                info.appendChild(personalizacao);
+            }
             if (item.observacao) {
                 const observacao = document.createElement('small');
                 observacao.className = 'garcom-order-item__observacao';
@@ -198,6 +390,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const qtdInput = document.createElement('input');
             qtdInput.type = 'number';
             qtdInput.min = '1';
+            qtdInput.max = '99';
             qtdInput.value = String(item.quantidade);
             qtdInput.className = 'garcom-order-qtd';
             qtdInput.dataset.orderQtd = item.chave;
@@ -212,6 +405,13 @@ document.addEventListener('DOMContentLoaded', function () {
             adicionarInputOculto(`itens[${index}][produto_id]`, item.id);
             adicionarInputOculto(`itens[${index}][quantidade]`, item.quantidade);
             adicionarInputOculto(`itens[${index}][observacao]`, item.observacao || '');
+            if (item.personalizacao) {
+                Object.entries(item.personalizacao).forEach(([campo, valor]) => {
+                    if (valor !== null && valor !== '') {
+                        adicionarInputOculto(`itens[${index}][personalizacao][${campo}]`, valor);
+                    }
+                });
+            }
             index += 1;
         });
 
@@ -242,10 +442,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!itemPendente) return;
 
         const observacaoNormalizada = String(observacao || '').trim();
-        const chave = `${itemPendente.id}|${observacaoNormalizada}`;
+        const personalizacaoNormalizada = itemPendente.personalizacao || {};
+        const chave = `${itemPendente.id}|${JSON.stringify(personalizacaoNormalizada)}|${observacaoNormalizada}`;
         const itemAtual = pedido.get(chave);
         if (itemAtual) {
-            itemAtual.quantidade += itemPendente.quantidade;
+            itemAtual.quantidade = Math.min(99, itemAtual.quantidade + itemPendente.quantidade);
         } else {
             pedido.set(chave, { ...itemPendente, chave, observacao: observacaoNormalizada });
         }
@@ -267,12 +468,39 @@ document.addEventListener('DOMContentLoaded', function () {
             const preco = parsePreco(row.dataset.produtoPreco);
             const qtdInput = row.querySelector('[data-garcom-qtd]');
             const quantidade = normalizarQuantidade(qtdInput?.value || '1');
+            const aceitaMeia = row.dataset.aceitaMeia === '1';
 
             if (qtdInput) {
                 qtdInput.value = String(quantidade);
             }
 
-            itemPendente = { id: produtoId, nome, preco, quantidade };
+            itemPendente = {
+                id: produtoId,
+                nome,
+                tipo: row.dataset.produtoTipo || '',
+                preco,
+                precoBase: preco,
+                precoMeia: parsePreco(row.dataset.precoMeia),
+                aceitaMeia,
+                precos: lerPrecos(row.dataset.precos),
+                bordas: lerBordas(row.dataset.bordas),
+                quantidade,
+            };
+            if (modoPizza) modoPizza.value = 'inteira';
+            if (segundoSabor) segundoSabor.value = '';
+            if (tamanhoPizza) tamanhoPizza.value = '';
+            if (bordaPizza) bordaPizza.value = '';
+            if (tipoPorcao) {
+                tipoPorcao.value = 'inteira';
+                const meiaOption = tipoPorcao.querySelector('option[value="meia"]');
+                if (meiaOption) {
+                    meiaOption.disabled = !aceitaMeia;
+                    meiaOption.textContent = aceitaMeia
+                        ? `Meia porção — ${formatarMoeda(itemPendente.precoMeia)}`
+                        : 'Meia porção — indisponível';
+                }
+            }
+            sincronizarPersonalizacao();
             if (observacaoProduto) observacaoProduto.textContent = `${quantidade}x ${nome}`;
             if (observacaoInput) observacaoInput.value = '';
 
@@ -287,11 +515,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     observacaoModal?.querySelector('form')?.addEventListener('submit', function (event) {
         event.preventDefault();
+        if (confirmarObservacaoBtn?.disabled) return;
         adicionarItemPendente(observacaoInput?.value || '');
     });
 
+    [modoPizza, segundoSabor, tamanhoPizza, bordaPizza, tipoPorcao].forEach((campo) => {
+        campo?.addEventListener('change', sincronizarPersonalizacao);
+    });
+
     observacaoSemBtn?.addEventListener('click', function () {
-        adicionarItemPendente('');
+        itemPendente = null;
+
+        if (observacaoInput) {
+            observacaoInput.value = '';
+        }
+
+        observacaoModal?.close();
     });
 
     observacaoModal?.addEventListener('cancel', function () {
@@ -306,7 +545,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!item) return;
 
         if (target.dataset.orderAction === 'increment') {
-            item.quantidade += 1;
+            item.quantidade = Math.min(99, item.quantidade + 1);
         }
 
         if (target.dataset.orderAction === 'decrement') {

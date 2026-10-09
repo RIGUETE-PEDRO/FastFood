@@ -2,7 +2,10 @@
 
 namespace App\Repositoryimpl;
 
+use App\Enum\StatusPedidos;
 use App\Models\Dados_empresa;
+use App\Models\ItemPedidoModel;
+use App\Models\MesaModel;
 use App\Models\PedidoModel;
 use App\Repository\PedidosFeitosRepository;
 use Illuminate\Support\Collection;
@@ -30,6 +33,8 @@ class PedidosFeitosRepositoryimpl implements PedidosFeitosRepository
         $pedido->status = $status;
         $pedido->save();
 
+        $this->atualizarResumoDaMesa($pedido);
+
         return $pedido->fresh([
             'statusRelacionamento',
             'endereco.cidade',
@@ -38,6 +43,39 @@ class PedidosFeitosRepositoryimpl implements PedidosFeitosRepository
             'usuario',
             'motoboy',
         ]);
+    }
+
+    /**
+     * O pedido só compõe a conta da mesa após ser aceito (em preparo).
+     * Pedidos pendentes ou cancelados permanecem fora do total.
+     */
+    private function atualizarResumoDaMesa(PedidoModel $pedido): void
+    {
+        if (!$pedido->mesa_id) {
+            return;
+        }
+
+        $mesa = MesaModel::find($pedido->mesa_id);
+        if (!$mesa) {
+            return;
+        }
+
+        $totalAberto = (float) ItemPedidoModel::query()
+            ->whereHas('pedido', function ($query) use ($pedido) {
+                $query->where('mesa_id', $pedido->mesa_id)
+                    ->whereIn('status', [
+                        StatusPedidos::EM_PREPARO->value,
+                        StatusPedidos::A_CAMINHO->value,
+                        StatusPedidos::ENTREGUE->value,
+                    ]);
+            })
+            ->where('status_da_comanda', 'em_aberto')
+            ->selectRaw('COALESCE(SUM(preco_unitario * quantidade), 0) as total')
+            ->value('total');
+
+        $mesa->preco = $totalAberto;
+        $mesa->status = $totalAberto > 0 ? 'Ocupada' : 'Disponível';
+        $mesa->save();
     }
 
     public function buscarPedidoPorId($pedidoId): ?PedidoModel

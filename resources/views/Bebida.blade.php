@@ -54,7 +54,7 @@
                     <div class="ingredientes-lista">{{ $bebida->descricao }}</div>
                 </div>
                 @else
-                <p class="produto-empty-description">Descricao nao informada.</p>
+                <p class="produto-empty-description">Descrição não informada.</p>
                 @endif
                 <div class="produto-action">
                     <button type="button" class="button-adicionar">Adicionar ao carrinho</button>

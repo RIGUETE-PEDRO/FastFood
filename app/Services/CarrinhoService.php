@@ -17,12 +17,14 @@ class CarrinhoService
 {
     protected GenericBase $genericBase;
     protected CarrinhoRepository $carrinhoRepository;
+    protected PersonalizacaoProdutoService $personalizacaoProdutoService;
 
 
-    public function __construct(GenericBase $genericBase, CarrinhoRepository $carrinhoRepository)
+    public function __construct(GenericBase $genericBase, CarrinhoRepository $carrinhoRepository, PersonalizacaoProdutoService $personalizacaoProdutoService)
     {
         $this->genericBase = $genericBase;
         $this->carrinhoRepository = $carrinhoRepository;
+        $this->personalizacaoProdutoService = $personalizacaoProdutoService;
     }
 
     public function validarCarrinhoAntesRegistrarPedido(Request $request)
@@ -75,9 +77,12 @@ class CarrinhoService
         ];
     }
 
-    public function adicionarProdutoAoCarrinho($usuario, $produtoId, $quantidade, $observacao)
+    public function adicionarProdutoAoCarrinho($usuario, $produtoId, $quantidade, $observacao, $configuracao = null)
     {
-        $quantidadeNormalizada = $quantidade;
+        $quantidadeNormalizada = filter_var($quantidade, FILTER_VALIDATE_INT);
+        if ($quantidadeNormalizada === false || $quantidadeNormalizada < 1 || $quantidadeNormalizada > 99) {
+            throw new \InvalidArgumentException('A quantidade deve ficar entre 1 e 99.');
+        }
 
         $usuarioId = is_array($usuario) ? ($usuario['id'] ?? null) : ($usuario->id ?? null);
         if (!$usuarioId) {
@@ -88,14 +93,26 @@ class CarrinhoService
         if (!$produto) {
             throw new \InvalidArgumentException('Produto não encontrado.');
         }
-        $precoUnitario = (float) $produto->preco;
-        $precoTotal = $quantidadeNormalizada * $precoUnitario;
 
-        $itemCarrinho = $this->carrinhoRepository->buscarItemCarrinhoPorUsuarioEProduto((int) $usuarioId, (int) $produtoId);
+        $cotacao = $this->personalizacaoProdutoService->cotar($produto, $configuracao);
+        $personalizacao = $cotacao['personalizacao'];
+        $precoUnitario = $cotacao['preco_unitario'];
+        $precoTotal = round($quantidadeNormalizada * $precoUnitario, 2);
+        $observacao = trim((string) ($observacao ?? ''));
+
+        $itemCarrinho = $this->carrinhoRepository->buscarItemCarrinhoPorUsuarioEProduto(
+            (int) $usuarioId,
+            (int) $produtoId,
+            $personalizacao,
+            $observacao
+        );
 
         if ($itemCarrinho) {
+            if ($itemCarrinho->quantidade + $quantidadeNormalizada > 99) {
+                throw new \InvalidArgumentException('A quantidade máxima por item é 99.');
+            }
             $itemCarrinho->quantidade += $quantidadeNormalizada;
-            $itemCarrinho->preco_total += $precoTotal;
+            $itemCarrinho->preco_total = round($itemCarrinho->quantidade * $precoUnitario, 2);
             $itemCarrinho->save();
         } else {
             $this->carrinhoRepository->criarItemCarrinho([
@@ -104,6 +121,7 @@ class CarrinhoService
                 'quantidade' => $quantidadeNormalizada,
                 'observacao' => $observacao ?? '',
                 'preco_total' => $precoTotal,
+                'personalizacao' => $personalizacao,
             ]);
         }
     }
@@ -135,6 +153,9 @@ class CarrinhoService
         if ($request->filled('acao')) {
 
             if ($request->acao === 'mais') {
+                if ($itemCarrinho->quantidade >= 99) {
+                    return false;
+                }
                 $itemCarrinho->quantidade++;
             }
 
@@ -152,9 +173,14 @@ class CarrinhoService
             $itemCarrinho->quantidade = $quantidadeNormalizada;
         }
 
-        // Atualiza preço total
-        $precoUnitario = (float) $itemCarrinho->produto->preco;
-        $itemCarrinho->preco_total = $itemCarrinho->quantidade * $precoUnitario;
+        try {
+            $cotacao = $this->personalizacaoProdutoService->cotar($itemCarrinho->produto, $itemCarrinho->personalizacao);
+        } catch (\InvalidArgumentException $e) {
+            return false;
+        }
+
+        $itemCarrinho->personalizacao = $cotacao['personalizacao'];
+        $itemCarrinho->preco_total = round($itemCarrinho->quantidade * $cotacao['preco_unitario'], 2);
 
         $itemCarrinho->save();
 
@@ -358,18 +384,9 @@ class CarrinhoService
                 'status_da_comanda' => 'em_aberto',
                 'pago_em' => null,
                 'pedido_id' => $resultado,
+                'observacao' => $item->observacao,
+                'personalizacao' => $item->personalizacao,
             ]);
-        }
-
-        if ($mesaId) {
-            $mesa = $this->carrinhoRepository->pegarMesaPorId((int) $mesaId);
-            if ($mesa) {
-                $totalAberto = $this->carrinhoRepository->calcularTotalAbertoMesa((int) $mesaId);
-
-                $mesa->preco = $totalAberto;
-                $mesa->status = 'Ocupada';
-                $mesa->save();
-            }
         }
 
         $this->carrinhoRepository->removerItensSelecionadosCarrinho((int) $usuarioId);
@@ -446,7 +463,7 @@ class CarrinhoService
             return [
                 'status' => false,
                 'tipo' => 'error',
-                'mensagem' => 'Tipo de pedido invalido.',
+                'mensagem' => 'Tipo de pedido inválido.',
             ];
         }
 
@@ -457,6 +474,24 @@ class CarrinhoService
         }
 
         $usuarioId = Auth::id();
+
+        try {
+            $precosMudaram = $this->recalcularItensSelecionados((int) $usuarioId);
+        } catch (\InvalidArgumentException $e) {
+            return [
+                'status' => false,
+                'tipo' => 'error',
+                'mensagem' => $e->getMessage(),
+            ];
+        }
+
+        if ($precosMudaram) {
+            return [
+                'status' => false,
+                'tipo' => 'warning',
+                'mensagem' => 'O preço de um ou mais itens foi atualizado. Confira o carrinho e confirme o pedido novamente.',
+            ];
+        }
 
         $valor_total = $this->carrinhoRepository->somarValorSelecionadoCarrinho((int) $usuarioId);
 
@@ -585,6 +620,27 @@ class CarrinhoService
             'tipo' => 'success',
             'mensagem' => PassMensagens::MESA_SELECIONADA_SUCESSO,
         ];
+    }
+
+    private function recalcularItensSelecionados(int $usuarioId): bool
+    {
+        $precosMudaram = false;
+        foreach ($this->carrinhoRepository->listarItensSelecionadosCarrinho($usuarioId) as $item) {
+            if (!$item->produto) {
+                throw new \InvalidArgumentException('Um produto do carrinho não está mais disponível. Remova-o e adicione outro.');
+            }
+
+            $cotacao = $this->personalizacaoProdutoService->cotar($item->produto, $item->personalizacao);
+            $item->personalizacao = $cotacao['personalizacao'];
+            $novoTotal = round($item->quantidade * $cotacao['preco_unitario'], 2);
+            if (round((float) $item->preco_total, 2) !== $novoTotal) {
+                $precosMudaram = true;
+            }
+            $item->preco_total = $novoTotal;
+            $item->save();
+        }
+
+        return $precosMudaram;
     }
 }
 //576 linhas

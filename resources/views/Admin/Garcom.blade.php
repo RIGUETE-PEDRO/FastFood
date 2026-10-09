@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     @include('partials.favicon')
     <title>Painel do Garçom</title>
     @vite(['resources/js/app.js'])
@@ -82,7 +82,7 @@
                                     <select name="categoria_id" id="categoria_id" class="garcom-filter-select">
                                         <option value="">Todas as categorias</option>
                                         @foreach(($categorias ?? []) as $categoria)
-                                            <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
+                                        <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -107,10 +107,20 @@
                                 </thead>
                                 <tbody id="tableBody">
                                     @foreach($produtos as $produto)
+                                    @php
+                                        $categoriaProduto = mb_strtolower(\Illuminate\Support\Str::ascii(trim((string) optional($produto->categoria)->nome)));
+                                        $tipoProduto = in_array($categoriaProduto, ['pizza', 'pizzas'], true)
+                                            ? 'pizza'
+                                            : (in_array($categoriaProduto, ['porcao', 'porcoes'], true) ? 'porcao' : '');
+                                    @endphp
                                     <tr
                                         data-produto-id="{{ $produto->id }}"
                                         data-produto-nome="{{ $produto->nome }}"
-                                        data-produto-preco="{{ (float) $produto->preco }}">
+                                        data-produto-preco="{{ (float) $produto->preco }}"
+                                        data-produto-tipo="{{ $tipoProduto }}"
+                                        data-aceita-meia="{{ $produto->aceita_meia_por ? '1' : '0' }}"
+                                        data-preco-meia="{{ $produto->preco_meia_por }}"
+                                        data-precos='{{ json_encode($produto->precos_por_tamanho ?: \App\Services\PersonalizacaoProdutoService::PRECOS_PADRAO) }}' data-bordas='{{ json_encode($produto->bordas->where("ativa", true)->map(fn ($borda) => ["id" => $borda->id, "nome" => $borda->nome, "adicionais_por_tamanho" => $borda->adicionais_por_tamanho ?: []])->values()) }}'>
                                         <td>
                                             @if(!empty($produto->imagem_url))
                                             <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="Produto {{ $produto->nome }}" style="width:48px; height:48px; object-fit:cover; border-radius:8px;">
@@ -134,6 +144,7 @@
                                                             class="qtd-input"
                                                             data-garcom-qtd
                                                             min="1"
+                                                            max="99"
                                                             value="1"
                                                             required>
                                                     </div>
@@ -165,20 +176,60 @@
             <form method="dialog" class="garcom-observacao-modal__content">
                 <h2 id="garcomObservacaoTitulo">Alguma observação?</h2>
                 <p id="garcomObservacaoProduto"></p>
+                <div id="garcomPizzaOptions" hidden>
+                    <label for="garcomPizzaModo">Como deseja a pizza?</label>
+                    <select id="garcomPizzaModo">
+                        <option value="inteira">Pizza inteira, um sabor</option>
+                        <option value="meia_a_meia">Meia a meia, combine dois sabores</option>
+                    </select>
+                    <div id="garcomPizzaSecondField" hidden>
+                        <label for="garcomPizzaSabor2">Segundo sabor</label>
+                        <select id="garcomPizzaSabor2">
+                            <option value="">Selecione o segundo sabor</option>
+                            @foreach($pizzas as $pizzaOpcao)
+                                <option value="{{ $pizzaOpcao->id }}" data-precos='{{ json_encode($pizzaOpcao->precos_por_tamanho ?: \App\Services\PersonalizacaoProdutoService::PRECOS_PADRAO) }}' data-preco="{{ (float) $pizzaOpcao->preco }}" data-bordas='{{ json_encode($pizzaOpcao->bordas->where("ativa", true)->map(fn ($borda) => ["id" => $borda->id, "nome" => $borda->nome, "adicionais_por_tamanho" => $borda->adicionais_por_tamanho ?: []])->values()) }}'>{{ $pizzaOpcao->nome }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div id="garcomPizzaBordaField">
+                        <label for="garcomPizzaBorda">Qual borda deseja?</label>
+                        <select id="garcomPizzaBorda" required>
+                            <option value="">Escolha uma opção</option>
+                            <option value="0">Sem borda</option>
+                        </select>
+                    </div>
+                    <div id="garcomPizzaSizeField" hidden>
+                        <label for="garcomPizzaTamanho">Tamanho e preço</label>
+                        <select id="garcomPizzaTamanho">
+                            <option value="">Selecione o tamanho</option>
+                        </select>
+                    </div>
+                    <small id="garcomPizzaSizeUnavailable" hidden>Os sabores escolhidos não têm um tamanho em comum cadastrado.</small>
+                </div>
+                <div id="garcomPortionOptions" hidden>
+                    <label for="garcomTipoPorcao">Porção</label>
+                    <select id="garcomTipoPorcao">
+                        <option value="inteira">Porção inteira</option>
+                        <option value="meia">Meia porção</option>
+                    </select>
+                </div>
+                <small id="garcomPersonalizationPrice"></small>
                 <label for="garcomObservacaoInput">Informe retiradas ou acréscimos (opcional)</label>
                 <textarea
                     id="garcomObservacaoInput"
                     maxlength="500"
                     rows="4"
-                    placeholder="Ex.: sem cebola, acrescentar queijo..."
-                ></textarea>
+                    placeholder="Ex.: sem cebola, acrescentar queijo..."></textarea>
                 <div class="garcom-observacao-modal__actions">
-                    <button type="button" class="garcom-order-clear" id="garcomObservacaoSem">Sem observação</button>
+                    <button type="button" class="garcom-order-clear" id="garcomObservacaoSem">
+                        Cancelar
+                    </button>
                     <button type="submit" class="btn-add" id="garcomObservacaoConfirmar">Adicionar ao pedido</button>
                 </div>
             </form>
         </dialog>
-            <script src="{{ asset('js/garcom.js') }}?v={{ filemtime(public_path('js/garcom.js')) }}"></script>
+        @include('components.flash-toast')
+        <script src="{{ asset('js/garcom.js') }}?v={{ filemtime(public_path('js/garcom.js')) }}"></script>
 </body>
 
 </html>

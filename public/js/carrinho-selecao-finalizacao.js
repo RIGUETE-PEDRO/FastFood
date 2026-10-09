@@ -73,7 +73,7 @@
             body: formData,
         }).then((response) => {
             if (!response.ok) {
-                throw new Error('Nao foi possivel atualizar a selecao.');
+                throw new Error('Não foi possível atualizar a seleção.');
             }
 
             return response.json().catch(() => ({}));

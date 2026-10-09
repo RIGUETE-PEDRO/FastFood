@@ -44,6 +44,10 @@ RUN composer install --no-scripts
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
 
+# Inicializa uma pasta externa de uploads vazia sem sobrescrever fotos existentes.
+RUN mkdir -p /app/public/img/produtos-seed \
+    && cp -a /app/public/img/produtos/. /app/public/img/produtos-seed/
+
 RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views bootstrap/cache
 
 RUN composer dump-autoload --no-scripts

@@ -16,6 +16,7 @@ class ItemPedidoModel extends Model
         'produto_id',
         'pedido_id',
         'observacao',
+        'personalizacao',
     ];
 
     protected $guarded = [
@@ -24,6 +25,7 @@ class ItemPedidoModel extends Model
 
     protected $casts = [
         'pago_em' => 'datetime',
+        'personalizacao' => 'array',
     ];
 
     public function produto()

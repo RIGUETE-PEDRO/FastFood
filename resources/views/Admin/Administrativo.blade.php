@@ -22,7 +22,7 @@
             <main>
                 <section class="dashboard-header">
                     <h1>Dashboard administrativo</h1>
-                    <p>Ola, {{ $nomeUsuario ?? 'Usuario' }}. Acompanhe os indicadores do FlashFood.</p>
+                    <p>Olá, {{ $nomeUsuario ?? 'Usuário' }}. Acompanhe os indicadores do FlashFood.</p>
                 </section>
 
                 <section class="dashboard-toolbar painel">
@@ -36,7 +36,7 @@
                         <button type="submit">Aplicar</button>
                     </form>
 
-                    <p class="dashboard-periodo">Periodo atual: <strong>{{ $periodoTexto ?? 'Mes atual' }}</strong></p>
+                    <p class="dashboard-periodo">Período atual: <strong>{{ $periodoTexto ?? 'Mês atual' }}</strong></p>
                 </section>
 
                 <section class="dashboard-kpis">
@@ -67,6 +67,19 @@
                         <h3>Top 5 produtos vendidos</h3>
                         <canvas id="topProdutosChart" aria-label="Grafico de produtos mais vendidos"></canvas>
                     </article>
+
+                    <article class="painel chart-card dashboard-motoboys">
+                        <h3>Pedidos por motoboy</h3>
+                        <p class="dashboard-motoboys__hint">Pedidos aceitos no período selecionado.</p>
+                        @php
+                            $motoboys = $pedidosPorMotoboy ?? collect();
+                        @endphp
+                        @if($motoboys->isNotEmpty())
+                            <canvas id="motoboysChart" aria-label="Gráfico de pedidos por motoboy"></canvas>
+                        @else
+                            <p class="dashboard-motoboys__empty">Nenhum pedido foi aceito por motoboy neste período.</p>
+                        @endif
+                    </article>
                 </section>
             </main>
         </div>
@@ -77,6 +90,8 @@
         'statusValores' => $statusValores ?? [],
         'topProdutosLabels' => $topProdutosLabels ?? [],
         'topProdutosValores' => $topProdutosValores ?? [],
+        'motoboysLabels' => ($motoboys ?? collect())->pluck('motoboy_nome')->values(),
+        'motoboysValores' => ($motoboys ?? collect())->pluck('total_pedidos')->map(fn ($total) => (int) $total)->values(),
     ], JSON_UNESCAPED_UNICODE) !!}</script>
     <script src="{{ asset('js/admin-dashboard-charts-fallback.js') }}?v={{ filemtime(public_path('js/admin-dashboard-charts-fallback.js')) }}"></script>
 

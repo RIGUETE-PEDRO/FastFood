@@ -32,7 +32,7 @@ class AdminService
         $usuario = $this->genericBase->findById($data['id']);
 
         if (!$usuario) {
-            return ['status' => false, 'mensagem' => 'Usuario nao encontrado.'];
+            return ['status' => false, 'mensagem' => 'Usuário não encontrado.'];
         }
 
         $usuario->nome = $data['nome'];
@@ -65,25 +65,59 @@ class AdminService
 
     public function resolverReturnUrl(Request $request)
     {
-        $previousUrl = URL::previous();
-        $currentUrl = $request->fullUrl();
-
         $fallbackUrl = route('home');
 
+        $returnUrl = $this->normalizarUrlRetornoPerfil($request->query('return'), $request);
+        if ($returnUrl !== null) {
+            session(['perfil_return_url' => $returnUrl]);
+            return $returnUrl;
+        }
+
+        $previousUrl = $this->normalizarUrlRetornoPerfil(URL::previous(), $request);
+        if ($previousUrl !== null) {
+            session(['perfil_return_url' => $previousUrl]);
+            return $previousUrl;
+        }
+
+        return $this->normalizarUrlRetornoPerfil(session('perfil_return_url'), $request) ?? $fallbackUrl;
+    }
+
+    private function normalizarUrlRetornoPerfil($url, Request $request): ?string
+    {
+        if (!is_string($url) || trim($url) === '') {
+            return null;
+        }
+
+        $parts = parse_url($url);
+        if ($parts === false) {
+            return null;
+        }
+
+        if (isset($parts['host']) && strcasecmp($parts['host'], $request->getHost()) !== 0) {
+            return null;
+        }
+
+        if (isset($parts['scheme']) && !in_array(strtolower($parts['scheme']), ['http', 'https'], true)) {
+            return null;
+        }
+
+        $path = $parts['path'] ?? '/';
+        if (!str_starts_with($path, '/') || str_starts_with($path, '//')) {
+            return null;
+        }
+
+        $pathNormalizado = '/' . trim(strtolower(urldecode($path)), '/');
         $rotasBloqueadas = [
-            route('AcessoNegado'),
-            route('Alterar_Dados'),
+            '/' . trim(parse_url(route('perfil'), PHP_URL_PATH) ?: '/perfil', '/'),
+            '/' . trim(parse_url(route('AcessoNegado'), PHP_URL_PATH) ?: '/AcessoNegado', '/'),
+            '/' . trim(parse_url(route('Alterar_Dados'), PHP_URL_PATH) ?: '/Alterar_Dados', '/'),
         ];
 
-        if (in_array($previousUrl, $rotasBloqueadas, true) || $previousUrl === $currentUrl) {
-            $previousUrl = session('perfil_return_url', $fallbackUrl);
+        if (in_array($pathNormalizado, array_map('strtolower', $rotasBloqueadas), true)) {
+            return null;
         }
 
-        if (!empty($previousUrl) && $previousUrl !== $currentUrl) {
-            session(['perfil_return_url' => $previousUrl]);
-        }
-
-        return session('perfil_return_url', $fallbackUrl);
+        return $path . (isset($parts['query']) ? '?' . $parts['query'] : '');
     }
 
     public function camposDadosEmpresa(): array
@@ -187,6 +221,7 @@ class AdminService
         }
 
         $topProdutos = $this->adminRepository->topProdutosNoPeriodo($inicioPeriodo, $fimPeriodo, 5);
+        $pedidosPorMotoboy = $this->adminRepository->pedidosPorMotoboyNoPeriodo($inicioPeriodo, $fimPeriodo);
 
         $topProdutosLabels = $topProdutos
             ->map(fn($item) => $item->produto_nome ?? 'Produto removido')
@@ -212,6 +247,7 @@ class AdminService
             'statusValores' => $statusValores,
             'topProdutosLabels' => $topProdutosLabels,
             'topProdutosValores' => $topProdutosValores,
+            'pedidosPorMotoboy' => $pedidosPorMotoboy,
             'dataInicioSelecionada' => $periodoDados['dataInicioView'],
             'dataFimSelecionada' => $periodoDados['dataFimView'],
             'periodoTexto' => $periodoDados['periodoTexto'],

@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     @include('partials.favicon')
-    <title>Historico de Mesas</title>
+    <title>Histórico de mesas</title>
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}?v={{ filemtime(public_path('css/Admin/Principal.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/Admin/Mesa.css') }}?v={{ filemtime(public_path('css/Admin/Mesa.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/PersonalizacaoProduto.css') }}">
 </head>
 
 <body>
@@ -25,13 +26,13 @@
                 @php
                     $formaLabel = static function (?string $metodo): string {
                         return match ($metodo) {
-                            'cartao' => 'Cartao',
-                            'cartao_credito' => 'Cartao de credito',
-                            'cartao_debito' => 'Cartao de debito',
+                            'cartao' => 'Cartão',
+                            'cartao_credito' => 'Cartão de crédito',
+                            'cartao_debito' => 'Cartão de débito',
                             'pix' => 'Pix',
                             'dinheiro' => 'Dinheiro',
-                            'nao_informado' => 'Nao informado',
-                            default => $metodo ? str_replace('_', ' ', ucfirst($metodo)) : 'Nao informado',
+                            'nao_informado' => 'Não informado',
+                            default => $metodo ? str_replace('_', ' ', ucfirst($metodo)) : 'Não informado',
                         };
                     };
                 @endphp
@@ -39,7 +40,7 @@
                 <section class="mesas-page mesas-history-page">
                     <header class="mesas-header mesas-history-header">
                         <div>
-                            <span class="mesa-detail-header__eyebrow">Historico operacional</span>
+                            <span class="mesa-detail-header__eyebrow">Histórico operacional</span>
                             <h1 class="mesas-title">Mesas fechadas</h1>
                             <p class="mesas-subtitle">Consulte fechamentos de mesa e formas de pagamento utilizadas.</p>
                         </div>
@@ -48,7 +49,7 @@
                         </div>
                     </header>
 
-                    <section class="mesa-history-summary" aria-label="Resumo do historico">
+                    <section class="mesa-history-summary" aria-label="Resumo do histórico">
                         <article>
                             <span>Fechamentos</span>
                             <strong>{{ $fechamentos->total() }}</strong>
@@ -59,7 +60,7 @@
                         </article>
                     </section>
 
-                    <form method="GET" action="{{ route('mesas.historico') }}" class="mesa-history-filter" aria-label="Filtrar historico de mesas">
+                    <form method="GET" action="{{ route('mesas.historico') }}" class="mesa-history-filter" aria-label="Filtrar histórico de mesas">
                         <div class="mesa-history-filter__field">
                             <label for="mesa_id">Mesa</label>
                             <select name="mesa_id" id="mesa_id">
@@ -107,7 +108,7 @@
                                         <div>
                                             <span class="mesa-history-card__eyebrow">Mesa {{ $fechamento->numero_da_mesa }}</span>
                                             <h2>Fechamento #{{ $fechamento->id }}</h2>
-                                            <p>{{ optional($fechamento->fechado_em)->format('d/m/Y H:i') ?? 'Data nao informada' }}</p>
+                                            <p>{{ optional($fechamento->fechado_em)->format('d/m/Y H:i') ?? 'Data não informada' }}</p>
                                         </div>
                                         <strong class="mesa-history-card__total">
                                             R$ {{ number_format((float) $fechamento->total_pago, 2, ',', '.') }}
@@ -120,7 +121,7 @@
                                             @forelse($formas as $forma)
                                                 <span>{{ $formaLabel($forma) }}</span>
                                             @empty
-                                                <span>Nao informado</span>
+                                                <span>Não informado</span>
                                             @endforelse
                                         </div>
                                     </div>
@@ -134,7 +135,7 @@
                                         @empty
                                             <div>
                                                 <span>Pagamento</span>
-                                                <strong>Nao informado</strong>
+                                                <strong>Não informado</strong>
                                             </div>
                                         @endforelse
                                     </div>
@@ -148,13 +149,14 @@
                                                         {{ (int) ($produto['quantidade'] ?? 0) }}x
                                                         {{ $produto['nome'] ?? 'Produto' }}
                                                     </span>
+                                                    @include('partials.detalhes-personalizacao-item', ['personalizacao' => $produto['personalizacao'] ?? null])
                                                     <strong>
                                                         R$ {{ number_format((float) ($produto['subtotal'] ?? 0), 2, ',', '.') }}
                                                     </strong>
                                                 </div>
                                             @empty
                                                 <div>
-                                                    <span>Produtos nao detalhados neste fechamento</span>
+                                                    <span>Produtos não detalhados neste fechamento</span>
                                                     <strong>-</strong>
                                                 </div>
                                             @endforelse
