@@ -2,61 +2,66 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class Relating_roles_to_user extends Seeder
 {
-
     public function run(): void
     {
-        DB::table('SecureKey_tipo_usuario')->insert([
-            [
-                'created_at' => now(),
-                'tipo_usuario_id' => 5,
-                'role_id' => 3
+        $rolesPorGrupo = [
+            'SecureKey' => ['SecureKey'],
+            'Estabelecimento' => [
+                'pedidos_cancelar',
             ],
-            [
-                'created_at' => now(),
-                'tipo_usuario_id' => 3,
-                'role_id' => 1
+            'Administrador' => [
+                'admin',
+                'dashbord',
+                'pedidos',
+                'gerenciamento_funcionarios',
+                'gerenciamento_produtos',
+                'gerenciamento_bordas',
+                'pedido_whatsapp',
+                'entregas',
+                'mesas',
+                'garcom',
             ],
-            [
-                'created_at' => now(),
-                'tipo_usuario_id' => 3,
-                'role_id' => 4
+            'Entregador' => [
+                'entregas',
+                'pedidos_visualizar',
             ],
-            [
-                'created_at' => now(),
-                'tipo_usuario_id' => 3,
-                'role_id' => 5
+            'garçom' => [
+                'garcom',
+                'mesas',
+                'pedidos_visualizar',
             ],
-            [
-                'created_at' => now(),
-                'tipo_usuario_id' => 3,
-                'role_id' => 6
-            ],
-            [
-                'created_at' => now(),
-                'tipo_usuario_id' => 3,
-                'role_id' => 7
-            ],
-            [
-                'created_at' => now(),
-                'tipo_usuario_id' => 3,
-                'role_id' => 8
-            ],
-            [
-                'created_at' => now(),
-                'tipo_usuario_id' => 3,
-                'role_id' => 9
-            ],
-            [
-                'created_at' => now(),
-                'tipo_usuario_id' => 3,
-                'role_id' => 10
-            ]
-            ]);
+        ];
+
+        foreach ($rolesPorGrupo as $descricaoGrupo => $nomesRoles) {
+            $grupoId = DB::table('tipo_usuarios')
+                ->where('descricao', $descricaoGrupo)
+                ->value('id');
+
+            if (!$grupoId) {
+                continue;
+            }
+
+            $roles = DB::table('roles')
+                ->whereIn('nome', $nomesRoles)
+                ->pluck('id');
+
+            foreach ($roles as $roleId) {
+                DB::table('SecureKey_tipo_usuario')->updateOrInsert(
+                    [
+                        'tipo_usuario_id' => $grupoId,
+                        'role_id' => $roleId,
+                    ],
+                    [
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+            }
+        }
     }
 }

@@ -123,7 +123,7 @@
                                         data-precos='{{ json_encode($produto->precos_por_tamanho ?: \App\Services\PersonalizacaoProdutoService::PRECOS_PADRAO) }}' data-bordas='{{ json_encode($produto->bordas->where("ativa", true)->map(fn ($borda) => ["id" => $borda->id, "nome" => $borda->nome, "adicionais_por_tamanho" => $borda->adicionais_por_tamanho ?: []])->values()) }}'>
                                         <td>
                                             @if(!empty($produto->imagem_url))
-                                            <img src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="Produto {{ $produto->nome }}" style="width:48px; height:48px; object-fit:cover; border-radius:8px;">
+                                            <img class="produto-thumbnail" src="{{ asset('img/produtos/' . $produto->imagem_url) }}" alt="Imagem do produto {{ $produto->nome }}" loading="lazy" decoding="async">
                                             @else
                                             <span style="color:#aaa;">Sem imagem</span>
                                             @endif

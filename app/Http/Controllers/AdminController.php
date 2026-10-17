@@ -8,6 +8,7 @@ use App\Http\Middleware\UsuarioAutenticado;
 use App\Mensagens\PassMensagens;
 use App\Models\ConfiguracaoImpressao;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Enum\TipoUsuario as EnumsTipoUsuario;
 use Illuminate\Support\Facades\Auth;
 
@@ -105,6 +106,7 @@ class AdminController extends Controller
     {
         return view('Admin.Impressao', [
             'configuracoesImpressao' => ConfiguracaoImpressao::atuais(),
+            'formatosBobina' => ConfiguracaoImpressao::formatosBobina(),
             'impressaoReturnUrl' => $this->resolverUrlRetornoImpressao($request),
         ]);
     }
@@ -112,7 +114,7 @@ class AdminController extends Controller
     public function atualizarConfiguracoesImpressao(Request $request)
     {
         $dados = $request->validate([
-            'paperWidth' => ['required', 'in:58,80'],
+            'paperRoll' => ['required', Rule::in(array_keys(ConfiguracaoImpressao::formatosBobina()))],
             'fontSize' => ['required', 'in:10,12,14'],
             'receiptFont' => ['required', 'in:monospace,arial,georgia'],
             'copies' => ['required', 'integer', 'between:1,5'],

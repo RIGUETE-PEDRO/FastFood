@@ -27,6 +27,7 @@ class CarrinhoRepositoryimpl implements CarrinhoRepository
     {
         return EnderecoModel::with('cidade')
             ->where('usuario_id', $usuarioId)
+            ->where('deleted', false)
             ->orderByDesc('created_at')
             ->get();
     }
@@ -86,6 +87,7 @@ class CarrinhoRepositoryimpl implements CarrinhoRepository
     {
         return EnderecoModel::where('id', $enderecoId)
             ->where('usuario_id', $usuarioId)
+            ->where('deleted', false)
             ->first();
     }
 
@@ -96,7 +98,9 @@ class CarrinhoRepositoryimpl implements CarrinhoRepository
 
     public function quantidadeEnderecosUsuario(int $usuarioId): int
     {
-        return EnderecoModel::where('usuario_id', $usuarioId)->count();
+        return EnderecoModel::where('usuario_id', $usuarioId)
+            ->where('deleted', false)
+            ->count();
     }
 
     public function listarItensSelecionadosCarrinho(int $usuarioId): Collection

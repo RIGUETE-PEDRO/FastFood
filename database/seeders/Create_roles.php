@@ -10,14 +10,10 @@ class Create_roles extends Seeder
 
     public function run(): void
     {
-        DB::table('roles')->insert([
+        DB::table('roles')->insertOrIgnore([
                 [
                     'nome' => 'admin',
                     'created_at' => now()],
-                [
-                    'nome' => 'user',
-                    'created_at' => now()
-                ],
                 [
                     'nome' => 'SecureKey',
                     'created_at' => now()
@@ -28,6 +24,14 @@ class Create_roles extends Seeder
                 ],
                 [
                     'nome' => 'pedidos',
+                    'created_at' => now()
+                ],
+                [
+                    'nome' => 'pedidos_visualizar',
+                    'created_at' => now()
+                ],
+                [
+                    'nome' => 'pedidos_cancelar',
                     'created_at' => now()
                 ],
                 [
@@ -48,6 +52,14 @@ class Create_roles extends Seeder
                 ],
                 [
                     'nome' => 'garcom',
+                    'created_at' => now()
+                ],
+                [
+                    'nome' => 'gerenciamento_bordas',
+                    'created_at' => now()
+                ],
+                [
+                    'nome' => 'pedido_whatsapp',
                     'created_at' => now()
                 ]
             ]

@@ -1,0 +1,685 @@
+@startuml
+title FlashFood — Diagrama de Classes: estrutura e relações principais
+left to right direction
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide empty members
+
+package "Controladores" {
+  abstract class Controller <<Base da aplicação>>
+  class IndexController {
+    +index()
+  }
+  class PizzaController {
+    +Pizza()
+  }
+  class LanchesController {
+    +Lanches()
+  }
+  class BebidasController {
+    +Bebidas()
+  }
+  class PorcaoController {
+    +porcao()
+  }
+  class CarrinhoController {
+    +adicionarAoCarrinho(request)
+    +verCarrinho()
+    +registrarPedido(request)
+  }
+  class PedidoController {
+    +pedidosFiltro(request)
+    +verpedido()
+  }
+  class PedidosFeitosController {
+    +verPedidosAdmin()
+    +atualizarStatus(request, pedido)
+    +avancarStatus(pedido)
+    +cancelar(pedido)
+    +gerarCumpom(pedido)
+  }
+  class EntregasController {
+    +index()
+    +aceitar(pedido)
+    +finalizar(pedido)
+  }
+  class LoginController {
+    +login(request)
+    +logout()
+    +recuperarSenha(request)
+    +atualizarSenha(request)
+  }
+  class RegisterController {
+    +register(request)
+    +registerFuncionario(request)
+  }
+  class AdminController {
+    +bemVindo(request)
+    +configuracoes()
+    +atualizarConfiguracoes(request)
+    +atualizarConfiguracoesImpressao(request)
+  }
+  class GerenciamentoUsuarioController {
+    +gerenciamentoFuncionario()
+    +atualizarFuncionario(request, id)
+    +deletarUsuario(id)
+  }
+  class GerenciamentoProdutoController {
+    +gerenciamentoProduto()
+    +cadastrarProduto(request)
+    +atualizarProduto(request, id)
+    +deletarProduto(id)
+    +gerenciamentoBordas()
+    +cadastrarBorda(request)
+    +atualizarBorda(request, id)
+  }
+  class MesaController {
+    +ListarMesa()
+    +detalhesMesa(id)
+    +abaterItensContaMesa(request, id)
+  }
+  class GarcomController {
+    +index()
+    +adicionarProduto(request)
+  }
+  class SecureKeyController {
+    +index()
+    +grupo()
+    +permissoes()
+  }
+  class AdminPedidoWhatsAppController {
+    +index()
+    +buscarCliente(request)
+    +store(request)
+  }
+}
+
+package "Serviços" {
+  class GenericBase {
+    -repository : GenericBaseRepository
+    +findByProdutos(categoria)
+    +hasLogado()
+    +pegarItensCarrinho(usuarioId)
+  }
+  class IndexService {
+    #produtoRepository : IndexProdutoRepository
+    +pegarProdutosIndex()
+    +pegarProdutosDestaque()
+  }
+  class AdminService {
+    #genericBase : GenericBase
+    #adminRepository : AdminRepository
+    #secureKeyService : SecureKeyService
+    +montarDashboardAdministrativo(inicio, fim)
+    +atualizarDadosEmpresa(dados)
+  }
+  class AuthService {
+    #genericBase : GenericBase
+    #authRepository : AuthRepositoryimpl
+    +register(dados)
+    +autenticarAdm(usuario)
+  }
+  class LoginService {
+    #genericBase : GenericBase
+    #secureKeyService : SecureKeyService
+    #loginRepository : LoginRepository
+    +autenticar(credenciais)
+    +recuperarSenha(request)
+    +atualizarSenha(request)
+  }
+  class CarrinhoService {
+    #genericBase : GenericBase
+    #carrinhoRepository : CarrinhoRepository
+    #personalizacaoProdutoService : PersonalizacaoProdutoService
+    +adicionarProdutoAoCarrinho(usuario, produtoId, quantidade, observacao, configuracao)
+    +registraPedido(request, enderecoId)
+  }
+  class PedidoService {
+    #genericBase : GenericBase
+    #service : PedidosFeitosService
+    #repository : PedidoRepository
+    +pegarPedidosDoUsuario(usuario)
+    +montarDadosPainel()
+  }
+  class PedidosFeitosService {
+    -repository : PedidosFeitosRepository
+    +atualizarStatus(pedido, status)
+    +proximoStatus(status)
+    +gerarCumpom(pedidoId)
+    +cancelarPedido(pedido)
+  }
+  class MesasService {
+    -mesasRepository : MesasRepository
+    +pegarMesas()
+    +pegarDetalhesMesa(id)
+    +abaterItensContaMesa(request, id)
+    +abaterPorValor(mesaId, itemIds, quantidadesPorItem, valorPagamento, pagamentoMetodo)
+  }
+  class GarcomService {
+    -repository : GarcomRepository
+    -personalizacaoProdutoService : PersonalizacaoProdutoService
+    +adicionarAoPedido(request)
+  }
+  class GerenciaProdutosService {
+    #genericBase : GenericBase
+    #repository : GerenciaProdutosRepository
+    -otimizadorImagemProduto : OtimizadorImagemProduto
+    +criarProduto(request, dadosValidados)
+    +atualizarProduto(id, dados)
+  }
+  class GerenciamentoFuncionarioService {
+    #genericBase : GenericBase
+    #repository : GerenciamentoFuncionarioRepository
+    +atualizarFuncionario(request, id)
+  }
+  class SecureKeyService {
+    -repository : SecureKeyRepository
+    +hasRole(usuario, roleName)
+    +adicionarRoleAoGrupo(tipoUsuarioId, roleId)
+  }
+  class PersonalizacaoProdutoService {
+    +cotar(produto, configuracao)
+  }
+  class PedidoRealtimeService {
+    -pedidoService : PedidoService
+    +payload(pedidoId)
+    +broadcast(pedidoId)
+  }
+  class OtimizadorImagemProduto {
+    +salvar(arquivo)
+  }
+}
+
+package "Interfaces de Repositório" {
+  interface AdminRepository {
+    +listarDadosEmpresa()
+    +totalVendasNoPeriodo(inicio, fim)
+    +totalPedidosNoPeriodo(inicio, fim)
+  }
+  interface AuthRepository {
+    +criarUsuario(dados)
+    +criarFuncionario(dados)
+  }
+  interface CarrinhoRepository {
+    +buscarProdutoPorId(produtoId)
+    +criarItemCarrinho(dados)
+    +criarPedido(dados)
+  }
+  interface GarcomRepository {
+    +adicionarProdutoAoPedido(produtoId, mesaId, quantidade, usuarioLogado, observacao, personalizacao, precoUnitario)
+    +adicionarProdutosAoPedido(itens, mesaId, usuarioLogado)
+  }
+  interface GenericBaseRepository {
+    +findById(id)
+    +findByProdutos(categorias)
+    +findFuncionarios()
+  }
+  interface GerenciaProdutosRepository {
+    +listarProdutosComCategoria()
+    +criarProduto(dados)
+    +atualizarProduto(id, dados)
+  }
+  interface GerenciamentoFuncionarioRepository {
+    +buscarFuncionarioPorUsuarioId(usuarioId)
+  }
+  interface IndexProdutoRepository {
+    +pegarProdutosIndex()
+    +pegarProdutosDestaque()
+  }
+  interface LoginRepository {
+    +buscarUsuarioPorEmail(email)
+    +inserirTokenRecuperacao(email, token)
+    +atualizarSenhaUsuario(email, senhaHash)
+  }
+  interface MesasRepository {
+    +listarMesas()
+    +registrarPagamentoMesa(dados)
+    +registrarFechamentoMesa(dados)
+  }
+  interface PedidoRepository {
+    +filtrarPedidosDataNome(data, nome)
+    +pegarPedidosDoUsuario(usuarioId)
+  }
+  interface PedidosFeitosRepository {
+    +listarPedidos()
+    +salvarStatus(pedido, status)
+  }
+  interface SecureKeyRepository {
+    +hasRole(usuario, roleName)
+    +adicionarRoleAoGrupo(tipoUsuarioId, roleId)
+  }
+}
+
+package "Implementações de Repositório" {
+  class AdminRepositoryimpl
+  class AuthRepositoryimpl
+  class CarrinhoRepositoryimpl
+  class GarcomRepositoryimpl
+  class GenericBaseRepositoryimpl
+  class GerenciaProdutosRepositoryimpl
+  class GerenciamentoFuncionarioRepositoryimpl
+  class IndexProdutoRepositoryimpl
+  class LoginRepositoryimpl
+  class MesasRepositoryimpl
+  class PedidoRepositoryimpl
+  class PedidosFeitosRepositoryimpl
+  class SecureKeyRepositoryimpl
+}
+
+package "Entidades e Modelos" {
+  class UsuarioModel <<Authenticatable>> {
+    -nome : string
+    -email : string
+    -senha : string
+    -telefone : string
+    -tipo_usuario_id : int
+    -url_imagem_perfil : string?
+    +isFuncionario() : bool
+    +isAtivo() : bool
+    +pedidos()
+    +entregasAtribuidas()
+    +Carrinho()
+  }
+  class FuncionarioModel <<Model>> {
+    -usuario_id : int
+    -has_ativo : bool
+    -salario : double
+    +usuario()
+  }
+  class EnderecoModel <<Model>> {
+    -logradouro : string
+    -numero : string?
+    -complemento : string?
+    -bairro : string
+    -cidade_id : int
+    -usuario_id : int
+    +cidade()
+    +usuario()
+    +pedidos()
+  }
+  class CidadeModel <<Model>> {
+    -nome : string
+    +enderecos()
+  }
+  class PedidoModel <<Model>> {
+    -usuario_id : int
+    -motoboy_id : int?
+    -motoboy_vinculado_em : datetime?
+    -mesa_id : int?
+    -status : int
+    -tipo_pagamento_id : int?
+    -valor_total : decimal
+    -observacoes_pagamento : string?
+    -endereco_id : int?
+    +itens()
+    +statusRelacionamento()
+    +usuario()
+    +motoboy()
+    +endereco()
+    +mesa()
+    +formaPagamento()
+  }
+  class ItemPedidoModel <<Model>> {
+    -produto_id : int
+    -pedido_id : int
+    -quantidade : int
+    -preco_unitario : decimal
+    -valor_pago : decimal
+    -status_da_comanda : string
+    -pago_em : datetime?
+    -pagamento_metodo : string?
+    -observacao : string?
+    -personalizacao : array?
+    +produto()
+    +pedido()
+  }
+  class ProdutoModel <<Model>> {
+    -nome : string
+    -preco : decimal
+    -descricao : text?
+    -imagem_url : string?
+    -ingredientes : string?
+    -disponivel : bool
+    -categoria_id : int
+    -no_carrousel : int
+    -precos_por_tamanho : array?
+    -aceita_meia_por : bool
+    -preco_meia_por : decimal?
+    +categoria()
+    +bordas()
+  }
+  class CategoriaProdutoModel <<Model>> {
+    -nome : string
+    +produtos()
+  }
+  class BordaModel <<Model>> {
+    -nome : string
+    -adicionais_por_tamanho : array?
+    -ativa : bool
+    -padrao : bool
+    +produtos()
+  }
+  class CarrinhoModel <<Model>> {
+    -usuario_id : int
+    -produto_id : int
+    -quantidade : int
+    -observacao : text?
+    -preco_total : decimal
+    -selecionado : bool
+    -personalizacao : array?
+    +usuario()
+    +produto()
+  }
+  class MesaModel <<Model>> {
+    -numero_da_mesa : int
+    -status : string
+    -preco : decimal
+    +pedidos()
+  }
+  class MesaPagamentoModel <<Model>> {
+    -mesa_id : int?
+    -mesa_fechamento_id : int?
+    -pagamento_metodo : string
+    -valor : decimal
+    -pago_em : datetime?
+    +mesa()
+    +fechamento()
+  }
+  class MesaFechamentoModel <<Model>> {
+    -mesa_id : int?
+    -numero_da_mesa : int
+    -total_pago : decimal
+    -total_itens : int
+    -formas_pagamento : array?
+    -pagamentos_resumo : array?
+    -produtos_resumo : array?
+    -fechado_em : datetime?
+    +mesa()
+    +pagamentos()
+  }
+  class FormaPagamentoModel <<Model>> {
+    -tipo_pagamento : string
+    +pedidos()
+  }
+  class StatusModel <<Model>> {
+    -status : string
+    +pedidos()
+  }
+  class RolesModel <<Model>> {
+    -nome : string
+    +SecureKeyTipoUsuarios()
+  }
+  class SecureKeyTipoUsuarioModel <<Model>> {
+    -tipo_usuario_id : int
+    -role_id : int
+    +roles()
+    +tipoUsuario()
+  }
+  class Dados_empresa <<Model>> {
+    -id : int
+    -Informacao : string
+    -Valor : string
+  }
+  class ConfiguracaoImpressao <<Model>> {
+    -configuracoes : array
+    {static} +atuais() : array
+    {static} +salvar(configuracoes) : void
+  }
+}
+
+package "Tabela de Banco sem Model Eloquent" {
+  class TipoUsuarioRegistro <<Tabela SQL>> {
+    -id : int
+    -descricao : string
+  }
+}
+
+package "Enums e Suporte" {
+  class TipoUsuario <<enumeration>> {
+    CLIENTE = 1
+    ESTABELECIMENTO = 2
+    ADMINISTRADOR = 3
+    ENTREGADOR = 4
+    SecureKey = 5
+    GARCOM = 6
+    +label() : string
+  }
+  class StatusPedidos <<enumeration>> {
+    PENDENTE = 1
+    EM_PREPARO = 2
+    A_CAMINHO = 3
+    ENTREGUE = 4
+    CANCELADO = 5
+    +rotulo() : string
+    +proximo() : ?StatusPedidos
+  }
+  class Pagamento <<enumeration>> {
+    CARTAO_CREDITO = 1
+    CARTAO_DEBITO = 2
+    PIX = 3
+    DINHEIRO = 4
+    {static} +fromString(nome : string) : Pagamento
+  }
+  class PedidosAtualizados <<Event>> {
+    -payload : array
+    +broadcastOn()
+    +broadcastAs()
+    +broadcastWith()
+  }
+  class UsuarioAutenticado <<Middleware>> {
+    +handle(request, next)
+  }
+  class PedidoObserver <<Observer>> {
+    -pedidoRealtimeService : PedidoRealtimeService
+    +created(pedido)
+    +updated(pedido)
+    +deleted(pedido)
+  }
+  class AppServiceProvider <<ServiceProvider>> {
+    +register()
+    +boot()
+  }
+  class Roles <<Constants>>
+  class PassMensagens <<Constants>>
+  class ErroMensagens <<Constants>>
+}
+
+' Herança e injeção de dependências dos controllers
+Controller <|-- IndexController
+Controller <|-- PizzaController
+Controller <|-- LanchesController
+Controller <|-- BebidasController
+Controller <|-- PorcaoController
+Controller <|-- CarrinhoController
+Controller <|-- PedidoController
+Controller <|-- PedidosFeitosController
+Controller <|-- EntregasController
+Controller <|-- LoginController
+Controller <|-- RegisterController
+Controller <|-- AdminController
+Controller <|-- GerenciamentoUsuarioController
+Controller <|-- GerenciamentoProdutoController
+Controller <|-- MesaController
+Controller <|-- GarcomController
+Controller <|-- AdminPedidoWhatsAppController
+
+IndexController ..> GenericBase
+IndexController ..> IndexService
+PizzaController ..> GenericBase
+LanchesController ..> GenericBase
+BebidasController ..> GenericBase
+PorcaoController ..> GenericBase
+CarrinhoController ..> GenericBase
+CarrinhoController ..> CarrinhoService
+PedidoController ..> GenericBase
+PedidoController ..> PedidoService
+PedidosFeitosController ..> GenericBase
+PedidosFeitosController ..> PedidosFeitosService
+PedidosFeitosController ..> PedidoService
+PedidosFeitosController ..> SecureKeyService
+PedidosFeitosController ..> PedidoModel
+PedidosFeitosController ..> ConfiguracaoImpressao
+PedidosFeitosController ..> StatusPedidos
+PedidosFeitosController ..> Roles
+PedidosFeitosController ..> PassMensagens
+EntregasController ..> PedidosFeitosService
+EntregasController ..> PedidoModel
+EntregasController ..> StatusPedidos
+LoginController ..> AuthService
+LoginController ..> LoginService
+LoginController ..> GenericBase
+RegisterController ..> AuthService
+RegisterController ..> GenericBase
+AdminController ..> GenericBase
+AdminController ..> AdminService
+AdminController ..> UsuarioAutenticado
+AdminController ..> PassMensagens
+GerenciamentoUsuarioController ..> GenericBase
+GerenciamentoUsuarioController ..> AdminService
+GerenciamentoUsuarioController ..> GerenciamentoFuncionarioService
+GerenciamentoProdutoController ..> GenericBase
+GerenciamentoProdutoController ..> AuthService
+GerenciamentoProdutoController ..> GerenciaProdutosService
+GerenciamentoProdutoController ..> BordaModel
+GerenciamentoProdutoController ..> PassMensagens
+MesaController ..> GenericBase
+MesaController ..> MesasService
+GarcomController ..> GarcomService
+GarcomController ..> GerenciaProdutosService
+GarcomController ..> MesasService
+SecureKeyController ..> GenericBase
+SecureKeyController ..> SecureKeyService
+AdminPedidoWhatsAppController ..> PedidoRealtimeService
+AdminPedidoWhatsAppController ..> PersonalizacaoProdutoService
+AdminPedidoWhatsAppController ..> UsuarioModel
+AdminPedidoWhatsAppController ..> EnderecoModel
+AdminPedidoWhatsAppController ..> CidadeModel
+AdminPedidoWhatsAppController ..> CategoriaProdutoModel
+AdminPedidoWhatsAppController ..> FormaPagamentoModel
+AdminPedidoWhatsAppController ..> ProdutoModel
+AdminPedidoWhatsAppController ..> PedidoModel
+AdminPedidoWhatsAppController ..> ItemPedidoModel
+AdminPedidoWhatsAppController ..> TipoUsuario
+AdminPedidoWhatsAppController ..> StatusPedidos
+
+' Herança e dependências entre serviços e repositórios
+GenericBase ..> GenericBaseRepository
+IndexService ..> IndexProdutoRepository
+AdminService ..> GenericBase
+AdminService ..> AdminRepository
+AdminService ..> SecureKeyService
+AdminService ..> StatusPedidos
+AuthService ..> GenericBase
+AuthService ..> AuthRepositoryimpl
+LoginService ..> GenericBase
+LoginService ..> SecureKeyService
+LoginService ..> LoginRepository
+CarrinhoService ..> GenericBase
+CarrinhoService ..> CarrinhoRepository
+CarrinhoService ..> PersonalizacaoProdutoService
+PedidoService ..> GenericBase
+PedidoService ..> PedidosFeitosService
+PedidoService ..> PedidoRepository
+PedidoService ..> StatusPedidos
+PedidosFeitosService ..> PedidosFeitosRepository
+MesasService --|> GenericBase
+MesasService ..> MesasRepository
+GarcomService ..> GarcomRepository
+GarcomService ..> PersonalizacaoProdutoService
+GarcomService ..> ProdutoModel
+GerenciaProdutosService ..> GenericBase
+GerenciaProdutosService ..> GerenciaProdutosRepository
+GerenciaProdutosService ..> OtimizadorImagemProduto
+GerenciamentoFuncionarioService ..> GenericBase
+GerenciamentoFuncionarioService ..> GerenciamentoFuncionarioRepository
+SecureKeyService ..> SecureKeyRepository
+PersonalizacaoProdutoService ..> ProdutoModel
+PersonalizacaoProdutoService ..> BordaModel
+GerenciaProdutosService ..> CategoriaProdutoModel
+GerenciaProdutosService ..> BordaModel
+PedidoRealtimeService ..> PedidoService
+PedidoRealtimeService ..> PedidosAtualizados
+PedidoObserver ..> PedidoRealtimeService
+PedidoObserver ..> PedidoModel
+AppServiceProvider ..> PedidoObserver : registra observer
+
+AdminRepositoryimpl ..|> AdminRepository
+AuthRepositoryimpl ..|> AuthRepository
+CarrinhoRepositoryimpl ..|> CarrinhoRepository
+GarcomRepositoryimpl ..|> GarcomRepository
+GenericBaseRepositoryimpl ..|> GenericBaseRepository
+GerenciaProdutosRepositoryimpl ..|> GerenciaProdutosRepository
+GerenciamentoFuncionarioRepositoryimpl ..|> GerenciamentoFuncionarioRepository
+IndexProdutoRepositoryimpl ..|> IndexProdutoRepository
+LoginRepositoryimpl ..|> LoginRepository
+MesasRepositoryimpl ..|> MesasRepository
+PedidoRepositoryimpl ..|> PedidoRepository
+PedidosFeitosRepositoryimpl ..|> PedidosFeitosRepository
+SecureKeyRepositoryimpl ..|> SecureKeyRepository
+
+' Relacionamentos entre entidades e tabelas
+UsuarioModel "1" -- "0..*" PedidoModel : cliente
+UsuarioModel "0..1" -- "0..*" PedidoModel : entregador
+UsuarioModel "1" -- "0..1" FuncionarioModel
+UsuarioModel "1" -- "0..*" EnderecoModel
+UsuarioModel "1" -- "0..*" CarrinhoModel
+ProdutoModel "1" -- "0..*" CarrinhoModel
+PedidoModel "1" -- "0..*" ItemPedidoModel
+ProdutoModel "1" -- "0..*" ItemPedidoModel
+PedidoModel "0..*" --> "1" StatusModel
+PedidoModel "0..*" --> "0..1" FormaPagamentoModel
+PedidoModel "0..*" --> "0..1" EnderecoModel
+PedidoModel "0..*" --> "0..1" MesaModel
+CidadeModel "1" -- "0..*" EnderecoModel
+CategoriaProdutoModel "1" -- "0..*" ProdutoModel
+ProdutoModel "0..*" -- "0..*" BordaModel : produto_borda
+MesaModel "0..1" -- "0..*" MesaPagamentoModel
+MesaModel "0..1" -- "0..*" MesaFechamentoModel
+MesaFechamentoModel "0..1" -- "0..*" MesaPagamentoModel
+RolesModel "1" -- "0..*" SecureKeyTipoUsuarioModel
+TipoUsuarioRegistro "1" -- "0..*" UsuarioModel : tipo_usuario_id
+TipoUsuarioRegistro "1" -- "0..*" SecureKeyTipoUsuarioModel : tipo_usuario_id
+TipoUsuario ..> TipoUsuarioRegistro : IDs definidos no enum
+PedidosFeitosService ..> StatusPedidos
+StatusPedidos ..> StatusModel : valores numéricos usados em pedidos.status
+CarrinhoService ..> Pagamento
+Pagamento ..> FormaPagamentoModel : valores usados em tipo_pagamento_id
+UsuarioModel ..> TipoUsuario : converte tipo_usuario_id
+SecureKeyTipoUsuarioModel ..> Roles : alvo declarado em roles()
+SecureKeyTipoUsuarioModel ..> TipoUsuario : alvo declarado em tipoUsuario()
+AdminController ..> TipoUsuario
+AdminController ..> ConfiguracaoImpressao
+AdminRepositoryimpl ..> Dados_empresa
+PedidoRepositoryimpl ..> Dados_empresa
+PedidosFeitosRepositoryimpl ..> Dados_empresa
+
+note bottom of SecureKeyTipoUsuarioModel
+  As FKs da tabela apontam para roles e tipo_usuarios.
+  No código atual, roles() aponta para App\Roles\Roles e tipoUsuario()
+  aponta para App\Enum\TipoUsuario; nenhum dos dois é Model Eloquent.
+end note
+
+note bottom of TipoUsuarioRegistro
+  Esta classe no diagrama representa a tabela tipo_usuarios, criada pela migração.
+  O projeto não possui um Model Eloquent para essa tabela.
+  Os IDs do enum correspondem à ordem do seeder em banco novo; eles não são
+  definidos explicitamente nas inserções.
+end note
+
+note bottom of FuncionarioModel
+  UsuarioModel::funcionario() declara hasOne e FuncionarioModel::usuario() declara
+  belongsTo. A migração não cria UNIQUE em usuario_id, então o banco permite mais
+  de um funcionário para o mesmo usuário. tipo_usuarios_id está no fillable de
+  FuncionarioModel, mas não existe na tabela funcionario.
+end note
+
+note bottom of Pagamento
+  Os valores dos enums StatusPedidos e Pagamento são gravados como FKs numéricas
+  em pedidos.status e pedidos.tipo_pagamento_id. Os IDs são gerados pela ordem
+  dos registros no seeder em banco novo; não são declarados explicitamente. Para
+  status, os rótulos semeados nos IDs 2, 3 e 5 são "Em Preparação", "Em Trânsito"
+  e "Recusado", enquanto o enum usa "Em preparo", "A caminho" e "Cancelado".
+end note
+
+@enduml

@@ -19,6 +19,27 @@
         .replace('__GRUPO__', String(grupoId))
         .replace('__ROLE__', String(roleId));
 
+    function positionSuggestions(input, list) {
+        const inputRect = input.getBoundingClientRect();
+        const viewportPadding = 12;
+        const dropdownGap = 6;
+        const spaceAbove = Math.max(0, inputRect.top - viewportPadding - dropdownGap);
+        const spaceBelow = Math.max(0, window.innerHeight - inputRect.bottom - viewportPadding - dropdownGap);
+        const desiredHeight = Math.min(360, list.scrollHeight);
+        const openAbove = spaceBelow < desiredHeight && spaceAbove > spaceBelow;
+        const availableSpace = openAbove ? spaceAbove : spaceBelow;
+
+        list.classList.toggle('kc-autocomplete-list--above', openAbove);
+        list.style.maxHeight = `${Math.max(0, Math.min(360, availableSpace))}px`;
+    }
+
+    function closeSuggestions(list) {
+        list.hidden = true;
+        list.innerHTML = '';
+        list.classList.remove('kc-autocomplete-list--above');
+        list.style.maxHeight = '';
+    }
+
     async function requestJson(url, method, body = null) {
         const response = await fetch(url, {
             method,
@@ -39,12 +60,11 @@
 
     function renderSuggestions(input, list, query) {
         const filtered = roles
-            .filter((role) => normalize(role.nome).includes(normalize(query)))
-            .slice(0, 8);
+            .filter((role) => normalize(role.nome).includes(normalize(query)));
 
         list.innerHTML = '';
         if (!filtered.length) {
-            list.hidden = true;
+            closeSuggestions(list);
             return;
         }
 
@@ -58,7 +78,7 @@
             button.textContent = role.nome;
             button.addEventListener('click', () => {
                 input.value = role.nome;
-                list.hidden = true;
+                closeSuggestions(list);
             });
 
             item.appendChild(button);
@@ -66,6 +86,14 @@
         });
 
         list.hidden = false;
+        positionSuggestions(input, list);
+    }
+
+    function repositionOpenSuggestions() {
+        document.querySelectorAll('.kc-autocomplete-list:not([hidden])').forEach((list) => {
+            const input = list.closest('.kc-autocomplete')?.querySelector('.kc-role-input');
+            if (input) positionSuggestions(input, list);
+        });
     }
 
     function bindRemove(button) {
@@ -108,11 +136,13 @@
         input.addEventListener('input', () => renderSuggestions(input, list, input.value));
     });
 
+    window.addEventListener('resize', repositionOpenSuggestions);
+    document.addEventListener('scroll', repositionOpenSuggestions, true);
+
     document.addEventListener('click', (event) => {
         if (!event.target.closest('.kc-autocomplete')) {
             document.querySelectorAll('.kc-autocomplete-list').forEach((list) => {
-                list.hidden = true;
-                list.innerHTML = '';
+                closeSuggestions(list);
             });
         }
     });
@@ -158,8 +188,8 @@
                     const span = document.createElement('span');
                     span.textContent = role.nome;
 
-                    li.appendChild(removeBtn);
                     li.appendChild(span);
+                    li.appendChild(removeBtn);
                     list.appendChild(li);
 
                     input.value = '';

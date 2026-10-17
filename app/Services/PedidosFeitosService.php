@@ -6,6 +6,7 @@ use App\Enum\StatusPedidos as EnumsStatusPedidos;
 use App\Models\PedidoModel;
 use App\Repository\PedidosFeitosRepository;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 
 class PedidosFeitosService
 {
@@ -28,6 +29,26 @@ class PedidosFeitosService
     public function atualizarStatus(PedidoModel $pedido, EnumsStatusPedidos $status): PedidoModel
     {
         return $this->repository->salvarStatus($pedido, $status->value);
+    }
+
+    /**
+     * Cancela pedidos que ainda estão em andamento.
+     */
+    public function cancelarPedido(PedidoModel $pedido): PedidoModel
+    {
+        $statusAtual = EnumsStatusPedidos::tryFrom((int) $pedido->status);
+
+        if (!in_array($statusAtual, [
+            EnumsStatusPedidos::PENDENTE,
+            EnumsStatusPedidos::EM_PREPARO,
+            EnumsStatusPedidos::A_CAMINHO,
+        ], true)) {
+            throw ValidationException::withMessages([
+                'pedido' => 'Somente pedidos em andamento podem ser cancelados.',
+            ]);
+        }
+
+        return $this->repository->salvarStatus($pedido, EnumsStatusPedidos::CANCELADO->value);
     }
 
     /**

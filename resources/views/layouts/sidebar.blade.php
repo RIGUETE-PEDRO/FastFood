@@ -15,14 +15,20 @@
     $usuarioAtual = auth()->user() ?? ($usuario ?? null);
     $canSeeConfiguracoes = false;
     $canSeePedidos = false;
+    $canSeePedidosLeitura = false;
+    $canCancelarPedidos = false;
+    $canAccessPedidos = false;
     $pedidosMonitorSnapshot = null;
 
     if ($usuarioAtual instanceof \App\Models\UsuarioModel) {
         $secureKeyService = app(\App\Services\SecureKeyService::class);
         $canSeeConfiguracoes = $secureKeyService->hasRole($usuarioAtual, \App\Roles\Roles::ADMIN);
         $canSeePedidos = $secureKeyService->hasRole($usuarioAtual, \App\Roles\Roles::PEDIDOS);
+        $canSeePedidosLeitura = $secureKeyService->hasRole($usuarioAtual, \App\Roles\Roles::PEDIDOS_VISUALIZAR);
+        $canCancelarPedidos = $secureKeyService->hasRole($usuarioAtual, \App\Roles\Roles::PEDIDOS_CANCELAR);
+        $canAccessPedidos = $canSeePedidos || $canSeePedidosLeitura || $canCancelarPedidos;
 
-        if ($canSeePedidos) {
+        if ($canAccessPedidos) {
             $pedidosMonitorSnapshot = app(\App\Services\PedidoService::class)->checksumBasico();
         }
     }
@@ -85,13 +91,16 @@
                 </li>
             @endrole
 
-            @role('PEDIDOS')
+            @anyrole('PEDIDOS', 'PEDIDOS_VISUALIZAR', 'PEDIDOS_CANCELAR')
                 <li class="nav-item">
                     <a href="{{ route('Pedidos_Administrativo', [], false) }}" class="nav-link {{ request()->routeIs('Pedidos_Administrativo') ? 'active' : '' }}">
                         {!! $ffIcon('orders') !!}
                         <span>Pedidos</span>
                     </a>
                 </li>
+            @endanyrole
+
+            @role('PEDIDO_WHATSAPP')
                 <li class="nav-item">
                     <a href="{{ route('admin.pedidos.whatsapp', [], false) }}" class="nav-link {{ request()->routeIs('admin.pedidos.whatsapp*') ? 'active' : '' }}">
                         {!! $ffIcon('orders') !!}
@@ -107,6 +116,9 @@
                         <span>Produtos</span>
                     </a>
                 </li>
+            @endrole
+
+            @role('GERENCIAMENTO_BORDAS')
                 <li class="nav-item">
                     <a href="{{ route('gerenciamento_bordas', [], false) }}" class="nav-link {{ request()->routeIs('gerenciamento_bordas') ? 'active' : '' }}">
                         {!! $ffIcon('products') !!}
@@ -225,7 +237,7 @@
     </div>
 </nav>
 
-@if($canSeePedidos)
+@if($canAccessPedidos)
     <div
         id="pedidos-global-notifier"
         data-realtime-channel="pedidos.admin"

@@ -136,13 +136,13 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
         ->name('Administrativo');
 
     Route::get('/Pedidos_Administrativo', [PedidosFeitosController::class, 'verPedidosAdmin'])
-        ->middleware('SecureKey.role:' . Roles::PEDIDOS)
+        ->middleware('SecureKey.role:' . Roles::PEDIDOS . ',' . Roles::PEDIDOS_VISUALIZAR . ',' . Roles::PEDIDOS_CANCELAR)
         ->name('Pedidos_Administrativo');
     Route::get('/admin/pedidos', [PedidoController::class, 'pedidosFiltro'])
     ->middleware('SecureKey.role:' . Roles::PEDIDOS)
     ->name('admin.pedidos');
 
-    Route::middleware('SecureKey.role:' . Roles::PEDIDOS)->prefix('/admin/pedidos/whatsapp')->name('admin.pedidos.whatsapp')->group(function () {
+    Route::middleware('SecureKey.role:' . Roles::PEDIDO_WHATSAPP)->prefix('/admin/pedidos/whatsapp')->name('admin.pedidos.whatsapp')->group(function () {
         Route::get('/', [AdminPedidoWhatsAppController::class, 'index'])->name('');
         Route::get('/cliente', [AdminPedidoWhatsAppController::class, 'buscarCliente'])->name('.cliente');
         Route::post('/', [AdminPedidoWhatsAppController::class, 'store'])->name('.store');
@@ -167,6 +167,10 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
     Route::post('/Pedidos/Administrativo/{pedido}/avancar', [PedidosFeitosController::class, 'avancarStatus'])
         ->middleware('SecureKey.role:' . Roles::PEDIDOS)
         ->name('Pedidos.StatusAvancar');
+
+    Route::post('/Pedidos/Administrativo/{pedido}/cancelar', [PedidosFeitosController::class, 'cancelar'])
+        ->middleware('SecureKey.role:' . Roles::PEDIDOS_CANCELAR)
+        ->name('Pedidos.Cancelar');
 
     Route::get('/Pedidos.Administrativo/som', [PedidosFeitosController::class, 'somNovoPedido'])
         ->middleware('SecureKey.role:' . Roles::ADMIN)
@@ -196,15 +200,15 @@ Route::post('/Cadastrar_Produto', [GerenciamentoProdutoController::class, 'cadas
 
 Route::get('/gerenciamento_bordas', [GerenciamentoProdutoController::class, 'gerenciamentoBordas'])
     ->name('gerenciamento_bordas')
-    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
+    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_BORDAS]);
 
 Route::post('/gerenciamento_bordas', [GerenciamentoProdutoController::class, 'cadastrarBorda'])
     ->name('bordas.cadastrar')
-    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
+    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_BORDAS]);
 
 Route::put('/gerenciamento_bordas/{id}', [GerenciamentoProdutoController::class, 'atualizarBorda'])
     ->name('bordas.atualizar')
-    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_PRODUTOS]);
+    ->middleware(['auth', 'admin.access', 'SecureKey.role:' . Roles::GERENCIAMENTO_BORDAS]);
 
 Route::get('/gerenciamento_Produtos', [GerenciamentoProdutoController::class, 'gerenciamentoProduto'])
     ->name('gerenciamento_Produtos')

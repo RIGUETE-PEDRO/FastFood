@@ -50,7 +50,11 @@ class AdminPedidoWhatsAppController extends Controller
             return response()->json(['encontrado' => false]);
         }
 
-        $enderecos = EnderecoModel::with('cidade')->where('usuario_id', $usuario->id)->orderByDesc('id')->get();
+        $enderecos = EnderecoModel::with('cidade')
+            ->where('usuario_id', $usuario->id)
+            ->where('deleted', false)
+            ->orderByDesc('id')
+            ->get();
 
         return response()->json([
             'encontrado' => true,
@@ -58,6 +62,11 @@ class AdminPedidoWhatsAppController extends Controller
             'enderecos' => $enderecos->map(fn ($endereco) => [
                 'id' => $endereco->id,
                 'label' => trim($endereco->logradouro . ', ' . ($endereco->numero ?: 's/n') . ' — ' . $endereco->bairro . ', ' . optional($endereco->cidade)->nome . ($endereco->complemento ? ' (' . $endereco->complemento . ')' : '')),
+                'logradouro' => $endereco->logradouro,
+                'numero' => $endereco->numero,
+                'bairro' => $endereco->bairro,
+                'complemento' => $endereco->complemento,
+                'cidade_id' => $endereco->cidade_id,
             ]),
         ]);
     }
@@ -71,6 +80,7 @@ class AdminPedidoWhatsAppController extends Controller
             'tipo_entrega' => ['required', 'in:entrega,retirada'],
             'endereco_id' => ['nullable', 'integer', 'exists:endereco,id'],
             'cadastrar_endereco' => ['nullable', 'boolean'],
+            'substituir_endereco_id' => ['nullable', 'integer', 'exists:endereco,id'],
             'novo_endereco.logradouro' => ['required_if:cadastrar_endereco,1', 'nullable', 'string', 'max:255'],
             'novo_endereco.numero' => ['nullable', 'string', 'max:30'],
             'novo_endereco.complemento' => ['nullable', 'string', 'max:255'],
@@ -104,7 +114,7 @@ class AdminPedidoWhatsAppController extends Controller
             $temNovoEndereco = $request->boolean('cadastrar_endereco');
             if ($temNovoEndereco) {
                 $enderecoId = null;
-            } elseif (!$usuario || !$enderecoId || !EnderecoModel::where('id', $enderecoId)->where('usuario_id', $usuario->id)->exists()) {
+            } elseif (!$usuario || !$enderecoId || !EnderecoModel::where('id', $enderecoId)->where('usuario_id', $usuario->id)->where('deleted', false)->exists()) {
                 throw ValidationException::withMessages(['endereco_id' => 'Selecione um endereço salvo deste cliente para entrega.']);
             }
         } else {
@@ -126,12 +136,32 @@ class AdminPedidoWhatsAppController extends Controller
             }
 
             if ($dados['tipo_entrega'] === 'entrega' && !$request->boolean('cadastrar_endereco')
-                && (!$enderecoId || !EnderecoModel::where('id', $enderecoId)->where('usuario_id', $usuario->id)->exists())) {
+                && (!$enderecoId || !EnderecoModel::where('id', $enderecoId)->where('usuario_id', $usuario->id)->where('deleted', false)->exists())) {
                 throw ValidationException::withMessages(['endereco_id' => 'Selecione um endereço salvo deste cliente ou cadastre um novo.']);
             }
 
             if ($dados['tipo_entrega'] === 'entrega' && $request->boolean('cadastrar_endereco')) {
+                $enderecoAntigo = null;
+                if (!empty($dados['substituir_endereco_id'])) {
+                    $enderecoAntigo = EnderecoModel::query()
+                        ->whereKey($dados['substituir_endereco_id'])
+                        ->where('usuario_id', $usuario->id)
+                        ->where('deleted', false)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (!$enderecoAntigo) {
+                        throw ValidationException::withMessages([
+                            'substituir_endereco_id' => 'O endereço selecionado não pertence a este cliente ou já foi substituído. Atualize o cadastro do cliente e tente novamente.',
+                        ]);
+                    }
+                }
+
                 $endereco = EnderecoModel::create(array_merge($dados['novo_endereco'], ['usuario_id' => $usuario->id]));
+                if ($enderecoAntigo) {
+                    $enderecoAntigo->deleted = true;
+                    $enderecoAntigo->save();
+                }
                 $enderecoId = $endereco->id;
             }
             $produtos = ProdutoModel::with(['categoria', 'bordas'])

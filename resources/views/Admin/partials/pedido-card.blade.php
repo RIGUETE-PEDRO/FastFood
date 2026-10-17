@@ -2,6 +2,8 @@
     $statusAtual = $pedido->status_enum;
     $nextStatus = $pedido->next_status;
     $statusAtualValor = $statusAtual->value ?? 0;
+    $podeGerenciarPedidos = (bool) ($podeGerenciarPedidos ?? false);
+    $podeCancelarPedidos = (bool) ($podeCancelarPedidos ?? false);
     $colapsavel = (bool) ($colapsavel ?? false);
     $iniciarRecolhido = (bool) ($iniciarRecolhido ?? false);
     $statusClasses = [
@@ -126,7 +128,7 @@
             </section>
         @endif
 
-        @unless(!empty($desabilitarAcoes))
+        @if($podeGerenciarPedidos && empty($desabilitarAcoes))
             <section class="pedido-card__secao pedido-card__secao--acoes">
                 <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3">
                     <form class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-3" method="POST" action="{{ route('Pedidos.StatusAtualizar', $pedido) }}">
@@ -161,8 +163,16 @@
                     </form>
                 </div>
             </section>
-        @endunless
-        @if(!empty($desabilitarAcoes) && $statusAtualValor === 4)
+        @endif
+        @if($podeCancelarPedidos && empty($desabilitarAcoes) && in_array($statusAtualValor, [1, 2, 3], true))
+            <section class="pedido-card__secao pedido-card__secao--acoes">
+                <form method="POST" action="{{ route('Pedidos.Cancelar', $pedido) }}" class="m-0" onsubmit="return confirm('Deseja cancelar o pedido #{{ $pedido->id }}?')">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger">Cancelar pedido</button>
+                </form>
+            </section>
+        @endif
+        @if($podeGerenciarPedidos && !empty($desabilitarAcoes) && $statusAtualValor === 4)
             <section class="pedido-card__secao pedido-card__secao--acoes pedido-card__secao--cupom">
                 <form method="GET" action="{{ route('Pedidos.GerarCupom', $pedido) }}" class="m-0 pedido-cupom-form">
                     <button type="submit" class="btn btn-outline-secondary btn-geraCupom" aria-label="Gerar cupom do pedido #{{ $pedido->id }}">Gerar cupom</button>

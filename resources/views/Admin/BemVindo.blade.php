@@ -45,13 +45,13 @@
                     </a>
                     @endrole
 
-                    @role('PEDIDOS')
+                    @anyrole('PEDIDOS', 'PEDIDOS_VISUALIZAR', 'PEDIDOS_CANCELAR')
                     <a class="bemvindo-action" href="{{ route('Pedidos_Administrativo', [], false) }}">
                         <span class="bemvindo-action__icon">02</span>
                         <strong>Pedidos</strong>
                         <small>Acompanhe preparo, status e cupons.</small>
                     </a>
-                    @endrole
+                    @endanyrole
 
                     @role('GERENCIAMENTO_PRODUTOS')
                     <a class="bemvindo-action" href="{{ route('gerenciamento_Produtos', [], false) }}">

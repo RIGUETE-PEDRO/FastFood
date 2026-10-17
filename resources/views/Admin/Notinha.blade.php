@@ -17,6 +17,14 @@
         $temEnderecoEntrega = filled(optional($pedido->endereco)->logradouro);
         $numeroMesa = optional($pedido->mesa)->numero_da_mesa;
         $horarioFuncionamento = $dadosEmpresa['Horario de Funcionamento'] ?? null;
+        $fontesImpressao = [
+            'monospace' => '"Courier New", monospace',
+            'arial' => 'Arial, sans-serif',
+            'georgia' => 'Georgia, serif',
+        ];
+        $fonteImpressao = $fontesImpressao[$configuracoesImpressao['receiptFont'] ?? ''] ?? '"Courier New", monospace';
+        $tamanhosImpressao = ['10' => '10px', '12' => '12px', '14' => '14px'];
+        $tamanhoImpressao = $tamanhosImpressao[(string) ($configuracoesImpressao['fontSize'] ?? '')] ?? '12px';
     @endphp
 
     <div class="receipt-page">
@@ -37,7 +45,7 @@
         <main class="cupom-container" aria-label="Cupom do pedido">
             <span class="receipt-preview-label" aria-hidden="true">Pré-visualização de impressão</span>
 
-            <section class="cupom">
+            <section class="cupom" style="font-family: {{ $fonteImpressao }} !important; font-size: {{ $tamanhoImpressao }} !important;">
                 <header class="receipt-header">
                     <strong class="receipt-store">{{ $dadosEmpresa['Nome da Empresa'] ?? 'FlashFood' }}</strong>
                     @if(!empty($dadosEmpresa['Msg_comanda']))

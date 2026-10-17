@@ -6,7 +6,6 @@ use App\Enum\StatusPedidos as EnumsStatusPedidos;
 use App\Models\PedidoModel;
 use App\Services\PedidosFeitosService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class EntregasController extends Controller
@@ -15,7 +14,7 @@ class EntregasController extends Controller
     {
     }
 
-    public function index(Request $request)
+    public function index()
     {
         $usuarioLogado = Auth::user();
         $nomeUsuario = $usuarioLogado?->nome ? explode(' ', trim($usuarioLogado->nome))[0] : 'Entregador';
@@ -33,26 +32,13 @@ class EntregasController extends Controller
             ->values();
 
         $pedidosAbertos = $pedidosEntrega
-            ->filter(fn($pedido) => in_array($pedido->status_enum, [EnumsStatusPedidos::PENDENTE, EnumsStatusPedidos::EM_PREPARO, EnumsStatusPedidos::A_CAMINHO], true))
+            ->filter(fn($pedido) => $pedido->status_enum === EnumsStatusPedidos::A_CAMINHO)
             ->filter(fn($pedido) => is_null($pedido->motoboy_id))
             ->values();
 
-        $pedidosFinalizados = $pedidosEntrega
-            ->filter(fn($pedido) => in_array($pedido->status_enum, [EnumsStatusPedidos::ENTREGUE, EnumsStatusPedidos::CANCELADO], true))
-            ->filter(function ($pedido) use ($request) {
-                $busca = trim((string) $request->query('busca_finalizados', ''));
-                if ($busca === '') {
-                    return true;
-                }
-
-                return mb_stripos((string) optional($pedido->usuario)->nome, $busca) !== false
-                    || mb_stripos((string) optional($pedido->motoboy)->nome, $busca) !== false;
-            })
-            ->values();
-
         $pedidosAceitos = $pedidosEntrega
-            ->filter(fn($pedido) => !is_null($pedido->motoboy_id))
-            ->filter(fn($pedido) => in_array($pedido->status_enum, [EnumsStatusPedidos::PENDENTE, EnumsStatusPedidos::EM_PREPARO, EnumsStatusPedidos::A_CAMINHO], true))
+            ->filter(fn($pedido) => (int) $pedido->motoboy_id === (int) $usuarioLogado->id)
+            ->filter(fn($pedido) => $pedido->status_enum === EnumsStatusPedidos::A_CAMINHO)
             ->sortByDesc(fn($pedido) => $pedido->motoboy_vinculado_em ?? $pedido->updated_at)
             ->values();
 
@@ -60,10 +46,8 @@ class EntregasController extends Controller
             'usuario' => $usuarioLogado,
             'nomeUsuario' => $nomeUsuario,
             'pedidosAbertos' => $pedidosAbertos,
-            'pedidosFinalizados' => $pedidosFinalizados,
             'pedidosAceitos' => $pedidosAceitos,
-            'totalPedidosEntrega' => $pedidosEntrega->count(),
-            'buscaFinalizados' => trim((string) $request->query('busca_finalizados', '')),
+            'totalPedidosEntrega' => $pedidosAbertos->count() + $pedidosAceitos->count(),
         ]);
     }
 
@@ -81,11 +65,7 @@ class EntregasController extends Controller
             $usuarioId = (int) ($usuarioLogado->id ?? 0);
 
             $pedidoNaoEntrega = is_null($pedido->endereco_id);
-            $statusValidoParaAceite = in_array($statusAtual, [
-                EnumsStatusPedidos::PENDENTE,
-                EnumsStatusPedidos::EM_PREPARO,
-                EnumsStatusPedidos::A_CAMINHO,
-            ], true);
+            $statusValidoParaAceite = $statusAtual === EnumsStatusPedidos::A_CAMINHO;
             $vinculadoOutroMotoboy = (int) ($pedido->motoboy_id ?? 0) !== 0 && (int) $pedido->motoboy_id !== $usuarioId;
             $jaVinculadoAoMesmoMotoboy = (int) ($pedido->motoboy_id ?? 0) === $usuarioId;
 

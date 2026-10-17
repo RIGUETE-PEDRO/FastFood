@@ -1,3 +1,6 @@
+@php($podeGerenciarPedidos = (bool) ($podeGerenciarPedidos ?? false))
+@php($podeCancelarPedidos = (bool) ($podeCancelarPedidos ?? false))
+
 @if($pedidos->isEmpty())
     <div class="card shadow-sm">
         <div class="card-body text-center py-5">
@@ -39,6 +42,8 @@
                 'statusOptions' => $statusOptions,
                 'statusTimeline' => $statusTimeline,
                 'statusLabels' => $statusLabels,
+                'podeGerenciarPedidos' => $podeGerenciarPedidos,
+                'podeCancelarPedidos' => $podeCancelarPedidos,
                 'desabilitarAcoes' => false,
                 'colapsavel' => true,
                 'iniciarRecolhido' => false,
@@ -91,6 +96,8 @@
                     'statusOptions' => $statusOptions,
                     'statusTimeline' => $statusTimeline,
                     'statusLabels' => $statusLabels,
+                    'podeGerenciarPedidos' => $podeGerenciarPedidos,
+                    'podeCancelarPedidos' => $podeCancelarPedidos,
                     'desabilitarAcoes' => true,
                     'colapsavel' => true,
                     'iniciarRecolhido' => true,
@@ -102,6 +109,11 @@
                     </div>
                 </div>
             @endforelse
+            <nav class="pedidos-paginacao" data-paginacao-pedidos="finalizados" aria-label="Paginação de pedidos finalizados" hidden>
+                <button class="pedidos-paginacao__botao" type="button" data-pagina-anterior disabled>Anterior</button>
+                <span class="pedidos-paginacao__info" data-pagina-info aria-live="polite"></span>
+                <button class="pedidos-paginacao__botao" type="button" data-pagina-proxima disabled>Próxima</button>
+            </nav>
         </div>
     </section>
 @endif

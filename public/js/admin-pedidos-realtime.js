@@ -10,6 +10,8 @@
     let currentPending = normalizeNumber(root?.dataset.pendingCount || '0');
     let lastPendingId = root?.dataset.lastPendingId || notifier?.dataset.lastPendingId || '';
     let isAlertPlaying = false;
+    let deliveredPage = 1;
+    const deliveredPageSize = 10;
 
     const totalBadge = document.getElementById('pedidos-total-badge');
     const resumoWrapper = document.getElementById('pedidos-resumo-wrapper');
@@ -238,13 +240,19 @@
         if (input.dataset.enhanced === '1') return;
         input.dataset.enhanced = '1';
 
-        const filterDeliveredOrders = () => {
-          const container = input.closest('.acordeao-pedidos__conteudo');
-          if (!container) return;
+        const container = input.closest('.acordeao-pedidos__conteudo');
+        if (!container) return;
 
+        const pagination = container.querySelector('[data-paginacao-pedidos="finalizados"]');
+        const previousButton = pagination?.querySelector('[data-pagina-anterior]');
+        const nextButton = pagination?.querySelector('[data-pagina-proxima]');
+        const pageInfo = pagination?.querySelector('[data-pagina-info]');
+
+        const filterDeliveredOrders = () => {
           const term = input.value.trim().toLocaleLowerCase('pt-BR');
           const dateInput = container.querySelector('[data-filtro-dia-entregues]');
           const day = dateInput?.value || '';
+          const matchingCards = [];
 
           container.querySelectorAll('.pedido-card').forEach((card) => {
             const client = card.dataset.cliente?.toLocaleLowerCase('pt-BR')
@@ -253,15 +261,54 @@
             const cardDay = card.dataset.pedidoData || '';
             const matchesClient = term === '' || client.includes(term);
             const matchesDay = day === '' || cardDay === day;
+            const matchesFilters = matchesClient && matchesDay;
 
-            card.classList.toggle('is-filter-hidden', !matchesClient || !matchesDay);
+            card.classList.toggle('is-filter-hidden', !matchesFilters);
+            if (matchesFilters) matchingCards.push(card);
           });
+
+          const totalPages = Math.max(1, Math.ceil(matchingCards.length / deliveredPageSize));
+          deliveredPage = Math.min(deliveredPage, totalPages);
+          const firstVisibleIndex = (deliveredPage - 1) * deliveredPageSize;
+          const lastVisibleIndex = firstVisibleIndex + deliveredPageSize;
+
+          matchingCards.forEach((card, index) => {
+            card.classList.toggle('is-pagination-hidden', index < firstVisibleIndex || index >= lastVisibleIndex);
+          });
+
+          if (pagination) {
+            pagination.hidden = matchingCards.length <= deliveredPageSize;
+          }
+          if (previousButton) previousButton.disabled = deliveredPage <= 1;
+          if (nextButton) nextButton.disabled = deliveredPage >= totalPages;
+          if (pageInfo) {
+            pageInfo.textContent = matchingCards.length
+              ? `Página ${deliveredPage} de ${totalPages} · ${matchingCards.length} pedidos`
+              : 'Nenhum pedido encontrado';
+          }
         };
 
-        input.addEventListener('input', filterDeliveredOrders);
-        input.closest('.acordeao-pedidos__conteudo')
-          ?.querySelector('[data-filtro-dia-entregues]')
-          ?.addEventListener('input', filterDeliveredOrders);
+        const handleFilterChange = (event) => {
+          if (event.isTrusted) deliveredPage = 1;
+          filterDeliveredOrders();
+        };
+
+        input.addEventListener('input', handleFilterChange);
+        container.querySelector('[data-filtro-dia-entregues]')
+          ?.addEventListener('input', handleFilterChange);
+
+        if (pagination && pagination.dataset.enhanced !== '1') {
+          pagination.dataset.enhanced = '1';
+          previousButton?.addEventListener('click', () => {
+            deliveredPage = Math.max(1, deliveredPage - 1);
+            filterDeliveredOrders();
+          });
+          nextButton?.addEventListener('click', () => {
+            deliveredPage += 1;
+            filterDeliveredOrders();
+          });
+        }
+
         filterDeliveredOrders();
       });
 
@@ -397,8 +444,14 @@
         resumoWrapper.innerHTML = usarTokenCsrfDaAba(data.resumoHtml);
       }
 
-      if (typeof data.listaHtml === 'string' && listaWrapper) {
-        listaWrapper.innerHTML = usarTokenCsrfDaAba(data.listaHtml);
+      const listaHtml = root?.dataset.canManageOrders === '1'
+        ? data.listaHtml
+        : root?.dataset.canCancelOrders === '1'
+          ? (data.listaHtmlCancelar ?? data.listaHtmlLeitura ?? data.listaHtml)
+          : (data.listaHtmlLeitura ?? data.listaHtml);
+
+      if (typeof listaHtml === 'string' && listaWrapper) {
+        listaWrapper.innerHTML = usarTokenCsrfDaAba(listaHtml);
       }
 
       if (totalBadge && data.totalLabel) {

@@ -16,16 +16,21 @@
             <header class="print-hero">
                 <span>Preferências</span>
                 <h1>Configuração de impressão</h1>
-                <p>Ajuste o formato dos cupons para a impressora térmica usada neste navegador.</p>
+                <p>Escolha o formato da bobina POS/PDV e ajuste a aparência dos cupons.</p>
             </header>
             <section class="print-layout">
                 <form id="print-settings-form" class="print-card" action="{{ route('admin.impressao.atualizar') }}" method="POST">
                     @csrf
                     <input type="hidden" name="return" value="{{ $impressaoReturnUrl }}">
                     <h2>Formato e conteúdo</h2>
-                    <label class="print-field">Largura do papel
-                        <select name="paperWidth"><option value="58">Térmica 58 mm</option><option value="80">Térmica 80 mm</option></select>
+                    <label class="print-field">Formato da bobina
+                        <select name="paperRoll" required>
+                            @foreach($formatosBobina as $valor => $formato)
+                                <option value="{{ $valor }}" @selected(($configuracoesImpressao['paperRoll'] ?? '80x40') === $valor)>{{ $formato['label'] }}</option>
+                            @endforeach
+                        </select>
                     </label>
+                    <p class="print-note">A medida indica largura × diâmetro externo em milímetros. A largura ajusta o cupom; o diâmetro representa o tamanho da bobina no suporte.</p>
                     <label class="print-field">Tamanho do texto
                         <select name="fontSize"><option value="10">10 px</option><option value="12">12 px</option><option value="14">14 px</option></select>
                     </label>
@@ -52,7 +57,7 @@
                         </label>
                         <span class="print-typography__status" data-receipt-font-status role="status" aria-live="polite"></span>
                     </div>
-                    <p class="print-note">A impressão também depende do driver e do modelo da impressora.</p>
+                    <p class="print-note">Confirme no manual da impressora quais bobinas cabem no equipamento. A impressão também depende do driver.</p>
                     <button type="submit" class="print-save">Salvar preferências</button>
                     <p id="print-saved" class="print-saved" role="status" aria-live="polite"></p>
                 </form>

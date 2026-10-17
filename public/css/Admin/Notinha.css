@@ -134,7 +134,7 @@ body {
 .receipt-store {
     display: block;
     max-width: 100%;
-    font-size: 15px;
+    font-size: 1.25em;
     line-height: 1.15;
     text-transform: uppercase;
     word-break: break-word;
@@ -151,7 +151,7 @@ body {
 
 .receipt-title {
     margin: 0 0 6px;
-    font-size: 12px;
+    font-size: 1em;
     line-height: 1.2;
     text-align: center;
     text-transform: uppercase;
@@ -185,7 +185,7 @@ body {
 }
 
 .receipt-row--small {
-    font-size: 10px;
+    font-size: 0.83em;
 }
 
 .receipt-pill {
@@ -208,7 +208,7 @@ body {
     border-top: 1px solid var(--receipt-ink);
     margin-top: 7px;
     padding-top: 6px;
-    font-size: 14px;
+    font-size: 1.17em;
     font-weight: 700;
     text-transform: uppercase;
 }
@@ -294,6 +294,11 @@ body {
     .receipt-page { padding: 0 !important; margin: 0 !important; }
     .cupom-container { break-after: auto; page-break-after: auto; }
     .receipt-extra-copy { break-before: auto; page-break-before: auto; }
-    .cupom { padding: var(--receipt-padding, 3mm); margin: 0; }
+    .cupom {
+        padding: var(--receipt-padding, 3mm);
+        margin: 0;
+        font-family: var(--receipt-font-family, 'Courier New', monospace) !important;
+        font-size: var(--receipt-font-size, 12px) !important;
+    }
     .receipt-footer { margin-bottom: 0; padding-bottom: 0; }
 }

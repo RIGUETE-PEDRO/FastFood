@@ -95,6 +95,20 @@ class PedidoService
             return $pedido;
         });
 
+        $pedidos = $pedidos->sort(function (PedidoModel $left, PedidoModel $right) {
+            $leftIsPending = $left->status_enum === EnumStatusPedidos::PENDENTE;
+            $rightIsPending = $right->status_enum === EnumStatusPedidos::PENDENTE;
+
+            if ($leftIsPending !== $rightIsPending) {
+                return $leftIsPending ? -1 : 1;
+            }
+
+            $leftCreatedAt = $left->created_at?->getTimestamp() ?? 0;
+            $rightCreatedAt = $right->created_at?->getTimestamp() ?? 0;
+
+            return ($rightCreatedAt <=> $leftCreatedAt) ?: ($right->id <=> $left->id);
+        })->values();
+
         $contagens = $pedidos->groupBy(fn($pedido) => $pedido->status_enum->value ?? 0)->map->count();
         $dashboardCards = [
             [

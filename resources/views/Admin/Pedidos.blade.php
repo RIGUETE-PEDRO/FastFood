@@ -9,7 +9,7 @@
     <title>Painel de Pedidos</title>
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/Admin/Pedidos.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Pedidos.css') }}?v={{ filemtime(public_path('css/Admin/Pedidos.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/PersonalizacaoProduto.css') }}">
 </head>
 
@@ -29,12 +29,20 @@
         data-checksum="{{ $realtimeChecksum ?? '' }}"
         data-pending-count="{{ $pedidosPendentes ?? 0 }}"
         data-last-pending-id="{{ $ultimoPedidoPendenteId ?? '' }}"
+        data-can-manage-orders="{{ !empty($podeGerenciarPedidos) ? '1' : '0' }}"
+        data-can-cancel-orders="{{ !empty($podeCancelarPedidos) ? '1' : '0' }}"
     >
         <header class="cabecalho-pedidos mb-4">
             <div class="cabecalho-pedidos__titulo">
                 <span class="cabecalho-pedidos__etiqueta">Painel de pedidos</span>
                 <h1 class="titulo-pagina">Olá, {{ $nomeUsuario ?? 'Administrador' }}!</h1>
-                <p class="texto-suave mb-0">Acompanhe o avanço de cada pedido e atualize o status conforme o preparo.</p>
+                @if(!empty($podeGerenciarPedidos))
+                    <p class="texto-suave mb-0">Acompanhe o avanço de cada pedido e atualize o status conforme o preparo.</p>
+                @elseif(!empty($podeCancelarPedidos))
+                    <p class="texto-suave mb-0">Acompanhe os pedidos e cancele os que ainda estão em andamento.</p>
+                @else
+                    <p class="texto-suave mb-0">Acompanhe os pedidos e seus status.</p>
+                @endif
             </div>
             <div class="cabecalho-pedidos__dados">
                 <span class="badge-total" id="pedidos-total-badge">{{ $totalPedidos }} pedidos ativos</span>
@@ -65,6 +73,8 @@
                 'statusOptions' => $statusOptions,
                 'statusTimeline' => $statusTimeline,
                 'statusLabels' => $statusLabels,
+                'podeGerenciarPedidos' => $podeGerenciarPedidos ?? false,
+                'podeCancelarPedidos' => $podeCancelarPedidos ?? false,
             ])
         </div>
     </main>

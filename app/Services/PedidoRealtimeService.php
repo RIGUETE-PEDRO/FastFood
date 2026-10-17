@@ -27,13 +27,9 @@ class PedidoRealtimeService
             'resumoHtml' => $this->trocarTokenCsrfPorMarcador(view('Admin.partials.pedidos-resumo-cards', [
                 'dashboardCards' => $dados['dashboardCards'],
             ])->render()),
-            'listaHtml' => $this->trocarTokenCsrfPorMarcador(view('Admin.partials.pedidos-lista', [
-                'pedidos' => $dados['pedidos'],
-                'pedidosPorStatus' => $dados['pedidosPorStatus'],
-                'statusOptions' => $dados['statusOptions'],
-                'statusTimeline' => $dados['statusTimeline'],
-                'statusLabels' => $dados['statusLabels'],
-            ])->render()),
+            'listaHtml' => $this->renderListaPedidos($dados, true),
+            'listaHtmlLeitura' => $this->renderListaPedidos($dados, false),
+            'listaHtmlCancelar' => $this->renderListaPedidos($dados, false, true),
             'emittedAt' => now()->toIso8601String(),
         ];
     }
@@ -57,5 +53,18 @@ class PedidoRealtimeService
             '$1$2' . self::CSRF_PLACEHOLDER . '$2',
             $html
         ) ?? $html;
+    }
+
+    private function renderListaPedidos(array $dados, bool $podeGerenciarPedidos, bool $podeCancelarPedidos = false): string
+    {
+        return $this->trocarTokenCsrfPorMarcador(view('Admin.partials.pedidos-lista', [
+            'pedidos' => $dados['pedidos'],
+            'pedidosPorStatus' => $dados['pedidosPorStatus'],
+            'statusOptions' => $dados['statusOptions'],
+            'statusTimeline' => $dados['statusTimeline'],
+            'statusLabels' => $dados['statusLabels'],
+            'podeGerenciarPedidos' => $podeGerenciarPedidos,
+            'podeCancelarPedidos' => $podeCancelarPedidos,
+        ])->render());
     }
 }

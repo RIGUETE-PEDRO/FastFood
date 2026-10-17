@@ -406,6 +406,51 @@ body {
     display: none !important;
 }
 
+.pedido-card.is-pagination-hidden {
+    display: none !important;
+}
+
+.pedidos-paginacao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 0 4px;
+}
+
+.pedidos-paginacao[hidden] {
+    display: none;
+}
+
+.pedidos-paginacao__botao {
+    min-height: 38px;
+    padding: 0 14px;
+    border: 1px solid var(--orders-border-strong);
+    border-radius: 8px;
+    background: var(--orders-surface);
+    color: var(--orders-brand);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pedidos-paginacao__botao:hover:not(:disabled) {
+    border-color: var(--orders-accent);
+    color: var(--orders-accent-dark);
+}
+
+.pedidos-paginacao__botao:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pedidos-paginacao__info {
+    color: var(--orders-muted);
+    font-size: 0.9rem;
+    font-weight: 650;
+    text-align: center;
+}
+
 @media (max-width: 760px) {
     .pedidos-finalizados-filtro,
     .pedidos-finalizados-filtro__campos {

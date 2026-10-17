@@ -28,7 +28,7 @@
                     <div class="cabecalho-pedidos__titulo">
                         <span class="cabecalho-pedidos__etiqueta">Entregas</span>
                         <h1 class="titulo-pagina">Olá, {{ $nomeUsuario ?? 'Entregador' }}!</h1>
-                        <p class="texto-suave mb-0">Veja os pedidos com nome do cliente e endereço para entrega.</p>
+                        <p class="texto-suave mb-0">Veja os pedidos A caminho disponíveis e os vinculados a você.</p>
                     </div>
                     <div class="cabecalho-pedidos__dados">
                         <span class="badge-total">{{ $totalPedidosEntrega ?? 0 }} pedidos de entrega</span>
@@ -36,7 +36,7 @@
                 </header>
 
                 <section class="lista-pedidos-admin">
-                    <h2 class="secao-titulo secao-titulo--disponiveis">Pedidos disponíveis para atribuir</h2>
+                    <h2 class="secao-titulo secao-titulo--disponiveis">Pedidos A caminho disponíveis</h2>
 
                     @forelse(($pedidosAbertos ?? collect()) as $pedido)
                     @php
@@ -82,7 +82,7 @@
                             $motoboyPedidoId = (int) (optional($pedido)->motoboy_id ?? 0);
                             $statusPedido = (int) (optional($pedido)->status ?? 0);
                             $etapaEntrega = $statusPedido === 3;
-                            $podeAceitar = in_array($statusPedido, [1, 2, 3], true);
+                            $podeAceitar = $statusPedido === 3;
                             @endphp
 
                             @if ($motoboyPedidoId === 0 && $podeAceitar)
@@ -111,12 +111,12 @@
                         </section>
                     </article>
                     @empty
-                    <p class="entregas-lista-vazia texto-suave">Nenhum pedido de entrega em aberto no momento.</p>
+                    <p class="entregas-lista-vazia texto-suave">Nenhum pedido A caminho disponível no momento.</p>
                     @endforelse
                 </section>
 
                 <section class="lista-pedidos-admin mt-4">
-                    <h2 class="secao-titulo secao-titulo--aceitos">Pedidos aceitos</h2>
+                    <h2 class="secao-titulo secao-titulo--aceitos">Pedidos A caminho vinculados a você</h2>
 
                     @forelse(($pedidosAceitos ?? collect()) as $pedido)
                     <article class="pedido-card entregas-card" data-status="{{ (int) ($pedido->status ?? 0) }}">
@@ -162,70 +162,16 @@
                         @endif
                     </article>
                     @empty
-                    <p class="entregas-lista-vazia texto-suave">Nenhum pedido aceito até o momento.</p>
+                    <p class="entregas-lista-vazia texto-suave">Você não tem pedidos A caminho vinculados.</p>
                     @endforelse
                 </section>
 
-                <section class="acordeao-pedidos">
-                    <button class="acordeao-pedidos__gatilho" type="button" data-target="#entregasFinalizadas" aria-controls="entregasFinalizadas" aria-expanded="{{ !empty($buscaFinalizados) ? 'true' : 'false' }}">
-                        <span>Entregas finalizadas</span>
-                        <span class="acordeao-pedidos__contador">{{ count($pedidosFinalizados ?? []) }}</span>
-                        <span class="acordeao-pedidos__icone" aria-hidden="true"></span>
-                    </button>
-                    <div class="acordeao-pedidos__conteudo" id="entregasFinalizadas" {{ !empty($buscaFinalizados) ? '' : 'hidden' }}>
-                        <form method="GET" action="{{ route('entregas') }}" class="entregas-busca col-12" role="search">
-                            <label for="busca_finalizados">Buscar pedido finalizado</label>
-                            <div class="entregas-busca__campos">
-                                <input type="search" id="busca_finalizados" name="busca_finalizados" value="{{ $buscaFinalizados ?? '' }}" placeholder="Nome do cliente ou motoboy">
-                                <button type="submit" class="btn-add">Buscar</button>
-                                @if(!empty($buscaFinalizados))
-                                    <a href="{{ route('entregas') }}" class="btn btn-secondary">Limpar</a>
-                                @endif
-                            </div>
-                        </form>
-                        @forelse(($pedidosFinalizados ?? collect()) as $pedido)
-                        <article class="pedido-card" data-status="{{ (int) ($pedido->status ?? 0) }}">
-                            <header class="pedido-card__header">
-                                <div>
-                                    <h3 class="pedido-card__titulo">Pedido #{{ $pedido->id }}</h3>
-                                    <span class="pedido-card__subtitulo"><strong>Cliente:</strong> {{ optional($pedido->usuario)->nome ?? 'Não informado' }}</span><br>
-                                    <span class="pedido-card__subtitulo"><strong>Endereço:</strong> {{ optional($pedido->endereco)->logradouro ?? 'Não informado' }}, {{ optional($pedido->endereco)->numero ?? 's/n' }}, {{ optional($pedido->endereco)->bairro ?? 'Não informado' }}, {{ optional(optional($pedido->endereco)->cidade)->nome ?? 'Não informado' }}</span><br>
-                                    <span class="pedido-card__subtitulo"><strong>Motoboy:</strong> {{ optional($pedido->motoboy)->nome ?? 'Não vinculado' }}</span>
-                                    <span class="pedido-card__subtitulo"><strong>Finalizado:</strong> em: {{ optional($pedido->updated_at)->format('d/m/Y \à\s H:i') ?? 'N/D' }}</span>
-                                </div>
-                                <span class="badge-status badge-status--entregue">{{ strtoupper((string) ($pedido->status_label ?? 'FINALIZADO')) }}</span>
-                            </header>
-                        </article>
-                        @empty
-                        <div class="card shadow-sm">
-                            <div class="card-body text-center py-4">
-                                <p class="texto-suave mb-0">Nenhuma entrega finalizada encontrada.</p>
-                            </div>
-                        </div>
-                        @endforelse
-                    </div>
-                </section>
             </main>
         </div>
     </div>
 
     @include('components.flash-toast')
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const gatilho = document.querySelector('.acordeao-pedidos__gatilho');
-            const conteudo = document.querySelector('#entregasFinalizadas');
-
-            if (!gatilho || !conteudo) return;
-
-            gatilho.addEventListener('click', function() {
-                const aberto = gatilho.getAttribute('aria-expanded') === 'true';
-                gatilho.setAttribute('aria-expanded', aberto ? 'false' : 'true');
-                conteudo.hidden = aberto;
-                conteudo.classList.toggle('is-open', !aberto);
-            });
-        });
-    </script>
 </body>
 
 </html>

@@ -10,5 +10,8 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('pedidos.admin', function (UsuarioModel $user) {
-    return app(SecureKeyService::class)->hasRole($user, Roles::PEDIDOS);
+    $secureKey = app(SecureKeyService::class);
+
+    return $secureKey->hasRole($user, Roles::PEDIDOS)
+        || $secureKey->hasRole($user, Roles::PEDIDOS_VISUALIZAR);
 });

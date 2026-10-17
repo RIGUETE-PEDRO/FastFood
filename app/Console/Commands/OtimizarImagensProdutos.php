@@ -52,4 +52,4 @@ class OtimizarImagensProdutos extends Command
 
         return self::SUCCESS;
     }
-}
+}''

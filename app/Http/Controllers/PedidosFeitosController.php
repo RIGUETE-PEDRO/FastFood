@@ -7,9 +7,11 @@ use App\Mensagens\PassMensagens;
 use App\Models\Pedido;
 use App\Models\PedidoModel;
 use App\Models\ConfiguracaoImpressao;
+use App\Roles\Roles;
 use App\Services\GenericBase;
 use App\Services\PedidoService;
 use App\Services\PedidosFeitosService;
+use App\Services\SecureKeyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,6 +36,8 @@ class PedidosFeitosController extends Controller
     {
         return view('Admin.Pedidos', array_merge($this->pedidosService->montarDadosPainel(), [
             'configuracoesImpressao' => ConfiguracaoImpressao::atuais(),
+            'podeGerenciarPedidos' => app(SecureKeyService::class)->hasRole(auth()->user(), Roles::PEDIDOS),
+            'podeCancelarPedidos' => app(SecureKeyService::class)->hasRole(auth()->user(), Roles::PEDIDOS_CANCELAR),
         ]));
     }
 
@@ -83,6 +87,13 @@ class PedidosFeitosController extends Controller
         }
 
         return redirect()->back()->with('sucesso', PassMensagens::STATUS_AVANCADO . ' ' . $this->pedidosFeitosService->rotulo($proximo) . '.');
+    }
+
+    public function cancelar(PedidoModel $pedido): RedirectResponse
+    {
+        $this->pedidosFeitosService->cancelarPedido($pedido);
+
+        return redirect()->back()->with('sucesso', 'Pedido cancelado com sucesso.');
     }
 
     public function gerarCumpom(PedidoModel $pedido)

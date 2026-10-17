@@ -1,8 +1,183 @@
-.print-back{width:max-content;display:inline-flex;align-items:center;gap:8px;padding:10px 15px;border:1px solid #d8cec6;border-radius:8px;background:#fff;color:#5f2d12;text-decoration:none;font-weight:700}.print-back:hover,.print-back:focus-visible{background:#fff7ed;color:#7c2d12}
-.print-settings{max-width:1100px;margin:0 auto;padding:24px;display:grid;gap:22px;color:#302822}.print-hero{padding:26px;border-radius:12px;background:linear-gradient(135deg,#302723,#6b4934);color:#fff}.print-hero>span{font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;opacity:.8}.print-hero h1{margin:8px 0;font-size:clamp(1.5rem,3vw,2.1rem)}.print-hero p{margin:0;color:#eee2d8}.print-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.8fr);gap:18px}.print-card{padding:24px;border:1px solid #e6ded7;border-radius:12px;background:#fff;box-shadow:0 8px 28px #3028220d}.print-card h2{margin:0 0 20px;font-size:1.1rem}.print-field{display:grid;gap:8px;margin:16px 0;font-weight:650}.print-field select{min-height:44px;padding:8px 12px;border:1px solid #d8cec6;border-radius:8px;background:#fff;font:inherit}.print-check{display:flex;align-items:center;gap:10px;margin:22px 0}.print-check input{width:18px;height:18px;accent-color:#e84d2f}.print-note{font-size:.88rem;line-height:1.5;color:#746b65}.print-save{padding:12px 18px;border:0;border-radius:8px;background:#e84d2f;color:#fff;font-weight:700;cursor:pointer}.print-saved{min-height:1.2em;color:#287746}.print-example{background:#f7f5f3}.paper-preview{--preview-width:80mm;width:min(var(--preview-width),100%);min-height:270px;margin:auto;padding:18px;background:#fff;border:1px dashed #cfc5bd;box-shadow:0 8px 20px #00000010;display:flex;flex-direction:column;align-items:center;gap:9px;font:12px 'Courier New',monospace;color:#111}.paper-preview strong{font-size:1.25em}.paper-preview hr{width:100%;border:0;border-top:1px dashed #555}.paper-preview small{margin-top:auto}.paper-preview[data-size="58"]{font-size:10px}@media(max-width:760px){.print-settings{padding:16px}.print-layout{grid-template-columns:1fr}}
-.paper-preview{min-height:0;padding:0;gap:0;border-style:solid}.paper-preview .cupom{width:100%;font-size:var(--receipt-font-size,10.5px);padding:var(--receipt-padding,3mm)}
-.print-typography{margin:24px 0;padding-top:20px;border-top:1px solid #e6ded7}.print-typography h2{margin-bottom:8px}.print-typography>p{color:#746b65}.print-typography__status{display:block;min-height:1.2em;margin-top:8px;color:#287746}
+.print-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: max-content;
+    padding: 10px 15px;
+    border: 1px solid #d8cec6;
+    border-radius: 8px;
+    background: #fff;
+    color: #5f2d12;
+    font-weight: 700;
+    text-decoration: none;
+}
 
-/* A prévia usa a mesma estrutura e os mesmos seletores do cupom impresso. */
-.paper-preview{display:block;min-height:0;padding:0;overflow:auto;--receipt-padding:3mm;--receipt-font-size:12px;--receipt-font-family:'Courier New',monospace}
-.paper-preview .cupom{width:100%;padding:var(--receipt-padding);font-size:var(--receipt-font-size);font-family:var(--receipt-font-family)}
+.print-back:hover,
+.print-back:focus-visible {
+    background: #fff7ed;
+    color: #7c2d12;
+}
+
+.print-settings {
+    display: grid;
+    gap: 22px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+    color: #302822;
+}
+
+.print-hero {
+    padding: 26px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #302723, #6b4934);
+    color: #fff;
+}
+
+.print-hero > span {
+    font-size: .75rem;
+    letter-spacing: .12em;
+    opacity: .8;
+    text-transform: uppercase;
+}
+
+.print-hero h1 {
+    margin: 8px 0;
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+}
+
+.print-hero p {
+    margin: 0;
+    color: #eee2d8;
+}
+
+.print-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, .8fr);
+    gap: 18px;
+}
+
+.print-card {
+    padding: 24px;
+    border: 1px solid #e6ded7;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 8px 28px #3028220d;
+}
+
+.print-card h2 {
+    margin: 0 0 20px;
+    font-size: 1.1rem;
+}
+
+.print-field {
+    display: grid;
+    gap: 8px;
+    margin: 16px 0;
+    font-weight: 650;
+}
+
+.print-field select {
+    min-height: 44px;
+    padding: 8px 12px;
+    border: 1px solid #d8cec6;
+    border-radius: 8px;
+    background: #fff;
+    font: inherit;
+}
+
+.print-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 22px 0;
+}
+
+.print-check input {
+    width: 18px;
+    height: 18px;
+    accent-color: #e84d2f;
+}
+
+.print-note {
+    color: #746b65;
+    font-size: .88rem;
+    line-height: 1.5;
+}
+
+.print-save {
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 8px;
+    background: #e84d2f;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.print-saved {
+    min-height: 1.2em;
+    color: #287746;
+}
+
+.print-example {
+    background: #f7f5f3;
+}
+
+.paper-preview {
+    --preview-width: 80mm;
+    --preview-height: 40mm;
+    --receipt-padding: 3mm;
+    --receipt-font-size: 12px;
+    --receipt-font-family: 'Courier New', monospace;
+    display: block;
+    width: min(var(--preview-width), 100%);
+    height: auto;
+    min-height: var(--preview-height);
+    margin: auto;
+    overflow: visible;
+    border: 1px solid #cfc5bd;
+    background: #fff;
+    box-shadow: 0 8px 20px #00000010;
+    box-sizing: border-box;
+    color: #111;
+}
+
+.paper-preview .cupom {
+    width: 100%;
+    min-height: 100%;
+    padding: var(--receipt-padding);
+    font-size: var(--receipt-font-size);
+    font-family: var(--receipt-font-family);
+}
+
+.print-typography {
+    margin: 24px 0;
+    padding-top: 20px;
+    border-top: 1px solid #e6ded7;
+}
+
+.print-typography h2 {
+    margin-bottom: 8px;
+}
+
+.print-typography > p {
+    color: #746b65;
+}
+
+.print-typography__status {
+    display: block;
+    min-height: 1.2em;
+    margin-top: 8px;
+    color: #287746;
+}
+
+@media (max-width: 760px) {
+    .print-settings {
+        padding: 16px;
+    }
+
+    .print-layout {
+        grid-template-columns: 1fr;
+    }
+}
