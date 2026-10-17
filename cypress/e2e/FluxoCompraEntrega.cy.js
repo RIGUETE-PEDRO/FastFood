@@ -1,4 +1,4 @@
-describe('fluxo de compra e entrega', () => {
+describe('RF04/RF07-RF11 - pedidos, acompanhamento e persistência', () => {
   const cliente = {
     nome: 'Cliente Cypress Delivery',
     email: 'cliente.delivery.cypress@flashfood.test',
@@ -69,7 +69,7 @@ describe('fluxo de compra e entrega', () => {
     })
   })
 
-  it('compra produto, avanca o pedido e finaliza a entrega', () => {
+  it('RF04/RF07/RF08/RF09/RF10/RF11 compra, acompanha, gerencia e persiste o pedido', () => {
     cy.clearCookies()
     cy.clearLocalStorage()
 
@@ -152,6 +152,15 @@ describe('fluxo de compra e entrega', () => {
         .should('have.attr', 'data-status', '2')
         .and('contain', 'Em preparo')
 
+      cy.loginAs(cliente.email, cliente.senha)
+      cy.visit('/pedidos')
+      cy.contains('.pedido-card', `Pedido #${pedidoId}`, { timeout: 10000 })
+        .find('.badge-status--preparo')
+        .should('be.visible')
+
+      cy.loginAdmin()
+      cy.visit('/Pedidos_Administrativo')
+
       cy.get(`[data-pedido-id="${pedidoId}"]`)
         .contains('button', 'Avancar para A caminho')
         .should('be.visible')
@@ -185,12 +194,7 @@ describe('fluxo de compra e entrega', () => {
       alterarEntrega(pedidoId, 'finalizar')
       cy.visit('/entregas')
 
-      cy.contains('.acordeao-pedidos__gatilho', 'Entregas finalizadas').click()
-
-      cy.get('#entregasFinalizadas').should('not.have.attr', 'hidden')
-      cy.contains('#entregasFinalizadas .pedido-card', `Pedido #${pedidoId}`, { timeout: 10000 })
-        .should('contain', 'ENTREGUE')
-        .and('contain', 'Administrador')
+      cy.contains('.entregas-card', `Pedido #${pedidoId}`).should('not.exist')
     })
 
     cy.task('latestPedidoByCliente', cliente.email).then((pedido) => {

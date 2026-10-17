@@ -1,10 +1,12 @@
-describe('login administrador', () => {
-  it('autentica e redireciona para o painel', () => {
+describe('RF02 - autenticação', () => {
+  it('RF02 autentica o administrador e abre o painel', () => {
     cy.visit('/login')
 
-    cy.get('#email').type(Cypress.env('USUARIO_ADMINISTRADOR'))
-    cy.get('#senha').type(Cypress.env('SENHA_ADMINISTRADOR'))
-    cy.get('#entrar').click()
+    cy.task('ensureCypressAdmin').then(({ email, senha }) => {
+      cy.get('#email').type(email)
+      cy.get('#senha').type(senha)
+      cy.get('#entrar').click()
+    })
 
     cy.location('pathname', { timeout: 10000 }).should('eq', '/admin/bem-vindo')
   })

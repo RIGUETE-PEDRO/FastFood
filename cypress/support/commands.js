@@ -37,10 +37,7 @@ function csrfToken(path) {
 }
 
 Cypress.Commands.add('loginAdmin', () => {
-  submitLogin(
-    Cypress.env('USUARIO_ADMINISTRADOR'),
-    Cypress.env('SENHA_ADMINISTRADOR')
-  )
+  cy.loginCypressAdmin()
 })
 
 Cypress.Commands.add('loginCypressAdmin', () => {
@@ -54,6 +51,16 @@ Cypress.Commands.add('loginAs', (email, senha) => {
 })
 
 Cypress.Commands.add('csrfToken', csrfToken)
+
+Cypress.Commands.add('scrollOverlayToBottom', (selector) => {
+  return cy.get(selector).then(($panel) => {
+    const panel = $panel[0]
+
+    if (panel.scrollHeight > panel.clientHeight) {
+      return cy.wrap($panel).scrollTo('bottom')
+    }
+  })
+})
 
 Cypress.Commands.add('registrarCliente', ({
   nome,
@@ -141,6 +148,7 @@ Cypress.Commands.add('criarProdutoUi', ({
   })
   cy.get(ativo ? '#btnAtivo' : '#btnInativo').click()
 
+  cy.scrollOverlayToBottom('#createProductOverlay .overlay-panel')
   cy.get('#createProductOverlay').within(() => {
     cy.contains('button[type="submit"]', 'Salvar').click()
   })
@@ -170,6 +178,7 @@ Cypress.Commands.add('criarFuncionarioUi', ({
   cy.get('#senha').clear().type(senha)
   cy.get('#senha_confirmation').clear().type(senha)
 
+  cy.scrollOverlayToBottom('#createUserOverlay .overlay-panel')
   cy.get('#createUserOverlay').within(() => {
     cy.contains('button[type="submit"]', 'Salvar').click()
   })

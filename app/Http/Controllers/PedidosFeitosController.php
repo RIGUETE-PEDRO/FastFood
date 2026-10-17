@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 
@@ -61,7 +62,7 @@ class PedidosFeitosController extends Controller
         return redirect()->back()->with('sucesso', PassMensagens::ATUALIZADO_STATUS . ' ' . $this->pedidosFeitosService->rotulo($novoStatus) . '.');
     }
 
-    public function avancarStatus(PedidoModel $pedido): RedirectResponse
+    public function avancarStatus(PedidoModel $pedido): RedirectResponse|View
     {
 
         $statusAtual = EnumsStatusPedidos::tryFrom((int) $pedido->status) ?? EnumsStatusPedidos::PENDENTE;

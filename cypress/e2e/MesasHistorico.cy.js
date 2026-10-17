@@ -16,11 +16,14 @@ describe('historico de mesas', () => {
       cy.get('#data_inicio').should('have.attr', 'type', 'date')
       cy.get('#data_fim').should('have.attr', 'type', 'date')
       cy.contains('button[type="submit"]', 'Filtrar').should('be.visible')
-      cy.contains('a', 'Limpar').should('have.attr', 'href', '/mesas/historico')
+      cy.contains('a', 'Limpar')
+        .should('have.attr', 'href')
+        .and('match', /\/mesas\/historico$/)
     })
 
     cy.contains('a', 'Voltar para mesas')
-      .should('have.attr', 'href', '/mesas')
+      .should('have.attr', 'href')
+      .and('match', /\/mesas$/)
   })
 
   it('aplica o intervalo de datas informado', () => {

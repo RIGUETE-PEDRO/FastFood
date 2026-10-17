@@ -34,6 +34,7 @@ describe('atualizacao de produto', () => {
     cy.get('#produto-descricao').clear().type('Produto atualizado por teste')
     cy.get('#btnInativo').click()
 
+    cy.scrollOverlayToBottom('#createProductOverlay .overlay-panel')
     cy.get('#createProductOverlay').within(() => {
       cy.contains('button[type="submit"]', 'Salvar').click()
     })

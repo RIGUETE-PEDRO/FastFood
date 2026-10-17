@@ -73,7 +73,11 @@ services:
     command: sh -c "npm ci --ignore-scripts && rm -f public/hot && npm run build"
 
   cypress:
-    image: cypress/included:15.14.2
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: cypress
+    image: flashfood-cypress:15.18.0
     container_name: cypress_FlashFood
     working_dir: /app
     profiles:
@@ -100,6 +104,39 @@ services:
     entrypoint: ["/bin/sh", "-lc"]
     command:
       - "npm ci && npx cypress run"
+
+  cypress-browser:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: cypress-browser
+    image: flashfood-cypress-browser:15.18.0
+    container_name: cypress_browser_FlashFood
+    working_dir: /app
+    profiles:
+      - browser
+    depends_on:
+      - app
+      - db
+      - node
+    environment:
+      CYPRESS_BASE_URL: http://app:8000
+      CYPRESS_DB_HOST: db
+      CYPRESS_DB_PORT: 3306
+      CYPRESS_DB_DATABASE: FlashFood
+      CYPRESS_DB_USERNAME: root
+      CYPRESS_DB_PASSWORD: root
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: FlashFood
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "127.0.0.1:6080:6080"
+    entrypoint: ["/usr/local/bin/cypress-browser-entrypoint"]
 
 
   redis:

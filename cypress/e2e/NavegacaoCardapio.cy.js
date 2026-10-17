@@ -1,4 +1,4 @@
-describe('navegacao do cardapio', () => {
+describe('RF05 - exibição do cardápio ao cliente', () => {
   const paginasPublicas = [
     { caminho: '/', titulo: 'Escolha seu pedido' },
     { caminho: '/Lanches', titulo: 'Lanches' },
@@ -8,7 +8,7 @@ describe('navegacao do cardapio', () => {
   ]
 
   paginasPublicas.forEach(({ caminho, titulo }) => {
-    it(`abre ${caminho} e mostra o título da página`, () => {
+    it(`RF05 exibe a página ${caminho} do cardápio`, () => {
       cy.visit(caminho)
 
       cy.get('main h1').should('be.visible').and('have.text', titulo)

@@ -1,4 +1,4 @@
-describe('gerenciamento de funcionarios', () => {
+describe('RF01 - cadastro de funcionário', () => {
   const nome = 'Fernando Teste Automatizado Ferrari'
   const email = Cypress.env('EMAIL_NOVO_USUARIO')
   const senha = Cypress.env('SENHA_NOVO_USUARIO')
@@ -15,7 +15,7 @@ describe('gerenciamento de funcionarios', () => {
     cy.task('deleteUserFuncionario', email)
   })
 
-  it('cria um funcionario pelo painel administrativo', () => {
+  it('RF01 cria um funcionário pelo painel administrativo', () => {
     cy.criarFuncionarioUi({ nome, email, senha })
   })
 })

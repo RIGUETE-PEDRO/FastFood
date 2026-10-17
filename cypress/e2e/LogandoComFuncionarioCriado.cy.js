@@ -1,4 +1,4 @@
-describe('login de funcionario criado', () => {
+describe('RF01/RF02 - cadastro e autenticação de funcionário', () => {
   const nome = 'Fernando Teste Automatizado Ferrari'
   const email = Cypress.env('EMAIL_NOVO_USUARIO')
   const senha = Cypress.env('SENHA_NOVO_USUARIO')
@@ -11,12 +11,12 @@ describe('login de funcionario criado', () => {
     cy.task('deleteUserFuncionario', email)
   })
 
-  it('cria um funcionario pelo painel administrativo', () => {
+  it('RF01 cadastra o funcionário autorizado', () => {
     cy.loginAdmin()
     cy.criarFuncionarioUi({ nome, email, senha })
   })
 
-  it('permite login com o funcionario criado', () => {
+  it('RF02 autentica o funcionário cadastrado', () => {
     cy.visit('/login')
 
     cy.get('#email').type(email)

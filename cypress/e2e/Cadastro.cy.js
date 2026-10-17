@@ -1,5 +1,5 @@
-describe('cadastro de cliente', () => {
-  const email = 'teste@gmail.com'
+describe('RF01 - cadastro de cliente', () => {
+  const email = 'rf01.cadastro@flashfood.test'
   const senha = '123456789'
 
   before(() => {
@@ -10,7 +10,7 @@ describe('cadastro de cliente', () => {
     cy.task('deleteUser', email)
   })
 
-  it('cadastra um cliente e permite login', () => {
+  it('RF01 cria o cliente e permite autenticação posterior', () => {
     cy.visit('/registro')
 
     cy.get('#name').type('Teste Cypress')

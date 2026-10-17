@@ -71,6 +71,7 @@ describe('cadastro e personalizacao de pizzas', () => {
     cy.get('#pizza-preco-GG').should('have.value', '75.00')
 
     cy.get('#pizza-preco-P').clear().type('33.00')
+    cy.scrollOverlayToBottom('#createProductOverlay .overlay-panel')
     cy.get('#createProductOverlay').within(() => {
       cy.contains('button[type="submit"]', 'Salvar').click()
     })

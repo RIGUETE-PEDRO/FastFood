@@ -1,4 +1,4 @@
-describe('protecao de paginas autenticadas', () => {
+describe('RF03 - proteção de páginas por autenticação e perfil', () => {
   const paginasProtegidas = [
     '/perfil',
     '/pedidos',
@@ -16,7 +16,7 @@ describe('protecao de paginas autenticadas', () => {
   })
 
   paginasProtegidas.forEach((caminho) => {
-    it(`redireciona ${caminho} para o login quando não há sessão`, () => {
+    it(`RF03 protege ${caminho} quando não há sessão`, () => {
       cy.visit(caminho)
 
       cy.location('pathname', { timeout: 10000 }).should('eq', '/login')

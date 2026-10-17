@@ -10,6 +10,19 @@ COPY public ./public
 COPY vite.config.js ./
 RUN npm run build
 
+# Estágio isolado para testes E2E; mantém Cypress e seus navegadores fora da
+# imagem da aplicação Laravel.
+FROM cypress/included:15.18.0 AS cypress
+WORKDIR /app
+
+FROM cypress AS cypress-browser
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends xvfb fluxbox novnc x11vnc \
+    && rm -rf /var/lib/apt/lists/*
+COPY docker/cypress-browser-entrypoint.sh /usr/local/bin/cypress-browser-entrypoint
+RUN chmod +x /usr/local/bin/cypress-browser-entrypoint
+
 FROM php:8.3-cli
 
 WORKDIR /app

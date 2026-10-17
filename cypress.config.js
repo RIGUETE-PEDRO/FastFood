@@ -59,6 +59,8 @@ const ORDER_FLOW_CITY = 'Cidade Cypress Delivery'
 const CYPRESS_ADMIN_EMAIL = 'admin.cypress@flashfood.test'
 const CYPRESS_ADMIN_PASSWORD = 'CypressAdmin123!'
 const CYPRESS_ADMIN_PASSWORD_HASH = '$2y$12$tPtYgwkfMS7o0lBora5Nkuy2PfhgDVtp9MAY9wmpet1SV4BWzN.OW'
+let cypressAdminUsed = false
+let cypressAdminRoleAssignmentAdded = null
 
 async function ensureOrderFlowBaseRecords(conn) {
     const requiredRecords = [
@@ -98,6 +100,10 @@ async function ensureOrderFlowBaseRecords(conn) {
 }
 
 export default defineConfig({
+  env: {
+    EMAIL_NOVO_USUARIO: process.env.CYPRESS_EMAIL_NOVO_USUARIO || 'funcionario.cypress@flashfood.test',
+    SENHA_NOVO_USUARIO: process.env.CYPRESS_SENHA_NOVO_USUARIO || 'CypressFuncionario123!',
+  },
   e2e: {
     baseUrl: process.env.CYPRESS_BASE_URL || "http://localhost:8000",
 
@@ -142,12 +148,21 @@ export default defineConfig({
                         `SELECT id FROM roles WHERE nome = 'gerenciamento_produtos' LIMIT 1`
                     )
 
-                    await conn.execute(
-                        `INSERT INTO SecureKey_tipo_usuario (tipo_usuario_id, role_id, created_at, updated_at)
-                         VALUES (?, ?, NOW(), NOW())
-                         ON DUPLICATE KEY UPDATE updated_at = NOW()`,
-                        [tipoUsuarioId, Number(roles[0].id)]
+                    const roleId = Number(roles[0].id)
+                    const [vinculosExistentes] = await conn.execute(
+                        `SELECT role_id FROM SecureKey_tipo_usuario
+                         WHERE tipo_usuario_id = ? AND role_id = ? LIMIT 1`,
+                        [tipoUsuarioId, roleId]
                     )
+
+                    if (!vinculosExistentes.length) {
+                        await conn.execute(
+                            `INSERT INTO SecureKey_tipo_usuario (tipo_usuario_id, role_id, created_at, updated_at)
+                             VALUES (?, ?, NOW(), NOW())`,
+                            [tipoUsuarioId, roleId]
+                        )
+                        cypressAdminRoleAssignmentAdded = { tipoUsuarioId, roleId }
+                    }
 
                     await conn.execute(
                         `INSERT INTO usuarios
@@ -158,6 +173,8 @@ export default defineConfig({
                             deleted = 0, updated_at = NOW()`,
                         [CYPRESS_ADMIN_EMAIL, CYPRESS_ADMIN_PASSWORD_HASH, tipoUsuarioId]
                     )
+
+                    cypressAdminUsed = true
 
                     return { email: CYPRESS_ADMIN_EMAIL, senha: CYPRESS_ADMIN_PASSWORD }
                 } finally {
@@ -357,6 +374,13 @@ export default defineConfig({
 
                 await ensureOrderFlowBaseRecords(conn)
 
+                await conn.execute(
+                    `INSERT INTO categoria_produto (nome, deleted, created_at, updated_at)
+                     VALUES (?, 0, NOW(), NOW())
+                     ON DUPLICATE KEY UPDATE deleted = 0, updated_at = NOW()`,
+                    [categoria]
+                )
+
                 const [categorias] = await conn.execute(
                     `SELECT id FROM categoria_produto WHERE nome = ? LIMIT 1`,
                     [categoria]
@@ -521,6 +545,32 @@ export default defineConfig({
                 }
             },
          })
+
+        on('after:run', async () => {
+            if (!cypressAdminUsed) return
+
+            const conn = await getConnection()
+
+            try {
+                await conn.execute(
+                    `DELETE FROM ${usuarioTable()} WHERE email = ?`,
+                    [CYPRESS_ADMIN_EMAIL]
+                )
+
+                if (cypressAdminRoleAssignmentAdded) {
+                    await conn.execute(
+                        `DELETE FROM SecureKey_tipo_usuario
+                         WHERE tipo_usuario_id = ? AND role_id = ?`,
+                        [
+                            cypressAdminRoleAssignmentAdded.tipoUsuarioId,
+                            cypressAdminRoleAssignmentAdded.roleId,
+                        ]
+                    )
+                }
+            } finally {
+                await conn.end()
+            }
+        })
 
       return config
     },

@@ -177,10 +177,42 @@ Para abrir o Cypress em modo interativo:
 npm run cypress:open
 ```
 
+Para abrir a interface gráfica do Cypress no navegador do seu PC enquanto ele roda no servidor:
+
+1. No terminal do servidor, na pasta do projeto, inicie o serviço:
+
+   ```bash
+   docker compose --profile browser up --build cypress-browser
+   ```
+
+2. No Windows, abra um segundo terminal e crie um túnel SSH:
+
+   ```bash
+   ssh -N -L 6080:127.0.0.1:6080 usuario@servidor
+   ```
+
+3. Acesse `http://127.0.0.1:6080/vnc.html?autoconnect=1` no navegador do Windows. O túnel mantém a porta acessível apenas pela sua conexão SSH. Se estiver usando VS Code Remote SSH, também pode encaminhar a porta `6080` no painel **Ports** e abrir o endereço local exibido, acrescentando `/vnc.html?autoconnect=1`. Para encerrar, pressione `Ctrl+C` nos terminais do túnel e do serviço.
+
 Também é possível executar a suíte pelo serviço Docker:
 
 ```bash
 npm run test:e2e:docker
 ```
 
-Os testes de cadastro, funcionários, produtos e pedidos usam o banco configurado para o Cypress e podem criar e remover registros de teste. A suíte completa e o teste do histórico de mesas precisam das credenciais de teste do administrador em `CYPRESS_USUARIO_ADMINISTRADOR` e `CYPRESS_SENHA_ADMINISTRADOR`. Os testes de funcionários também precisam de `CYPRESS_EMAIL_NOVO_USUARIO` e `CYPRESS_SENHA_NOVO_USUARIO`. Os testes de navegação, acesso protegido e validação podem ser executados sem essas credenciais.
+Os testes de cadastro, funcionários, produtos e pedidos usam o banco configurado para o Cypress e podem criar e remover registros de teste. Os testes administrativos criam uma conta Cypress temporária e a removem ao final da execução. Os testes de funcionários usam `funcionario.cypress@flashfood.test` e uma senha de teste por padrão; os valores podem ser substituídos por `CYPRESS_EMAIL_NOVO_USUARIO` e `CYPRESS_SENHA_NOVO_USUARIO`.
+
+### Cobertura dos requisitos funcionais
+
+| Requisito | Cenário automatizado |
+| --- | --- |
+| RF01 — cadastro de clientes e funcionários | `Cadastro.cy.js`, `CriarFuncionario.cy.js` |
+| RF02 — login e encerramento de sessão | `loginAdmin.cy.js`, `LogandoComFuncionarioCriado.cy.js`, `Logout.cy.js` |
+| RF03 — autorização por perfil | `AcessoProtegido.cy.js`, `AcessoAdmin.cy.js`, `AcessoPerfil.cy.js` |
+| RF04 — gerenciamento de pedidos | `FluxoCompraEntrega.cy.js` — consulta e avanço do pedido no painel |
+| RF05 — exibição de produtos disponíveis | `NavegacaoCardapio.cy.js`, `CatalogoProdutos.cy.js` |
+| RF06 — gerenciamento do carrinho | `Carrinho.cy.js` — adicionar, alterar quantidade e remover produto |
+| RF07 — confirmação e registro de pedidos | `FluxoCompraEntrega.cy.js` — finalização do checkout |
+| RF08 — consulta de pedidos por funcionário autorizado | `FluxoCompraEntrega.cy.js` — consulta no painel administrativo |
+| RF09 — localização e acompanhamento do pedido | `FluxoCompraEntrega.cy.js` — acompanhamento pelo cliente e painel de entregas |
+| RF10 — atualização do status do pedido | `FluxoCompraEntrega.cy.js` — preparo, trânsito e entrega |
+| RF11 — armazenamento e recuperação de dados | `CriandoProduto.cy.js`, `FluxoCompraEntrega.cy.js` — conferência dos dados persistidos |

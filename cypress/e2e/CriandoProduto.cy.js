@@ -1,4 +1,4 @@
-describe('gerenciamento de produtos', () => {
+describe('RF11 - armazenamento e consulta de produtos', () => {
   const produtoNome = 'Coca-cola Teste'
 
   before(() => {
@@ -13,7 +13,7 @@ describe('gerenciamento de produtos', () => {
     cy.task('deleteProduct', produtoNome)
   })
 
-  it('cria um produto pelo painel administrativo', () => {
+  it('RF11 salva o produto e recupera seus dados na listagem', () => {
     cy.visit('/Administrativo')
     cy.location('pathname').should('include', '/Administrativo')
 
