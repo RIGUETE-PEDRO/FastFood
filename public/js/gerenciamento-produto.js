@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageName = document.getElementById('imagem-nome');
     const categoryInput = document.getElementById('produto-categoria');
     const pizzaSizePrices = document.getElementById('pizzaSizePrices');
-    const pizzaBorders = document.getElementById('pizzaBorders');
     const portionHalfPrice = document.getElementById('portionHalfPrice');
     const allowHalfPortion = document.getElementById('produto-aceita-meia');
 
@@ -36,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const isPortion = ['porcao', 'porcoes'].includes(selectedCategory);
 
         if (pizzaSizePrices) pizzaSizePrices.hidden = !isPizza;
-        if (pizzaBorders) pizzaBorders.hidden = !isPizza;
         if (portionHalfPrice) portionHalfPrice.hidden = !isPortion;
         if (allowHalfPortion) allowHalfPortion.required = false;
     }
@@ -49,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('produto_id').value = '';
         if (imageName) imageName.textContent = 'Nenhum selecionado';
         form.querySelectorAll('[name^="precos_por_tamanho["]').forEach((field) => { field.value = ''; });
-        form.querySelectorAll('[name="borda_ids[]"]').forEach((field) => { field.checked = false; });
         if (allowHalfPortion) allowHalfPortion.checked = false;
         const halfPrice = document.getElementById('produto-preco-meia');
         if (halfPrice) halfPrice.value = '';
@@ -119,15 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
             Object.entries(pricesBySize).forEach(([size, price]) => {
                 const field = document.getElementById(`pizza-preco-${size}`);
                 if (field) field.value = price;
-            });
-            let borderIds = [];
-            try {
-                borderIds = JSON.parse(btn.getAttribute('data-borda-ids') || '[]') || [];
-            } catch (error) {
-                borderIds = [];
-            }
-            form.querySelectorAll('[name="borda_ids[]"]').forEach((field) => {
-                field.checked = borderIds.map(String).includes(field.value);
             });
             if (allowHalfPortion) allowHalfPortion.checked = btn.getAttribute('data-aceita-meia-por') === '1';
             const halfPrice = document.getElementById('produto-preco-meia');

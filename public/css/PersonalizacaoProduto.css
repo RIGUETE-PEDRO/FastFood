@@ -28,12 +28,74 @@
     font-weight: 700;
 }
 
+.form-group.product-options#pizzaSizePrices {
+    margin-top: 0.25rem;
+    padding: 1rem 0 0;
+    border: 0;
+    border-radius: 0;
+    border-top: 1px solid #eaded5;
+}
+
+#pizzaSizePrices legend {
+    padding: 0;
+    margin-bottom: 0.35rem;
+}
+
+#pizzaSizePrices > small {
+    display: block;
+    max-width: 54ch;
+    color: #75665f;
+    line-height: 1.5;
+}
+
 .product-options__sizes {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 0.5rem;
+    gap: 1rem 1.25rem;
+    align-items: start;
+    margin-top: 1.1rem;
+}
+
+.product-options__size {
+    display: grid !important;
+    gap: 0.55rem;
+    min-width: 0;
+    padding: 0.35rem 0.25rem;
+    margin: 0 !important;
+    color: #62443a !important;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.product-options__size-price {
+    display: flex;
     align-items: center;
-    margin-top: 0.75rem;
+    gap: 0.45rem;
+    min-width: 0;
+    border-bottom: 1px solid #d9c8bc;
+    color: #8b5e4c;
+    font-size: 0.9rem;
+}
+
+.product-options__size-price:focus-within {
+    border-color: #d62828;
+    box-shadow: 0 1px 0 #d62828;
+}
+
+.form-group.product-options .product-options__size-price input.form-control {
+    min-width: 0;
+    min-height: 40px;
+    padding: 0.35rem 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: #412015;
+}
+
+.form-group.product-options .product-options__size-price input.form-control:focus {
+    border: 0;
+    box-shadow: none;
 }
 
 .product-options__checks {

@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\CategoriaProdutoModel;
-use App\Models\BordaModel;
 use App\Repository\GerenciaProdutosRepository;
 use Illuminate\Support\Str;
 
@@ -28,9 +27,8 @@ class GerenciaProdutosService
         $nomeUsuario = $usuarioLogado ? explode(' ', trim($usuarioLogado->nome))[0] : 'Usuário';
         $produtos = $this->repository->listarProdutosComCategoria();
         $categorias = $this->repository->listarCategorias();
-        $bordas = BordaModel::query()->where('ativa', true)->orderBy('nome')->get();
 
-        return compact('usuarioLogado', 'nomeUsuario', 'produtos', 'categorias', 'bordas');
+        return compact('usuarioLogado', 'nomeUsuario', 'produtos', 'categorias');
     }
 
     public function criarProduto($request, ?array $dadosValidados = null)
@@ -50,10 +48,6 @@ class GerenciaProdutosService
                 ...$opcoes,
             ]
         );
-
-        if ($this->categoriaEhPizza($dados['categoria_id'] ?? null)) {
-            $produto->bordas()->sync($this->bordasAtivas($dados['borda_ids'] ?? []));
-        }
 
         return $produto;
     }
@@ -84,31 +78,7 @@ class GerenciaProdutosService
         $data = array_merge($data, $this->opcoesPersonalizacao($data));
 
         $produto = $this->repository->atualizarProduto((int) $id, $data);
-        if ($produto) {
-            $bordas = $this->categoriaEhPizza($data['categoria_id'] ?? null)
-                ? $this->bordasAtivas($data['borda_ids'] ?? [])
-                : [];
-            if ($this->categoriaEhPizza($data['categoria_id'] ?? null)) {
-                $inativasAssociadas = $produto->bordas()->where('bordas.ativa', false)->pluck('bordas.id')->all();
-                $bordas = array_values(array_unique([...$bordas, ...$inativasAssociadas]));
-            }
-            $produto->bordas()->sync($bordas);
-        }
-
         return $produto;
-    }
-
-    private function bordasAtivas(array $ids): array
-    {
-        return BordaModel::query()->where('ativa', true)->whereIn('id', $ids)->pluck('id')->all();
-    }
-
-    private function categoriaEhPizza(mixed $categoriaId): bool
-    {
-        $categoria = CategoriaProdutoModel::find($categoriaId);
-        $nomeCategoria = mb_strtolower(Str::ascii(trim((string) optional($categoria)->nome)));
-
-        return in_array($nomeCategoria, ['pizza', 'pizzas'], true);
     }
 
     private function opcoesPersonalizacao(array $dados): array

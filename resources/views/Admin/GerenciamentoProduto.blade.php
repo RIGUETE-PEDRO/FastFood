@@ -94,7 +94,6 @@
                                             data-precos-por-tamanho="{{ json_encode($produto->precos_por_tamanho ?? []) }}"
                                             data-aceita-meia-por="{{ $produto->aceita_meia_por ? 1 : 0 }}"
                                             data-preco-meia-por="{{ $produto->preco_meia_por }}"
-                                            data-borda-ids="{{ json_encode($produto->bordas->pluck('id')->all()) }}"
                                             data-action="{{ route('produtos.atualizar', $produto->id) }}"
 
                                             >
@@ -180,30 +179,17 @@
                         </div>
                         <fieldset class="form-group product-options" id="pizzaSizePrices" hidden>
                             <legend>Preços por tamanho da pizza</legend>
-                            <small>Preencha somente os tamanhos vendidos. O preço cadastrado acima continua sendo usado para pizzas sem opções de tamanho.</small>
+                            <small>Preencha somente os tamanhos vendidos. O preço acima vale para pizzas sem tamanhos configurados. Todas as bordas ativas ficam disponíveis automaticamente para qualquer pizza.</small>
                             <div class="product-options__sizes">
                                 @foreach(['P', 'M', 'G', 'GG', 'XG'] as $tamanho)
-                                    <label for="pizza-preco-{{ $tamanho }}">{{ $tamanho }}</label>
-                                    <input type="number" min="0.01" step="0.01" inputmode="decimal" name="precos_por_tamanho[{{ $tamanho }}]" id="pizza-preco-{{ $tamanho }}" class="form-control" placeholder="R$">
-                                @endforeach
-                            </div>
-                        </fieldset>
-                        <fieldset class="form-group product-options" id="pizzaBorders" hidden>
-                            <legend>Bordas disponíveis nesta pizza</legend>
-                            <small>Marque as bordas que o cliente poderá escolher. Os adicionais são configurados no cadastro de bordas.</small>
-                            <div class="product-options__checks">
-                                @forelse($bordas as $borda)
-                                    <label class="product-options__check" for="produto-borda-{{ $borda->id }}">
-                                        <input type="checkbox" name="borda_ids[]" id="produto-borda-{{ $borda->id }}" value="{{ $borda->id }}">
-                                        {{ $borda->nome }}
+                                    <label class="product-options__size" for="pizza-preco-{{ $tamanho }}">
+                                        <span class="product-options__size-label">Tamanho {{ $tamanho }}</span>
+                                        <span class="product-options__size-price">
+                                            <span aria-hidden="true">R$</span>
+                                            <input type="number" min="0.01" step="0.01" inputmode="decimal" name="precos_por_tamanho[{{ $tamanho }}]" id="pizza-preco-{{ $tamanho }}" class="form-control" placeholder="0,00">
+                                        </span>
                                     </label>
-                                @empty
-                                    <p>Nenhuma borda ativa.
-                                        @role('GERENCIAMENTO_BORDAS')
-                                            <a href="{{ route('gerenciamento_bordas') }}">Cadastre uma borda</a>.
-                                        @endrole
-                                    </p>
-                                @endforelse
+                                @endforeach
                             </div>
                         </fieldset>
                         <fieldset class="form-group product-options" id="portionHalfPrice" hidden>

@@ -15,7 +15,7 @@ class IndexProdutoRepositoryimpl implements IndexProdutoRepository
         
         return Cache::remember("todos_produtos",now()->addMinutes(30),function (){
               return ProdutoModel::where('disponivel', true)
-                ->with(['categoria', 'bordas'])
+                ->with('categoria')
                 ->orderBy('nome')
                 ->get();
         });
@@ -27,7 +27,7 @@ class IndexProdutoRepositoryimpl implements IndexProdutoRepository
 
         return Cache::remember('lista_produtos_destaque', now()->addMinutes(30), function () {
             return ProdutoModel::where('disponivel', true)
-                ->with(['categoria', 'bordas'])
+                ->with('categoria')
                 ->where('no_carrousel', true)
                 ->orderBy('nome')
                 ->get();

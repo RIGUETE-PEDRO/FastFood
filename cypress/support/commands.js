@@ -43,6 +43,12 @@ Cypress.Commands.add('loginAdmin', () => {
   )
 })
 
+Cypress.Commands.add('loginCypressAdmin', () => {
+  cy.task('ensureCypressAdmin').then(({ email, senha }) => {
+    submitLogin(email, senha)
+  })
+})
+
 Cypress.Commands.add('loginAs', (email, senha) => {
   submitLogin(email, senha)
 })
@@ -120,6 +126,7 @@ Cypress.Commands.add('criarProdutoUi', ({
   descricao = 'Produto criado por teste automatizado',
   categoria = 'Bebidas',
   ativo = true,
+  precosPorTamanho = {},
 }) => {
   cy.visit('/gerenciamento_Produtos')
   cy.get('#openCreateProduct').click()
@@ -129,6 +136,9 @@ Cypress.Commands.add('criarProdutoUi', ({
   cy.get('#produto-preco').clear().type(preco)
   cy.get('#produto-descricao').clear().type(descricao)
   cy.get('#produto-categoria').select(categoria)
+  Object.entries(precosPorTamanho).forEach(([tamanho, valor]) => {
+    cy.get(`#pizza-preco-${tamanho}`).clear().type(String(valor))
+  })
   cy.get(ativo ? '#btnAtivo' : '#btnInativo').click()
 
   cy.get('#createProductOverlay').within(() => {

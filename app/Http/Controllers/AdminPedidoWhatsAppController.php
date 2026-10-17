@@ -22,7 +22,7 @@ class AdminPedidoWhatsAppController extends Controller
 {
     public function index()
     {
-        $produtos = ProdutoModel::with(['categoria', 'bordas'])->where('disponivel', true)->orderBy('nome')->get();
+        $produtos = ProdutoModel::with('categoria')->where('disponivel', true)->orderBy('nome')->get();
         $pizzas = $produtos->filter(function ($produto) {
             $categoria = mb_strtolower(Str::ascii(trim((string) optional($produto->categoria)->nome)));
             return in_array($categoria, ['pizza', 'pizzas'], true);
@@ -164,7 +164,7 @@ class AdminPedidoWhatsAppController extends Controller
                 }
                 $enderecoId = $endereco->id;
             }
-            $produtos = ProdutoModel::with(['categoria', 'bordas'])
+            $produtos = ProdutoModel::with('categoria')
                 ->whereIn('id', collect($dados['itens'])->pluck('produto_id'))
                 ->get()
                 ->keyBy('id');

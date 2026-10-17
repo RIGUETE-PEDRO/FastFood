@@ -95,7 +95,7 @@ class PersonalizacaoProdutoService
             if (!isset($precos1[$tamanho], $precos2[$tamanho])) {
                 throw new InvalidArgumentException('Selecione um tamanho cadastrado para os dois sabores.');
             }
-            $borda = $this->bordaSelecionada($sabor1, $sabor2, $configuracao);
+            $borda = $this->bordaSelecionada($configuracao);
             $preco1 = $this->preco($precos1[$tamanho]);
             $preco2 = $this->preco($precos2[$tamanho]);
             $preco = max($preco1, $preco2) + $this->adicionalBorda($tamanho, $borda);
@@ -117,7 +117,7 @@ class PersonalizacaoProdutoService
         if (!isset($precos1[$tamanho])) {
             throw new InvalidArgumentException('Selecione um tamanho cadastrado para esta pizza.');
         }
-        $borda = $this->bordaSelecionada($sabor1, null, $configuracao);
+        $borda = $this->bordaSelecionada($configuracao);
         $preco = $this->preco($precos1[$tamanho]) + $this->adicionalBorda($tamanho, $borda);
 
         return [
@@ -172,7 +172,7 @@ class PersonalizacaoProdutoService
         return $normalizados ?: self::PRECOS_PADRAO;
     }
 
-    private function bordaSelecionada(ProdutoModel $sabor1, ?ProdutoModel $sabor2, array $configuracao): ?BordaModel
+    private function bordaSelecionada(array $configuracao): ?BordaModel
     {
         $bordaId = $configuracao['borda_id'] ?? null;
         $bordaAntiga = mb_strtolower(trim((string) ($configuracao['borda'] ?? '')));
@@ -199,13 +199,9 @@ class PersonalizacaoProdutoService
             throw new InvalidArgumentException('Escolha uma borda válida.');
         }
 
-        $borda = $sabor1->bordas()->where('bordas.id', (int) $bordaId)->where('bordas.ativa', true)->first();
+        $borda = BordaModel::query()->whereKey((int) $bordaId)->where('ativa', true)->first();
         if (!$borda) {
-            throw new InvalidArgumentException('Essa borda não está disponível para a pizza escolhida.');
-        }
-
-        if ($sabor2 && !$sabor2->bordas()->where('bordas.id', $borda->id)->where('bordas.ativa', true)->exists()) {
-            throw new InvalidArgumentException('Essa borda precisa estar disponível nos dois sabores da pizza.');
+            throw new InvalidArgumentException('Essa borda não está ativa no momento.');
         }
 
         return $borda;

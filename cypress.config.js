@@ -56,6 +56,9 @@ function usuarioTable() {
 
 const ORDER_FLOW_CATEGORY = 'Categoria Cypress Delivery'
 const ORDER_FLOW_CITY = 'Cidade Cypress Delivery'
+const CYPRESS_ADMIN_EMAIL = 'admin.cypress@flashfood.test'
+const CYPRESS_ADMIN_PASSWORD = 'CypressAdmin123!'
+const CYPRESS_ADMIN_PASSWORD_HASH = '$2y$12$tPtYgwkfMS7o0lBora5Nkuy2PfhgDVtp9MAY9wmpet1SV4BWzN.OW'
 
 async function ensureOrderFlowBaseRecords(conn) {
     const requiredRecords = [
@@ -115,6 +118,53 @@ export default defineConfig({
                 return null
             },
 
+            async ensureCypressAdmin() {
+                const conn = await getConnection()
+
+                try {
+                    const [tipos] = await conn.execute(
+                        `SELECT id FROM tipo_usuarios WHERE descricao = 'Administrador' LIMIT 1`
+                    )
+
+                    if (!tipos.length) {
+                        throw new Error('Base de teste incompleta: grupo Administrador nao encontrado.')
+                    }
+
+                    const tipoUsuarioId = Number(tipos[0].id)
+
+                    await conn.execute(
+                        `INSERT INTO roles (nome, created_at, updated_at)
+                         VALUES ('gerenciamento_produtos', NOW(), NOW())
+                         ON DUPLICATE KEY UPDATE updated_at = NOW()`
+                    )
+
+                    const [roles] = await conn.execute(
+                        `SELECT id FROM roles WHERE nome = 'gerenciamento_produtos' LIMIT 1`
+                    )
+
+                    await conn.execute(
+                        `INSERT INTO SecureKey_tipo_usuario (tipo_usuario_id, role_id, created_at, updated_at)
+                         VALUES (?, ?, NOW(), NOW())
+                         ON DUPLICATE KEY UPDATE updated_at = NOW()`,
+                        [tipoUsuarioId, Number(roles[0].id)]
+                    )
+
+                    await conn.execute(
+                        `INSERT INTO usuarios
+                            (nome, email, senha, telefone, tipo_usuario_id, deleted, created_at, updated_at)
+                         VALUES ('Administrador Cypress', ?, ?, '11999999999', ?, 0, NOW(), NOW())
+                         ON DUPLICATE KEY UPDATE
+                            nome = VALUES(nome), senha = VALUES(senha), tipo_usuario_id = VALUES(tipo_usuario_id),
+                            deleted = 0, updated_at = NOW()`,
+                        [CYPRESS_ADMIN_EMAIL, CYPRESS_ADMIN_PASSWORD_HASH, tipoUsuarioId]
+                    )
+
+                    return { email: CYPRESS_ADMIN_EMAIL, senha: CYPRESS_ADMIN_PASSWORD }
+                } finally {
+                    await conn.end()
+                }
+            },
+
             async deleteProduct(nome) {
                 const conn = await getConnection()
 
@@ -159,6 +209,17 @@ export default defineConfig({
                 await conn.end()
 
                 return null
+            },
+
+            async activeBorders() {
+                const conn = await getConnection()
+                const [rows] = await conn.execute(
+                    `SELECT id, nome FROM bordas WHERE ativa = 1 ORDER BY nome`
+                )
+
+                await conn.end()
+
+                return rows.map((row) => ({ id: Number(row.id), nome: row.nome }))
             },
 
             async cleanupPedidoFlow({

@@ -13,7 +13,7 @@ class GerenciaProdutosRepositoryimpl implements GerenciaProdutosRepository
     public function listarProdutosComCategoria()
     {
         return Cache::remember('lista_produtos', now()->addMinutes(30), function () {
-            return ProdutoModel::with(['categoria', 'bordas'])->get();
+            return ProdutoModel::with('categoria')->get();
         });
     }
 

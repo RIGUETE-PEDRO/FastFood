@@ -53,7 +53,7 @@ class GarcomService
     {
         return array_map(function (array $item): array {
             $produtoId = (int) ($item['produto_id'] ?? 0);
-            $produto = ProdutoModel::with(['categoria', 'bordas'])->whereKey($produtoId)->first();
+            $produto = ProdutoModel::with('categoria')->whereKey($produtoId)->first();
             if (!$produto) {
                 throw new \InvalidArgumentException('Um dos produtos não foi encontrado.');
             }

@@ -43,7 +43,7 @@
             @foreach ($pizzas as $pizza)
 
 
-            <div class="produto produto--interactive" data-produto-id="{{ $pizza->id }}" data-produto-nome="{{ $pizza->nome }}" data-produto-preco="{{ $pizza->preco }}" data-produto-tipo="pizza" data-precos='{{ json_encode($pizza->precos_por_tamanho ?: \App\Services\PersonalizacaoProdutoService::PRECOS_PADRAO) }}' data-bordas='{{ json_encode($pizza->bordas->where("ativa", true)->map(fn ($borda) => ["id" => $borda->id, "nome" => $borda->nome, "adicionais_por_tamanho" => $borda->adicionais_por_tamanho ?: []])->values()) }}'>
+            <div class="produto produto--interactive" data-produto-id="{{ $pizza->id }}" data-produto-nome="{{ $pizza->nome }}" data-produto-preco="{{ $pizza->preco }}" data-produto-tipo="pizza" data-precos='{{ json_encode($pizza->precos_por_tamanho ?: \App\Services\PersonalizacaoProdutoService::PRECOS_PADRAO) }}' data-bordas='{{ json_encode($pizza->bordasDisponiveis->map(fn ($borda) => ["id" => $borda->id, "nome" => $borda->nome, "adicionais_por_tamanho" => $borda->adicionais_por_tamanho ?: []])->values()) }}'>
                 <div class="container-img">
                     @if(filled($pizza->imagem_url))
                         <img src="{{ asset('img/produtos/' . $pizza->imagem_url) }}" alt="{{ $pizza->nome }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif decoding="async">

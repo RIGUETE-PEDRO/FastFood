@@ -19,7 +19,7 @@
                     <div class="mb-3" id="cartPizzaOptions" hidden>
                         <select id="cart_pizza_sabor_1" hidden aria-hidden="true" tabindex="-1" style="display:none !important">
                             @foreach(($pizzas ?? collect()) as $pizzaOpcao)
-                                <option value="{{ $pizzaOpcao->id }}" data-nome="{{ $pizzaOpcao->nome }}" data-preco="{{ $pizzaOpcao->preco }}" data-precos='{{ json_encode($pizzaOpcao->precos_por_tamanho ?: \App\Services\PersonalizacaoProdutoService::PRECOS_PADRAO) }}' data-bordas='{{ json_encode($pizzaOpcao->bordas->where("ativa", true)->map(fn ($borda) => ["id" => $borda->id, "nome" => $borda->nome, "adicionais_por_tamanho" => $borda->adicionais_por_tamanho ?: []])->values()) }}'>{{ $pizzaOpcao->nome }}</option>
+                                <option value="{{ $pizzaOpcao->id }}" data-nome="{{ $pizzaOpcao->nome }}" data-preco="{{ $pizzaOpcao->preco }}" data-precos='{{ json_encode($pizzaOpcao->precos_por_tamanho ?: \App\Services\PersonalizacaoProdutoService::PRECOS_PADRAO) }}' data-bordas='{{ json_encode($pizzaOpcao->bordasDisponiveis->map(fn ($borda) => ["id" => $borda->id, "nome" => $borda->nome, "adicionais_por_tamanho" => $borda->adicionais_por_tamanho ?: []])->values()) }}'>{{ $pizzaOpcao->nome }}</option>
                             @endforeach
                         </select>
 
@@ -35,7 +35,7 @@
                             <select class="form-select" id="cart_pizza_sabor_2" name="personalizacao[sabor_2_id]" disabled>
                                 <option value="" selected>Selecione outro sabor</option>
                                 @foreach(($pizzas ?? collect()) as $pizzaOpcao)
-                                    <option value="{{ $pizzaOpcao->id }}" data-nome="{{ $pizzaOpcao->nome }}" data-preco="{{ $pizzaOpcao->preco }}" data-precos='{{ json_encode($pizzaOpcao->precos_por_tamanho ?: \App\Services\PersonalizacaoProdutoService::PRECOS_PADRAO) }}' data-bordas='{{ json_encode($pizzaOpcao->bordas->where("ativa", true)->map(fn ($borda) => ["id" => $borda->id, "nome" => $borda->nome, "adicionais_por_tamanho" => $borda->adicionais_por_tamanho ?: []])->values()) }}'>{{ $pizzaOpcao->nome }}</option>
+                                    <option value="{{ $pizzaOpcao->id }}" data-nome="{{ $pizzaOpcao->nome }}" data-preco="{{ $pizzaOpcao->preco }}" data-precos='{{ json_encode($pizzaOpcao->precos_por_tamanho ?: \App\Services\PersonalizacaoProdutoService::PRECOS_PADRAO) }}' data-bordas='{{ json_encode($pizzaOpcao->bordasDisponiveis->map(fn ($borda) => ["id" => $borda->id, "nome" => $borda->nome, "adicionais_por_tamanho" => $borda->adicionais_por_tamanho ?: []])->values()) }}'>{{ $pizzaOpcao->nome }}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -153,8 +153,34 @@ composer debug
 
 ### Executando o Cypress
 
-Para abrir os testes end-to-end:
+Com a aplicação e o banco de dados em execução, rode toda a suíte em modo headless:
 
 ```bash
-npx cypress open
+npm run test:e2e
 ```
+
+Para executar apenas navegação, acesso protegido e validação de formulários:
+
+```bash
+npx cypress run --spec "cypress/e2e/NavegacaoCardapio.cy.js,cypress/e2e/AcessoProtegido.cy.js,cypress/e2e/ValidacaoFormularios.cy.js"
+```
+
+Com as credenciais de teste do administrador configuradas, também execute o histórico de mesas:
+
+```bash
+npx cypress run --spec "cypress/e2e/MesasHistorico.cy.js"
+```
+
+Para abrir o Cypress em modo interativo:
+
+```bash
+npm run cypress:open
+```
+
+Também é possível executar a suíte pelo serviço Docker:
+
+```bash
+npm run test:e2e:docker
+```
+
+Os testes de cadastro, funcionários, produtos e pedidos usam o banco configurado para o Cypress e podem criar e remover registros de teste. A suíte completa e o teste do histórico de mesas precisam das credenciais de teste do administrador em `CYPRESS_USUARIO_ADMINISTRADOR` e `CYPRESS_SENHA_ADMINISTRADOR`. Os testes de funcionários também precisam de `CYPRESS_EMAIL_NOVO_USUARIO` e `CYPRESS_SENHA_NOVO_USUARIO`. Os testes de navegação, acesso protegido e validação podem ser executados sem essas credenciais.

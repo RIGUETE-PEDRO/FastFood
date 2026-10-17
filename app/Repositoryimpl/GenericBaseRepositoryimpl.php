@@ -35,7 +35,7 @@ class GenericBaseRepositoryimpl implements  GenericBaseRepository
                 $query->whereIn('nome', $categorias)
                     ->where('deleted', false);
             })
-            ->with(['categoria', 'bordas'])
+            ->with('categoria')
             ->get();
     }
 

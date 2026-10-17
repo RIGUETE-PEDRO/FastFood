@@ -32,7 +32,6 @@ class GerenciamentoProdutoController extends Controller
         return view('Admin.GerenciamentoProduto', [
             'produtos' => $dados['produtos'] ?? [],
             'categorias' => $dados['categorias'] ?? [],
-            'bordas' => $dados['bordas'] ?? [],
             'usuario' => $dados['usuarioLogado'] ?? null,
             'nomeUsuario' => $dados['nomeUsuario'] ?? 'Usuário',
         ]);
@@ -52,8 +51,6 @@ class GerenciamentoProdutoController extends Controller
             'precos_por_tamanho.*' => 'nullable|numeric|min:0.01',
             'aceita_meia_por' => 'nullable|boolean',
             'preco_meia_por' => 'nullable|required_if:aceita_meia_por,1|numeric|min:0.01',
-            'borda_ids' => 'nullable|array',
-            'borda_ids.*' => 'integer|exists:bordas,id',
         ]);
         $this->gerenciaProdutosService->criarProduto($request, $dados);
         return redirect()->route('ListaProdutos')->with('success', PassMensagens::CADASTRAR_PRODUTO_SUCESSO);
@@ -78,8 +75,6 @@ class GerenciamentoProdutoController extends Controller
             'precos_por_tamanho.*' => 'nullable|numeric|min:0.01',
             'aceita_meia_por' => 'nullable|boolean',
             'preco_meia_por' => 'nullable|required_if:aceita_meia_por,1|numeric|min:0.01',
-            'borda_ids' => 'nullable|array',
-            'borda_ids.*' => 'integer|exists:bordas,id',
         ]);
         $this->gerenciaProdutosService->atualizarProduto($id, array_merge($dados, ['imagem' => $request->file('imagem')]));
         return redirect()->route('gerenciamento_Produtos')->with('success', PassMensagens::ATUALIZADO_SUCESSO);
@@ -181,7 +176,7 @@ class GerenciamentoProdutoController extends Controller
 
     private function limparCacheProdutos(): void
     {
-        foreach (['lista_produtos', 'lista_produtos_destaque', 'todos_produtos', 'produtos_categorias'] as $chave) {
+        foreach (['lista_produtos', 'lista_produtos_destaque', 'todos_produtos', 'produtos_categorias', 'bordas_ativas'] as $chave) {
             Cache::forget($chave);
         }
     }
