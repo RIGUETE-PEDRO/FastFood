@@ -167,6 +167,8 @@ package "Serviços" {
     -otimizadorImagemProduto : OtimizadorImagemProduto
     +criarProduto(request, dadosValidados)
     +atualizarProduto(id, dados)
+    -opcoesPersonalizacao(dados) : array
+    -precoDecimal(valor) : string
   }
   class GerenciamentoFuncionarioService {
     #genericBase : GenericBase
@@ -179,7 +181,15 @@ package "Serviços" {
     +adicionarRoleAoGrupo(tipoUsuarioId, roleId)
   }
   class PersonalizacaoProdutoService {
-    +cotar(produto, configuracao)
+    {static} -TAMANHOS : array
+    {static} +PRECOS_PADRAO : array
+    {static} +FATIAS_POR_TAMANHO : array
+    +cotar(produto, configuracao) : array
+    -cotarPizza(produto, configuracao) : array
+    -cotarPorcao(produto, configuracao) : array
+    -precosPorTamanho(produto) : array
+    -bordaSelecionada(configuracao) : ?BordaModel
+    -adicionalBorda(tamanho, borda) : float
   }
   class PedidoRealtimeService {
     -pedidoService : PedidoService
@@ -348,6 +358,7 @@ package "Entidades e Modelos" {
     -preco_meia_por : decimal?
     +categoria()
     +bordas()
+    +getBordasDisponiveisAttribute() : Collection<BordaModel>
   }
   class CategoriaProdutoModel <<Model>> {
     -nome : string
@@ -633,7 +644,7 @@ PedidoModel "0..*" --> "0..1" EnderecoModel
 PedidoModel "0..*" --> "0..1" MesaModel
 CidadeModel "1" -- "0..*" EnderecoModel
 CategoriaProdutoModel "1" -- "0..*" ProdutoModel
-ProdutoModel "0..*" -- "0..*" BordaModel : produto_borda
+ProdutoModel "0..*" -- "0..*" BordaModel : produto_borda (associação persistida)
 MesaModel "0..1" -- "0..*" MesaPagamentoModel
 MesaModel "0..1" -- "0..*" MesaFechamentoModel
 MesaFechamentoModel "0..1" -- "0..*" MesaPagamentoModel
@@ -658,6 +669,21 @@ note bottom of SecureKeyTipoUsuarioModel
   As FKs da tabela apontam para roles e tipo_usuarios.
   No código atual, roles() aponta para App\Roles\Roles e tipoUsuario()
   aponta para App\Enum\TipoUsuario; nenhum dos dois é Model Eloquent.
+end note
+
+note bottom of ProdutoModel
+  Para produtos das categorias Pizza/Pizzas, bordasDisponiveis retorna todas as
+  bordas ativas, ordenadas por nome e armazenadas em cache por 30 minutos. Para
+  outras categorias, retorna uma coleção vazia. A disponibilidade no catálogo
+  não depende da seleção individual em produto_borda; essa relação many-to-many
+  permanece mapeada no modelo e na tabela.
+end note
+
+note bottom of PersonalizacaoProdutoService
+  A personalização é armazenada como JSON em carrinho.personalizacao e
+  item_pedido.personalizacao. O serviço valida tamanho, sabores, porções e borda
+  ativa consultando os dados atuais, calcula o preço no servidor e guarda a
+  descrição da personalização junto com o item.
 end note
 
 note bottom of TipoUsuarioRegistro
