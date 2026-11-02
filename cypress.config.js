@@ -100,6 +100,8 @@ async function ensureOrderFlowBaseRecords(conn) {
 }
 
 export default defineConfig({
+  viewportWidth: 1440,
+  viewportHeight: 900,
   env: {
     EMAIL_NOVO_USUARIO: process.env.CYPRESS_EMAIL_NOVO_USUARIO || 'funcionario.cypress@flashfood.test',
     SENHA_NOVO_USUARIO: process.env.CYPRESS_SENHA_NOVO_USUARIO || 'CypressFuncionario123!',
@@ -108,6 +110,15 @@ export default defineConfig({
     baseUrl: process.env.CYPRESS_BASE_URL || "http://localhost:8000",
 
     setupNodeEvents(on, config) {
+
+        on('before:browser:launch', (browser, launchOptions) => {
+            if (browser.name === 'electron' && browser.isHeadless) {
+                launchOptions.preferences.width = 1440
+                launchOptions.preferences.height = 900
+            }
+
+            return launchOptions
+        })
 
         on('task', {
 

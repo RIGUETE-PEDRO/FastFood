@@ -1,0 +1,82 @@
+<mxfile host="app.diagrams.net" modified="2026-10-25T15:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="flashfood-use-cases" name="Casos de uso">
+    <mxGraphModel dx="1450" dy="980" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1450" pageHeight="980" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="system" value="Sistema FlashFood" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=center;spacingTop=10;fontStyle=1;fontSize=18;fillColor=#F8FBFF;strokeColor=#315B8A;strokeWidth=2;" vertex="1" parent="1"><mxGeometry x="260" y="40" width="940" height="900" as="geometry" /></mxCell>
+
+        <mxCell id="panel_customer" value="Acesso e cliente" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingTop=8;spacingLeft=12;fontStyle=1;fontSize=14;fillColor=none;strokeColor=#C7D5E5;dashed=1;" vertex="1" parent="1"><mxGeometry x="280" y="90" width="390" height="790" as="geometry" /></mxCell>
+        <mxCell id="panel_admin" value="Administração" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingTop=8;spacingLeft=12;fontStyle=1;fontSize=14;fillColor=none;strokeColor=#C7D5E5;dashed=1;" vertex="1" parent="1"><mxGeometry x="700" y="90" width="470" height="400" as="geometry" /></mxCell>
+        <mxCell id="panel_orders" value="Pedidos e atendimento" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingTop=8;spacingLeft=12;fontStyle=1;fontSize=14;fillColor=none;strokeColor=#C7D5E5;dashed=1;" vertex="1" parent="1"><mxGeometry x="700" y="520" width="470" height="360" as="geometry" /></mxCell>
+
+        <mxCell id="actor_visitor" value="Visitante" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=13;" vertex="1" parent="1"><mxGeometry x="80" y="155" width="50" height="80" as="geometry" /></mxCell>
+        <mxCell id="actor_customer" value="Cliente" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=13;" vertex="1" parent="1"><mxGeometry x="80" y="470" width="50" height="80" as="geometry" /></mxCell>
+        <mxCell id="actor_staff" value="Funcionário autorizado" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=13;" vertex="1" parent="1"><mxGeometry x="1280" y="600" width="55" height="85" as="geometry" /></mxCell>
+        <mxCell id="actor_admin" value="Administrador" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=13;" vertex="1" parent="1"><mxGeometry x="1280" y="220" width="55" height="85" as="geometry" /></mxCell>
+        <mxCell id="actor_securekey" value="Responsável SecureKey" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;" vertex="1" parent="1"><mxGeometry x="1280" y="355" width="55" height="85" as="geometry" /></mxCell>
+        <mxCell id="actor_waiter" value="Garçom" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=13;" vertex="1" parent="1"><mxGeometry x="1280" y="745" width="55" height="85" as="geometry" /></mxCell>
+        <mxCell id="actor_courier" value="Entregador" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=13;" vertex="1" parent="1"><mxGeometry x="1280" y="845" width="55" height="85" as="geometry" /></mxCell>
+
+        <mxCell id="uc_catalog" value="Consultar cardápio" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=13;" vertex="1" parent="1"><mxGeometry x="310" y="135" width="160" height="55" as="geometry" /></mxCell>
+        <mxCell id="uc_register" value="Criar conta" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=13;" vertex="1" parent="1"><mxGeometry x="500" y="135" width="150" height="55" as="geometry" /></mxCell>
+        <mxCell id="uc_login" value="Entrar no sistema" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=13;" vertex="1" parent="1"><mxGeometry x="310" y="205" width="160" height="55" as="geometry" /></mxCell>
+        <mxCell id="uc_password" value="Recuperar senha" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=13;" vertex="1" parent="1"><mxGeometry x="500" y="205" width="150" height="55" as="geometry" /></mxCell>
+
+        <mxCell id="uc_profile" value="Gerenciar perfil" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=13;" vertex="1" parent="1"><mxGeometry x="310" y="310" width="160" height="55" as="geometry" /></mxCell>
+        <mxCell id="uc_cart" value="Gerenciar carrinho" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=13;" vertex="1" parent="1"><mxGeometry x="500" y="310" width="150" height="55" as="geometry" /></mxCell>
+        <mxCell id="uc_place_order" value="Finalizar pedido" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=13;" vertex="1" parent="1"><mxGeometry x="310" y="395" width="160" height="55" as="geometry" /></mxCell>
+        <mxCell id="uc_location" value="Informar endereço ou mesa" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=12;" vertex="1" parent="1"><mxGeometry x="500" y="395" width="150" height="60" as="geometry" /></mxCell>
+        <mxCell id="uc_payment" value="Selecionar forma de pagamento" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=12;" vertex="1" parent="1"><mxGeometry x="500" y="475" width="150" height="60" as="geometry" /></mxCell>
+        <mxCell id="uc_track" value="Acompanhar pedido" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=13;" vertex="1" parent="1"><mxGeometry x="310" y="565" width="160" height="55" as="geometry" /></mxCell>
+        <mxCell id="uc_my_orders" value="Consultar meus pedidos" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=12;" vertex="1" parent="1"><mxGeometry x="500" y="565" width="150" height="60" as="geometry" /></mxCell>
+
+        <mxCell id="uc_products" value="Gerenciar produtos e bordas" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=12;" vertex="1" parent="1"><mxGeometry x="725" y="145" width="195" height="60" as="geometry" /></mxCell>
+        <mxCell id="uc_employees" value="Gerenciar funcionários" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=12;" vertex="1" parent="1"><mxGeometry x="950" y="145" width="195" height="60" as="geometry" /></mxCell>
+        <mxCell id="uc_permissions" value="Gerenciar permissões de acesso" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=12;" vertex="1" parent="1"><mxGeometry x="950" y="245" width="195" height="60" as="geometry" /></mxCell>
+        <mxCell id="uc_tables" value="Gerenciar mesas" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=12;" vertex="1" parent="1"><mxGeometry x="725" y="245" width="195" height="60" as="geometry" /></mxCell>
+        <mxCell id="uc_settings" value="Configurar sistema e impressão" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=12;" vertex="1" parent="1"><mxGeometry x="725" y="345" width="195" height="60" as="geometry" /></mxCell>
+        <mxCell id="uc_dashboard" value="Consultar painel administrativo" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=12;" vertex="1" parent="1"><mxGeometry x="950" y="345" width="195" height="60" as="geometry" /></mxCell>
+
+        <mxCell id="uc_orders" value="Consultar pedidos" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=13;" vertex="1" parent="1"><mxGeometry x="725" y="565" width="195" height="55" as="geometry" /></mxCell>
+        <mxCell id="uc_status" value="Atualizar status do pedido" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=12;" vertex="1" parent="1"><mxGeometry x="725" y="635" width="195" height="55" as="geometry" /></mxCell>
+        <mxCell id="uc_cancel" value="Cancelar pedido" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=13;" vertex="1" parent="1"><mxGeometry x="725" y="705" width="195" height="55" as="geometry" /></mxCell>
+        <mxCell id="uc_receipt" value="Emitir comprovante" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=13;" vertex="1" parent="1"><mxGeometry x="725" y="775" width="195" height="55" as="geometry" /></mxCell>
+        <mxCell id="uc_whatsapp" value="Registrar pedido via WhatsApp" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=12;" vertex="1" parent="1"><mxGeometry x="950" y="565" width="195" height="55" as="geometry" /></mxCell>
+        <mxCell id="uc_table_order" value="Lançar pedido para mesa" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=12;" vertex="1" parent="1"><mxGeometry x="950" y="665" width="195" height="55" as="geometry" /></mxCell>
+        <mxCell id="uc_deliveries" value="Gerenciar entregas" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#315B8A;fontSize=13;" vertex="1" parent="1"><mxGeometry x="950" y="765" width="195" height="55" as="geometry" /></mxCell>
+        <mxCell id="note_permissions" value="As ações disponíveis dependem do perfil e das permissões concedidas." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#475569;" vertex="1" parent="1"><mxGeometry x="725" y="835" width="420" height="28" as="geometry" /></mxCell>
+
+        <mxCell id="e_visitor_catalog" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_visitor" target="uc_catalog"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_visitor_register" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_visitor" target="uc_register"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_visitor_login" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_visitor" target="uc_login"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_visitor_password" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_visitor" target="uc_password"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_customer_profile" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_customer" target="uc_profile"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_customer_cart" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_customer" target="uc_cart"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_customer_order" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_customer" target="uc_place_order"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_customer_track" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_customer" target="uc_track"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_customer_myorders" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_customer" target="uc_my_orders"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_customer_visitor" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=0;strokeColor=#315B8A;" edge="1" parent="1" source="actor_customer" target="actor_visitor"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e_order_location" value="«include»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=vee;endFill=0;strokeColor=#315B8A;fontSize=11;" edge="1" parent="1" source="uc_place_order" target="uc_location"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_order_payment" value="«include»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=vee;endFill=0;strokeColor=#315B8A;fontSize=11;" edge="1" parent="1" source="uc_place_order" target="uc_payment"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e_admin_products" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_admin" target="uc_products"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_admin_employees" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_admin" target="uc_employees"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_admin_tables" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_admin" target="uc_tables"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_admin_settings" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_admin" target="uc_settings"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_admin_dashboard" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_admin" target="uc_dashboard"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_securekey_permissions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_securekey" target="uc_permissions"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e_staff_orders" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_staff" target="uc_orders"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_staff_status" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_staff" target="uc_status"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_staff_cancel" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_staff" target="uc_cancel"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_staff_receipt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_staff" target="uc_receipt"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_staff_whatsapp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_staff" target="uc_whatsapp"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e_waiter_order" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_waiter" target="uc_table_order"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_courier_deliveries" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748B;" edge="1" parent="1" source="actor_courier" target="uc_deliveries"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

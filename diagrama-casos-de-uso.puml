@@ -1,0 +1,95 @@
+@startuml
+title Diagrama de Casos de Uso — FlashFood
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #F7FAFF
+  BorderColor #315B8A
+}
+
+actor Visitante
+actor Cliente
+actor "Funcionário autorizado" as Funcionario
+actor Administrador as Admin
+actor "Responsável por permissões (SecureKey)" as SecureKey
+actor Garçom as Garcom
+actor Entregador
+
+Cliente --|> Visitante
+
+rectangle "Sistema FlashFood" {
+  usecase "Consultar cardápio" as UC_Cardapio
+  usecase "Criar conta" as UC_Cadastro
+  usecase "Entrar no sistema" as UC_Login
+  usecase "Recuperar senha" as UC_Senha
+
+  usecase "Gerenciar perfil" as UC_Perfil
+  usecase "Gerenciar carrinho" as UC_Carrinho
+  usecase "Finalizar pedido" as UC_Pedido
+  usecase "Informar endereço ou mesa" as UC_Local
+  usecase "Selecionar forma de pagamento" as UC_Pagamento
+  usecase "Acompanhar pedido" as UC_Acompanhar
+  usecase "Consultar meus pedidos" as UC_MeusPedidos
+
+  usecase "Consultar pedidos" as UC_ConsultarPedidos
+  usecase "Atualizar status do pedido" as UC_Status
+  usecase "Cancelar pedido" as UC_Cancelar
+  usecase "Emitir comprovante" as UC_Comprovante
+  usecase "Registrar pedido via WhatsApp" as UC_WhatsApp
+
+  usecase "Lançar pedido para mesa" as UC_PedidoMesa
+  usecase "Gerenciar entregas" as UC_Entregas
+
+  usecase "Gerenciar produtos e bordas" as UC_Produtos
+  usecase "Gerenciar funcionários" as UC_Funcionarios
+  usecase "Gerenciar permissões de acesso" as UC_Permissoes
+  usecase "Gerenciar mesas" as UC_Mesas
+  usecase "Configurar sistema e impressão" as UC_Configuracoes
+  usecase "Consultar painel administrativo" as UC_Painel
+}
+
+Visitante --> UC_Cardapio
+Visitante --> UC_Cadastro
+Visitante --> UC_Login
+Visitante --> UC_Senha
+
+Cliente --> UC_Perfil
+Cliente --> UC_Carrinho
+Cliente --> UC_Pedido
+Cliente --> UC_Acompanhar
+Cliente --> UC_MeusPedidos
+
+UC_Pedido ..> UC_Local : <<include>>
+UC_Pedido ..> UC_Pagamento : <<include>>
+
+Funcionario --> UC_ConsultarPedidos
+Funcionario --> UC_Status
+Funcionario --> UC_Cancelar
+Funcionario --> UC_Comprovante
+Funcionario --> UC_WhatsApp
+
+Garcom --> UC_PedidoMesa
+Entregador --> UC_Entregas
+
+Admin --> UC_Produtos
+Admin --> UC_Funcionarios
+SecureKey --> UC_Permissoes
+Admin --> UC_Mesas
+Admin --> UC_Configuracoes
+Admin --> UC_Painel
+
+note right of UC_Pedido
+  Para fazer um pedido, o cliente informa
+  o endereço de entrega ou seleciona uma
+  mesa e escolhe a forma de pagamento.
+end note
+
+note bottom of Funcionario
+  As operações disponíveis para cada funcionário
+  dependem do perfil e das permissões concedidas.
+end note
+
+@enduml

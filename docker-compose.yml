@@ -113,6 +113,7 @@ services:
     image: flashfood-cypress-browser:15.18.0
     container_name: cypress_browser_FlashFood
     working_dir: /app
+    shm_size: 2gb
     profiles:
       - browser
     depends_on:

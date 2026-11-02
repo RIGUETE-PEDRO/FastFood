@@ -1,0 +1,199 @@
+@startuml
+title Modelo de domínio do sistema FlashFood
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide methods
+
+package "Acesso e usuários" {
+  class TipoUsuario <<tipo_usuarios>> {
+    +id : bigint (PK)
+    +descricao : string
+  }
+
+  class Usuario <<usuarios>> {
+    +id : bigint (PK)
+    +tipo_usuario_id : bigint (FK)
+    +nome : string
+    +email : string
+    +telefone : string
+    +url_imagem_perfil : string (opcional)
+  }
+
+  class Funcionario <<funcionario>> {
+    +id : bigint (PK)
+    +usuario_id : bigint (FK)
+    +has_ativo : boolean
+    +salario : decimal
+  }
+
+  class Role <<roles>> {
+    +id : bigint (PK)
+    +nome : string
+  }
+
+  class PermissaoTipoUsuario <<SecureKey_tipo_usuario>> {
+    +id : bigint (PK)
+    +tipo_usuario_id : bigint (FK)
+    +role_id : bigint (FK)
+  }
+}
+
+package "Catálogo de produtos" {
+  class CategoriaProduto <<categoria_produto>> {
+    +id : bigint (PK)
+    +nome : string
+  }
+
+  class Produto <<produtos>> {
+    +id : bigint (PK)
+    +categoria_id : bigint (FK)
+    +nome : string
+    +preco : decimal
+    +descricao : text (opcional)
+    +disponivel : boolean
+    +precos_por_tamanho : json (opcional)
+    +aceita_meia_por : boolean
+    +preco_meia_por : decimal (opcional)
+  }
+
+  class Borda <<bordas>> {
+    +id : bigint (PK)
+    +nome : string
+    +adicionais_por_tamanho : json (opcional)
+    +ativa : boolean
+    +padrao : boolean
+  }
+
+  class ProdutoBorda <<produto_borda>> {
+    +produto_id : bigint (PK, FK)
+    +borda_id : bigint (PK, FK)
+  }
+}
+
+package "Endereços" {
+  class Cidade <<cidade>> {
+    +id : bigint (PK)
+    +nome : string
+  }
+
+  class Endereco <<endereco>> {
+    +id : bigint (PK)
+    +usuario_id : bigint (FK)
+    +cidade_id : bigint (FK)
+    +logradouro : string
+    +numero : string (opcional)
+    +complemento : string (opcional)
+    +bairro : string
+  }
+}
+
+package "Carrinho e pedidos" {
+  class Carrinho <<carrinho>> {
+    +id : bigint (PK)
+    +usuario_id : bigint (FK)
+    +produto_id : bigint (FK)
+    +quantidade : integer
+    +preco_total : decimal
+    +observacao : text (opcional)
+    +personalizacao : json (opcional)
+    +selecionado : boolean
+  }
+
+  class Pedido <<pedidos>> {
+    +id : bigint (PK)
+    +usuario_id : bigint (FK)
+    +motoboy_id : bigint (FK, opcional)
+    +mesa_id : bigint (FK, opcional)
+    +endereco_id : bigint (FK, opcional)
+    +status : bigint (FK)
+    +tipo_pagamento_id : bigint (FK, opcional)
+    +valor_total : decimal
+    +observacoes_pagamento : string (opcional)
+  }
+
+  class ItemPedido <<item_pedido>> {
+    +id : bigint (PK)
+    +pedido_id : bigint (FK)
+    +produto_id : bigint (FK)
+    +quantidade : integer
+    +preco_unitario : decimal
+    +valor_pago : decimal
+    +status_da_comanda : string
+    +pagamento_metodo : string (opcional)
+    +observacao : string (opcional)
+    +personalizacao : json (opcional)
+  }
+
+  class StatusPedido <<status>> {
+    +id : bigint (PK)
+    +status : string
+  }
+
+  class FormaPagamento <<tipo_pagamento>> {
+    +id : bigint (PK)
+    +tipo_pagamento : string
+  }
+}
+
+package "Atendimento em mesa" {
+  class Mesa <<mesas>> {
+    +id : bigint (PK)
+    +numero_da_mesa : integer
+    +status : string
+    +preco : decimal
+  }
+
+  class MesaFechamento <<mesa_fechamentos>> {
+    +id : bigint (PK)
+    +mesa_id : bigint (FK, opcional)
+    +numero_da_mesa : integer
+    +total_pago : decimal
+    +total_itens : integer
+    +produtos_resumo : json (opcional)
+    +fechado_em : datetime (opcional)
+  }
+
+  class MesaPagamento <<mesa_pagamentos>> {
+    +id : bigint (PK)
+    +mesa_id : bigint (FK, opcional)
+    +mesa_fechamento_id : bigint (FK, opcional)
+    +pagamento_metodo : string
+    +valor : decimal
+    +pago_em : datetime (opcional)
+  }
+}
+
+' Usuários, funcionários e permissões
+TipoUsuario "1" -- "0..*" Usuario : classifica
+Usuario "1" -- "0..1" Funcionario : perfil de funcionário
+TipoUsuario "1" -- "0..*" PermissaoTipoUsuario
+Role "1" -- "0..*" PermissaoTipoUsuario
+
+' Catálogo e carrinho
+CategoriaProduto "1" -- "0..*" Produto : agrupa
+Produto "1" -- "0..*" Carrinho : aparece em
+Usuario "1" -- "0..*" Carrinho : mantém
+Produto "1" -- "0..*" ProdutoBorda
+Borda "1" -- "0..*" ProdutoBorda
+
+' Endereços e pedidos
+Cidade "1" -- "0..*" Endereco : localiza
+Usuario "1" -- "0..*" Endereco : possui
+Usuario "1" -- "0..*" Pedido : realiza
+Usuario "0..1" -- "0..*" Pedido : entregador atribuído
+Endereco "0..1" -- "0..*" Pedido : endereço de entrega
+StatusPedido "1" -- "0..*" Pedido : define
+FormaPagamento "0..1" -- "0..*" Pedido : pagamento
+Pedido "1" -- "0..*" ItemPedido : contém
+Produto "1" -- "0..*" ItemPedido : compõe
+
+' Atendimento em mesa
+Mesa "0..1" -- "0..*" Pedido : recebe
+Mesa "0..1" -- "0..*" MesaFechamento : possui histórico
+Mesa "0..1" -- "0..*" MesaPagamento : recebe
+MesaFechamento "0..1" -- "0..*" MesaPagamento : registra
+
+@enduml
