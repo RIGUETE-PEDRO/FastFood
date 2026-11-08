@@ -145,7 +145,11 @@ class PersonalizacaoProdutoService
             throw new InvalidArgumentException('Escolha meia ou inteira para a porção.');
         }
 
-        if ($tipoPorcao === 'meia' && (!$produto->aceita_meia_por || $produto->preco_meia_por === null)) {
+        if ($tipoPorcao === 'meia' && (
+            !$produto->aceita_meia_por
+            || !is_numeric($produto->preco_meia_por)
+            || (float) $produto->preco_meia_por <= 0
+        )) {
             throw new InvalidArgumentException('Este produto não está configurado para meia porção.');
         }
 

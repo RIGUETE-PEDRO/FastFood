@@ -9,7 +9,7 @@
     <title>Detalhes da Mesa</title>
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/Admin/Mesa.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Mesa.css') }}?v={{ filemtime(public_path('css/Admin/Mesa.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/PersonalizacaoProduto.css') }}">
 </head>
 
@@ -43,14 +43,14 @@
                     <section class="mesa-summary-grid" aria-label="Resumo da mesa">
                         <article class="mesa-summary-tile">
                             <span>Status</span>
-                            <strong>{{ $mesa->status }}</strong>
+                            <strong>{{ $mesa->status_exibicao ?? $mesa->status }}</strong>
                         </article>
                         <article class="mesa-summary-tile mesa-summary-tile--total">
                             <span>Total em aberto</span>
                             <strong>R$ {{ number_format((float) $totalAberto, 2, ',', '.') }}</strong>
                         </article>
                         <article class="mesa-summary-tile">
-                            <span>Itens em aberto</span>
+                            <span>Itens na mesa</span>
                             <strong>{{ $itensAbertos->count() }}</strong>
                         </article>
                     </section>
@@ -87,12 +87,13 @@
                                         $sub = $unit * (int) $item->quantidade;
                                         $valorPago = (float) ($item->valor_pago ?? 0);
                                         $restanteLinha = max(0, $sub - $valorPago);
+                                        $pedidoPendente = (int) optional($item->pedido)->status === \App\Enum\StatusPedidos::PENDENTE->value;
                                         $preselectId = (int) (session('mesa.conta.preselect_item_id') ?? 0);
                                         $maxParaAbater = $valorPago > 0 ? 1 : (int) $item->quantidade;
                                     @endphp
 
-                                    <article class="mesa-order-row {{ $permiteBaixa ? '' : 'mesa-order-row--edit-only' }}">
-                                        @if($permiteBaixa)
+                                    <article class="mesa-order-row {{ $permiteBaixa ? '' : 'mesa-order-row--edit-only' }} {{ $pedidoPendente ? 'mesa-order-row--pending' : '' }}">
+                                        @if($permiteBaixa && !$pedidoPendente)
                                             <div class="mesa-order-row__select">
                                                 <label class="mesa-check" aria-label="Selecionar {{ $nome }} para baixa">
                                                     <input
@@ -115,12 +116,17 @@
                                             <div class="mesa-item-name">
                                                 <strong>{{ $nome }}</strong>
                                                 <small>Item #{{ $item->id }}</small>
+                                                @if($pedidoPendente)
+                                                    <small class="mesa-pending-note">Incluído no total; aguardando aceite da cozinha.</small>
+                                                @endif
                                                 @include('partials.detalhes-personalizacao-item', ['personalizacao' => $item->personalizacao])
                                                 @if(filled($item->observacao))
                                                     <small><strong>Obs.:</strong> {{ $item->observacao }}</small>
                                                 @endif
                                             </div>
-                                            @if($valorPago > 0)
+                                            @if($pedidoPendente)
+                                                <span class="mesa-pending-chip">Aguardando preparo</span>
+                                            @elseif($valorPago > 0)
                                                 <span class="mesa-paid-chip">Parcialmente pago</span>
                                             @endif
                                         </div>
@@ -143,6 +149,12 @@
                                         </div>
 
                                         <div class="mesa-order-row__controls">
+                                            @if($pedidoPendente)
+                                                <div class="mesa-order-block">
+                                                    <span>Andamento</span>
+                                                    <strong>Aguardando aceite da cozinha</strong>
+                                                </div>
+                                            @else
                                             @if($permiteBaixa)
                                                 <div class="mesa-order-block">
                                                     <span>Dar baixa agora</span>
@@ -190,12 +202,13 @@
                                                     </form>
                                                 </div>
                                             </div>
+                                            @endif
                                         </div>
                                     </article>
                                 @endforeach
                             </div>
 
-                            @if($permiteBaixa)
+                            @if($permiteBaixa && $totalFaturavel > 0)
                                 <div class="mesa-checkout-bar">
                                     <div>
                                         <strong>Dar baixa parcial ou total</strong>

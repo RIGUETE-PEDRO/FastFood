@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Mensagens\ErroMensagens;
 use App\Mensagens\PassMensagens;
+use App\Enum\StatusPedidos;
 use App\Models\MesaModel;
 use App\Repository\GenericBaseRepository;
 use Carbon\Carbon;
@@ -67,10 +68,15 @@ class MesasService extends GenericBase
     {
         return $this->mesasRepository->listarMesas()
             ->each(function (MesaModel $mesa) {
-                // O valor exibido nunca depende do campo salvo anteriormente na mesa.
-                // Ele é recalculado usando somente pedidos já aceitos.
-                $itensAbertos = $this->mesasRepository->listarItensAbertosMesa((int) $mesa->id);
-                $mesa->setAttribute('preco_calculado', $this->calcularTotalItens($itensAbertos));
+                $itensVisiveis = $this->mesasRepository->pegarItensContaMesa((int) $mesa->id, false);
+                $total = $this->calcularTotalItens($itensVisiveis);
+                $temPedidoPendente = $itensVisiveis->contains(fn ($item) =>
+                    (int) optional($item->pedido)->status === StatusPedidos::PENDENTE->value
+                );
+                $mesa->setAttribute('preco_calculado', $total);
+                $mesa->setAttribute('status_exibicao', $total > 0
+                    ? 'Ocupada'
+                    : ($temPedidoPendente ? 'Aguardando preparo' : $mesa->status));
             });
     }
 
@@ -88,7 +94,15 @@ class MesasService extends GenericBase
 
         $itensAbertos = $this->pegarItensContaMesa($id, false);
         $itensPagos = $this->pegarItensContaMesa($id, true);
+        $itensFaturaveis = $this->mesasRepository->listarItensAbertosMesa((int) $id);
         $totalAberto = $this->calcularTotalItens($itensAbertos);
+        $totalFaturavel = $this->calcularTotalItens($itensFaturaveis);
+        $temPedidoPendente = $itensAbertos->contains(fn ($item) =>
+            (int) optional($item->pedido)->status === StatusPedidos::PENDENTE->value
+        );
+        $mesa->setAttribute('status_exibicao', $totalAberto > 0
+            ? 'Ocupada'
+            : ($temPedidoPendente ? 'Aguardando preparo' : $mesa->status));
 
         $formasPagamento = $this->mesasRepository->listarFormasPagamento();
 
@@ -97,6 +111,7 @@ class MesasService extends GenericBase
             'itensAbertos' => $itensAbertos,
             'itensPagos' => $itensPagos,
             'totalAberto' => $totalAberto,
+            'totalFaturavel' => $totalFaturavel,
             'formasPagamento' => $formasPagamento,
         ];
     }
@@ -247,9 +262,10 @@ class MesasService extends GenericBase
             return;
         }
 
-        $itensAbertos = $this->mesasRepository->listarItensAbertosMesa((int) $mesaId);
+        $itensAbertos = $this->mesasRepository->pegarItensContaMesa((int) $mesaId, false);
 
         $mesa->preco = $this->calcularTotalItens($itensAbertos);
+        $mesa->status = $mesa->preco > 0 ? 'Ocupada' : 'Disponível';
         $mesa->save();
     }
 
@@ -359,15 +375,6 @@ class MesasService extends GenericBase
 
         if ($pedidoId > 0) {
             $this->mesasRepository->atualizarTotaisPedido($pedidoId);
-        }
-
-        if (!$this->mesasRepository->existemItensAbertosMesa($mesaId)) {
-            $mesa = $this->mesasRepository->pegarMesaPorId($mesaId);
-            if ($mesa) {
-                $mesa->preco = 0.00;
-                $mesa->status = 'Disponivel';
-                $mesa->save();
-            }
         }
 
         return ['status' => true, 'mensagem' => 'Item removido da comanda com sucesso!'];

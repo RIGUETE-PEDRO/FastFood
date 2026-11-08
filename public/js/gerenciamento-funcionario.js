@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const emailInput = document.getElementById('email');
     const telefoneInput = document.getElementById('telefone');
     const tipoInput = document.getElementById('tipo_usuario_id');
-    const statusSwitch = document.getElementById('has_ativo_switch');
     const salarioInput = document.getElementById('salario');
     const senhaInput = document.getElementById('senha');
     const senhaConfirmInput = document.getElementById('senha_confirmation');
@@ -68,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         emailInput && (emailInput.value = '');
         telefoneInput && (telefoneInput.value = '');
         tipoInput && (tipoInput.value = '');
-    if (statusSwitch) statusSwitch.checked = true;
+        setStatusFuncionario(true);
         salarioInput && (salarioInput.value = '');
         senhaInput && (senhaInput.value = '');
         senhaConfirmInput && (senhaConfirmInput.value = '');
@@ -128,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (emailInput) emailInput.value = data.email || '';
             if (telefoneInput) telefoneInput.value = data.telefone || '';
             if (tipoInput) tipoInput.value = data.tipo || '';
-            if (statusSwitch) statusSwitch.checked = data.ativo == '1';
+            setStatusFuncionario(data.ativo == '1');
             if (salarioInput) salarioInput.value = data.salario || '';
 
             // Para edição, esconder e remover obrigatoriedade da senha

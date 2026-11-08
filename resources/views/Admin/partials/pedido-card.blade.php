@@ -15,13 +15,18 @@
     ];
     $classeStatus = $statusClasses[$statusAtualValor] ?? 'badge-status badge-status--padrao';
     $temEnderecoEntrega = filled(optional($pedido->endereco)->logradouro);
+    $nomeCliente = optional($pedido->usuario)->nome;
+    $numeroMesa = optional($pedido->mesa)->numero_da_mesa;
+    $rotuloCliente = filled($nomeCliente)
+        ? 'Cliente: ' . $nomeCliente
+        : ($numeroMesa ? 'Atendimento: Mesa ' . $numeroMesa : 'Cliente: Não informado');
 @endphp
 
 <article
     class="pedido-card shadow-sm"
     data-pedido-id="{{ $pedido->id }}"
     data-status="{{ $statusAtualValor }}"
-    data-cliente="{{ Str::lower(optional($pedido->usuario)->nome ?? 'desconhecido') }}"
+    data-cliente="{{ Str::lower($nomeCliente ?: ($numeroMesa ? 'mesa ' . $numeroMesa : 'sem cliente')) }}"
     data-pedido-data="{{ optional($pedido->created_at)->format('Y-m-d') }}"
 >
     @if($colapsavel)
@@ -31,7 +36,7 @@
                     <div>
                         <h2 class="pedido-card__titulo">Pedido #{{ $pedido->id }}</h2>
                         <p class="pedido-card__subtitulo mb-0">{{ optional($pedido->created_at)->format('d/m/Y \a\s H:i') ?? 'Data não informada' }}</p>
-                        <p class="pedido-card__cliente mb-0">Cliente: {{ optional($pedido->usuario)->nome ?? 'Desconhecido' }}</p>
+                        <p class="pedido-card__cliente mb-0">{{ $rotuloCliente }}</p>
                     </div>
                     <div class="pedido-card__header-right">
                         <span class="{{ $classeStatus }}">{{ $pedido->status_label }}</span>
@@ -46,7 +51,7 @@
             <div>
                 <h2 class="pedido-card__titulo">Pedido #{{ $pedido->id }}</h2>
                 <p class="pedido-card__subtitulo mb-0">{{ optional($pedido->created_at)->format('d/m/Y \a\s H:i') ?? 'Data não informada' }}</p>
-                <p class="pedido-card__cliente mb-0">Cliente: {{ optional($pedido->usuario)->nome ?? 'Desconhecido' }}</p>
+                <p class="pedido-card__cliente mb-0">{{ $rotuloCliente }}</p>
             </div>
             <div class="pedido-card__header-right">
                 <span class="{{ $classeStatus }}">{{ $pedido->status_label }}</span>

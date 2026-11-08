@@ -30,35 +30,6 @@ class GarcomRepositoryimpl implements GarcomRepository
         $usuarioId = $usuarioLogado->usuario_id ?? $usuarioLogado->id ?? null;
 
         return DB::transaction(function () use ($itens, $mesaId, $usuarioId) {
-            $pedidoIdAberto = ItemPedidoModel::query()
-                ->whereHas('pedido', function ($q) use ($mesaId) {
-                    $q->where('mesa_id', $mesaId);
-                })
-                ->where('status_da_comanda', 'em_aberto')
-                ->whereNotNull('pedido_id')
-                ->latest('id')
-                ->value('pedido_id');
-
-            $pedido = null;
-            if ($pedidoIdAberto) {
-                $pedido = PedidoModel::query()
-                    ->where('id', $pedidoIdAberto)
-                    ->whereNotIn('status', [
-                        StatusPedidos::ENTREGUE->value,
-                        StatusPedidos::CANCELADO->value,
-                    ])
-                    ->first();
-            }
-
-            if (!$pedido) {
-                $pedido = PedidoModel::create([
-                    'usuario_id' => $usuarioId,
-                    'mesa_id' => $mesaId,
-                    'status' => StatusPedidos::PENDENTE->value,
-                    'valor_total' => 0,
-                ]);
-            }
-
             $itensNormalizados = collect($itens)
                 ->map(fn ($item) => [
                     'produto_id' => (int) ($item['produto_id'] ?? 0),
@@ -86,6 +57,22 @@ class GarcomRepositoryimpl implements GarcomRepository
                 ->whereIn('id', $itensNormalizados->pluck('produto_id')->all())
                 ->get()
                 ->keyBy('id');
+
+            $itensNormalizados = $itensNormalizados
+                ->filter(fn ($item) => $produtos->has($item['produto_id']))
+                ->values();
+
+            if ($itensNormalizados->isEmpty()) {
+                return false;
+            }
+
+            // Cada envio do garçom vira um pedido novo para a cozinha.
+            $pedido = PedidoModel::create([
+                'usuario_id' => $usuarioId,
+                'mesa_id' => $mesaId,
+                'status' => StatusPedidos::PENDENTE->value,
+                'valor_total' => 0,
+            ]);
 
             $totalAdicionado = 0.0;
 
@@ -146,6 +133,7 @@ class GarcomRepositoryimpl implements GarcomRepository
                     ->whereHas('pedido', function ($q) use ($mesaId) {
                         $q->where('mesa_id', $mesaId)
                             ->whereIn('status', [
+                                StatusPedidos::PENDENTE->value,
                                 StatusPedidos::EM_PREPARO->value,
                                 StatusPedidos::A_CAMINHO->value,
                                 StatusPedidos::ENTREGUE->value,

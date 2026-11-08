@@ -466,9 +466,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const produtoId = row.dataset.produtoId;
             const nome = row.dataset.produtoNome || row.querySelector('.nome-cell')?.textContent?.trim() || 'Produto';
             const preco = parsePreco(row.dataset.produtoPreco);
+            const precoMeia = parsePreco(row.dataset.precoMeia);
             const qtdInput = row.querySelector('[data-garcom-qtd]');
             const quantidade = normalizarQuantidade(qtdInput?.value || '1');
-            const aceitaMeia = row.dataset.aceitaMeia === '1';
+            const aceitaMeia = row.dataset.aceitaMeia === '1' && precoMeia > 0;
 
             if (qtdInput) {
                 qtdInput.value = String(quantidade);
@@ -480,7 +481,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 tipo: row.dataset.produtoTipo || '',
                 preco,
                 precoBase: preco,
-                precoMeia: parsePreco(row.dataset.precoMeia),
+                precoMeia,
                 aceitaMeia,
                 precos: lerPrecos(row.dataset.precos),
                 bordas: lerBordas(row.dataset.bordas),

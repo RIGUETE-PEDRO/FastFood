@@ -103,6 +103,7 @@ class MesaController extends Controller
             'itensAbertos' => $detalhes['itensAbertos'],
             'itensPagos' => $detalhes['itensPagos'],
             'totalAberto' => $detalhes['totalAberto'],
+            'totalFaturavel' => $detalhes['totalFaturavel'],
             'formasPagamento' => $detalhes['formasPagamento'],
         ]);
     }

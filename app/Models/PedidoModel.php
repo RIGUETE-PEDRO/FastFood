@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enum\TipoUsuario;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -37,7 +38,8 @@ class PedidoModel extends Model
 
     public function usuario()
     {
-        return $this->belongsTo(UsuarioModel::class, 'usuario_id');
+        return $this->belongsTo(UsuarioModel::class, 'usuario_id')
+            ->where('tipo_usuario_id', TipoUsuario::CLIENTE->value);
     }
 
     public function motoboy()

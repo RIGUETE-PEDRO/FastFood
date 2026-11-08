@@ -638,6 +638,10 @@ body:not(.page-loading) .page-loader {
     width: 100%;
     max-width: 100%;
     padding-block: 4px 10px;
+    touch-action: pan-y pinch-zoom;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: grab;
     mask-image: linear-gradient(
         to right,
         transparent 0%,
@@ -652,6 +656,10 @@ body:not(.page-loading) .page-loader {
         black 96%,
         transparent 100%
     );
+}
+
+.carousel-produtos.is-dragging {
+    cursor: grabbing;
 }
 
 .carousel-track {
@@ -678,8 +686,12 @@ body:not(.page-loading) .page-loader {
     overflow: hidden;
     box-shadow: 0 4px 10px rgba(0,0,0,.2);
     transition: transform 0.3s ease;
-    touch-action: manipulation;
-    cursor: pointer;
+    touch-action: pan-y pinch-zoom;
+    cursor: grab;
+}
+
+.carousel-produtos.is-dragging .produto-card-mini {
+    cursor: grabbing;
 }
 
 .produto-card-mini:hover {
@@ -703,6 +715,7 @@ body:not(.page-loading) .page-loader {
     object-fit: contain;
     object-position: center;
     display: block;
+    -webkit-user-drag: none;
 }
 
 .mini-info {

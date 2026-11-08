@@ -21,6 +21,7 @@ class PedidosFeitosRepositoryimpl implements PedidosFeitosRepository
             'itens.produto',
             'formaPagamento',
             'usuario',
+            'mesa',
             'motoboy',
         ])
             ->orderByDesc('created_at')
@@ -41,13 +42,13 @@ class PedidosFeitosRepositoryimpl implements PedidosFeitosRepository
             'itens.produto',
             'formaPagamento',
             'usuario',
+            'mesa',
             'motoboy',
         ]);
     }
 
     /**
-     * O pedido só compõe a conta da mesa após ser aceito (em preparo).
-     * Pedidos pendentes ou cancelados permanecem fora do total.
+     * Mantém o saldo da mesa com pedidos pendentes e aceitos; cancelados ficam fora.
      */
     private function atualizarResumoDaMesa(PedidoModel $pedido): void
     {
@@ -64,13 +65,14 @@ class PedidosFeitosRepositoryimpl implements PedidosFeitosRepository
             ->whereHas('pedido', function ($query) use ($pedido) {
                 $query->where('mesa_id', $pedido->mesa_id)
                     ->whereIn('status', [
+                        StatusPedidos::PENDENTE->value,
                         StatusPedidos::EM_PREPARO->value,
                         StatusPedidos::A_CAMINHO->value,
                         StatusPedidos::ENTREGUE->value,
                     ]);
             })
             ->where('status_da_comanda', 'em_aberto')
-            ->selectRaw('COALESCE(SUM(preco_unitario * quantidade), 0) as total')
+            ->selectRaw('COALESCE(SUM(GREATEST(preco_unitario * quantidade - COALESCE(valor_pago, 0), 0)), 0) as total')
             ->value('total');
 
         $mesa->preco = $totalAberto;
@@ -86,6 +88,7 @@ class PedidosFeitosRepositoryimpl implements PedidosFeitosRepository
             'itens.produto',
             'formaPagamento',
             'usuario',
+            'mesa',
             'motoboy',
         ])->find($pedidoId);
     }

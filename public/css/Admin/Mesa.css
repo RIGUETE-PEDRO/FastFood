@@ -328,6 +328,29 @@
     white-space: nowrap;
 }
 
+.mesa-order-row--pending {
+    border-color: #fdba74;
+    background: #fff7ed;
+}
+
+.mesa-pending-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: #ffedd5;
+    color: #9a3412;
+    font-size: 0.72rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.mesa-pending-note {
+    color: #9a3412 !important;
+}
+
 .mesa-details-page .mesa-check {
     position: relative;
     display: inline-flex;
@@ -1192,6 +1215,12 @@ body {
     color: black;
     background-color: gold;
 }
+
+.status-aguardando-preparo {
+    color: #7c2d12;
+    background-color: #fed7aa;
+}
+
 
 /* ===== Modal (usado na comanda / detalhes da mesa) ===== */
 .ff-modal {

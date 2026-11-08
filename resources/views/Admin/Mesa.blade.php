@@ -9,7 +9,7 @@
     <title>Gerenciamento de Mesas</title>
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/Admin/Principal.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/Admin/Mesa.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin/Mesa.css') }}?v={{ filemtime(public_path('css/Admin/Mesa.css')) }}">
 
 </head>
 
@@ -177,10 +177,15 @@
 
                     <div class="sala" role="list" aria-label="Mesas">
                         @forelse ($mesas as $mesa)
+                        @php
+                            $statusMesa = $mesa->status_exibicao ?? $mesa->status;
+                            $statusNormalizado = mb_strtolower(\Illuminate\Support\Str::ascii(trim((string) $statusMesa)));
+                            $classeStatus = 'status-' . str_replace(' ', '-', $statusNormalizado);
+                        @endphp
                         <article class="mesa-card" role="listitem">
                             <div class="mesa-card__top">
-                                <span class="mesa-badge status-{{ strtolower($mesa->status) }}">
-                                    Status: {{ $mesa->status }}
+                                <span class="mesa-badge {{ $classeStatus }}">
+                                    Status: {{ $statusMesa }}
                                 </span>
                             </div>
 

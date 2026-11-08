@@ -198,12 +198,14 @@ function fillCartForm(fields, product, modal) {
       const fullOption = portionType.options.namedItem('inteira') || portionType.options[0];
       const halfOption = portionType.options.namedItem('meia') || portionType.options[1];
       const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+      const halfPrice = Number(product.precoMeia);
+      const halfAvailable = product.aceitaMeia && Number.isFinite(halfPrice) && halfPrice > 0;
       if (fullOption) fullOption.textContent = `Porção inteira — ${currency.format(Number(product.preco || 0))}`;
       if (halfOption) {
         halfOption.hidden = false;
-        halfOption.disabled = !product.aceitaMeia;
-        halfOption.textContent = product.aceitaMeia
-          ? `Meia porção — ${currency.format(Number(product.precoMeia || 0))}`
+        halfOption.disabled = !halfAvailable;
+        halfOption.textContent = halfAvailable
+          ? `Meia porção — ${currency.format(halfPrice)}`
           : 'Meia porção — indisponível';
       }
     }
@@ -425,7 +427,6 @@ function bindCarouselCards(controller) {
   };
 
   document.addEventListener('click', openFromCarousel);
-  document.addEventListener('touchend', openFromCarousel, { passive: false });
 }
 
 function bindModalCloseEvents(modal, controller) {

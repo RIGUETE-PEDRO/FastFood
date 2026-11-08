@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Mensagens\ErroMensagens;
 use App\Repository\GerenciamentoFuncionarioRepository;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
 class GerenciamentoFuncionarioService{
@@ -30,7 +31,7 @@ class GerenciamentoFuncionarioService{
             'nome' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'telefone' => 'nullable|string|max:50',
-            'tipo_usuario_id' => 'required|integer|in:2,3,4',
+            'tipo_usuario_id' => 'required|integer|in:2,3,4,6',
             'has_ativo' => 'nullable|boolean',
             'senha' => 'nullable|min:6|confirmed',
             'salario' => 'nullable|numeric|min:0',
@@ -62,6 +63,8 @@ class GerenciamentoFuncionarioService{
             $funcionario->salario = $request->input('salario');
             $funcionario->save();
         }
+
+        Cache::forget('List_funcionario');
 
     }
 

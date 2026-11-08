@@ -195,6 +195,7 @@
                                 <option value="2">Estabelecimento</option>
                                 <option value="3">Administrador</option>
                                 <option value="4">Entregador</option>
+                                <option value="6">Garçom</option>
                             </select>
                         </div>
 

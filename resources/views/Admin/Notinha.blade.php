@@ -16,6 +16,7 @@
         $subtotal = (float) $pedido->itens->sum(fn ($item) => $item->quantidade * $item->preco_unitario);
         $temEnderecoEntrega = filled(optional($pedido->endereco)->logradouro);
         $numeroMesa = optional($pedido->mesa)->numero_da_mesa;
+        $nomeCliente = optional($pedido->usuario)->nome;
         $horarioFuncionamento = $dadosEmpresa['Horario de Funcionamento'] ?? null;
         $fontesImpressao = [
             'monospace' => '"Courier New", monospace',
@@ -74,8 +75,8 @@
                         <span>{{ optional($pedido->created_at)->format('H:i') ?? 'N/D' }}</span>
                     </div>
                     <div class="receipt-row">
-                        <span>Cliente</span>
-                        <strong>{{ optional($pedido->usuario)->nome ?? 'Não informado' }}</strong>
+                        <span>{{ filled($nomeCliente) ? 'Cliente' : 'Atendimento' }}</span>
+                        <strong>{{ filled($nomeCliente) ? $nomeCliente : ($numeroMesa ? 'Mesa ' . $numeroMesa : 'Não informado') }}</strong>
                     </div>
                     <div class="receipt-row">
                         <span>Tipo</span>

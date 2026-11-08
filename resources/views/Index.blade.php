@@ -152,7 +152,7 @@
         </div>
     </div>
 @include('components.flash-toast')
-<script src="{{ asset('js/carousel.js') }}"></script>
+<script src="{{ asset('js/carousel.js') }}?v={{ filemtime(public_path('js/carousel.js')) }}"></script>
 <script>
     (() => {
         const imagensPrioritarias = [...document.querySelectorAll('.carousel-produtos img, .home-products img')]

@@ -103,15 +103,21 @@ class MesasRepositoryimpl implements MesasRepository
         $status = $pago ? 'pago' : 'em_aberto';
 
         return $this->queryItensDaMesa($mesaId)
-            ->whereHas('pedido', function ($query) {
-                $query->whereIn('status', [
+            ->whereHas('pedido', function ($query) use ($pago) {
+                $statusPermitidos = [
                     StatusPedidos::EM_PREPARO->value,
                     StatusPedidos::A_CAMINHO->value,
                     StatusPedidos::ENTREGUE->value,
-                ]);
+                ];
+
+                if (!$pago) {
+                    $statusPermitidos[] = StatusPedidos::PENDENTE->value;
+                }
+
+                $query->whereIn('status', $statusPermitidos);
             })
             ->where('status_da_comanda', $status)
-            ->with('produto')
+            ->with(['produto', 'pedido'])
             ->orderByDesc('updated_at')
             ->get();
     }
@@ -189,9 +195,7 @@ class MesasRepositoryimpl implements MesasRepository
 
     public function existemItensAbertosMesa(int $mesaId): bool
     {
-        return $this->queryItensAceitosDaMesa($mesaId)
-            ->where('status_da_comanda', 'em_aberto')
-            ->exists();
+        return $this->pegarItensContaMesa($mesaId, false)->isNotEmpty();
     }
 
     public function desvincularMesaItensPagos(int $mesaId): void
